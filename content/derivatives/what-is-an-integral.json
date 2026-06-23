@@ -1,0 +1,292 @@
+{
+  "id": "what-is-an-integral",
+  "title": "What Is an Integral?",
+  "order": 6,
+  "estimatedMinutes": 7,
+  "conceptTags": ["integral", "area_under_curve"],
+  "published": true,
+  "steps": [
+    {
+      "id": "int-step-1",
+      "type": "read",
+      "conceptTag": "integral",
+      "content": [
+        {
+          "type": "text",
+          "body": "A derivative measures how fast a function changes. An integral does the opposite kind of job: it adds up a function over an interval. Geometrically, that total is the area between the curve and the x-axis."
+        },
+        {
+          "type": "text",
+          "body": "We write the integral of f from a to b like this — read it as \"the area under f from a to b\":"
+        },
+        {
+          "type": "math",
+          "latex": "\\int_a^b f(x)\\,dx",
+          "display": true
+        },
+        {
+          "type": "text",
+          "body": "Let's build the idea up from the simplest shapes, just like we did with derivatives."
+        }
+      ],
+      "feedback": { "correct": "", "incorrect": "", "hint": "" }
+    },
+    {
+      "id": "int-step-2",
+      "type": "slider_graph",
+      "conceptTag": "area_under_curve",
+      "content": [
+        {
+          "type": "text",
+          "body": "Start with the flat line f(x) = 2. Drag x to the right and watch the shaded region grow. It's always a rectangle of height 2. Each time x increases by 1, how much does the shaded area increase?"
+        },
+        {
+          "type": "math",
+          "latex": "f(x) = 2"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "2",
+          "domain": [0, 5],
+          "yDomain": [0, 4],
+          "sliderLabel": "x",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showValue": false,
+          "showArea": true,
+          "areaStart": 0,
+          "sliderMin": 0,
+          "sliderMax": 5,
+          "sliderStep": 1,
+          "initialSlider": 0
+        },
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "multiple_choice",
+          "options": ["0", "2", "It depends on x"],
+          "correctIndex": 1
+        }
+      },
+      "feedback": {
+        "correct": "Exactly! The strip you add each step is a 1-by-2 rectangle, so the area grows by 2 every time x increases by 1. Area = height × width.",
+        "incorrect": "Look at the new sliver added each step. It's 1 unit wide and 2 units tall.",
+        "hint": "Each step adds a rectangle 1 wide and 2 tall, so its area is 1 × 2 = 2."
+      }
+    },
+    {
+      "id": "int-step-3",
+      "type": "slider_graph",
+      "conceptTag": "area_under_curve",
+      "content": [
+        {
+          "type": "text",
+          "body": "Now tilt the line: f(x) = x. Drag x out to 4. The shaded region is a triangle. Using area = ½ · base · height, what is the shaded area from 0 to 4?"
+        },
+        {
+          "type": "math",
+          "latex": "f(x) = x"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x",
+          "domain": [0, 5],
+          "yDomain": [0, 5],
+          "sliderLabel": "x",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showValue": false,
+          "showArea": true,
+          "showAreaValue": false,
+          "areaStart": 0,
+          "sliderMin": 0,
+          "sliderMax": 5,
+          "sliderStep": 1,
+          "initialSlider": 0
+        },
+        "hintAfterAttempts": 1,
+        "answer": { "type": "numeric", "value": 8, "tolerance": 0.1 }
+      },
+      "feedback": {
+        "correct": "Right! The triangle has base 4 and height f(4) = 4, so the area is ½ · 4 · 4 = 8.",
+        "incorrect": "The region is a right triangle. Its base runs from 0 to 4, and its height is f(4) = 4.",
+        "hint": "Area of a triangle = ½ · base · height = ½ · 4 · 4 = 8."
+      }
+    },
+    {
+      "id": "int-step-4",
+      "type": "read",
+      "conceptTag": "integral",
+      "content": [
+        {
+          "type": "text",
+          "body": "So the area under a flat line is a rectangle, and the area under a tilted line is a triangle. For any function, the integral from a to b is just the area trapped between the curve and the x-axis over that interval."
+        },
+        {
+          "type": "math",
+          "latex": "\\int_a^b f(x)\\,dx = \\text{area under } f \\text{ from } a \\text{ to } b",
+          "display": true
+        }
+      ],
+      "feedback": { "correct": "", "incorrect": "", "hint": "" }
+    },
+    {
+      "id": "int-step-5",
+      "type": "slider_graph",
+      "conceptTag": "area_under_curve",
+      "content": [
+        {
+          "type": "text",
+          "body": "Your turn to aim for a target. With f(x) = x, the shaded triangle has area ½ · x · x. Drag x until the shaded area reads exactly 2."
+        },
+        {
+          "type": "math",
+          "latex": "f(x) = x"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x",
+          "domain": [0, 5],
+          "yDomain": [0, 5],
+          "sliderLabel": "x",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showValue": false,
+          "showArea": true,
+          "areaStart": 0,
+          "sliderMin": 0,
+          "sliderMax": 5,
+          "sliderStep": 0.1,
+          "initialSlider": 0
+        },
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "slider",
+          "value": 2,
+          "tolerance": 0.2,
+          "prompt": "Drag x until the shaded area reads 2."
+        }
+      },
+      "feedback": {
+        "correct": "Nice — at x = 2 the triangle has area ½ · 2 · 2 = 2. You found the value of x that accumulates exactly 2 units of area.",
+        "incorrect": "You need ½ · x · x = 2, which means x² = 4. Slide a little until the area readout shows 2.",
+        "hint": "Solve ½ · x · x = 2 → x² = 4 → x = 2."
+      }
+    },
+    {
+      "id": "int-step-6",
+      "type": "multiple_choice",
+      "conceptTag": "integral",
+      "content": [
+        {
+          "type": "text",
+          "body": "Which expression stands for the area under the curve f(x) from x = a to x = b?"
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "The integral of f(x) from a to b",
+            "The slope f ′(x) at b",
+            "The value f(b) by itself"
+          ],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "Exactly — the definite integral from a to b is precisely the accumulated area under f over that interval.",
+        "incorrect": "Area is an accumulation, not a slope or a single height. Which choice describes adding f up across the whole interval?",
+        "hint": "Slopes are derivatives; a single height is just f(b). The accumulated area is the integral from a to b."
+      }
+    },
+    {
+      "id": "int-step-7",
+      "type": "read",
+      "conceptTag": "integral",
+      "content": [
+        {
+          "type": "text",
+          "body": "To recap: an integral accumulates a function, and that accumulation is the area between the curve and the x-axis. Flat lines give rectangles, tilted lines give triangles, and soon you'll handle genuine curves."
+        },
+        {
+          "type": "text",
+          "body": "Next up: how do we find the area under a curve like f(x) = x², where there's no neat triangle to measure?"
+        }
+      ],
+      "feedback": { "correct": "", "incorrect": "", "hint": "" }
+    }
+  ],
+  "practiceBank": [
+    {
+      "id": "int-practice-1",
+      "type": "numeric",
+      "conceptTag": "area_under_curve",
+      "content": [
+        {
+          "type": "text",
+          "body": "The constant function f(x) = 3 makes a rectangle. What is the area under it from x = 0 to x = 4?"
+        }
+      ],
+      "interaction": {
+        "answer": { "type": "numeric", "value": 12, "tolerance": 0.1 }
+      },
+      "feedback": {
+        "correct": "Right — a rectangle of height 3 and width 4 has area 3 × 4 = 12.",
+        "incorrect": "Area of a rectangle = height × width. Here height = 3 and width = 4.",
+        "hint": "3 × 4 = 12."
+      }
+    },
+    {
+      "id": "int-practice-2",
+      "type": "numeric",
+      "conceptTag": "area_under_curve",
+      "content": [
+        {
+          "type": "text",
+          "body": "For f(x) = x, the area under the line from 0 to 6 is a triangle. What is its area?"
+        }
+      ],
+      "interaction": {
+        "answer": { "type": "numeric", "value": 18, "tolerance": 0.1 }
+      },
+      "feedback": {
+        "correct": "Yes — ½ · 6 · 6 = 18.",
+        "incorrect": "Triangle area = ½ · base · height, with base 6 and height f(6) = 6.",
+        "hint": "½ · 6 · 6 = 18."
+      }
+    },
+    {
+      "id": "int-practice-3",
+      "type": "multiple_choice",
+      "conceptTag": "integral",
+      "content": [
+        {
+          "type": "text",
+          "body": "The area under a constant function f(x) = 5 over an interval of width 2 is a…"
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "triangle with area 5",
+            "rectangle with area 10",
+            "rectangle with area 5"
+          ],
+          "correctIndex": 1
+        }
+      },
+      "feedback": {
+        "correct": "Correct — height 5 times width 2 gives a rectangle of area 10.",
+        "incorrect": "A constant function is flat, so the region is a rectangle: height × width.",
+        "hint": "5 × 2 = 10, and the shape is a rectangle."
+      }
+    }
+  ]
+}

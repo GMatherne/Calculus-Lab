@@ -1,0 +1,343 @@
+{
+  "id": "power-rule",
+  "title": "The Power Rule",
+  "order": 4,
+  "estimatedMinutes": 8,
+  "conceptTags": ["power_rule"],
+  "published": true,
+  "steps": [
+    {
+      "id": "pr-step-1",
+      "type": "read",
+      "conceptTag": "power_rule",
+      "content": [
+        {
+          "type": "text",
+          "body": "The power rule lets you differentiate xⁿ instantly — no limit required. Bring the exponent down in front, then reduce the exponent by 1."
+        },
+        {
+          "type": "math",
+          "latex": "\\frac{d}{dx}(x^n) = n\\,x^{n-1}",
+          "display": true
+        }
+      ],
+      "feedback": { "correct": "", "incorrect": "", "hint": "" }
+    },
+    {
+      "id": "pr-step-2",
+      "type": "multiple_choice",
+      "conceptTag": "power_rule",
+      "content": [
+        { "type": "text", "body": "What is the derivative of x³?" }
+      ],
+      "interaction": {
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "multiple_choice",
+          "options": ["3x²", "x²", "3x³"],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "3x² — bring down the 3, then reduce the exponent to 2.",
+        "incorrect": "Use the power rule: n·x^(n−1) with n = 3.",
+        "hint": "Multiply by the exponent, then subtract 1 from it."
+      }
+    },
+    {
+      "id": "pr-step-3",
+      "type": "multiple_choice",
+      "conceptTag": "power_rule",
+      "content": [
+        { "type": "text", "body": "What is the derivative of f(x) = x⁵?" }
+      ],
+      "interaction": {
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "multiple_choice",
+          "options": ["5x⁴", "x⁴", "5x⁵"],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "f'(x) = 5x⁴.",
+        "incorrect": "Apply d/dx(xⁿ) = n·x^(n−1) with n = 5.",
+        "hint": "The exponent 5 becomes the coefficient, and 5 − 1 = 4."
+      }
+    },
+    {
+      "id": "pr-step-3b",
+      "type": "read",
+      "conceptTag": "power_rule",
+      "content": [
+        {
+          "type": "text",
+          "body": "See the pattern? Differentiating xⁿ is purely mechanical: the old exponent drops down to become a coefficient, and the new exponent is one smaller. That's how x³ became 3x² and x⁵ became 5x⁴ — no limits required."
+        },
+        {
+          "type": "text",
+          "body": "But does this tidy shortcut actually match the true slope of the curve? Let's put it to the test on a graph."
+        }
+      ],
+      "feedback": { "correct": "", "incorrect": "", "hint": "" }
+    },
+    {
+      "id": "pr-step-4",
+      "type": "slider_graph",
+      "conceptTag": "power_rule",
+      "content": [
+        {
+          "type": "text",
+          "body": "Let's confirm the rule on a graph. For f(x) = x³, shrink h to estimate the slope at x = 2. The power rule predicts f'(2) = 3·2² — what value does the secant approach?"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^3",
+          "domain": [0, 3],
+          "fixedPoint": 2,
+          "sliderLabel": "h",
+          "showSecant": true,
+          "sliderMin": 0.05,
+          "sliderMax": 1.5,
+          "sliderStep": 0.05,
+          "initialSlider": 0.5
+        },
+        "hintAfterAttempts": 1,
+        "answer": { "type": "numeric", "value": 12, "tolerance": 1 }
+      },
+      "feedback": {
+        "correct": "f'(x) = 3x², so f'(2) = 12 — and the secant slope approaches 12. The rule checks out!",
+        "incorrect": "Shrink h and read the secant slope, or compute 3 × 2².",
+        "hint": "3 × 2² = 3 × 4 = 12."
+      }
+    },
+    {
+      "id": "pr-step-5",
+      "type": "slider_graph",
+      "conceptTag": "power_rule",
+      "content": [
+        {
+          "type": "text",
+          "body": "For f(x) = x³ the slope formula is f'(x) = 3x². Drag x until the tangent slope reads 3. At what x does that happen?"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^3",
+          "domain": [0, 3],
+          "sliderLabel": "x",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showTangent": true,
+          "slopeLabel": "Tangent slope",
+          "sliderMin": 0,
+          "sliderMax": 3,
+          "sliderStep": 1,
+          "initialSlider": 0
+        },
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "slider",
+          "value": 1,
+          "tolerance": 0.2,
+          "prompt": "Drag x until the tangent slope equals 3, then check your answer."
+        }
+      },
+      "feedback": {
+        "correct": "Right — 3x² = 3 means x² = 1, so x = 1.",
+        "incorrect": "Set the slope formula equal to 3: 3x² = 3. Solve for x and drag there.",
+        "hint": "3x² = 3 → x² = 1 → x = 1."
+      }
+    },
+    {
+      "id": "pr-step-6",
+      "type": "numeric",
+      "conceptTag": "power_rule",
+      "content": [
+        {
+          "type": "text",
+          "body": "Apply the rule and evaluate. For f(x) = x⁴, what is f'(2)?"
+        },
+        { "type": "math", "latex": "f'(x) = 4x^3" }
+      ],
+      "interaction": {
+        "hintAfterAttempts": 1,
+        "answer": { "type": "numeric", "value": 32, "tolerance": 0.5 }
+      },
+      "feedback": {
+        "correct": "f'(2) = 4 · 2³ = 4 · 8 = 32.",
+        "incorrect": "Differentiate to 4x³, then substitute x = 2.",
+        "hint": "4 × 2³ = 4 × 8."
+      }
+    },
+    {
+      "id": "pr-step-7",
+      "type": "multiple_choice",
+      "conceptTag": "power_rule",
+      "content": [
+        {
+          "type": "text",
+          "body": "One special case to remember: what is the derivative of the constant function f(x) = 7?"
+        }
+      ],
+      "interaction": {
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "multiple_choice",
+          "options": ["0", "7", "1"],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "0 — a constant never changes, just like you saw in the first lesson.",
+        "incorrect": "A constant function is a flat line; its rate of change is zero.",
+        "hint": "Flat line → slope 0 → derivative 0."
+      }
+    },
+    {
+      "id": "pr-step-8",
+      "type": "read",
+      "conceptTag": "power_rule",
+      "content": [
+        {
+          "type": "text",
+          "body": "The power rule handles polynomials term by term: differentiate each xⁿ and keep any coefficients along for the ride. Next you'll use derivatives to read the shape of a graph — where it rises, falls, and turns."
+        },
+        {
+          "type": "math",
+          "latex": "\\frac{d}{dx}\\left(ax^n\\right) = a\\,n\\,x^{n-1}",
+          "display": true
+        }
+      ],
+      "feedback": { "correct": "", "incorrect": "", "hint": "" }
+    }
+  ],
+  "practiceBank": [
+    {
+      "id": "pr-practice-1",
+      "type": "multiple_choice",
+      "conceptTag": "power_rule",
+      "content": [
+        { "type": "text", "body": "Use the power rule. What is the derivative of x⁶?" }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "multiple_choice",
+          "options": ["6x⁵", "6x⁶", "x⁵"],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "Right — bring the 6 down and reduce the exponent: 6x⁵.",
+        "incorrect": "Apply d/dx(xⁿ) = n·x^(n−1) with n = 6.",
+        "hint": "The exponent 6 becomes the coefficient, and 6 − 1 = 5."
+      }
+    },
+    {
+      "id": "pr-practice-2",
+      "type": "numeric",
+      "conceptTag": "power_rule",
+      "content": [
+        {
+          "type": "text",
+          "body": "For f(x) = x³, the derivative is f'(x) = 3x². Evaluate f'(2)."
+        }
+      ],
+      "interaction": {
+        "answer": { "type": "numeric", "value": 12, "tolerance": 0.01 }
+      },
+      "feedback": {
+        "correct": "Yes — f'(2) = 3 · 2² = 3 · 4 = 12.",
+        "incorrect": "Substitute x = 2 into 3x².",
+        "hint": "3 × 2² = 3 × 4 = 12."
+      }
+    },
+    {
+      "id": "pr-practice-3",
+      "type": "multiple_choice",
+      "conceptTag": "power_rule",
+      "content": [
+        {
+          "type": "text",
+          "body": "Coefficients come along for the ride. What is the derivative of f(x) = 2x⁴?"
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "multiple_choice",
+          "options": ["8x³", "2x³", "8x⁴"],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "Correct — d/dx(2x⁴) = 2 · 4x³ = 8x³.",
+        "incorrect": "Use d/dx(a·xⁿ) = a·n·x^(n−1) with a = 2 and n = 4.",
+        "hint": "2 × 4 = 8, and the exponent drops to 3."
+      }
+    },
+    {
+      "id": "pr-practice-4",
+      "type": "multiple_choice",
+      "conceptTag": "power_rule",
+      "content": [
+        { "type": "text", "body": "Use the power rule. What is the derivative of x⁷?" }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "multiple_choice",
+          "options": ["7x⁶", "x⁶", "7x⁷"],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "Right — bring the 7 down and reduce the exponent: 7x⁶.",
+        "incorrect": "Apply d/dx(xⁿ) = n·x^(n−1) with n = 7.",
+        "hint": "The exponent 7 becomes the coefficient, and 7 − 1 = 6."
+      }
+    },
+    {
+      "id": "pr-practice-5",
+      "type": "numeric",
+      "conceptTag": "power_rule",
+      "content": [
+        {
+          "type": "text",
+          "body": "For f(x) = x⁵, the derivative is f'(x) = 5x⁴. Evaluate f'(1)."
+        }
+      ],
+      "interaction": {
+        "answer": { "type": "numeric", "value": 5, "tolerance": 0.01 }
+      },
+      "feedback": {
+        "correct": "Yes — f'(1) = 5 · 1⁴ = 5.",
+        "incorrect": "Substitute x = 1 into 5x⁴.",
+        "hint": "5 × 1⁴ = 5 × 1 = 5."
+      }
+    },
+    {
+      "id": "pr-practice-6",
+      "type": "multiple_choice",
+      "conceptTag": "power_rule",
+      "content": [
+        {
+          "type": "text",
+          "body": "Coefficients come along for the ride. What is the derivative of f(x) = 3x²?"
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "multiple_choice",
+          "options": ["6x", "3x", "6x²"],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "Correct — d/dx(3x²) = 3 · 2x = 6x.",
+        "incorrect": "Use d/dx(a·xⁿ) = a·n·x^(n−1) with a = 3 and n = 2.",
+        "hint": "3 × 2 = 6, and the exponent drops to 1."
+      }
+    }
+  ]
+}

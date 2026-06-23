@@ -1,0 +1,366 @@
+{
+  "id": "graph-shape",
+  "title": "Derivatives and Graph Shape",
+  "order": 5,
+  "estimatedMinutes": 8,
+  "conceptTags": ["graph_shape"],
+  "published": true,
+  "steps": [
+    {
+      "id": "gs-step-1",
+      "type": "read",
+      "conceptTag": "graph_shape",
+      "content": [
+        {
+          "type": "text",
+          "body": "The sign of f'(x) tells you the shape of f. Where f' > 0 the graph rises, where f' < 0 it falls, and where f' = 0 it momentarily levels off — a peak, a valley, or a flat spot."
+        }
+      ],
+      "feedback": { "correct": "", "incorrect": "", "hint": "" }
+    },
+    {
+      "id": "gs-step-2",
+      "type": "slider_graph",
+      "conceptTag": "graph_shape",
+      "content": [
+        {
+          "type": "text",
+          "body": "Explore f(x) = x² − 4x + 3. Drag x across the curve and watch the tangent slope flip from negative to positive. Which statement matches what you see?"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^2 - 4*x + 3",
+          "domain": [-1, 5],
+          "sliderLabel": "x",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showTangent": true,
+          "slopeLabel": "Tangent slope",
+          "sliderMin": 0,
+          "sliderMax": 4,
+          "sliderStep": 0.1,
+          "initialSlider": 0
+        },
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "f decreases before x = 2 and increases after it",
+            "f increases everywhere",
+            "f decreases everywhere"
+          ],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "Right — the tangent slope is negative left of x = 2 (falling) and positive right of it (rising).",
+        "incorrect": "Watch the sign of the tangent slope as you cross x = 2.",
+        "hint": "f'(x) = 2x − 4, which is negative for x < 2 and positive for x > 2."
+      }
+    },
+    {
+      "id": "gs-step-3",
+      "type": "slider_graph",
+      "conceptTag": "graph_shape",
+      "content": [
+        {
+          "type": "text",
+          "body": "A function turns around exactly where its tangent is flat — where f'(x) = 0. Tap the point on f(x) = x² − 4x + 3 where the slope is zero."
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^2 - 4*x + 3",
+          "domain": [-1, 5],
+          "xLabel": "x",
+          "yLabel": "f"
+        },
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "graph_point",
+          "x": 2,
+          "tolerance": 0.4,
+          "prompt": "Tap the lowest point of the curve, where the tangent is flat."
+        }
+      },
+      "feedback": {
+        "correct": "Exactly — at x = 2 the tangent is flat, so f'(2) = 0. This is the minimum of the parabola.",
+        "incorrect": "The slope is zero at the very bottom, where the curve stops falling and starts rising.",
+        "hint": "f'(x) = 2x − 4 = 0 gives x = 2."
+      }
+    },
+    {
+      "id": "gs-step-4",
+      "type": "slider_graph",
+      "conceptTag": "graph_shape",
+      "content": [
+        {
+          "type": "text",
+          "body": "On the same curve, find where it is rising at a specific rate. Drag x until the tangent slope reads 2. At what x does that occur?"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^2 - 4*x + 3",
+          "domain": [-1, 5],
+          "sliderLabel": "x",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showTangent": true,
+          "slopeLabel": "Tangent slope",
+          "sliderMin": 0,
+          "sliderMax": 5,
+          "sliderStep": 1,
+          "initialSlider": 0
+        },
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "slider",
+          "value": 3,
+          "tolerance": 0.2,
+          "prompt": "Drag x until the tangent slope equals 2, then check your answer."
+        }
+      },
+      "feedback": {
+        "correct": "Right — f'(x) = 2x − 4 = 2 gives x = 3, where the curve rises with slope 2.",
+        "incorrect": "Set the slope formula equal to 2: 2x − 4 = 2. Solve, then drag there.",
+        "hint": "2x − 4 = 2 → x = 3."
+      }
+    },
+    {
+      "id": "gs-step-5",
+      "type": "multiple_choice",
+      "conceptTag": "graph_shape",
+      "content": [
+        {
+          "type": "text",
+          "body": "Generalize what you saw: if f'(x) > 0 on an interval, what is f doing there?"
+        }
+      ],
+      "interaction": {
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "multiple_choice",
+          "options": ["Increasing", "Decreasing", "Constant"],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "Positive derivative → the function is increasing (going uphill).",
+        "incorrect": "A positive slope means the tangent points uphill.",
+        "hint": "f' > 0 means the graph is rising."
+      }
+    },
+    {
+      "id": "gs-step-5b",
+      "type": "read",
+      "conceptTag": "graph_shape",
+      "content": [
+        {
+          "type": "text",
+          "body": "Quick consolidation: the sign of f' reads the shape of the graph directly — positive means rising, negative means falling, and zero marks a turning point where the tangent goes flat."
+        },
+        {
+          "type": "text",
+          "body": "You found that flat tangent at the bottom of an upward parabola. But a turning point isn't always a valley — a downward parabola has the same flat tangent at its peak. Let's go find one."
+        }
+      ],
+      "feedback": { "correct": "", "incorrect": "", "hint": "" }
+    },
+    {
+      "id": "gs-step-6",
+      "type": "slider_graph",
+      "conceptTag": "graph_shape",
+      "content": [
+        {
+          "type": "text",
+          "body": "Flat spots can be peaks too. Here is f(x) = −x² + 4x, a downward parabola. Tap its highest point, where the tangent is flat."
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "-x^2 + 4*x",
+          "domain": [0, 4],
+          "xLabel": "x",
+          "yLabel": "f"
+        },
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "graph_point",
+          "x": 2,
+          "tolerance": 0.4,
+          "prompt": "Tap the top of the hill, where the slope is zero."
+        }
+      },
+      "feedback": {
+        "correct": "Exactly — at x = 2 the curve peaks and f'(2) = 0. A maximum has a flat tangent, just like a minimum.",
+        "incorrect": "The slope is zero at the very top, where the curve stops rising and starts falling.",
+        "hint": "f'(x) = −2x + 4 = 0 gives x = 2."
+      }
+    },
+    {
+      "id": "gs-step-7",
+      "type": "numeric",
+      "conceptTag": "graph_shape",
+      "content": [
+        {
+          "type": "text",
+          "body": "For that hill f(x) = −x² + 4x, the slope formula is f'(x) = −2x + 4. Compute f'(3). (A negative answer means the curve is falling there.)"
+        }
+      ],
+      "interaction": {
+        "hintAfterAttempts": 1,
+        "answer": { "type": "numeric", "value": -2, "tolerance": 0.01 }
+      },
+      "feedback": {
+        "correct": "f'(3) = −2(3) + 4 = −2 — negative, so past the peak the curve is falling.",
+        "incorrect": "Substitute x = 3 into −2x + 4.",
+        "hint": "−2 × 3 + 4 = −6 + 4."
+      }
+    },
+    {
+      "id": "gs-step-8",
+      "type": "read",
+      "conceptTag": "graph_shape",
+      "content": [
+        {
+          "type": "text",
+          "body": "Congratulations! You've built a solid foundation in derivatives — rate of change, tangent slopes, the difference quotient, the power rule, and how the sign of f' shapes a graph: rising, falling, and turning at flat tangents."
+        },
+        {
+          "type": "math",
+          "latex": "f'(x) > 0 \\Rightarrow \\text{rising}, \\quad f'(x) < 0 \\Rightarrow \\text{falling}, \\quad f'(x) = 0 \\Rightarrow \\text{flat}",
+          "display": true
+        }
+      ],
+      "feedback": { "correct": "", "incorrect": "", "hint": "" }
+    }
+  ],
+  "practiceBank": [
+    {
+      "id": "gs-practice-1",
+      "type": "multiple_choice",
+      "conceptTag": "graph_shape",
+      "content": [
+        {
+          "type": "text",
+          "body": "If f'(x) < 0 on an interval, what is the graph of f doing there?"
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "multiple_choice",
+          "options": ["Falling", "Rising", "Staying flat"],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "Right — a negative derivative means the tangent points downhill, so f is falling.",
+        "incorrect": "A negative slope tilts the tangent downward.",
+        "hint": "f' < 0 → the graph decreases."
+      }
+    },
+    {
+      "id": "gs-practice-2",
+      "type": "numeric",
+      "conceptTag": "graph_shape",
+      "content": [
+        {
+          "type": "text",
+          "body": "For f(x) = x² − 4x + 3, the slope is f'(x) = 2x − 4. At what x is the tangent flat (f'(x) = 0)?"
+        }
+      ],
+      "interaction": {
+        "answer": { "type": "numeric", "value": 2, "tolerance": 0.01 }
+      },
+      "feedback": {
+        "correct": "Yes — 2x − 4 = 0 gives x = 2, the turning point of the parabola.",
+        "incorrect": "Set 2x − 4 = 0 and solve for x.",
+        "hint": "2x − 4 = 0 → 2x = 4 → x = 2."
+      }
+    },
+    {
+      "id": "gs-practice-3",
+      "type": "numeric",
+      "conceptTag": "graph_shape",
+      "content": [
+        {
+          "type": "text",
+          "body": "For f(x) = x² − 6x + 5, the slope is f'(x) = 2x − 6. Compute f'(1). (A negative answer means the curve is falling there.)"
+        }
+      ],
+      "interaction": {
+        "answer": { "type": "numeric", "value": -4, "tolerance": 0.01 }
+      },
+      "feedback": {
+        "correct": "Right — f'(1) = 2(1) − 6 = −4, so the curve is falling at x = 1.",
+        "incorrect": "Substitute x = 1 into 2x − 6.",
+        "hint": "2 × 1 − 6 = 2 − 6 = −4."
+      }
+    },
+    {
+      "id": "gs-practice-4",
+      "type": "multiple_choice",
+      "conceptTag": "graph_shape",
+      "content": [
+        {
+          "type": "text",
+          "body": "At a peak or a valley of a smooth curve, what is the value of f'(x)?"
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "multiple_choice",
+          "options": ["0", "Positive", "Negative"],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "Right — at a turning point the tangent is flat, so f'(x) = 0.",
+        "incorrect": "Think about the slope of the tangent at the very top or bottom.",
+        "hint": "A flat tangent means slope 0."
+      }
+    },
+    {
+      "id": "gs-practice-5",
+      "type": "numeric",
+      "conceptTag": "graph_shape",
+      "content": [
+        {
+          "type": "text",
+          "body": "For f(x) = x² − 10x, the slope is f'(x) = 2x − 10. At what x is the tangent flat (f'(x) = 0)?"
+        }
+      ],
+      "interaction": {
+        "answer": { "type": "numeric", "value": 5, "tolerance": 0.01 }
+      },
+      "feedback": {
+        "correct": "Yes — 2x − 10 = 0 gives x = 5, the turning point of the parabola.",
+        "incorrect": "Set 2x − 10 = 0 and solve for x.",
+        "hint": "2x − 10 = 0 → 2x = 10 → x = 5."
+      }
+    },
+    {
+      "id": "gs-practice-6",
+      "type": "numeric",
+      "conceptTag": "graph_shape",
+      "content": [
+        {
+          "type": "text",
+          "body": "For f(x) = −x² + 4x, the slope is f'(x) = −2x + 4. Compute f'(1). (A positive answer means the curve is rising there.)"
+        }
+      ],
+      "interaction": {
+        "answer": { "type": "numeric", "value": 2, "tolerance": 0.01 }
+      },
+      "feedback": {
+        "correct": "f'(1) = −2(1) + 4 = 2 — positive, so the curve is rising at x = 1.",
+        "incorrect": "Substitute x = 1 into −2x + 4.",
+        "hint": "−2 × 1 + 4 = 2."
+      }
+    }
+  ]
+}

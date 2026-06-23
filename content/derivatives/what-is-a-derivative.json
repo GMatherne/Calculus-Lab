@@ -1,0 +1,433 @@
+{
+  "id": "what-is-a-derivative",
+  "title": "What Is a Derivative?",
+  "order": 1,
+  "estimatedMinutes": 8,
+  "conceptTags": ["rate_of_change"],
+  "published": true,
+  "steps": [
+    {
+      "id": "wid-step-1",
+      "type": "read",
+      "conceptTag": "rate_of_change",
+      "content": [
+        {
+          "type": "text",
+          "body": "A derivative measures how much a function's output changes as its input changes. When the input x increases a little, the output shifts too — and the derivative tells you how big that change is."
+        },
+        {
+          "type": "text",
+          "body": "You'll see derivatives written a few different ways. For a function f(x), all of these mean the same thing — the derivative of f with respect to x:"
+        },
+        {
+          "type": "math",
+          "latex": "f'(x) = \\frac{df}{dx} = \\frac{dy}{dx}",
+          "display": true
+        },
+        {
+          "type": "text",
+          "body": "Read f'(x) as \"f prime of x.\" The dy/dx form reads as \"the change in y for a change in x.\" We'll use these notations throughout the course."
+        },
+        {
+          "type": "text",
+          "body": "Let's build that idea up from the very simplest functions, one step at a time."
+        }
+      ],
+      "feedback": { "correct": "", "incorrect": "", "hint": "" }
+    },
+    {
+      "id": "wid-step-2",
+      "type": "slider_graph",
+      "conceptTag": "rate_of_change",
+      "content": [
+        {
+          "type": "text",
+          "body": "Start with the flat line f(x) = 2. Drag x left and right and watch the output. As x changes, how much does f(x) change?"
+        },
+        {
+          "type": "math",
+          "latex": "f(x) = 2"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "2",
+          "domain": [0, 5],
+          "yDomain": [0, 4],
+          "sliderLabel": "x",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showTangent": false,
+          "showValue": true,
+          "sliderMin": 0,
+          "sliderMax": 5,
+          "sliderStep": 1,
+          "initialSlider": 0
+        },
+        "hintAfterAttempts": 1,
+        "answer": { "type": "numeric", "value": 0, "tolerance": 0.01 }
+      },
+      "feedback": {
+        "correct": "Exactly! Each time x increases by 1, f(x) stays at 2 — it changes by 0. So the rate of change is 0, and that's the derivative everywhere.",
+        "incorrect": "Look at the height of the line as you drag x. Does it ever move up or down?",
+        "hint": "Plug in a few values: f(0) = 2, f(1) = 2, f(2) = 2. The output never moves, so each step changes f by 0."
+      }
+    },
+    {
+      "id": "wid-step-3",
+      "type": "slider_graph",
+      "conceptTag": "rate_of_change",
+      "content": [
+        {
+          "type": "text",
+          "body": "Now tilt the line: f(x) = 2x. Drag x up by one unit at a time. Each time x increases by 1, how much does f(x) change?"
+        },
+        {
+          "type": "math",
+          "latex": "f(x) = 2x"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "2*x",
+          "domain": [0, 5],
+          "sliderLabel": "x",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showTangent": false,
+          "showValue": true,
+          "sliderMin": 0,
+          "sliderMax": 5,
+          "sliderStep": 1,
+          "initialSlider": 0
+        },
+        "hintAfterAttempts": 1,
+        "answer": { "type": "numeric", "value": 2, "tolerance": 0.01 }
+      },
+      "feedback": {
+        "correct": "Right! Each time x increases by 1, f(x) goes up by 2, so the rate of change is 2 — and that constant rate is the derivative.",
+        "incorrect": "Compare two neighbors: at x = 1, f = 2; at x = 2, f = 4. How much did the output rise?",
+        "hint": "Plug in values: f(1) = 2, f(2) = 4, f(3) = 6. Each step of 1 in x raises f by 2."
+      }
+    },
+    {
+      "id": "wid-step-4",
+      "type": "slider_graph",
+      "conceptTag": "rate_of_change",
+      "content": [
+        {
+          "type": "text",
+          "body": "Here is f(x) = 2x + 3 — the same slope as before, just lifted up by 3. Drag x and watch the rate of change. By how much does f(x) change for each step in x?"
+        },
+        {
+          "type": "math",
+          "latex": "f(x) = 2x + 3"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "2*x + 3",
+          "domain": [0, 5],
+          "sliderLabel": "x",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showTangent": false,
+          "showValue": true,
+          "sliderMin": 0,
+          "sliderMax": 5,
+          "sliderStep": 1,
+          "initialSlider": 0
+        },
+        "hintAfterAttempts": 1,
+        "answer": { "type": "numeric", "value": 2, "tolerance": 0.01 }
+      },
+      "feedback": {
+        "correct": "Exactly 2 — the same as f(x) = 2x! Each time x increases by 1, f(x) rises by 2; the + 3 only shifts the line up. So the rate of change is 2, and a constant term has no effect on the derivative.",
+        "incorrect": "The + 3 just shifts the line up. The steepness — how much f changes per step — is still the same as 2x.",
+        "hint": "Plug in values: f(1) = 5, f(2) = 7, f(3) = 9. Each step raises f by 2 — the + 3 just shifts everything up."
+      }
+    },
+    {
+      "id": "wid-step-4b",
+      "type": "read",
+      "conceptTag": "rate_of_change",
+      "content": [
+        {
+          "type": "text",
+          "body": "Step back for a second. Every straight line you've tried tells the same story: the rate of change is simply the slope. A flat line has slope 0, while f(x) = 2x and f(x) = 2x + 3 both change by 2 per step — the + 3 only lifts the line without tilting it."
+        },
+        {
+          "type": "text",
+          "body": "So far the slopes have all been positive. Next, let's stretch the idea — what happens when a line heads downhill, or when it's much steeper or much gentler?"
+        }
+      ],
+      "feedback": { "correct": "", "incorrect": "", "hint": "" }
+    },
+    {
+      "id": "wid-step-5",
+      "type": "slider_graph",
+      "conceptTag": "rate_of_change",
+      "content": [
+        {
+          "type": "text",
+          "body": "What if a function goes downhill? Here is f(x) = 4 − x. Drag x and watch the output fall. What is its rate of change for each step in x?"
+        },
+        {
+          "type": "math",
+          "latex": "f(x) = 4 - x"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "4 - x",
+          "domain": [0, 5],
+          "sliderLabel": "x",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showTangent": false,
+          "showValue": true,
+          "sliderMin": 0,
+          "sliderMax": 5,
+          "sliderStep": 1,
+          "initialSlider": 0
+        },
+        "hintAfterAttempts": 1,
+        "answer": { "type": "numeric", "value": -1, "tolerance": 0.01 }
+      },
+      "feedback": {
+        "correct": "Yes — each time x increases by 1, f(x) drops by 1, so the rate of change is −1. That rate of change is the derivative, f'(x) = −1, and a negative derivative means the function is decreasing.",
+        "incorrect": "The line falls as x grows. Going up by 1 in x lowers f by 1, so the change is negative.",
+        "hint": "Plug in values: f(1) = 3, f(2) = 2, f(3) = 1. Each step lowers f by 1, so the change per step is −1."
+      }
+    },
+    {
+      "id": "wid-step-6",
+      "type": "slider_graph",
+      "conceptTag": "rate_of_change",
+      "content": [
+        {
+          "type": "text",
+          "body": "Steeper lines change faster. Here is f(x) = 5x. Drag x one unit at a time. How much does f(x) change with each step?"
+        },
+        {
+          "type": "math",
+          "latex": "f(x) = 5x"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "5*x",
+          "domain": [0, 5],
+          "sliderLabel": "x",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showTangent": false,
+          "showValue": true,
+          "sliderMin": 0,
+          "sliderMax": 5,
+          "sliderStep": 1,
+          "initialSlider": 0
+        },
+        "hintAfterAttempts": 1,
+        "answer": { "type": "numeric", "value": 5, "tolerance": 0.01 }
+      },
+      "feedback": {
+        "correct": "Right — each time x increases by 1, f(x) climbs by 5, so the rate of change is 5 — that's the derivative, f'(x) = 5. The steeper the line, the bigger the derivative.",
+        "incorrect": "Each step in x multiplies by 5: f goes 0, 5, 10, 15… How much per step?",
+        "hint": "Plug in values: f(1) = 5, f(2) = 10, f(3) = 15. Each step raises f by 5."
+      }
+    },
+    {
+      "id": "wid-step-7",
+      "type": "slider_graph",
+      "conceptTag": "rate_of_change",
+      "content": [
+        {
+          "type": "text",
+          "body": "Now a gentle line: f(x) = 0.5x. Drag x and read its rate of change. Compared with f(x) = 2x, this line's rate of change is…"
+        },
+        {
+          "type": "math",
+          "latex": "f(x) = 0.5x"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "0.5*x",
+          "domain": [0, 5],
+          "sliderLabel": "x",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showTangent": false,
+          "showValue": true,
+          "sliderMin": 0,
+          "sliderMax": 5,
+          "sliderStep": 1,
+          "initialSlider": 0
+        },
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "Smaller — it changes more slowly",
+            "Exactly the same",
+            "Bigger — it changes faster"
+          ],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "Correct — each time x increases by 1, f(x) rises by only 0.5, so the rate of change — the derivative — is 0.5. That's smaller than 2, so this line is gentler and changes more slowly.",
+        "incorrect": "Compare the change per step. Each step here adds 0.5; for f(x) = 2x each step adds 2. Is 0.5 more or less?",
+        "hint": "Plug in values: f(1) = 0.5, f(2) = 1, f(3) = 1.5. Each step adds just 0.5 — less than the 2 from f(x) = 2x."
+      }
+    },
+    {
+      "id": "wid-step-8",
+      "type": "read",
+      "conceptTag": "rate_of_change",
+      "content": [
+        {
+          "type": "text",
+          "body": "So far: a flat line has derivative 0, a tilted line has a constant derivative equal to its slope (positive going up, negative going down, bigger when steeper), and adding a constant changes nothing. Next, you'll see what happens when the line bends into a curve and the rate of change starts to vary."
+        },
+        {
+          "type": "math",
+          "latex": "f(x) = c \\Rightarrow f'(x) = 0, \\qquad f(x) = mx + b \\Rightarrow f'(x) = m",
+          "display": true
+        }
+      ],
+      "feedback": { "correct": "", "incorrect": "", "hint": "" }
+    }
+  ],
+  "practiceBank": [
+    {
+      "id": "wid-practice-1",
+      "type": "numeric",
+      "conceptTag": "rate_of_change",
+      "content": [
+        {
+          "type": "text",
+          "body": "The line f(x) = 3x + 1 climbs steadily. Each time x increases by 1, how much does f(x) change?"
+        }
+      ],
+      "interaction": {
+        "answer": { "type": "numeric", "value": 3, "tolerance": 0.01 }
+      },
+      "feedback": {
+        "correct": "Right — the slope is 3, so f changes by 3 per step. That rate of change is the derivative: f'(x) = 3. The + 1 only shifts the line up.",
+        "incorrect": "For a line mx + b, the rate of change — the derivative — is m. What is m here?",
+        "hint": "f(0) = 1, f(1) = 4, f(2) = 7 — each step adds 3."
+      }
+    },
+    {
+      "id": "wid-practice-2",
+      "type": "multiple_choice",
+      "conceptTag": "rate_of_change",
+      "content": [
+        {
+          "type": "text",
+          "body": "What is the rate of change of the constant function f(x) = −5?"
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "multiple_choice",
+          "options": ["0", "−5", "5"],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "Exactly — a constant function is a flat line, so its rate of change, and therefore its derivative, is 0.",
+        "incorrect": "The output never moves as x changes. How much does a flat line rise per step?",
+        "hint": "f(0) = −5, f(1) = −5, f(2) = −5 — the change each step is 0."
+      }
+    },
+    {
+      "id": "wid-practice-3",
+      "type": "numeric",
+      "conceptTag": "rate_of_change",
+      "content": [
+        {
+          "type": "text",
+          "body": "Now a line that heads downhill: f(x) = 6 − 2x. What is its rate of change for each step in x?"
+        }
+      ],
+      "interaction": {
+        "answer": { "type": "numeric", "value": -2, "tolerance": 0.01 }
+      },
+      "feedback": {
+        "correct": "Yes — each step in x lowers f by 2, so the rate of change is −2 — that's the derivative, f'(x) = −2 (negative means decreasing).",
+        "incorrect": "The line falls as x grows, so the rate of change is negative. By how much per step?",
+        "hint": "f(0) = 6, f(1) = 4, f(2) = 2 — each step drops f by 2, so the rate is −2."
+      }
+    },
+    {
+      "id": "wid-practice-4",
+      "type": "numeric",
+      "conceptTag": "rate_of_change",
+      "content": [
+        {
+          "type": "text",
+          "body": "The line f(x) = 7x − 4 rises steadily. By how much does f(x) change each time x increases by 1?"
+        }
+      ],
+      "interaction": {
+        "answer": { "type": "numeric", "value": 7, "tolerance": 0.01 }
+      },
+      "feedback": {
+        "correct": "Right — the slope is 7, so f changes by 7 per step. That rate of change is the derivative: f'(x) = 7. The − 4 only shifts the line down.",
+        "incorrect": "For a line mx + b, the rate of change (the derivative) is the slope m. What is m here?",
+        "hint": "f(0) = −4, f(1) = 3, f(2) = 10 — each step adds 7."
+      }
+    },
+    {
+      "id": "wid-practice-5",
+      "type": "multiple_choice",
+      "conceptTag": "rate_of_change",
+      "content": [
+        {
+          "type": "text",
+          "body": "Which of these lines has the greatest rate of change?"
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "multiple_choice",
+          "options": ["f(x) = x", "f(x) = 2x", "f(x) = 5x"],
+          "correctIndex": 2
+        }
+      },
+      "feedback": {
+        "correct": "Correct — f(x) = 5x climbs by 5 per step, so it has the greatest rate of change — the largest derivative, f'(x) = 5.",
+        "incorrect": "The rate of change — the derivative — is the slope. Compare the slopes 1, 2, and 5.",
+        "hint": "A bigger slope means a faster rate of change: 5 > 2 > 1."
+      }
+    },
+    {
+      "id": "wid-practice-6",
+      "type": "numeric",
+      "conceptTag": "rate_of_change",
+      "content": [
+        {
+          "type": "text",
+          "body": "A gently falling line: f(x) = 9 − x. What is its rate of change for each step in x?"
+        }
+      ],
+      "interaction": {
+        "answer": { "type": "numeric", "value": -1, "tolerance": 0.01 }
+      },
+      "feedback": {
+        "correct": "Yes — each step in x lowers f by 1, so the rate of change — the derivative — is −1.",
+        "incorrect": "The line falls as x grows, so the rate is negative. By how much per step?",
+        "hint": "f(0) = 9, f(1) = 8, f(2) = 7 — each step drops f by 1, so the rate is −1."
+      }
+    }
+  ]
+}

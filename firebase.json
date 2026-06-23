@@ -1,0 +1,36 @@
+{
+  "hosting": {
+    "public": "dist",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  },
+  "firestore": {
+    "database": "(default)",
+    "location": "nam5",
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "auth": {
+    "providers": {
+      "emailPassword": true,
+      "googleSignIn": {
+        "oAuthBrandDisplayName": "Derivatives Learn",
+        "supportEmail": "grant.matherne@alphaaiengineering.com"
+      }
+    },
+    "authorizedDomains": [
+      "localhost",
+      "brilliantclone-eca87.firebaseapp.com",
+      "brilliantclone-eca87.web.app"
+    ]
+  }
+}

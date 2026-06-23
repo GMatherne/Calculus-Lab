@@ -1,0 +1,392 @@
+{
+  "id": "slope-of-a-curve",
+  "title": "Slope of a Curve",
+  "order": 2,
+  "estimatedMinutes": 8,
+  "conceptTags": ["secant_tangent"],
+  "published": true,
+  "steps": [
+    {
+      "id": "soc-step-1",
+      "type": "read",
+      "conceptTag": "secant_tangent",
+      "content": [
+        {
+          "type": "text",
+          "body": "Now that we know the derivative of a function is its slope, there's a natural next question: how do we find the slope of a curve?"
+        },
+        {
+          "type": "text",
+          "body": "On a straight line, slope is constant. On a curve, the slope changes from point to point. The derivative at a point is the slope of the tangent line — the line that just grazes the curve there."
+        },
+        {
+          "type": "math",
+          "latex": "f(x) = x^2",
+          "display": true
+        }
+      ],
+      "feedback": { "correct": "", "incorrect": "", "hint": "" }
+    },
+    {
+      "id": "soc-step-2",
+      "type": "slider_graph",
+      "conceptTag": "secant_tangent",
+      "content": [
+        {
+          "type": "text",
+          "body": "Here is f(x) = x² with its tangent line. Drag x from left to right and watch the tangent. As x increases, the tangent becomes…"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 4],
+          "sliderLabel": "x",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showTangent": true,
+          "slopeLabel": "Tangent slope",
+          "sliderMin": 0,
+          "sliderMax": 4,
+          "sliderStep": 0.1,
+          "initialSlider": 0
+        },
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "Steeper — the slope grows",
+            "Flatter — the slope shrinks",
+            "Unchanged — the slope is constant"
+          ],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "Right — on a curve the slope is not constant. For x² the tangent gets steeper as x grows.",
+        "incorrect": "Watch the tangent-slope readout as you drag x to the right. Is it growing or shrinking?",
+        "hint": "At x = 1 the tangent slope is small; at x = 3 it is much larger."
+      }
+    },
+    {
+      "id": "soc-step-3",
+      "type": "slider_graph",
+      "conceptTag": "secant_tangent",
+      "content": [
+        {
+          "type": "text",
+          "body": "If the slope changes along the curve, there must be a spot where it is flat. Tap the point on f(x) = x² where the tangent is flat (slope 0)."
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [-3, 3],
+          "xLabel": "x",
+          "yLabel": "f",
+          "pointSnap": 0.5
+        },
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "graph_point",
+          "x": 0,
+          "tolerance": 0.4,
+          "prompt": "Tap the bottom of the curve, where the tangent would be perfectly flat."
+        }
+      },
+      "feedback": {
+        "correct": "Exactly — at x = 0 the curve bottoms out and the tangent is horizontal, so the slope is 0.",
+        "incorrect": "The slope is zero where the curve is neither rising nor falling — the very bottom of the parabola.",
+        "hint": "The lowest point of f(x) = x² is at x = 0."
+      }
+    },
+    {
+      "id": "soc-step-4",
+      "type": "slider_graph",
+      "conceptTag": "secant_tangent",
+      "content": [
+        {
+          "type": "text",
+          "body": "How do we measure the tangent slope? Start with a secant — a line through two points. Slide h to bring the second point toward x = 2 and watch the secant slope."
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 4],
+          "fixedPoint": 2,
+          "sliderLabel": "h",
+          "showSecant": true,
+          "sliderMin": 0.2,
+          "sliderMax": 2,
+          "sliderStep": 0.05,
+          "initialSlider": 1.5
+        },
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "The secant slope approaches 4",
+            "The secant slope approaches 0",
+            "The secant slope stays constant"
+          ],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "As h → 0, the secant slope approaches the tangent slope at x = 2, which is 4.",
+        "incorrect": "Watch the slope value as the two points get closer together.",
+        "hint": "For f(x) = x², the slope at x = 2 is 2(2) = 4."
+      }
+    },
+    {
+      "id": "soc-step-5",
+      "type": "multiple_choice",
+      "conceptTag": "secant_tangent",
+      "content": [
+        {
+          "type": "text",
+          "body": "You just watched the second point slide in. What does the secant line become as h → 0?"
+        }
+      ],
+      "interaction": {
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "The tangent line at that point",
+            "A horizontal line",
+            "A vertical line"
+          ],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "Correct — the limiting secant is exactly the tangent line.",
+        "incorrect": "As the two points merge into one, the line through them grazes the curve.",
+        "hint": "Shrinking h turns the secant into the line that touches the curve at a single point."
+      }
+    },
+    {
+      "id": "soc-step-5b",
+      "type": "read",
+      "conceptTag": "secant_tangent",
+      "content": [
+        {
+          "type": "text",
+          "body": "Here's the big picture from the last few steps: a curve doesn't have one fixed slope the way a line does. Its slope at a point is the slope of the tangent there — and you reach that tangent by shrinking a secant until its two points merge into one."
+        },
+        {
+          "type": "text",
+          "body": "That limiting process gives the curve a definite slope at every point. Now let's put it to work and pin down some specific slopes on f(x) = x²."
+        }
+      ],
+      "feedback": { "correct": "", "incorrect": "", "hint": "" }
+    },
+    {
+      "id": "soc-step-6",
+      "type": "slider_graph",
+      "conceptTag": "secant_tangent",
+      "content": [
+        {
+          "type": "text",
+          "body": "Time to aim for a slope. On f(x) = x², drag x until the tangent slope reads 4. What x gives that slope?"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 4],
+          "sliderLabel": "x",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showTangent": true,
+          "slopeLabel": "Tangent slope",
+          "sliderMin": 0,
+          "sliderMax": 4,
+          "sliderStep": 1,
+          "initialSlider": 0
+        },
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "slider",
+          "value": 2,
+          "tolerance": 0.2,
+          "prompt": "Drag x until the tangent slope equals 4, then check your answer."
+        }
+      },
+      "feedback": {
+        "correct": "Nailed it — at x = 2 the tangent slope is 4. Notice the pattern: the slope of x² is 2x.",
+        "incorrect": "The slope of x² is 2x. You want 2x = 4, so keep dragging until the readout hits 4.",
+        "hint": "Solve 2x = 4 → x = 2."
+      }
+    },
+    {
+      "id": "soc-step-7",
+      "type": "numeric",
+      "conceptTag": "secant_tangent",
+      "content": [
+        {
+          "type": "text",
+          "body": "Using that pattern — the slope of x² is 2x — what is the tangent slope of f(x) = x² at x = 3?"
+        }
+      ],
+      "interaction": {
+        "hintAfterAttempts": 1,
+        "answer": { "type": "numeric", "value": 6, "tolerance": 0.01 }
+      },
+      "feedback": {
+        "correct": "Yes — f'(3) = 2(3) = 6.",
+        "incorrect": "Plug x = 3 into the slope formula 2x.",
+        "hint": "2 × 3 = 6."
+      }
+    },
+    {
+      "id": "soc-step-8",
+      "type": "read",
+      "conceptTag": "secant_tangent",
+      "content": [
+        {
+          "type": "text",
+          "body": "The derivative f'(a) is the slope of the tangent line at x = a — the limit of secant slopes as h → 0. For x² that slope is 2x. Next, we'll make this limit precise with the difference quotient."
+        },
+        {
+          "type": "math",
+          "latex": "f'(a) = \\lim_{h \\to 0} \\frac{f(a+h) - f(a)}{h}",
+          "display": true
+        }
+      ],
+      "feedback": { "correct": "", "incorrect": "", "hint": "" }
+    }
+  ],
+  "practiceBank": [
+    {
+      "id": "soc-practice-1",
+      "type": "numeric",
+      "conceptTag": "secant_tangent",
+      "content": [
+        {
+          "type": "text",
+          "body": "For f(x) = x², the tangent slope is given by 2x. What is the slope of the tangent line at x = 5?"
+        }
+      ],
+      "interaction": {
+        "answer": { "type": "numeric", "value": 10, "tolerance": 0.01 }
+      },
+      "feedback": {
+        "correct": "Right — f'(5) = 2(5) = 10.",
+        "incorrect": "Use the slope formula for x²: multiply x by 2.",
+        "hint": "2 × 5 = 10."
+      }
+    },
+    {
+      "id": "soc-practice-2",
+      "type": "multiple_choice",
+      "conceptTag": "secant_tangent",
+      "content": [
+        {
+          "type": "text",
+          "body": "On f(x) = x², how does the tangent line change as x increases from 1 to 4?"
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "multiple_choice",
+          "options": ["It gets steeper", "It gets flatter", "It stays the same"],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "Correct — since the slope 2x grows with x, the tangent gets steeper.",
+        "incorrect": "Compare the slope 2x at x = 1 versus x = 4.",
+        "hint": "At x = 1 the slope is 2; at x = 4 it is 8 — larger means steeper."
+      }
+    },
+    {
+      "id": "soc-practice-3",
+      "type": "numeric",
+      "conceptTag": "secant_tangent",
+      "content": [
+        {
+          "type": "text",
+          "body": "Still on f(x) = x² with slope 2x: at what value of x does the tangent slope equal 8?"
+        }
+      ],
+      "interaction": {
+        "answer": { "type": "numeric", "value": 4, "tolerance": 0.01 }
+      },
+      "feedback": {
+        "correct": "Yes — set 2x = 8, so x = 4.",
+        "incorrect": "Set the slope formula equal to 8: 2x = 8, then solve for x.",
+        "hint": "2x = 8 → x = 4."
+      }
+    },
+    {
+      "id": "soc-practice-4",
+      "type": "numeric",
+      "conceptTag": "secant_tangent",
+      "content": [
+        {
+          "type": "text",
+          "body": "For f(x) = x², the tangent slope is given by 2x. What is the tangent slope at x = 7?"
+        }
+      ],
+      "interaction": {
+        "answer": { "type": "numeric", "value": 14, "tolerance": 0.01 }
+      },
+      "feedback": {
+        "correct": "Right — f'(7) = 2(7) = 14.",
+        "incorrect": "Use the slope formula for x²: multiply x by 2.",
+        "hint": "2 × 7 = 14."
+      }
+    },
+    {
+      "id": "soc-practice-5",
+      "type": "multiple_choice",
+      "conceptTag": "secant_tangent",
+      "content": [
+        {
+          "type": "text",
+          "body": "The derivative of a function at a point is the slope of which line?"
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "The tangent line at that point",
+            "A vertical line through the point",
+            "The x-axis"
+          ],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "Exactly — the derivative at a point is the slope of the tangent line there.",
+        "incorrect": "It's the line that just grazes the curve at that single point.",
+        "hint": "Shrinking a secant until its two points merge gives the tangent line."
+      }
+    },
+    {
+      "id": "soc-practice-6",
+      "type": "numeric",
+      "conceptTag": "secant_tangent",
+      "content": [
+        {
+          "type": "text",
+          "body": "On f(x) = x² with slope 2x, at what value of x is the tangent perfectly flat (slope 0)?"
+        }
+      ],
+      "interaction": {
+        "answer": { "type": "numeric", "value": 0, "tolerance": 0.01 }
+      },
+      "feedback": {
+        "correct": "Yes — 2x = 0 gives x = 0, the bottom of the parabola.",
+        "incorrect": "Set the slope formula equal to zero: 2x = 0.",
+        "hint": "2x = 0 → x = 0."
+      }
+    }
+  ]
+}

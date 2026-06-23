@@ -1,0 +1,269 @@
+{
+  "id": "area-under-a-curve",
+  "title": "Area Under a Curve",
+  "order": 7,
+  "estimatedMinutes": 7,
+  "conceptTags": ["area_under_curve", "definite_integral"],
+  "published": true,
+  "steps": [
+    {
+      "id": "auc-step-1",
+      "type": "read",
+      "conceptTag": "definite_integral",
+      "content": [
+        {
+          "type": "text",
+          "body": "Rectangles and triangles were easy. But what is the area under a genuine curve like f(x) = x²? The trick is to slice the region into many thin strips, treat each as a skinny rectangle, and add them up. The thinner the strips, the better the estimate."
+        },
+        {
+          "type": "text",
+          "body": "Make the strips infinitely thin and the running total becomes exact. That exact area is the definite integral."
+        }
+      ],
+      "feedback": { "correct": "", "incorrect": "", "hint": "" }
+    },
+    {
+      "id": "auc-step-2",
+      "type": "slider_graph",
+      "conceptTag": "area_under_curve",
+      "content": [
+        {
+          "type": "text",
+          "body": "Here is f(x) = x². Drag x to the right and watch the shaded area pile up. As x grows, the area grows…"
+        },
+        {
+          "type": "math",
+          "latex": "f(x) = x^2"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 5],
+          "yDomain": [0, 25],
+          "sliderLabel": "x",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showValue": false,
+          "showArea": true,
+          "areaStart": 0,
+          "sliderMin": 0,
+          "sliderMax": 5,
+          "sliderStep": 0.5,
+          "initialSlider": 0
+        },
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "at a steady, constant rate",
+            "faster and faster",
+            "slower and slower"
+          ],
+          "correctIndex": 1
+        }
+      },
+      "feedback": {
+        "correct": "Right — because the curve gets taller as x grows, each new strip is taller than the last, so the area piles up faster and faster.",
+        "incorrect": "Watch how much area each step adds. As the curve rises, the new strips get taller.",
+        "hint": "Taller strips add more area. Since x² keeps rising, the area grows faster and faster."
+      }
+    },
+    {
+      "id": "auc-step-3",
+      "type": "read",
+      "conceptTag": "definite_integral",
+      "content": [
+        {
+          "type": "text",
+          "body": "Adding up infinitely many strips by hand would be painful, so there's a shortcut. For f(x) = x², the area from 0 to b works out to:"
+        },
+        {
+          "type": "math",
+          "latex": "\\int_0^b x^2\\,dx = \\frac{b^3}{3}",
+          "display": true
+        },
+        {
+          "type": "text",
+          "body": "Check it against the graph: at b = 3 this gives 27/3 = 9, which matches the shaded area you swept out."
+        }
+      ],
+      "feedback": { "correct": "", "incorrect": "", "hint": "" }
+    },
+    {
+      "id": "auc-step-4",
+      "type": "numeric",
+      "conceptTag": "definite_integral",
+      "content": [
+        {
+          "type": "text",
+          "body": "Use the formula b³/3. What is the area under f(x) = x² from 0 to 2? (Round to two decimals.)"
+        },
+        {
+          "type": "math",
+          "latex": "\\int_0^2 x^2\\,dx = \\frac{2^3}{3}"
+        }
+      ],
+      "interaction": {
+        "answer": { "type": "numeric", "value": 2.667, "tolerance": 0.05 }
+      },
+      "feedback": {
+        "correct": "Exactly — 2³/3 = 8/3 ≈ 2.67.",
+        "incorrect": "Plug b = 2 into b³/3: that's 8/3.",
+        "hint": "2³ = 8, and 8/3 ≈ 2.67."
+      }
+    },
+    {
+      "id": "auc-step-5",
+      "type": "slider_graph",
+      "conceptTag": "area_under_curve",
+      "content": [
+        {
+          "type": "text",
+          "body": "Back to the graph of f(x) = x². Drag x until the shaded area reads about 9. (Remember: the area from 0 to b is b³/3.)"
+        },
+        {
+          "type": "math",
+          "latex": "f(x) = x^2"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 5],
+          "yDomain": [0, 25],
+          "sliderLabel": "x",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showValue": false,
+          "showArea": true,
+          "areaStart": 0,
+          "sliderMin": 0,
+          "sliderMax": 5,
+          "sliderStep": 0.1,
+          "initialSlider": 0
+        },
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "slider",
+          "value": 3,
+          "tolerance": 0.2,
+          "prompt": "Drag x until the shaded area reads about 9."
+        }
+      },
+      "feedback": {
+        "correct": "Nice — at x = 3 the area is 3³/3 = 9. You located exactly where 9 units of area have accumulated.",
+        "incorrect": "You need b³/3 = 9, so b³ = 27. Slide until the area readout reaches about 9.",
+        "hint": "Solve b³/3 = 9 → b³ = 27 → b = 3."
+      }
+    },
+    {
+      "id": "auc-step-6",
+      "type": "multiple_choice",
+      "conceptTag": "definite_integral",
+      "content": [
+        {
+          "type": "text",
+          "body": "For f(x) = x², suppose you double the interval from [0, b] to [0, 2b]. The area…"
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "exactly doubles",
+            "more than doubles",
+            "stays the same"
+          ],
+          "correctIndex": 1
+        }
+      },
+      "feedback": {
+        "correct": "Right — the area is b³/3, so doubling b gives (2b)³/3 = 8 · b³/3. The area grows eightfold, far more than double.",
+        "incorrect": "The area depends on b³, not b. What happens to b³ when you double b?",
+        "hint": "(2b)³ = 8b³, so the area becomes 8 times as big — more than double."
+      }
+    },
+    {
+      "id": "auc-step-7",
+      "type": "read",
+      "conceptTag": "definite_integral",
+      "content": [
+        {
+          "type": "text",
+          "body": "You now know that area under a curve is built from thin strips and captured exactly by the definite integral — and for x² there's a clean formula, b³/3."
+        },
+        {
+          "type": "text",
+          "body": "But where do formulas like b³/3 come from? The answer ties areas back to derivatives through one of the most important results in all of calculus."
+        }
+      ],
+      "feedback": { "correct": "", "incorrect": "", "hint": "" }
+    }
+  ],
+  "practiceBank": [
+    {
+      "id": "auc-practice-1",
+      "type": "numeric",
+      "conceptTag": "definite_integral",
+      "content": [
+        {
+          "type": "text",
+          "body": "Using the formula b³/3, what is the area under f(x) = x² from 0 to 3?"
+        }
+      ],
+      "interaction": {
+        "answer": { "type": "numeric", "value": 9, "tolerance": 0.1 }
+      },
+      "feedback": {
+        "correct": "Yes — 3³/3 = 27/3 = 9.",
+        "incorrect": "Plug b = 3 into b³/3.",
+        "hint": "3³ = 27, and 27/3 = 9."
+      }
+    },
+    {
+      "id": "auc-practice-2",
+      "type": "numeric",
+      "conceptTag": "definite_integral",
+      "content": [
+        {
+          "type": "text",
+          "body": "What is the area under f(x) = x² from 0 to 1? (Round to two decimals.)"
+        }
+      ],
+      "interaction": {
+        "answer": { "type": "numeric", "value": 0.333, "tolerance": 0.03 }
+      },
+      "feedback": {
+        "correct": "Right — 1³/3 = 1/3 ≈ 0.33.",
+        "incorrect": "Plug b = 1 into b³/3.",
+        "hint": "1³ = 1, and 1/3 ≈ 0.33."
+      }
+    },
+    {
+      "id": "auc-practice-3",
+      "type": "multiple_choice",
+      "conceptTag": "area_under_curve",
+      "content": [
+        {
+          "type": "text",
+          "body": "To approximate the area under a curve, we add up many thin…"
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "multiple_choice",
+          "options": ["tangent lines", "rectangles", "circles"],
+          "correctIndex": 1
+        }
+      },
+      "feedback": {
+        "correct": "Correct — we slice the region into thin rectangles (strips) and sum their areas.",
+        "incorrect": "Think about the shape of each thin slice under the curve.",
+        "hint": "Each thin strip is treated as a skinny rectangle."
+      }
+    }
+  ]
+}

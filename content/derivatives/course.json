@@ -1,0 +1,96 @@
+{
+  "id": "derivatives",
+  "title": "Introduction to Calculus",
+  "subject": "AP Calculus BC",
+  "description": "Learn the foundations of calculus — derivatives and integrals — through interactive graphs and hands-on problems, built for AP Calc BC students.",
+  "levels": [
+    {
+      "id": "what-is-a-derivative",
+      "title": "What Is a Derivative?",
+      "description": "Build intuition for instantaneous rate of change.",
+      "lessonIds": ["what-is-a-derivative", "slope-of-a-curve"]
+    },
+    {
+      "id": "finding-derivatives",
+      "title": "Finding Derivatives",
+      "description": "Turn the limit definition into rules you can compute with.",
+      "lessonIds": ["difference-quotient", "power-rule"]
+    },
+    {
+      "id": "using-derivatives",
+      "title": "Using Derivatives",
+      "description": "Apply derivatives to read and analyze the shape of graphs.",
+      "lessonIds": ["graph-shape"]
+    },
+    {
+      "id": "intro-integrals",
+      "title": "What Is an Integral?",
+      "description": "Discover integrals as the accumulated area under a curve.",
+      "lessonIds": ["what-is-an-integral", "area-under-a-curve"]
+    },
+    {
+      "id": "connecting-calculus",
+      "title": "The Big Picture",
+      "description": "See how derivatives and integrals are two sides of one idea.",
+      "lessonIds": ["fundamental-theorem"]
+    }
+  ],
+  "lessons": [
+    {
+      "id": "what-is-a-derivative",
+      "title": "What Is a Derivative?",
+      "order": 1,
+      "estimatedMinutes": 6,
+      "published": true
+    },
+    {
+      "id": "slope-of-a-curve",
+      "title": "Slope of a Curve",
+      "order": 2,
+      "estimatedMinutes": 7,
+      "published": true
+    },
+    {
+      "id": "difference-quotient",
+      "title": "The Difference Quotient",
+      "order": 3,
+      "estimatedMinutes": 8,
+      "published": true
+    },
+    {
+      "id": "power-rule",
+      "title": "The Power Rule",
+      "order": 4,
+      "estimatedMinutes": 6,
+      "published": true
+    },
+    {
+      "id": "graph-shape",
+      "title": "Derivatives and Graph Shape",
+      "order": 5,
+      "estimatedMinutes": 7,
+      "published": true
+    },
+    {
+      "id": "what-is-an-integral",
+      "title": "What Is an Integral?",
+      "order": 6,
+      "estimatedMinutes": 7,
+      "published": true
+    },
+    {
+      "id": "area-under-a-curve",
+      "title": "Area Under a Curve",
+      "order": 7,
+      "estimatedMinutes": 7,
+      "published": true
+    },
+    {
+      "id": "fundamental-theorem",
+      "title": "The Fundamental Theorem of Calculus",
+      "order": 8,
+      "estimatedMinutes": 8,
+      "published": true
+    }
+  ]
+}

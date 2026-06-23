@@ -1,0 +1,282 @@
+{
+  "id": "fundamental-theorem",
+  "title": "The Fundamental Theorem of Calculus",
+  "order": 8,
+  "estimatedMinutes": 8,
+  "conceptTags": ["ftc", "antiderivative"],
+  "published": true,
+  "steps": [
+    {
+      "id": "ftc-step-1",
+      "type": "read",
+      "conceptTag": "ftc",
+      "content": [
+        {
+          "type": "text",
+          "body": "You've met both big ideas of calculus: the derivative (a slope, a rate of change) and the integral (an accumulated area). The Fundamental Theorem of Calculus says these two are inverse operations — each one undoes the other."
+        },
+        {
+          "type": "text",
+          "body": "To see it, think of the area you sweep out as its own function. Call A(x) the area under f from a fixed start up to x:"
+        },
+        {
+          "type": "math",
+          "latex": "A(x) = \\int_0^x f(t)\\,dt",
+          "display": true
+        }
+      ],
+      "feedback": { "correct": "", "incorrect": "", "hint": "" }
+    },
+    {
+      "id": "ftc-step-2",
+      "type": "slider_graph",
+      "conceptTag": "ftc",
+      "content": [
+        {
+          "type": "text",
+          "body": "Take f(x) = 2. Drag x and watch the area A(x) grow. Each time x increases by 1, by how much does the shaded area increase?"
+        },
+        {
+          "type": "math",
+          "latex": "f(x) = 2"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "2",
+          "domain": [0, 5],
+          "yDomain": [0, 4],
+          "sliderLabel": "x",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showValue": false,
+          "showArea": true,
+          "areaStart": 0,
+          "sliderMin": 0,
+          "sliderMax": 5,
+          "sliderStep": 1,
+          "initialSlider": 0
+        },
+        "hintAfterAttempts": 1,
+        "answer": { "type": "numeric", "value": 2, "tolerance": 0.1 }
+      },
+      "feedback": {
+        "correct": "Exactly — the area grows by 2 per step, which is precisely the height f(x) = 2. The rate the area grows equals the function's value.",
+        "incorrect": "Each step adds a strip of height f(x) = 2 and width 1. How much area is that?",
+        "hint": "Each new strip has area 2 × 1 = 2, so the area grows by 2 per step — the same as the height."
+      }
+    },
+    {
+      "id": "ftc-step-3",
+      "type": "read",
+      "conceptTag": "ftc",
+      "content": [
+        {
+          "type": "text",
+          "body": "That's the heart of it. The rate at which the area A(x) grows is exactly the height of the curve at that point. In derivative language, the derivative of the area function is f itself:"
+        },
+        {
+          "type": "math",
+          "latex": "\\frac{d}{dx}\\int_0^x f(t)\\,dt = f(x)",
+          "display": true
+        },
+        {
+          "type": "text",
+          "body": "Differentiating an integral hands you back the original function. Integrating and differentiating cancel out."
+        }
+      ],
+      "feedback": { "correct": "", "incorrect": "", "hint": "" }
+    },
+    {
+      "id": "ftc-step-4",
+      "type": "slider_graph",
+      "conceptTag": "ftc",
+      "content": [
+        {
+          "type": "text",
+          "body": "Now f(x) = x, where the height changes. Drag x to 4. By the theorem, the rate the area is growing at x = 4 equals f(4). What is f(4)?"
+        },
+        {
+          "type": "math",
+          "latex": "f(x) = x"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x",
+          "domain": [0, 5],
+          "yDomain": [0, 5],
+          "sliderLabel": "x",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showValue": false,
+          "showArea": true,
+          "areaStart": 0,
+          "sliderMin": 0,
+          "sliderMax": 5,
+          "sliderStep": 1,
+          "initialSlider": 0
+        },
+        "hintAfterAttempts": 1,
+        "answer": { "type": "numeric", "value": 4, "tolerance": 0.1 }
+      },
+      "feedback": {
+        "correct": "Right — f(4) = 4, so at x = 4 the area is growing at a rate of 4 units of area per unit of x. The taller the curve, the faster the area accumulates.",
+        "incorrect": "Just evaluate the height: f(x) = x, so f(4) = 4.",
+        "hint": "f(x) = x means f(4) = 4 — and that's how fast the area is growing there."
+      }
+    },
+    {
+      "id": "ftc-step-5",
+      "type": "read",
+      "conceptTag": "antiderivative",
+      "content": [
+        {
+          "type": "text",
+          "body": "This inverse relationship gives a powerful shortcut for computing areas. To find a definite integral, find an antiderivative F — a function whose derivative is f — then subtract its values at the endpoints:"
+        },
+        {
+          "type": "math",
+          "latex": "\\int_a^b f(x)\\,dx = F(b) - F(a), \\quad \\text{where } F'(x) = f(x)",
+          "display": true
+        },
+        {
+          "type": "text",
+          "body": "No infinite strips required — just an antiderivative and a subtraction."
+        }
+      ],
+      "feedback": { "correct": "", "incorrect": "", "hint": "" }
+    },
+    {
+      "id": "ftc-step-6",
+      "type": "numeric",
+      "conceptTag": "antiderivative",
+      "content": [
+        {
+          "type": "text",
+          "body": "Compute the integral below. An antiderivative of 2x is x² (since the derivative of x² is 2x). Evaluate F(3) − F(0)."
+        },
+        {
+          "type": "math",
+          "latex": "\\int_0^3 2x\\,dx = \\left[x^2\\right]_0^3"
+        }
+      ],
+      "interaction": {
+        "answer": { "type": "numeric", "value": 9, "tolerance": 0.1 }
+      },
+      "feedback": {
+        "correct": "Exactly — F(3) − F(0) = 3² − 0² = 9.",
+        "incorrect": "Use F(x) = x²: compute F(3) − F(0) = 3² − 0².",
+        "hint": "3² − 0² = 9 − 0 = 9."
+      }
+    },
+    {
+      "id": "ftc-step-7",
+      "type": "multiple_choice",
+      "conceptTag": "antiderivative",
+      "content": [
+        {
+          "type": "text",
+          "body": "Which function is an antiderivative of f(x) = x²? (Its derivative should be x².)"
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "x³/3",
+            "2x",
+            "3x²"
+          ],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "Correct — the derivative of x³/3 is x², so x³/3 is an antiderivative. That's exactly why the area under x² is b³/3.",
+        "incorrect": "Differentiate each option and see which gives x² back.",
+        "hint": "d/dx (x³/3) = 3x²/3 = x². That's the one."
+      }
+    },
+    {
+      "id": "ftc-step-8",
+      "type": "read",
+      "conceptTag": "ftc",
+      "content": [
+        {
+          "type": "text",
+          "body": "That's the whole arc of introductory calculus: derivatives measure how things change, integrals accumulate them into areas, and the Fundamental Theorem shows the two are inverses — letting you compute areas with antiderivatives."
+        },
+        {
+          "type": "text",
+          "body": "Slopes and areas, finally tied together. Nice work making it through!"
+        }
+      ],
+      "feedback": { "correct": "", "incorrect": "", "hint": "" }
+    }
+  ],
+  "practiceBank": [
+    {
+      "id": "ftc-practice-1",
+      "type": "numeric",
+      "conceptTag": "antiderivative",
+      "content": [
+        {
+          "type": "text",
+          "body": "An antiderivative of 2x is x². Compute the integral of 2x from 0 to 2: that's F(2) − F(0)."
+        }
+      ],
+      "interaction": {
+        "answer": { "type": "numeric", "value": 4, "tolerance": 0.1 }
+      },
+      "feedback": {
+        "correct": "Yes — 2² − 0² = 4.",
+        "incorrect": "Use F(x) = x²: compute F(2) − F(0).",
+        "hint": "2² − 0² = 4."
+      }
+    },
+    {
+      "id": "ftc-practice-2",
+      "type": "multiple_choice",
+      "conceptTag": "antiderivative",
+      "content": [
+        {
+          "type": "text",
+          "body": "Which function is an antiderivative of f(x) = 2x?"
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "multiple_choice",
+          "options": ["x²", "2", "2x²"],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "Right — the derivative of x² is 2x.",
+        "incorrect": "Which option has derivative equal to 2x?",
+        "hint": "d/dx (x²) = 2x."
+      }
+    },
+    {
+      "id": "ftc-practice-3",
+      "type": "numeric",
+      "conceptTag": "ftc",
+      "content": [
+        {
+          "type": "text",
+          "body": "Suppose A(x) is the area under f up to x, and f(x) = 5 (a flat line). Since the area's growth rate equals the height, what is A′(3)?"
+        }
+      ],
+      "interaction": {
+        "answer": { "type": "numeric", "value": 5, "tolerance": 0.1 }
+      },
+      "feedback": {
+        "correct": "Exactly — by the Fundamental Theorem, A′(x) = f(x), so A′(3) = f(3) = 5.",
+        "incorrect": "The theorem says A′(x) = f(x). What is f(3) here?",
+        "hint": "A′(x) = f(x) = 5 everywhere, so A′(3) = 5."
+      }
+    }
+  ]
+}
