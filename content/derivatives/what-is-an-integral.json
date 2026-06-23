@@ -60,7 +60,7 @@
           "sliderMin": 0,
           "sliderMax": 5,
           "sliderStep": 1,
-          "initialSlider": 0
+          "initialSlider": 3
         },
         "hintAfterAttempts": 1,
         "answer": {
