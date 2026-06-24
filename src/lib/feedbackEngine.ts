@@ -61,6 +61,22 @@ export function checkAnswer(
             hint: step.feedback.hint,
           };
     }
+    case "multi_choice": {
+      const picks = Array.isArray(answer) ? (answer as (number | null)[]) : [];
+      const allAnswered =
+        spec.parts.length > 0 &&
+        spec.parts.every((_, i) => typeof picks[i] === "number");
+      const allCorrect =
+        allAnswered && spec.parts.every((p, i) => picks[i] === p.correctIndex);
+      return allCorrect
+        ? { correct: true, message: step.feedback.correct }
+        : {
+            correct: false,
+            message: step.feedback.incorrect,
+            showHint: false,
+            hint: step.feedback.hint,
+          };
+    }
     case "numeric":
     case "slider": {
       const num = Number(answer);
@@ -123,6 +139,48 @@ export function checkAnswer(
           ? coeff === 0
           : coeff === spec.coefficient && exp === spec.exponent;
       return verified
+        ? { correct: true, message: step.feedback.correct }
+        : {
+            correct: false,
+            message: step.feedback.incorrect,
+            showHint: false,
+            hint: step.feedback.hint,
+          };
+    }
+    case "drag_drop": {
+      const placed = Array.isArray(answer) ? (answer as (string | null)[]) : [];
+      const allFilled =
+        placed.length >= spec.blanks.length &&
+        spec.blanks.every((_, i) => placed[i] != null);
+      // Grade by the multiset of signed terms rather than by position, so a sum
+      // can be assembled in any order (addition is commutative). Each blank's
+      // sign comes from the operator fixed in front of it ("+" for the first),
+      // so a term dropped into a "-" slot counts as negative — which keeps
+      // subtraction order-sensitive while making pure sums order-free.
+      const sign = (i: number) => (i === 0 ? "+" : spec.blanks[i].connector ?? "+");
+      const expected = spec.blanks.map((b, i) => `${sign(i)}${b.accept}`).sort();
+      const got = placed.map((p, i) => `${sign(i)}${p}`).sort();
+      const allCorrect =
+        allFilled && expected.every((e, i) => e === got[i]);
+      return allCorrect
+        ? { correct: true, message: step.feedback.correct }
+        : {
+            correct: false,
+            message: step.feedback.incorrect,
+            showHint: false,
+            hint: step.feedback.hint,
+          };
+    }
+    case "match": {
+      const picks = Array.isArray(answer) ? (answer as (string | null)[]) : [];
+      const allMatched =
+        spec.pairs.length > 0 &&
+        spec.pairs.every((_, i) => picks[i] != null);
+      // Graded by position: each prompt must hold its own correct option. Since
+      // every `match` is unique, an option maps to exactly one prompt.
+      const allCorrect =
+        allMatched && spec.pairs.every((p, i) => picks[i] === p.match);
+      return allCorrect
         ? { correct: true, message: step.feedback.correct }
         : {
             correct: false,

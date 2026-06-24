@@ -9,7 +9,7 @@ export function AppHeader() {
   return (
     <header className="flex items-center justify-between px-4 py-3 border-b border-slate-200 bg-white/90 backdrop-blur sticky top-0 z-10 safe-top">
       <Link to="/" className="font-bold text-indigo-700 text-lg">
-        d/dx
+        Calculus Lab
       </Link>
       <nav className="flex items-center gap-3 text-sm">
         <Link to="/lessons" className="text-slate-600 hover:text-indigo-600 min-h-[44px] flex items-center">

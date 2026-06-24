@@ -34,51 +34,112 @@
     },
     {
       "id": "ip-step-2",
+      "type": "drag_drop",
+      "conceptTag": "antiderivative",
+      "content": [
+        {
+          "type": "text",
+          "body": "Integrate term by term — reverse the power rule on each. Drag the antiderivative of each term into the blanks to build $F(x)$ for $f(x) = x^3 + x^2 + x$."
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^3 + x^2 + x",
+          "domain": [-2, 2],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true
+        },
+        "answer": {
+          "type": "drag_drop",
+          "prefix": "F(x) =",
+          "blanks": [
+            { "accept": "\\frac{x^4}{4}" },
+            { "accept": "\\frac{x^3}{3}" },
+            { "accept": "\\frac{x^2}{2}" }
+          ],
+          "bank": [
+            "\\frac{x^4}{4}",
+            "\\frac{x^3}{3}",
+            "\\frac{x^2}{2}",
+            "\\frac{x^3}{2}",
+            "\\frac{x^2}{3}",
+            "\\frac{x^4}{3}"
+          ]
+        }
+      },
+      "feedback": {
+        "correct": "Right — reverse the power rule on each: $x^3 \\to \\frac{x^4}{4}$, $x^2 \\to \\frac{x^3}{3}$, and $x \\to \\frac{x^2}{2}$, so $F(x) = \\frac{x^4}{4} + \\frac{x^3}{3} + \\frac{x^2}{2}$.",
+        "incorrect": "Add 1 to each exponent, then divide by that new exponent.",
+        "hint": "$x^n \\to \\frac{x^{n+1}}{n+1}$, so $x^2 \\to \\frac{x^3}{3}$ (divide by the new exponent, 3)."
+      }
+    },
+    {
+      "id": "ip-step-3",
+      "type": "read",
+      "conceptTag": "antiderivative",
+      "content": [
+        {
+          "type": "text",
+          "body": "One subtlety: an antiderivative isn't unique. The derivative of any constant is 0, so you can tack any number onto $\\frac{x^3}{3}$ and it still differentiates back to $x^2$. That means $\\frac{x^3}{3}$, $\\frac{x^3}{3} + 1$, and $\\frac{x^3}{3} - 7$ are all antiderivatives of $x^2$."
+        },
+        {
+          "type": "math",
+          "latex": "\\frac{d}{dx}\\left(\\frac{x^3}{3} + C\\right) = x^2 \\quad \\text{for any constant } C",
+          "display": true
+        },
+        {
+          "type": "text",
+          "body": "To capture the whole family at once, we add a constant of integration $C$. An integral with no limits — an indefinite integral — stands for every antiderivative together:"
+        },
+        {
+          "type": "math",
+          "latex": "\\int x^2\\,dx = \\frac{x^3}{3} + C",
+          "display": true
+        },
+        {
+          "type": "text",
+          "body": "So the very first example is, more precisely, $\\int (x^2 + x)\\,dx = \\frac{x^3}{3} + \\frac{x^2}{2} + C$ — a single $C$ covers the constant for the whole sum."
+        }
+      ],
+      "feedback": { "correct": "", "incorrect": "", "hint": "" }
+    },
+    {
+      "id": "ip-step-4",
       "type": "multiple_choice",
       "conceptTag": "antiderivative",
       "content": [
         {
           "type": "text",
-          "body": "Integrate term by term. Which is an antiderivative of $f(x) = x^2 + x$?"
+          "body": "Which expression represents every antiderivative of $f(x) = 3x^2$ — the full indefinite integral $\\int 3x^2\\,dx$?"
         }
       ],
       "interaction": {
-        "graph": {
-          "fn": "x^2 + x",
-          "domain": [0, 3],
-          "yDomain": [0, 12],
-          "xLabel": "x",
-          "yLabel": "f",
-          "showArea": true,
-          "areaStart": 0,
-          "initialSlider": 2,
-          "static": true
-        },
+        "hintAfterAttempts": 1,
         "answer": {
           "type": "multiple_choice",
-          "options": [
-            "$\\frac{x^3}{3} + \\frac{x^2}{2}$",
-            "$x^3 + x^2$",
-            "$2x + 1$",
-            "$\\frac{x^3}{3} + x^2$"
-          ],
+          "options": ["$x^3 + C$", "$x^3$", "$3x^3 + C$", "$6x + C$"],
           "correctIndex": 0
         }
       },
       "feedback": {
-        "correct": "Right — reverse the power rule on each term: $x^2 \\to \\frac{x^3}{3}$ and $x \\to \\frac{x^2}{2}$.",
-        "incorrect": "Add 1 to each exponent and divide by the new exponent, term by term.",
-        "hint": "$x^2 \\to \\frac{x^3}{3}$ and $x \\to \\frac{x^2}{2}$, giving $\\frac{x^3}{3} + \\frac{x^2}{2}$."
+        "correct": "Right — $\\frac{d}{dx}(x^3) = 3x^2$, and the $+ C$ captures every antiderivative at once.",
+        "incorrect": "Reverse the power rule to find one antiderivative, then add $C$ to include all of them.",
+        "hint": "$3x^2 \\to x^3$ (raise the exponent, divide the coefficient by it), then write $+ C$: $x^3 + C$."
       }
     },
     {
-      "id": "ip-step-3",
+      "id": "ip-step-5",
       "type": "read",
       "conceptTag": "definite_integral",
       "content": [
         {
           "type": "text",
           "body": "To evaluate a definite integral, the Fundamental Theorem says: find an antiderivative $F$, then subtract its values at the endpoints, $F(b) - F(a)$. For polynomials, $F$ comes straight from the reverse power rule."
+        },
+        {
+          "type": "text",
+          "body": "Here the constant of integration doesn't matter: it's the same at both endpoints, so it cancels — $(F(b) + C) - (F(a) + C) = F(b) - F(a)$. That's why definite integrals never need a $C$."
         },
         {
           "type": "math",
@@ -93,7 +154,7 @@
       "feedback": { "correct": "", "incorrect": "", "hint": "" }
     },
     {
-      "id": "ip-step-4",
+      "id": "ip-step-6",
       "type": "numeric",
       "conceptTag": "definite_integral",
       "content": [
@@ -129,7 +190,7 @@
       }
     },
     {
-      "id": "ip-step-5",
+      "id": "ip-step-7",
       "type": "slider_graph",
       "conceptTag": "definite_integral",
       "content": [
@@ -175,20 +236,20 @@
       }
     },
     {
-      "id": "ip-step-6",
-      "type": "multiple_choice",
+      "id": "ip-step-8",
+      "type": "power_term",
       "conceptTag": "antiderivative",
       "content": [
         {
           "type": "text",
-          "body": "Reverse the power rule with coefficients. Which is an antiderivative of $f(x) = 6x^2 + 2x$?"
+          "body": "Coefficients ride along here too. Build an antiderivative of $f(x) = 6x^2$ — use the steppers to set the coefficient and exponent of $F(x)$."
         }
       ],
       "interaction": {
         "graph": {
-          "fn": "6*x^2 + 2*x",
+          "fn": "6*x^2",
           "domain": [0, 2],
-          "yDomain": [0, 28],
+          "yDomain": [0, 24],
           "xLabel": "x",
           "yLabel": "f",
           "showArea": true,
@@ -198,30 +259,28 @@
         },
         "hintAfterAttempts": 1,
         "answer": {
-          "type": "multiple_choice",
-          "options": [
-            "$2x^3 + x^2$",
-            "$6x^3 + 2x^2$",
-            "$12x + 2$",
-            "$3x^3 + x^2$"
-          ],
-          "correctIndex": 0
+          "type": "power_term",
+          "coefficient": 2,
+          "exponent": 3,
+          "startCoefficient": 6,
+          "startExponent": 2,
+          "previewPrefix": "F(x) ="
         }
       },
       "feedback": {
-        "correct": "Right — $6x^2 \\to 6 \\cdot \\frac{x^3}{3} = 2x^3$ and $2x \\to 2 \\cdot \\frac{x^2}{2} = x^2$. Check by differentiating: $\\frac{d}{dx}(2x^3 + x^2) = 6x^2 + 2x$.",
-        "incorrect": "Integrate each term: raise the exponent and divide, keeping the coefficients.",
-        "hint": "$6x^2 \\to 2x^3$ and $2x \\to x^2$, giving $2x^3 + x^2$."
+        "correct": "Right — raise the exponent to 3, then divide the coefficient by it: $6x^2 \\to 6 \\cdot \\frac{x^3}{3} = 2x^3$. Differentiate $2x^3$ to check: back to $6x^2$.",
+        "incorrect": "Add 1 to the exponent, then divide the coefficient by that new exponent: $6x^2 \\to \\frac{6}{3}x^3$.",
+        "hint": "Exponent $2 \\to 3$, then $6 \\div 3 = 2$, giving $2x^3$."
       }
     },
     {
-      "id": "ip-step-7",
+      "id": "ip-step-9",
       "type": "read",
       "conceptTag": "definite_integral",
       "content": [
         {
           "type": "text",
-          "body": "You can now run calculus in both directions on any polynomial: differentiate term by term with the power rule, or integrate term by term with the reverse power rule — and with the Fundamental Theorem, turn those antiderivatives into exact areas."
+          "body": "You can now run calculus in both directions on any polynomial: differentiate term by term with the power rule, or integrate term by term with the reverse power rule — adding a constant of integration $C$ for an indefinite integral — and with the Fundamental Theorem, turn those antiderivatives into exact areas."
         },
         {
           "type": "text",
@@ -269,19 +328,19 @@
     },
     {
       "id": "ip-practice-2",
-      "type": "multiple_choice",
+      "type": "power_term",
       "conceptTag": "antiderivative",
       "content": [
         {
           "type": "text",
-          "body": "Which is an antiderivative of $f(x) = x^3 + x$?"
+          "body": "Coefficients come along for the ride. Build an antiderivative of $f(x) = 12x^3$ by setting the coefficient and exponent of $F(x)$."
         }
       ],
       "interaction": {
         "graph": {
-          "fn": "x^3 + x",
-          "domain": [0, 2],
-          "yDomain": [0, 10],
+          "fn": "12*x^3",
+          "domain": [0, 1],
+          "yDomain": [0, 12],
           "xLabel": "x",
           "yLabel": "f",
           "showArea": true,
@@ -290,20 +349,18 @@
           "static": true
         },
         "answer": {
-          "type": "multiple_choice",
-          "options": [
-            "$\\frac{x^4}{4} + \\frac{x^2}{2}$",
-            "$x^4 + x^2$",
-            "$3x^2 + 1$",
-            "$\\frac{x^4}{4} + x^2$"
-          ],
-          "correctIndex": 0
+          "type": "power_term",
+          "coefficient": 3,
+          "exponent": 4,
+          "startCoefficient": 12,
+          "startExponent": 3,
+          "previewPrefix": "F(x) ="
         }
       },
       "feedback": {
-        "correct": "Right — $x^3 \\to \\frac{x^4}{4}$ and $x \\to \\frac{x^2}{2}$.",
-        "incorrect": "Add 1 to each exponent and divide by the new exponent.",
-        "hint": "$\\frac{x^4}{4} + \\frac{x^2}{2}$."
+        "correct": "Correct — $12x^3 \\to 12 \\cdot \\frac{x^4}{4} = 3x^4$.",
+        "incorrect": "Raise the exponent by 1, then divide the coefficient by the new exponent: $\\frac{12}{4}x^4$.",
+        "hint": "Exponent $3 \\to 4$, then $12 \\div 4 = 3$, giving $3x^4$."
       }
     },
     {
@@ -343,41 +400,57 @@
     },
     {
       "id": "ip-practice-4",
+      "type": "match",
+      "conceptTag": "antiderivative",
+      "content": [
+        {
+          "type": "text",
+          "body": "Match each function with its antiderivative. Remember a constant integrates to a linear term."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "match",
+          "pairs": [
+            { "prompt": "$2x$", "match": "$x^2$" },
+            { "prompt": "$3$", "match": "$3x$" },
+            { "prompt": "$4x$", "match": "$2x^2$" }
+          ],
+          "distractors": ["$3x^2$"]
+        }
+      },
+      "feedback": {
+        "correct": "Right — $2x \\to x^2$, $3 \\to 3x$, and $4x \\to 2x^2$.",
+        "incorrect": "Integrate each term with the reverse power rule; a constant $c$ becomes $cx$.",
+        "hint": "$2x \\to x^2$ and the constant $3 \\to 3x$."
+      }
+    },
+    {
+      "id": "ip-practice-5",
       "type": "multiple_choice",
       "conceptTag": "antiderivative",
       "content": [
         {
           "type": "text",
-          "body": "Which is an antiderivative of $f(x) = 2x + 3$?"
+          "body": "Evaluate the indefinite integral below. With no limits, don't forget the constant of integration."
+        },
+        {
+          "type": "math",
+          "latex": "\\int 4x\\,dx",
+          "display": true
         }
       ],
       "interaction": {
-        "graph": {
-          "fn": "2*x + 3",
-          "domain": [0, 3],
-          "yDomain": [0, 9],
-          "xLabel": "x",
-          "yLabel": "f",
-          "showArea": true,
-          "areaStart": 0,
-          "initialSlider": 2,
-          "static": true
-        },
         "answer": {
           "type": "multiple_choice",
-          "options": [
-            "$x^2 + 3x$",
-            "$2x^2 + 3x$",
-            "$x^2 + 3$",
-            "$2$"
-          ],
+          "options": ["$2x^2 + C$", "$2x^2$", "$4x^2 + C$", "$x^2 + C$"],
           "correctIndex": 0
         }
       },
       "feedback": {
-        "correct": "Right — $2x \\to x^2$ and $3 \\to 3x$.",
-        "incorrect": "Integrate each term separately with the reverse power rule, then combine.",
-        "hint": "$x^2 + 3x$."
+        "correct": "Yes — $4x \\to \\frac{4}{2}x^2 = 2x^2$, and an indefinite integral always carries $+ C$: $2x^2 + C$.",
+        "incorrect": "Reverse the power rule on $4x$, then add $+ C$ because there are no limits.",
+        "hint": "$4x \\to 2x^2$, then include the constant: $2x^2 + C$."
       }
     }
   ]

@@ -3,7 +3,7 @@ import { join } from "path";
 import { validateLesson } from "../src/lib/validateLesson";
 import type { Lesson } from "../src/types/content";
 
-const dir = join(process.cwd(), "content/derivatives");
+const dir = join(process.cwd(), "content");
 const files = readdirSync(dir).filter((f) => f.endsWith(".json") && f !== "course.json");
 
 let hasErrors = false;

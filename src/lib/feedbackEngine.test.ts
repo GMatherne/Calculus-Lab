@@ -82,6 +82,42 @@ describe("checkAnswer", () => {
     });
   });
 
+  describe("multi_choice", () => {
+    const step = stepWith({
+      type: "multi_choice",
+      options: ["Maximum", "Minimum", "Neither"],
+      parts: [
+        { prompt: "x = 0", correctIndex: 0 },
+        { prompt: "x = 1", correctIndex: 2 },
+        { prompt: "x = 2", correctIndex: 1 },
+      ],
+    });
+
+    it("accepts when every row matches its correct option", () => {
+      expect(checkAnswer(step, [0, 2, 1]).correct).toBe(true);
+    });
+
+    it("rejects when any row is wrong and surfaces the hint", () => {
+      const res = checkAnswer(step, [0, 1, 1]);
+      expect(res.correct).toBe(false);
+      if (!res.correct) {
+        expect(res.message).toBe(feedback.incorrect);
+        expect(res.hint).toBe(feedback.hint);
+      }
+    });
+
+    it("rejects an incomplete or missing answer", () => {
+      expect(checkAnswer(step, [0, 2]).correct).toBe(false);
+      expect(checkAnswer(step, [0, null, 1]).correct).toBe(false);
+      expect(checkAnswer(step, undefined).correct).toBe(false);
+    });
+
+    it("treats option index 0 as a real selection, not a blank", () => {
+      // A row whose correct (and chosen) answer is the first option still counts.
+      expect(checkAnswer(step, [0, 2, 1]).correct).toBe(true);
+    });
+  });
+
   describe("numeric", () => {
     const step = stepWith({ type: "numeric", value: 6, tolerance: 0.01 });
 
@@ -122,6 +158,92 @@ describe("checkAnswer", () => {
       const step = stepWith({ type: "power_term", coefficient: 0, exponent: 0 });
       expect(checkAnswer(step, { coefficient: 0, exponent: 7 }).correct).toBe(true);
       expect(checkAnswer(step, { coefficient: 2, exponent: 0 }).correct).toBe(false);
+    });
+  });
+
+  describe("drag_drop", () => {
+    const step = stepWith({
+      type: "drag_drop",
+      prefix: "f'(x) =",
+      blanks: [{ accept: "3x^2" }, { accept: "2x" }],
+      bank: ["3x^2", "2x", "3x^3", "x^2"],
+    });
+
+    it("accepts the correct tiles in each blank", () => {
+      expect(checkAnswer(step, ["3x^2", "2x"]).correct).toBe(true);
+    });
+
+    it("rejects a wrong tile and surfaces the hint", () => {
+      const res = checkAnswer(step, ["3x^3", "2x"]);
+      expect(res.correct).toBe(false);
+      if (!res.correct) {
+        expect(res.message).toBe(feedback.incorrect);
+        expect(res.hint).toBe(feedback.hint);
+      }
+    });
+
+    it("accepts the terms in any order (addition is commutative)", () => {
+      expect(checkAnswer(step, ["2x", "3x^2"]).correct).toBe(true);
+    });
+
+    it("rejects an incomplete or missing answer", () => {
+      expect(checkAnswer(step, ["3x^2", null]).correct).toBe(false);
+      expect(checkAnswer(step, ["3x^2"]).correct).toBe(false);
+      expect(checkAnswer(step, undefined).correct).toBe(false);
+    });
+
+    describe("with a subtraction connector", () => {
+      // f'(x) = 3x^2 - 2; the sign is fixed to the slot, so order matters here.
+      const subStep = stepWith({
+        type: "drag_drop",
+        prefix: "f'(x) =",
+        blanks: [{ accept: "3x^2" }, { accept: "2", connector: "-" }],
+        bank: ["3x^2", "2", "x^2", "3x"],
+      });
+
+      it("accepts the correct signed arrangement", () => {
+        expect(checkAnswer(subStep, ["3x^2", "2"]).correct).toBe(true);
+      });
+
+      it("rejects swapping terms across the minus sign", () => {
+        // "2 - 3x^2" is not equal to "3x^2 - 2".
+        expect(checkAnswer(subStep, ["2", "3x^2"]).correct).toBe(false);
+      });
+    });
+  });
+
+  describe("match", () => {
+    const step = stepWith({
+      type: "match",
+      pairs: [
+        { prompt: "$x^2$", match: "x^3/3" },
+        { prompt: "$x$", match: "x^2/2" },
+        { prompt: "$x^3$", match: "x^4/4" },
+      ],
+      distractors: ["x^3/2"],
+    });
+
+    it("accepts when every prompt holds its correct match", () => {
+      expect(checkAnswer(step, ["x^3/3", "x^2/2", "x^4/4"]).correct).toBe(true);
+    });
+
+    it("rejects a wrong pairing and surfaces the hint", () => {
+      const res = checkAnswer(step, ["x^3/2", "x^2/2", "x^4/4"]);
+      expect(res.correct).toBe(false);
+      if (!res.correct) {
+        expect(res.message).toBe(feedback.incorrect);
+        expect(res.hint).toBe(feedback.hint);
+      }
+    });
+
+    it("is graded by position, so swapped matches are wrong", () => {
+      expect(checkAnswer(step, ["x^2/2", "x^3/3", "x^4/4"]).correct).toBe(false);
+    });
+
+    it("rejects an incomplete or missing answer", () => {
+      expect(checkAnswer(step, ["x^3/3", null, "x^4/4"]).correct).toBe(false);
+      expect(checkAnswer(step, ["x^3/3", "x^2/2"]).correct).toBe(false);
+      expect(checkAnswer(step, undefined).correct).toBe(false);
     });
   });
 });

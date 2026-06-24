@@ -6,7 +6,7 @@ import { getLesson, getPublishedLessons, hasPractice } from "./contentLoader";
  * Display names for concept-tag slugs. Slugs without an entry fall back to a
  * humanized version of the slug (see {@link conceptLabel}).
  */
-export const CONCEPT_LABELS: Record<string, string> = {
+const CONCEPT_LABELS: Record<string, string> = {
   rate_of_change: "Rate of Change",
   secant_tangent: "Secant & Tangent Lines",
   limit_definition: "Limit Definition",

@@ -146,7 +146,7 @@
           "fixedPoint": 2,
           "sliderLabel": "h",
           "showSecant": true,
-          "sliderMin": 0.2,
+          "sliderMin": 0.05,
           "sliderMax": 2,
           "sliderStep": 0.05,
           "initialSlider": 1.5
@@ -164,7 +164,7 @@
         }
       },
       "feedback": {
-        "correct": "As h → 0, the secant slope approaches the tangent slope at x = 2, which is 4.",
+        "correct": "As the distance between the points → 0, the secant slope approaches the tangent slope at x = 2, which is 4.",
         "incorrect": "Watch the slope value as the two points get closer together.",
         "hint": "For f(x) = x², the slope at x = 2 is 2(2) = 4."
       }
@@ -180,7 +180,7 @@
         },
         {
           "type": "text",
-          "body": "As h → 0 and the two points merge into one, the secant line becomes…"
+          "body": "As the distance between the points → 0 and they merge into one, the secant line becomes…"
         }
       ],
       "interaction": {
@@ -194,9 +194,9 @@
           "showSecant": true,
           "tangentAtFixedPoint": true,
           "slopeLabel": "Secant slope",
-          "sliderMin": 0.1,
+          "sliderMin": 0.05,
           "sliderMax": 2,
-          "sliderStep": 0.1,
+          "sliderStep": 0.05,
           "initialSlider": 1.5
         },
         "hintAfterAttempts": 1,
@@ -308,11 +308,11 @@
       "content": [
         {
           "type": "text",
-          "body": "The derivative f'(a) is the slope of the tangent line at x = a — the limit of secant slopes as h → 0. For x² that slope is 2x. Next, we'll make this limit precise with the difference quotient."
+          "body": "The derivative f'(x) is the slope of the tangent line at x — the limit of secant slopes as h → 0. For x² that slope is 2x. Next, we'll make this limit precise with the difference quotient."
         },
         {
           "type": "math",
-          "latex": "f'(a) = \\lim_{h \\to 0} \\frac{f(a+h) - f(a)}{h}",
+          "latex": "f'(x) = \\lim_{h \\to 0} \\frac{f(x+h) - f(x)}{h}",
           "display": true
         }
       ],

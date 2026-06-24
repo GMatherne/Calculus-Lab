@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useProgress } from "../contexts/ProgressContext";
 import { AppHeader } from "../components/layout/AppHeader";
@@ -11,6 +12,10 @@ const inputClass =
   "w-full min-h-[48px] rounded-xl border border-slate-300 px-4 text-base";
 const primaryBtn =
   "min-h-[48px] rounded-xl bg-indigo-600 px-5 text-white font-semibold disabled:opacity-50 active:scale-[0.99] transition";
+const dangerBtn =
+  "min-h-[48px] rounded-xl bg-red-600 px-5 text-white font-semibold disabled:opacity-50 active:scale-[0.99] transition";
+const secondaryBtn =
+  "min-h-[48px] rounded-xl border border-slate-300 bg-white px-5 font-semibold text-slate-700 disabled:opacity-50 active:scale-[0.99] transition";
 
 function errorMessage(err: unknown): string {
   return err instanceof Error && err.message
@@ -304,6 +309,109 @@ function PasswordSection({
   );
 }
 
+function DeleteAccountSection({
+  requiresPassword,
+  isDemo,
+}: {
+  /** Production password accounts must re-enter their password to re-authenticate. */
+  requiresPassword: boolean;
+  isDemo: boolean;
+}) {
+  const { deleteAccount } = useAuth();
+  const navigate = useNavigate();
+  const [confirming, setConfirming] = useState(false);
+  const [password, setPassword] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const [error, setError] = useState("");
+
+  const disabled = deleting || (requiresPassword && password.length === 0);
+
+  const cancel = () => {
+    setConfirming(false);
+    setPassword("");
+    setError("");
+  };
+
+  const handleDelete = async () => {
+    setError("");
+    setDeleting(true);
+    try {
+      await deleteAccount(requiresPassword ? password : undefined);
+      // The user is now signed out; leave the protected settings page.
+      navigate("/", { replace: true });
+    } catch (err) {
+      setError(errorMessage(err));
+      setDeleting(false);
+    }
+  };
+
+  return (
+    <section className="rounded-2xl border border-red-200 bg-red-50/50 p-5">
+      <h2 className="text-sm font-semibold text-red-700">Delete account</h2>
+      <p className="mt-1 text-xs text-red-600/90">
+        Permanently delete your account along with all of your progress,
+        streaks, and XP. This can't be undone.
+      </p>
+
+      {!confirming ? (
+        <button
+          type="button"
+          onClick={() => setConfirming(true)}
+          className={`mt-4 ${dangerBtn}`}
+        >
+          Delete account
+        </button>
+      ) : (
+        <div className="mt-4 space-y-3">
+          {requiresPassword ? (
+            <div>
+              <label htmlFor="deletePassword" className={labelClass}>
+                Confirm your password
+              </label>
+              <PasswordInput
+                id="deletePassword"
+                autoComplete="current-password"
+                placeholder="Enter your current password"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setError("");
+                }}
+                className="mt-1"
+              />
+            </div>
+          ) : (
+            <p className="text-sm text-red-700">
+              {isDemo
+                ? "This clears your local demo data and signs you out."
+                : "You'll be asked to confirm with Google before your account is removed."}
+            </p>
+          )}
+          {error && <p className="text-sm text-red-600">{error}</p>}
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={cancel}
+              disabled={deleting}
+              className={secondaryBtn}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={() => void handleDelete()}
+              disabled={disabled}
+              className={dangerBtn}
+            >
+              {deleting ? "Deleting…" : "Delete account"}
+            </button>
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
 export function SettingsPage() {
   const { user, isDemo } = useAuth();
   const { profile, loading } = useProgress();
@@ -356,6 +464,10 @@ export function SettingsPage() {
             <PasswordSection
               enabled={passwordEnabled}
               disabledNote={passwordDisabledNote}
+            />
+            <DeleteAccountSection
+              requiresPassword={!isDemo && hasPasswordProvider}
+              isDemo={isDemo}
             />
           </div>
         )}

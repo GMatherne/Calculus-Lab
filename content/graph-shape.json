@@ -29,7 +29,7 @@
           "yLabel": "f",
           "showSecant": false,
           "showTangent": true,
-          "slopeLabel": "Slope f ′(x)",
+          "slopeLabel": "f'(x)",
           "sliderMin": -2.2,
           "sliderMax": 2.2,
           "sliderStep": 0.1,
@@ -165,9 +165,11 @@
         "graph": {
           "fn": "x^3 - 3*x",
           "domain": [-2.2, 2.2],
+          "yDomain": [-5, 5],
           "xLabel": "x",
           "yLabel": "f",
-          "static": true
+          "static": true,
+          "showDerivative": true
         },
         "hintAfterAttempts": 1,
         "answer": {
@@ -205,7 +207,7 @@
       "content": [
         {
           "type": "text",
-          "body": "Here's a different curve: f(x) = −x² + 4x. Tap the point where its tangent is flat — where the slope is zero."
+          "body": "Here's a different curve: f(x) = −x² + 4x. Tap the point where the derivative is zero."
         }
       ],
       "interaction": {
@@ -295,9 +297,11 @@
         "graph": {
           "fn": "x^3 - 3*x",
           "domain": [-2.2, 2.2],
+          "yDomain": [-5, 5],
           "xLabel": "x",
           "yLabel": "f",
-          "static": true
+          "static": true,
+          "showDerivative": true
         },
         "answer": {
           "type": "multiple_choice",
@@ -318,7 +322,7 @@
       "content": [
         {
           "type": "text",
-          "body": "For f(x) = x² − 4x + 3, the slope is f'(x) = 2x − 4. At what x is the tangent flat (f'(x) = 0)?"
+          "body": "Given the graph f(x) = x² − 4x + 3, at what x does f'(x) = 0?"
         }
       ],
       "interaction": {
@@ -344,7 +348,7 @@
       "content": [
         {
           "type": "text",
-          "body": "For f(x) = x² − 6x + 5, the slope is f'(x) = 2x − 6. Compute f'(1). (A negative answer means f is decreasing, so the curve is falling there.)"
+          "body": "For f(x) = x² − 6x + 5, the slope is f'(x) = 2x − 6. Compute f'(1)."
         }
       ],
       "interaction": {
@@ -379,9 +383,11 @@
         "graph": {
           "fn": "x^3 - 3*x",
           "domain": [-2.2, 2.2],
+          "yDomain": [-5, 5],
           "xLabel": "x",
           "yLabel": "f",
-          "static": true
+          "static": true,
+          "showDerivative": true
         },
         "answer": {
           "type": "multiple_choice",
@@ -402,7 +408,7 @@
       "content": [
         {
           "type": "text",
-          "body": "For f(x) = x² − 10x, the slope is f'(x) = 2x − 10. At what x is the tangent flat (f'(x) = 0)?"
+          "body": "Given the graph f(x) = x² − 10x, at what x does f'(x) = 0?"
         }
       ],
       "interaction": {
@@ -428,7 +434,7 @@
       "content": [
         {
           "type": "text",
-          "body": "For f(x) = −x² + 4x, the slope is f'(x) = −2x + 4. Compute f'(1). (A positive answer means f is increasing, so the curve is rising there.)"
+          "body": "For f(x) = −x² + 4x, the slope is f'(x) = −2x + 4. Compute f'(1)."
         }
       ],
       "interaction": {

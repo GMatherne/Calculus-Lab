@@ -10,8 +10,7 @@ problems, and instant feedback. Built for AP Calculus BC students.
 - **Backend:** Firebase (Auth + Firestore), with a zero-config localStorage demo mode
 
 > This document describes what the app can do and how it works internally. For a
-> quickstart, see [`README.md`](./README.md); for the learning-design notes, see
-> [`BRAINLIFT.md`](./BRAINLIFT.md).
+> quickstart and setup, see [`README.md`](./README.md).
 
 ---
 
@@ -67,14 +66,18 @@ Key principles baked into the build:
 
 ### Learning experience
 - **Interactive lessons** made of 6–10 bite-sized steps each.
-- **Five step/answer types** so problems fit the concept:
+- **Eight step/answer types** so problems fit the concept:
   | Type | Learner action | Graded |
   |------|----------------|--------|
   | `read` | Tap **Continue** | No |
   | `multiple_choice` | Pick an option (≥ 4 choices) | Yes |
+  | `multi_choice` | Answer several classification rows at once (e.g. max/min/neither) | Yes |
   | `numeric` | Type a number (tolerance-based) | Yes |
   | `slider_graph` | Move a slider on a live SVG graph | Yes |
-  | `power_term` | Build a derivative `a·xⁿ` with steppers | Yes |
+  | `power_term` | Build a term `a·xⁿ` with steppers (power rule / reverse power rule) | Yes |
+  | `drag_drop` | Drag tiles into ordered blanks to assemble an expression | Yes |
+  | `match` | Pair each prompt with its match (e.g. function ↔ antiderivative) | Yes |
+  | `match` | Pair each prompt with its matching option | Yes |
 
   Graph-backed steps can also carry a **slider** answer (drag to a target value)
   or a **graph_point** answer (tap the correct point on the curve).
@@ -120,7 +123,7 @@ Key principles baked into the build:
 
 ## 3. The course
 
-The course (`content/derivatives/course.json`) is **"Introduction to Calculus"**,
+The course (`content/course.json`) is **"Introduction to Calculus"**,
 organized into 5 levels and 11 lessons:
 
 | Level | Title | Lessons |
@@ -202,7 +205,7 @@ The app is built in four conceptual layers:
 ### Directory structure
 
 ```text
-content/derivatives/         # Course manifest + 11 lesson JSON files
+content/                     # Course manifest + 11 lesson JSON files
   course.json                #   levels, lesson metadata, ordering
   what-is-a-derivative.json  #   one file per lesson (steps + practiceBank)
   ...
@@ -219,38 +222,39 @@ src/
     firebase.ts              # Firebase init + mode flags
     contentLoader.ts         # Import/validate lessons; levels, sessions, unlock
     feedbackEngine.ts        # math.js grading + secant/tangent/derivative math
-    progressService.ts       # Firestore/localStorage; streaks, milestones
+    progressService.ts       # Firestore/localStorage; streaks, milestones, activity
+    masteryService.ts        # Per-concept mastery tiers + weak-area recommendations
     validateLesson.ts        # Lesson-schema validation
     *.test.ts                # Unit tests for the above
 
   contexts/
-    AuthContext.tsx          # Auth state: login/signup/google/demo
-    ProgressContext.tsx      # Profile + progress + XP + completion
-
-  hooks/useOrientation.ts    # Portrait/landscape detection
+    AuthContext.tsx          # Auth hook/types (provided by AuthProvider.tsx)
+    AuthProvider.tsx         # login/signup/google/demo + account management
+    ProgressContext.tsx      # Progress hook/types (provided by ProgressProvider.tsx)
+    ProgressProvider.tsx     # Profile + progress + XP + activity + completion
 
   components/
     auth/        ProtectedRoute, PasswordInput
-    layout/      AppHeader, SafeArea
+    layout/      AppHeader, UserMenu, SafeArea
     lesson/      LessonPlayer, FeedbackPanel, StepNavBar,
-                 LessonComplete, PracticeResults, ExplanationModal*
-    widgets/     GraphWidget, MathBlock, AnswerInput
+                 LessonComplete, PracticeResults
+    widgets/     GraphWidget, MathBlock, AnswerInput,
+                 MultiChoiceInput, DragDropInput, MatchInput
     roadmap/     LevelSection, LessonCard
-    habit/       StreakBadge, XpBadge, MilestoneToast*
+    habit/       StreakBadge, XpBadge
+    profile/     StatsStrip, ActivityHeatmap, WeakAreas, ConceptMasteryList
     dev/         DevTools
 
   pages/
     LandingPage, LoginPage, SignupPage, RoadmapPage,
-    LessonPage, PracticePage, ReviewPage, LevelReviewPage
+    LessonPage, PracticePage, ReviewPage, LevelReviewPage,
+    ProfilePage, SettingsPage
 
 firebase.json                # Hosting + Firestore + Auth config
 firestore.rules              # Per-user access rules
 firestore.indexes.json
 vite.config.ts               # Vite + Tailwind + Vitest config
 ```
-
-`*` `ExplanationModal` and `MilestoneToast` exist in the codebase but are not
-currently wired into the UI.
 
 ### Provider nesting
 
@@ -301,14 +305,17 @@ interface Step {
   feedback: { correct: string; incorrect: string; hint: string };
 }
 
-// Five answer shapes, each graded by the feedback engine.
+// Eight answer shapes, each graded by the feedback engine.
 type AnswerSpec =
   | { type: "multiple_choice"; options: string[]; correctIndex: number }
+  | { type: "multi_choice"; options?: string[]; parts: MultiChoicePart[] }
   | { type: "numeric"; value: number; tolerance?: number }
   | { type: "slider"; value: number; tolerance?: number }
   | { type: "graph_point"; x: number; tolerance?: number }
   | { type: "power_term"; coefficient: number; exponent: number;
-      startCoefficient?: number; startExponent?: number };
+      startCoefficient?: number; startExponent?: number; previewPrefix?: string }
+  | { type: "drag_drop"; prefix?: string; blanks: DragDropBlank[]; bank: string[] }
+  | { type: "match"; pairs: MatchPair[]; distractors?: string[] };
 ```
 
 Per-user state:
@@ -320,6 +327,7 @@ interface UserProfile {
   streak: { count: number; lastActiveDate: string };
   milestones: string[];
   xp: number;
+  activityLog?: Record<string, number>; // questions answered per ISO day → heatmap
   createdAt: string;
   updatedAt: string;
 }
@@ -340,11 +348,13 @@ Tuning constants (also in `content.ts`):
 |----------|------:|---------|
 | `MIN_STEPS` / `MAX_STEPS` | 6 / 10 | Allowed steps per lesson |
 | `MIN_MC_OPTIONS` | 4 | Minimum multiple-choice options |
+| `MIN_MATCH_PAIRS` | 2 | Minimum pairs in a match question |
 | `XP_PER_LESSON` | 50 | XP for first completion of a lesson |
 | `XP_PER_PRACTICE_CORRECT` | 10 | XP per first-try-correct practice answer |
 | `PRACTICE_SESSION_SIZE` | 3 | Questions per practice session |
 | `REVIEW_SESSION_SIZE` | 5 | Questions per mixed-review session |
 | `PRACTICE_BANK_MIN` | 3 | Minimum questions in a practice bank |
+| `MASTERY_PROFICIENT` / `MASTERY_MASTERED` | 0.6 / 0.9 | First-try accuracy for concept tiers |
 
 ---
 
@@ -461,9 +471,13 @@ function that returns a `FeedbackResult`. Grading per answer type:
 | Answer type | How it's checked |
 |-------------|------------------|
 | `multiple_choice` | Exact index match against `correctIndex` |
+| `multi_choice` | Every row's chosen option must match its `correctIndex` |
 | `numeric` / `slider` | `abs(answer − value) ≤ tolerance` (default 0.01) via math.js |
 | `graph_point` | `abs(tappedX − x) ≤ tolerance` (default 0.25) |
 | `power_term` | Coefficient **and** exponent must match; a 0 coefficient passes regardless of exponent (a constant's derivative) |
+| `drag_drop` | Multiset of **signed** placed terms must equal the target (order-free for sums; a `-` slot negates its term) |
+| `match` | Every prompt must hold its own `match` (graded by position) |
+| `match` | Every prompt must hold its own correct option (graded by position) |
 
 Feedback is rendered by `FeedbackPanel`:
 
@@ -522,6 +536,21 @@ step and on lesson completion.
 - Replaying or reviewing finished material earns no XP. The running total shows in
   the header (`XpBadge`) and the roadmap.
 
+### Concept mastery & profile
+
+`masteryService.ts` rolls every answerable lesson step up by its `conceptTag` into a
+**concept catalog**, then scores each concept from saved progress:
+
+- A question is **cleared** when its lesson is complete (or the saved step pointer has moved
+  past it), and **first-try** when it was cleared in a single attempt.
+- Each concept gets a **tier**: `not_started` → `learning` → `proficient` (fully cleared, ≥ 60%
+  first-try) → `mastered` (fully cleared, ≥ 90% first-try).
+- `getWeakConcepts()` returns the weakest started-but-unmastered concepts, each linked to the
+  best place to practice it.
+
+The **Profile** page (`/profile`) surfaces this as a `StatsStrip`, an `ActivityHeatmap` (driven
+by the profile's `activityLog`), a `WeakAreas` list, and a full `ConceptMasteryList`.
+
 ### Unlock & recommendation logic (`contentLoader.ts`)
 
 - `isLessonUnlocked()` — lesson *N* unlocks when *N−1* is complete.
@@ -566,6 +595,11 @@ match /users/{userId} {
 }
 ```
 
+A **Settings** page (`/settings`) lets signed-in users manage their account: change the
+display name, update email/password (for password accounts), and permanently delete the
+account (with re-authentication). Google accounts manage email/password through Google, and
+demo-mode changes are saved locally only.
+
 A demo-only **DevTools** panel (visible only under the dev bypass) can complete or
 reset all progress for quick testing of locks and milestones.
 
@@ -585,6 +619,8 @@ import time (`assertValidLesson`) and via a CLI script.
   steps must include a graph config.
 - Multiple-choice steps need ≥ 4 options.
 - `power_term` answers need a numeric coefficient and integer exponent.
+- `match` questions need ≥ 2 pairs, each with a prompt and match, and a unique
+  option pool (every match and distractor distinct).
 - Non-read steps must have all three feedback fields (correct/incorrect/hint).
 - Practice banks must hold ≥ 3 interactive questions with unique IDs.
 
@@ -599,7 +635,7 @@ form the practice pool, so practice offers the same hands-on graph problems as t
 lesson, deduplicated by ID.
 
 Here is a representative step (a `power_term` "derivative builder") from
-`content/derivatives/power-rule.json`:
+`content/power-rule.json`:
 
 ```json
 {
@@ -638,6 +674,8 @@ Here is a representative step (a `power_term` "derivative builder") from
 | `/lesson/:lessonId/practice` | `PracticePage` | Yes |
 | `/review` | `ReviewPage` — cross-lesson mixed review | Yes |
 | `/level/:levelId/review` | `LevelReviewPage` | Yes |
+| `/profile` | `ProfilePage` — stats, activity heatmap, concept mastery | Yes |
+| `/settings` | `SettingsPage` — account management | Yes |
 
 ---
 
@@ -684,21 +722,23 @@ Available scripts:
 ## 14. Deployment
 
 The app deploys as static files to **Firebase Hosting** with an SPA rewrite
-(everything routes to `index.html`). Firestore rules and indexes are deployed
-alongside it. Configuration lives in `firebase.json` (site `brilliantclone-eca87`,
-public dir `dist`).
+(everything routes to `index.html`). Firestore rules are deployed alongside it.
+Configuration lives in `firebase.json` (site `calculus-lab`, public dir `dist`); the
+active project is set in `.firebaserc`. The app is live at
+**https://calculus-lab.web.app**.
 
 ```bash
 npm run build
-firebase login
-firebase deploy                       # hosting + firestore rules/indexes
+npx -y firebase-tools@latest login
+npx -y firebase-tools@latest deploy                  # hosting + firestore rules
 # or scope it:
-firebase deploy --only hosting
-firebase deploy --only firestore:rules
+npx -y firebase-tools@latest deploy --only hosting
+npx -y firebase-tools@latest deploy --only firestore:rules
 ```
 
 For real auth in production, enable **Email/Password** and **Google** providers in
-the Firebase console and ensure the deployed domains are authorized.
+the Firebase console and ensure the deployed domains are authorized (the default
+`*.web.app` / `*.firebaseapp.com` domains are authorized automatically).
 
 ---
 
@@ -712,6 +752,7 @@ coverage scoped to `src/lib/**`:
 | `feedbackEngine.test.ts` | Answer grading + function/slope math |
 | `progressService.test.ts` | Streaks, milestones, step progression, persistence |
 | `contentLoader.test.ts` | Loading, levels, sessions, unlock/completion logic |
+| `masteryService.test.ts` | Concept catalog + mastery/weak-area scoring |
 | `validateLesson.test.ts` | Lesson-schema validation rules |
 
 ```bash
@@ -749,7 +790,7 @@ is used for deterministic answer-checking, not generation. The learning-science
 layer (practice, spaced/interleaved review, sequential mastery, XP/streaks) is
 implemented; AI-assisted hints or problem generation are not part of this build.
 
-**Known placeholders.** A `mastered` status is recognized by the unlock and
-completion logic for forward compatibility but is never written (lessons only
-reach `complete`). `MilestoneToast` and `ExplanationModal` components exist but
-are not yet wired into the UI.
+**Mastery model.** Per-concept mastery (`learning` / `proficient` / `mastered`) is computed
+from saved progress and shown on the profile. Lesson *status* itself still only reaches
+`complete` — a `mastered` lesson status is recognized by the unlock/mastery logic for
+forward compatibility but is never written.

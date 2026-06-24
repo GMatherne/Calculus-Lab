@@ -1,5 +1,8 @@
 import type { AnswerSpec } from "../../types/content";
 import { MathBlock, RichText } from "./MathBlock";
+import { DragDropInput } from "./DragDropInput";
+import { MultiChoiceInput } from "./MultiChoiceInput";
+import { MatchInput } from "./MatchInput";
 
 const COEFF_MIN = 0;
 const COEFF_MAX = 99;
@@ -192,9 +195,50 @@ export function AnswerInput({
         <div
           className={`rounded-xl border px-4 py-3 text-center text-lg ${previewClasses}`}
         >
-          <MathBlock latex={`f'(x) = ${termToLatex(coefficient, exponent)}`} />
+          <MathBlock
+            latex={`${spec.previewPrefix ?? "f'(x) ="} ${termToLatex(coefficient, exponent)}`}
+          />
         </div>
       </div>
+    );
+  }
+
+  if (spec.type === "multi_choice") {
+    return (
+      <MultiChoiceInput
+        spec={spec}
+        value={value as (number | null)[] | undefined}
+        onChange={onChange}
+        disabled={disabled}
+        reveal={reveal}
+        isCorrect={isCorrect}
+      />
+    );
+  }
+
+  if (spec.type === "drag_drop") {
+    return (
+      <DragDropInput
+        spec={spec}
+        value={value as (string | null)[] | undefined}
+        onChange={onChange}
+        disabled={disabled}
+        reveal={reveal}
+        isCorrect={isCorrect}
+      />
+    );
+  }
+
+  if (spec.type === "match") {
+    return (
+      <MatchInput
+        spec={spec}
+        value={value as (string | null)[] | undefined}
+        onChange={onChange}
+        disabled={disabled}
+        reveal={reveal}
+        isCorrect={isCorrect}
+      />
     );
   }
 

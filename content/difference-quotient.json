@@ -1,0 +1,484 @@
+{
+  "id": "difference-quotient",
+  "title": "The Limit Definition of the Derivative",
+  "order": 3,
+  "estimatedMinutes": 8,
+  "conceptTags": ["difference_quotient", "limit_definition"],
+  "published": true,
+  "steps": [
+    {
+      "id": "dq-step-1",
+      "type": "read",
+      "conceptTag": "limit_definition",
+      "content": [
+        {
+          "type": "text",
+          "body": "Last lesson you shrank a secant line until it became the tangent. This lesson pins down the two ideas the limit definition is built on: telling an average rate of change apart from an instantaneous one, and recognizing a limit that is secretly a derivative."
+        },
+        {
+          "type": "text",
+          "body": "Pick a point x and step a distance h away. The slope of the secant through those two points is the difference quotient — the average rate of change of f over the interval from x to x + h:"
+        },
+        {
+          "type": "math",
+          "latex": "\\frac{f(x+h) - f(x)}{h}",
+          "display": true
+        },
+        {
+          "type": "text",
+          "body": "Now let h shrink to 0. The secant pivots onto the tangent, and that average rate closes in on the instantaneous rate of change at x. The limit it reaches is the derivative:"
+        },
+        {
+          "type": "math",
+          "latex": "f'(x) = \\lim_{h \\to 0} \\frac{f(x+h) - f(x)}{h}",
+          "display": true
+        },
+        {
+          "type": "text",
+          "body": "So the difference quotient is an average rate (a secant slope), and its limit as h → 0 is the instantaneous rate (the tangent slope) — the derivative. Let's pull those two apart on a graph."
+        }
+      ],
+      "feedback": { "correct": "", "incorrect": "", "hint": "" }
+    },
+    {
+      "id": "dq-step-2",
+      "type": "slider_graph",
+      "conceptTag": "difference_quotient",
+      "content": [
+        {
+          "type": "text",
+          "body": "Here is f(x) = x² with a secant anchored at x = 1. The readout is the average rate of change over the interval from x = 1 to x = 1 + h. Drag h so the secant's moving end reaches x = 3 — spanning the interval [1, 3]."
+        },
+        {
+          "type": "math",
+          "latex": "f(x) = x^2,\\quad x = 1"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 4],
+          "fixedPoint": 1,
+          "sliderLabel": "h",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": true,
+          "tangentAtFixedPoint": true,
+          "showValue": false,
+          "slopeLabel": "Average rate of change",
+          "sliderMin": 0.1,
+          "sliderMax": 2.5,
+          "sliderStep": 0.1,
+          "initialSlider": 2.5
+        },
+        "hintAfterAttempts": 1,
+        "answer": { "type": "slider", "value": 2, "tolerance": 0.05 }
+      },
+      "feedback": {
+        "correct": "Exactly — with h = 2 the secant runs from x = 1 to x = 3, and its slope, the average rate of change, is (9 − 1) / (3 − 1) = 4.",
+        "incorrect": "The anchored end stays at x = 1, and the moving end sits at x = 1 + h. What value of h puts that moving end on x = 3?",
+        "hint": "You need 1 + h = 3, so drag h to 2."
+      }
+    },
+    {
+      "id": "dq-step-3",
+      "type": "slider_graph",
+      "conceptTag": "limit_definition",
+      "content": [
+        {
+          "type": "text",
+          "body": "Same graph — now drag h down toward 0. Watch the dashed secant rotate until it lies on the solid green tangent: the average rate of change is closing in on the instantaneous rate at x = 1. Rounded to a whole number, what is that instantaneous rate, f'(1)?"
+        },
+        {
+          "type": "math",
+          "latex": "f(x) = x^2,\\quad x = 1"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 4],
+          "fixedPoint": 1,
+          "sliderLabel": "h",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": true,
+          "tangentAtFixedPoint": true,
+          "showValue": false,
+          "slopeLabel": "Average rate of change",
+          "sliderMin": 0.05,
+          "sliderMax": 2.5,
+          "sliderStep": 0.05,
+          "initialSlider": 2
+        },
+        "hintAfterAttempts": 1,
+        "answer": { "type": "numeric", "value": 2, "tolerance": 0.3 }
+      },
+      "feedback": {
+        "correct": "Right — as h → 0 the average rate of change settles onto the instantaneous rate: the tangent slope f'(1) = 2.",
+        "incorrect": "Drag h as small as it will go. The 'Average rate of change' readout is heading toward a whole number — that's the tangent slope at x = 1.",
+        "hint": "As the secant lands on the tangent, the readout closes in on 2."
+      }
+    },
+    {
+      "id": "dq-step-4",
+      "type": "slider_graph",
+      "conceptTag": "limit_definition",
+      "content": [
+        {
+          "type": "text",
+          "body": "As h → 0 that secant didn't drift away — it pivoted around the single point it was anchored to and became the tangent there. The derivative is the slope at exactly that point. Tap the point on the curve where this difference quotient measures the instantaneous rate."
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 4],
+          "fixedPoint": 1,
+          "xLabel": "x",
+          "yLabel": "f",
+          "pointChoices": [0.5, 1, 1.5, 2, 2.5, 3]
+        },
+        "hintAfterAttempts": 1,
+        "answer": { "type": "graph_point", "x": 1, "tolerance": 0.1 }
+      },
+      "feedback": {
+        "correct": "Exactly — the secant was anchored at x = 1, so it collapses onto the tangent there. The difference quotient at x = 1 measures f'(1).",
+        "incorrect": "Look back at where the secant stayed pinned while h changed — that's the point it pivots onto as it becomes the tangent.",
+        "hint": "The anchor never moved from x = 1; tap the point there."
+      }
+    },
+    {
+      "id": "dq-step-5",
+      "type": "multiple_choice",
+      "conceptTag": "difference_quotient",
+      "content": [
+        {
+          "type": "text",
+          "body": "Suppose you fix a specific, nonzero step like h = 0.5. The difference quotient (f(x+h) − f(x)) / h then measures…"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 4],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true
+        },
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "the average rate of change of f over the interval [x, x + h] — a secant slope",
+            "the exact instantaneous rate of change at x",
+            "the slope of the tangent line at x",
+            "the area under f between x and x + h"
+          ],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "Right — for any fixed nonzero h it is an average rate of change: the slope of the secant across the whole interval [x, x + h]. Only the limit as h → 0 turns it into the instantaneous rate.",
+        "incorrect": "With h a real, nonzero step, the two points are genuinely apart — so it's an average across an interval, not an instantaneous value.",
+        "hint": "Two separate points make a secant; the tangent (instantaneous rate) appears only in the limit."
+      }
+    },
+    {
+      "id": "dq-step-6",
+      "type": "multiple_choice",
+      "conceptTag": "limit_definition",
+      "content": [
+        {
+          "type": "text",
+          "body": "Sometimes a limit is a derivative in disguise. Read the structure of this one carefully:"
+        },
+        {
+          "type": "math",
+          "latex": "\\lim_{h \\to 0} \\frac{(3+h)^2 - 9}{h}",
+          "display": true
+        },
+        {
+          "type": "text",
+          "body": "Compare it with f'(x) = lim (f(x+h) − f(x)) / h. Which function, at which point, is it the derivative of?"
+        }
+      ],
+      "interaction": {
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "f(x) = x², at x = 3",
+            "f(x) = x², at x = 9",
+            "f(x) = 2x, at x = 3",
+            "f(x) = x³, at x = 3"
+          ],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "Exactly — with f(x) = x² and base point 3, the numerator is f(3 + h) − f(3) = (3 + h)² − 9. So the limit is f'(3).",
+        "incorrect": "Match the pieces: (3 + h)² is f(3 + h) and 9 is f(3). That fixes both the function and the point.",
+        "hint": "f(3 + h) = (3 + h)² means f squares its input, and the base point is 3."
+      }
+    },
+    {
+      "id": "dq-step-7",
+      "type": "numeric",
+      "conceptTag": "limit_definition",
+      "content": [
+        {
+          "type": "text",
+          "body": "Here is the other common way to write the definition, using x → a instead of h → 0:"
+        },
+        {
+          "type": "math",
+          "latex": "\\lim_{x \\to 4} \\frac{x^2 - 16}{x - 4}",
+          "display": true
+        },
+        {
+          "type": "text",
+          "body": "This is f'(4) for f(x) = x². Compute its value — factor x² − 16, cancel x − 4, then let x → 4."
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 6],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true,
+          "markerX": 4,
+          "showTangent": true
+        },
+        "hintAfterAttempts": 1,
+        "answer": { "type": "numeric", "value": 8, "tolerance": 0.1 }
+      },
+      "feedback": {
+        "correct": "Right — (x² − 16) / (x − 4) = x + 4 → 8 as x → 4. That's the instantaneous rate f'(4) = 8.",
+        "incorrect": "Factor the top: x² − 16 = (x − 4)(x + 4). Cancel x − 4, leaving x + 4, then let x → 4.",
+        "hint": "x + 4 evaluated at x = 4 gives 8."
+      }
+    },
+    {
+      "id": "dq-step-8",
+      "type": "read",
+      "conceptTag": "limit_definition",
+      "content": [
+        {
+          "type": "text",
+          "body": "Two takeaways. First, the difference quotient is an average rate of change — a secant slope over an interval — and its limit as h → 0 is the instantaneous rate, the tangent slope, which is the derivative."
+        },
+        {
+          "type": "math",
+          "latex": "f'(x) = \\lim_{h \\to 0} \\frac{f(x+h) - f(x)}{h}",
+          "display": true
+        },
+        {
+          "type": "text",
+          "body": "Second, you can now spot that definition hiding inside a limit: a numerator shaped like f(a + h) − f(a) over h — or f(x) − f(a) over x − a — is just f'(a) in disguise."
+        },
+        {
+          "type": "text",
+          "body": "Computing every derivative from this limit would be slow, though. Next, the power rule turns the derivative of xⁿ into something you can write down instantly."
+        }
+      ],
+      "feedback": { "correct": "", "incorrect": "", "hint": "" }
+    }
+  ],
+  "practiceBank": [
+    {
+      "id": "dq-practice-1",
+      "type": "numeric",
+      "conceptTag": "difference_quotient",
+      "content": [
+        {
+          "type": "text",
+          "body": "The difference quotient is an average rate of change. Find the average rate of change of f(x) = x² from x = 0 to x = 2."
+        },
+        {
+          "type": "math",
+          "latex": "\\frac{f(2) - f(0)}{2 - 0}"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 3],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true
+        },
+        "answer": { "type": "numeric", "value": 2, "tolerance": 0.05 }
+      },
+      "feedback": {
+        "correct": "Right — (4 − 0) / (2 − 0) = 2, the slope of the secant from x = 0 to x = 2.",
+        "incorrect": "Average rate of change = (f(2) − f(0)) / (2 − 0). Use f(2) = 4 and f(0) = 0.",
+        "hint": "(4 − 0) / (2 − 0) = 2."
+      }
+    },
+    {
+      "id": "dq-practice-2",
+      "type": "multiple_choice",
+      "conceptTag": "difference_quotient",
+      "content": [
+        {
+          "type": "text",
+          "body": "For f(x) = x² starting at x = 2 with h = 0.5, the difference quotient works out to 4.5. That 4.5 is best described as…"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 4],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true
+        },
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "the average rate of change of f over [2, 2.5] (a secant slope)",
+            "the exact value of f'(2)",
+            "the instantaneous rate of change at x = 2",
+            "the area under f from 2 to 2.5"
+          ],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "Yes — h = 0.5 is a real step, so 4.5 is the average rate across [2, 2.5]. The instantaneous rate f'(2) = 4 only appears as h → 0.",
+        "incorrect": "h = 0.5 keeps the two points apart, so it's an average over the interval, not an instantaneous value.",
+        "hint": "Nonzero h means a secant, which means an average rate of change."
+      }
+    },
+    {
+      "id": "dq-practice-3",
+      "type": "multiple_choice",
+      "conceptTag": "limit_definition",
+      "content": [
+        {
+          "type": "text",
+          "body": "Read the structure of this limit:"
+        },
+        {
+          "type": "math",
+          "latex": "\\lim_{h \\to 0} \\frac{(1+h)^2 - 1}{h}",
+          "display": true
+        },
+        {
+          "type": "text",
+          "body": "It is the derivative of f(x) = x² at which point?"
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "multiple_choice",
+          "options": ["x = 1", "x = 0", "x = 2", "x = −1"],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "Right — (1 + h)² is f(1 + h) and 1 is f(1), so this is f'(1).",
+        "incorrect": "The numerator is f(1 + h) − f(1), which pins the base point at x = 1.",
+        "hint": "f(1 + h) = (1 + h)² means the point is x = 1."
+      }
+    },
+    {
+      "id": "dq-practice-4",
+      "type": "numeric",
+      "conceptTag": "limit_definition",
+      "content": [
+        {
+          "type": "text",
+          "body": "Using the x → a form of the definition, evaluate this limit:"
+        },
+        {
+          "type": "math",
+          "latex": "\\lim_{x \\to 3} \\frac{x^2 - 9}{x - 3}",
+          "display": true
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 5],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true,
+          "markerX": 3,
+          "showTangent": true
+        },
+        "answer": { "type": "numeric", "value": 6, "tolerance": 0.1 }
+      },
+      "feedback": {
+        "correct": "Right — (x² − 9) / (x − 3) = x + 3 → 6, which is f'(3) for f(x) = x².",
+        "incorrect": "Factor: x² − 9 = (x − 3)(x + 3). Cancel x − 3, then let x → 3.",
+        "hint": "x + 3 at x = 3 is 6."
+      }
+    },
+    {
+      "id": "dq-practice-5",
+      "type": "multiple_choice",
+      "conceptTag": "limit_definition",
+      "content": [
+        {
+          "type": "text",
+          "body": "As h → 0, the secant line through (a, f(a)) and (a + h, f(a + h)) approaches…"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 4],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true
+        },
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "the tangent line at x = a — the instantaneous rate of change",
+            "a vertical line at x = a",
+            "the x-axis",
+            "a line whose slope grows without bound"
+          ],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "Exactly — the two points merge, so the secant pivots onto the tangent at x = a, whose slope is f'(a).",
+        "incorrect": "Shrinking h slides the second point onto the first, so the secant rotates onto the tangent at x = a.",
+        "hint": "Secant becomes tangent as the gap h closes."
+      }
+    },
+    {
+      "id": "dq-practice-6",
+      "type": "numeric",
+      "conceptTag": "limit_definition",
+      "content": [
+        {
+          "type": "text",
+          "body": "For f(x) = x² at x = 2, the average rate of change over [2, 2 + h] gets closer and closer to one number as h → 0. What number?"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 4],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true,
+          "markerX": 2,
+          "showTangent": true
+        },
+        "answer": { "type": "numeric", "value": 4, "tolerance": 0.1 }
+      },
+      "feedback": {
+        "correct": "Right — the average rate closes in on the instantaneous rate f'(2) = 4 (the tangent slope at x = 2).",
+        "incorrect": "As h → 0 the secant slope approaches the tangent slope at x = 2 — the instantaneous rate there.",
+        "hint": "The tangent slope of x² at x = 2 is 4."
+      }
+    }
+  ]
+}

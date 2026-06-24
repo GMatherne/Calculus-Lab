@@ -95,11 +95,11 @@
         },
         {
           "type": "text",
-          "body": "The area starts accumulating at 0, and $F(0) = 0$, so the area under $x^2$ from 0 to $b$ is just $F(b)$:"
+          "body": "To get the area under $f$ between two points $x = a$ and $x = b$, evaluate the antiderivative at each endpoint and subtract:"
         },
         {
           "type": "math",
-          "latex": "\\int_0^b x^2\\,dx = F(b) = \\frac{b^3}{3}",
+          "latex": "\\int_a^b f(x)\\,dx = F(b) - F(a)",
           "display": true
         }
       ],
@@ -113,10 +113,6 @@
         {
           "type": "text",
           "body": "Use the antiderivative $F(x) = \\frac{x^3}{3}$. What is the area under $f(x) = x^2$ from 0 to 2? Evaluate $F(2) - F(0)$. (Round to two decimals.)"
-        },
-        {
-          "type": "math",
-          "latex": "\\int_0^2 x^2\\,dx = F(2) - F(0) = \\frac{2^3}{3}"
         }
       ],
       "interaction": {

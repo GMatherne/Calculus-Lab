@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth, GOOGLE_SIGN_IN_CANCELLED } from "../contexts/AuthContext";
+import {
+  useAuth,
+  GOOGLE_SIGN_IN_CANCELLED,
+  GOOGLE_ACCOUNT_NOT_FOUND,
+} from "../contexts/AuthContext";
 import { AppHeader } from "../components/layout/AppHeader";
 import { SafeArea } from "../components/layout/SafeArea";
 import { PasswordInput } from "../components/auth/PasswordInput";
@@ -11,10 +15,12 @@ export function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setNotice("");
     try {
       await login(email, password);
       navigate("/lessons");
@@ -25,13 +31,16 @@ export function LoginPage() {
 
   const handleGoogle = async () => {
     setError("");
+    setNotice("");
     try {
       await loginWithGoogle();
       navigate("/lessons");
     } catch (err) {
       console.error("Google sign-in (login page) error:", err);
       const message = err instanceof Error ? err.message : "";
-      if (message !== GOOGLE_SIGN_IN_CANCELLED) {
+      if (message === GOOGLE_ACCOUNT_NOT_FOUND) {
+        setNotice("No account found for that Google account. Sign up to get started.");
+      } else if (message !== GOOGLE_SIGN_IN_CANCELLED) {
         setError(message || "Couldn't sign in with Google. Please try again.");
       }
     }
@@ -95,6 +104,14 @@ export function LoginPage() {
         >
           Continue with Google
         </button>
+        {notice && (
+          <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+            {notice}{" "}
+            <Link to="/signup" className="font-semibold text-amber-900 underline">
+              Sign up
+            </Link>
+          </div>
+        )}
         <p className="mt-4 text-center text-sm text-slate-500">
           No account?{" "}
           <Link to="/signup" className="text-indigo-600 font-medium">

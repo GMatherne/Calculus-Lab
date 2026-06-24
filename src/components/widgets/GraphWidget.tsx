@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useRef, useState, type MouseEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type MouseEvent,
+} from "react";
 import type { GraphConfig } from "../../types/content";
 import { evalFunction, secantSlope, derivativeAt } from "../../lib/feedbackEngine";
 
@@ -24,6 +31,18 @@ function clamp(v: number, lo: number, hi: number): number {
 function fmtNum(n: number): string {
   if (!Number.isFinite(n)) return "—";
   return String(parseFloat(n.toFixed(2)));
+}
+
+/**
+ * Substitute the current x into a slope label written in function notation
+ * (e.g. "f ′(x)") so the readout tracks the slider, matching the f(x) readout.
+ * Plain descriptive labels like "Tangent slope" contain no standalone variable
+ * and are returned unchanged.
+ */
+function withCurrentX(label: string, varName: string, xStr: string): string {
+  if (!varName) return label;
+  const escaped = varName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return label.replace(new RegExp(`\\b${escaped}\\b`, "g"), () => xStr);
 }
 
 /** Pick a "nice" tick spacing (1, 2, 5 x 10^n) for a given range. */
@@ -56,6 +75,9 @@ export function GraphWidget({
 }: GraphWidgetProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
+  // Unique id for the plot-area clip path (sanitized: useId() contains colons,
+  // which aren't valid in a url(#…) reference).
+  const clipId = `plot-clip-${useId().replace(/:/g, "")}`;
   const [width, setWidth] = useState(320);
   const [internalSlider, setInternalSlider] = useState(
     config.initialSlider ?? config.sliderMin ?? 1,
@@ -101,9 +123,26 @@ export function GraphWidget({
     }
   }
 
+  // Optionally sample the derivative f'(x) across the domain so it can be drawn
+  // as a second curve. Its values feed into the y-range below so the overlay
+  // stays contained — unless an explicit yDomain is set, in which case steep
+  // parts of f' are clipped to the plot box instead of squashing f.
+  const derivativePoints: { x: number; y: number }[] = [];
+  if (config.showDerivative) {
+    for (let i = 0; i <= steps; i++) {
+      const x = d0 + ((d1 - d0) * i) / steps;
+      try {
+        derivativePoints.push({ x, y: derivativeAt(config.fn, x) });
+      } catch {
+        /* skip */
+      }
+    }
+  }
+
   const ys = points.map((p) => p.y);
-  const dataMin = ys.length ? Math.min(...ys) : 0;
-  const dataMax = ys.length ? Math.max(...ys) : 1;
+  const allYs = ys.concat(derivativePoints.map((p) => p.y));
+  const dataMin = allYs.length ? Math.min(...allYs) : 0;
+  const dataMax = allYs.length ? Math.max(...allYs) : 1;
   // Always include y = 0; pad with a small margin so the curve doesn't touch edges.
   const lo = Math.min(dataMin, 0);
   const hi = Math.max(dataMax, 0);
@@ -145,6 +184,15 @@ export function GraphWidget({
       return `${i === 0 ? "M" : "L"} ${sx} ${sy}`;
     })
     .join(" ");
+
+  const derivativePathD = config.showDerivative
+    ? derivativePoints
+        .map((p, i) => {
+          const { sx, sy } = toSvg(p.x, p.y);
+          return `${i === 0 ? "M" : "L"} ${sx} ${sy}`;
+        })
+        .join(" ")
+    : "";
 
   // Shaded area under the curve from areaStart to the moving x — the integral
   // visual. The filled region runs along the curve and closes down to the axis.
@@ -306,6 +354,15 @@ export function GraphWidget({
   const xLabel = config.xLabel ?? config.sliderLabel ?? "x";
   const yLabel = config.yLabel ?? "y";
 
+  // Slope readout mirrors the f(x) readout. When the label is function notation
+  // (e.g. "f ′(x)"), the variable is replaced with the current x and the value
+  // is joined with "=" → "f ′(-2.2) = 1.5". Plain descriptive labels
+  // ("Tangent slope") aren't rewritten, so they keep a colon → "Tangent slope: 1.5".
+  const rawSlopeLabel =
+    config.slopeLabel ?? (config.showTangent ? "Tangent slope" : "Secant slope");
+  const slopeLabelText = withCurrentX(rawSlopeLabel, xLabel, fmtNum(x1));
+  const slopeSep = slopeLabelText === rawSlopeLabel ? ": " : " = ";
+
   // Axis origin positions, clamped so the axes stay visible at the edges.
   const originX = clamp(toSvg(0, yMin).sx, PAD, size.w - PAD);
   const originY = clamp(toSvg(d0, 0).sy, PAD, size.h - PAD);
@@ -315,6 +372,24 @@ export function GraphWidget({
 
   return (
     <div ref={containerRef} className="w-full min-h-[200px] flex flex-col gap-3">
+      {config.showDerivative && (
+        <div className="flex items-center gap-4 text-xs text-slate-600 px-1">
+          <span className="flex items-center gap-1.5">
+            <span
+              className="inline-block w-4 h-[3px] rounded-full"
+              style={{ backgroundColor: "#4f46e5" }}
+            />
+            <span className="font-mono">f</span>
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span
+              className="inline-block w-4 h-[3px] rounded-full"
+              style={{ backgroundColor: "#ea580c" }}
+            />
+            <span className="font-mono">f′</span>
+          </span>
+        </div>
+      )}
       <svg
         ref={svgRef}
         width="100%"
@@ -331,6 +406,17 @@ export function GraphWidget({
         role="img"
         aria-label={`Graph of the function with ${xLabel} and ${yLabel} axes`}
       >
+        <defs>
+          <clipPath id={clipId}>
+            <rect
+              x={PAD}
+              y={PAD}
+              width={Math.max(size.w - 2 * PAD, 0)}
+              height={Math.max(size.h - 2 * PAD, 0)}
+            />
+          </clipPath>
+        </defs>
+
         {/* gridlines */}
         {xTicks.map((t) => {
           const sx = toSvg(t, 0).sx;
@@ -451,6 +537,17 @@ export function GraphWidget({
 
         {/* curve */}
         <path d={pathD} fill="none" stroke="#4f46e5" strokeWidth={2.5} />
+
+        {/* derivative overlay f'(x); clipped so steep parts don't spill out */}
+        {config.showDerivative && derivativePathD && (
+          <path
+            d={derivativePathD}
+            fill="none"
+            stroke="#ea580c"
+            strokeWidth={2.5}
+            clipPath={`url(#${clipId})`}
+          />
+        )}
 
         {/* static illustration: tangent line at the marked point */}
         {markTanA && markTanB && (
@@ -612,10 +709,10 @@ export function GraphWidget({
       {showSlider &&
         (config.showSecant !== false || config.showTangent) &&
         config.showSlopeValue !== false && (
-          <p className="text-sm text-slate-600">
-            {config.slopeLabel ??
-              (config.showTangent ? "Tangent slope" : "Secant slope")}
-            : <strong>{slopeDisplay}</strong>
+          <p className="text-sm text-slate-600 font-mono">
+            {slopeLabelText}
+            {slopeSep}
+            <strong>{slopeDisplay}</strong>
           </p>
         )}
 

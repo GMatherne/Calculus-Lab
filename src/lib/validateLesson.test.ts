@@ -1,5 +1,5 @@
 import { validateLesson, assertValidLesson } from "./validateLesson";
-import type { Lesson, Step } from "../types/content";
+import type { Lesson, Step, MultiChoicePart } from "../types/content";
 
 function numericStep(id: string): Step {
   return {
@@ -19,6 +19,22 @@ function sliderGraphStep(id: string): Step {
     interaction: {
       graph: { fn: "x^2", domain: [0, 4] },
       answer: { type: "slider", value: 2 },
+    },
+    feedback: { correct: "c", incorrect: "i", hint: "h" },
+  };
+}
+
+function dragDropStep(id: string): Step {
+  return {
+    id,
+    type: "drag_drop",
+    content: [],
+    interaction: {
+      answer: {
+        type: "drag_drop",
+        blanks: [{ accept: "3x^2" }, { accept: "2x" }],
+        bank: ["3x^2", "2x", "x^2"],
+      },
     },
     feedback: { correct: "c", incorrect: "i", hint: "h" },
   };
@@ -101,6 +117,195 @@ describe("validateLesson", () => {
       feedback: { correct: "", incorrect: "", hint: "" },
     };
     expect(hasError(validateLesson(lesson), /missing feedback/)).toBe(true);
+  });
+
+  describe("drag_drop", () => {
+    it("accepts a valid drag_drop step", () => {
+      const lesson = validLesson();
+      lesson.steps[1] = dragDropStep("s2");
+      expect(validateLesson(lesson)).toEqual([]);
+    });
+
+    it("flags a blank whose tile is not in the bank", () => {
+      const lesson = validLesson();
+      lesson.steps[1] = {
+        ...dragDropStep("s2"),
+        interaction: {
+          answer: {
+            type: "drag_drop",
+            blanks: [{ accept: "3x^2" }, { accept: "missing" }],
+            bank: ["3x^2", "2x", "x^2"],
+          },
+        },
+      };
+      expect(hasError(validateLesson(lesson), /not in the bank/)).toBe(true);
+    });
+
+    it("flags duplicate bank tiles", () => {
+      const lesson = validLesson();
+      lesson.steps[1] = {
+        ...dragDropStep("s2"),
+        interaction: {
+          answer: {
+            type: "drag_drop",
+            blanks: [{ accept: "3x^2" }, { accept: "2x" }],
+            bank: ["3x^2", "2x", "2x"],
+          },
+        },
+      };
+      expect(hasError(validateLesson(lesson), /duplicate tiles/)).toBe(true);
+    });
+
+    it("requires at least one distractor beyond the blanks", () => {
+      const lesson = validLesson();
+      lesson.steps[1] = {
+        ...dragDropStep("s2"),
+        interaction: {
+          answer: {
+            type: "drag_drop",
+            blanks: [{ accept: "3x^2" }, { accept: "2x" }],
+            bank: ["3x^2", "2x"],
+          },
+        },
+      };
+      expect(hasError(validateLesson(lesson), /distractor/)).toBe(true);
+    });
+  });
+
+  describe("multi_choice", () => {
+    function withMultiChoice(parts: MultiChoicePart[], options?: string[]): Lesson {
+      const lesson = validLesson();
+      lesson.steps[1] = {
+        id: "s2",
+        type: "multi_choice",
+        content: [],
+        interaction: { answer: { type: "multi_choice", options, parts } },
+        feedback: { correct: "c", incorrect: "i", hint: "h" },
+      };
+      return lesson;
+    }
+
+    it("accepts a valid multi_choice step", () => {
+      const lesson = withMultiChoice(
+        [
+          { prompt: "x = 0", correctIndex: 0 },
+          { prompt: "x = 2", correctIndex: 1 },
+        ],
+        ["Maximum", "Minimum", "Neither"],
+      );
+      expect(validateLesson(lesson)).toEqual([]);
+    });
+
+    it("flags fewer than two parts", () => {
+      const lesson = withMultiChoice([{ prompt: "x = 0", correctIndex: 0 }], [
+        "Maximum",
+        "Minimum",
+      ]);
+      expect(hasError(validateLesson(lesson), /at least two parts/)).toBe(true);
+    });
+
+    it("flags a row with too few options", () => {
+      const lesson = withMultiChoice(
+        [
+          { prompt: "x = 0", correctIndex: 0 },
+          { prompt: "x = 2", correctIndex: 0 },
+        ],
+        ["only-one"],
+      );
+      expect(hasError(validateLesson(lesson), /at least two options/)).toBe(true);
+    });
+
+    it("flags a correctIndex outside the row's options", () => {
+      const lesson = withMultiChoice(
+        [
+          { prompt: "x = 0", correctIndex: 0 },
+          { prompt: "x = 2", correctIndex: 9 },
+        ],
+        ["Maximum", "Minimum", "Neither"],
+      );
+      expect(hasError(validateLesson(lesson), /correctIndex outside/)).toBe(true);
+    });
+
+    it("lets a row override the shared options", () => {
+      const lesson = withMultiChoice([
+        { prompt: "x = 0", correctIndex: 1, options: ["Rising", "Falling"] },
+        { prompt: "x = 2", correctIndex: 0, options: ["Rising", "Falling"] },
+      ]);
+      expect(validateLesson(lesson)).toEqual([]);
+    });
+  });
+
+  describe("match", () => {
+    function matchStep(id: string): Step {
+      return {
+        id,
+        type: "match",
+        content: [],
+        interaction: {
+          answer: {
+            type: "match",
+            pairs: [
+              { prompt: "$x^2$", match: "x^3/3" },
+              { prompt: "$x$", match: "x^2/2" },
+            ],
+            distractors: ["x^3/2"],
+          },
+        },
+        feedback: { correct: "c", incorrect: "i", hint: "h" },
+      };
+    }
+
+    it("accepts a valid match step", () => {
+      const lesson = validLesson();
+      lesson.steps[1] = matchStep("s2");
+      expect(validateLesson(lesson)).toEqual([]);
+    });
+
+    it("flags fewer than two pairs", () => {
+      const lesson = validLesson();
+      lesson.steps[1] = {
+        ...matchStep("s2"),
+        interaction: {
+          answer: { type: "match", pairs: [{ prompt: "$x$", match: "x^2/2" }] },
+        },
+      };
+      expect(hasError(validateLesson(lesson), /at least 2 pairs/)).toBe(true);
+    });
+
+    it("flags a pair missing its prompt or match", () => {
+      const lesson = validLesson();
+      lesson.steps[1] = {
+        ...matchStep("s2"),
+        interaction: {
+          answer: {
+            type: "match",
+            pairs: [
+              { prompt: "$x^2$", match: "x^3/3" },
+              { prompt: "", match: "x^2/2" },
+            ],
+          },
+        },
+      };
+      expect(hasError(validateLesson(lesson), /both a prompt and a match/)).toBe(true);
+    });
+
+    it("flags duplicate options across matches and distractors", () => {
+      const lesson = validLesson();
+      lesson.steps[1] = {
+        ...matchStep("s2"),
+        interaction: {
+          answer: {
+            type: "match",
+            pairs: [
+              { prompt: "$x^2$", match: "x^3/3" },
+              { prompt: "$x$", match: "x^2/2" },
+            ],
+            distractors: ["x^3/3"],
+          },
+        },
+      };
+      expect(hasError(validateLesson(lesson), /duplicate options/)).toBe(true);
+    });
   });
 
   describe("practiceBank", () => {

@@ -1,19 +1,23 @@
 import type { Course, Lesson, LessonMeta, Step } from "../types/content";
-import { PRACTICE_SESSION_SIZE, REVIEW_SESSION_SIZE } from "../types/content";
+import {
+  PRACTICE_BANK_MIN,
+  PRACTICE_SESSION_SIZE,
+  REVIEW_SESSION_SIZE,
+} from "../types/content";
 import { assertValidLesson } from "./validateLesson";
 
-import courseData from "../../content/derivatives/course.json";
-import lesson1 from "../../content/derivatives/what-is-a-derivative.json";
-import lesson2 from "../../content/derivatives/slope-of-a-curve.json";
-import lesson3 from "../../content/derivatives/difference-quotient.json";
-import lesson4 from "../../content/derivatives/power-rule.json";
-import lessonDifferentiatingPolynomials from "../../content/derivatives/differentiating-polynomials.json";
-import lesson5 from "../../content/derivatives/graph-shape.json";
-import lesson6 from "../../content/derivatives/maxima-and-minima.json";
-import lesson7 from "../../content/derivatives/what-is-an-integral.json";
-import lesson8 from "../../content/derivatives/area-under-a-curve.json";
-import lesson9 from "../../content/derivatives/fundamental-theorem.json";
-import lessonIntegratingPolynomials from "../../content/derivatives/integrating-polynomials.json";
+import courseData from "../../content/course.json";
+import lesson1 from "../../content/what-is-a-derivative.json";
+import lesson2 from "../../content/slope-of-a-curve.json";
+import lesson3 from "../../content/difference-quotient.json";
+import lesson4 from "../../content/power-rule.json";
+import lessonDifferentiatingPolynomials from "../../content/differentiating-polynomials.json";
+import lesson5 from "../../content/graph-shape.json";
+import lesson6 from "../../content/maxima-and-minima.json";
+import lesson7 from "../../content/what-is-an-integral.json";
+import lesson8 from "../../content/area-under-a-curve.json";
+import lesson9 from "../../content/fundamental-theorem.json";
+import lessonIntegratingPolynomials from "../../content/integrating-polynomials.json";
 
 const rawLessons: Lesson[] = [
   lesson1 as Lesson,
@@ -45,30 +49,6 @@ export function getLesson(id: string): Lesson | undefined {
   return lessonsById.get(id);
 }
 
-export function getAllLessons(): Lesson[] {
-  return rawLessons.sort((a, b) => a.order - b.order);
-}
-
-/** Live stats for published lessons, used for summary copy that should stay accurate. */
-export function getLessonStepStats(): {
-  lessonCount: number;
-  minSteps: number;
-  maxSteps: number;
-} {
-  const publishedIds = new Set(getPublishedLessons().map((l) => l.id));
-  const counts = rawLessons
-    .filter((l) => publishedIds.has(l.id) && l.published)
-    .map((l) => l.steps.length);
-  if (counts.length === 0) {
-    return { lessonCount: 0, minSteps: 0, maxSteps: 0 };
-  }
-  return {
-    lessonCount: counts.length,
-    minSteps: Math.min(...counts),
-    maxSteps: Math.max(...counts),
-  };
-}
-
 export function getLessonStepCount(lessonId: string): number {
   return lessonsById.get(lessonId)?.steps.length ?? 0;
 }
@@ -86,21 +66,36 @@ function lessonQuestions(lesson: Lesson | undefined): Step[] {
 }
 
 /**
- * The full pool of practice questions for a lesson. Combines the authored
- * `practiceBank` (or legacy `practice`) with the lesson's own interactive
- * questions, so practice offers the same hands-on graph problems as the
- * lesson rather than only plain text questions. Deduplicated by id.
+ * The pool of practice questions for a lesson. Uses the authored `practiceBank`
+ * (or legacy `practice`) only — the lesson's own questions are deliberately left
+ * out so practice doesn't just rerun problems the learner already worked through
+ * in the lesson. If the authored bank is too small to fill a session, we backfill
+ * with the lesson's own interactive questions just enough to reach the minimum.
+ * Deduplicated by id.
  */
 export function getPracticeBank(lessonId: string): Step[] {
   const lesson = lessonsById.get(lessonId);
   const authored = lesson?.practiceBank ?? lesson?.practice ?? [];
   const seen = new Set<string>();
   const pool: Step[] = [];
-  for (const q of [...authored, ...lessonQuestions(lesson)]) {
-    if (seen.has(q.id)) continue;
+  const add = (q: Step) => {
+    if (seen.has(q.id)) return;
     seen.add(q.id);
     pool.push(q);
+  };
+
+  authored.forEach(add);
+
+  // Only fall back to lesson questions (which the learner has already seen) when
+  // there aren't enough authored practice questions to fill a session, and even
+  // then add just enough to reach the minimum rather than the whole lesson.
+  if (pool.length < PRACTICE_BANK_MIN) {
+    for (const q of lessonQuestions(lesson)) {
+      if (pool.length >= PRACTICE_BANK_MIN) break;
+      add(q);
+    }
   }
+
   return pool;
 }
 
@@ -153,7 +148,7 @@ function reviewableLessons(
 }
 
 /** Combined pool of practice questions across every lesson eligible for review. */
-export function getReviewBank(
+function getReviewBank(
   progress: Record<string, { status: string }>,
 ): Step[] {
   return reviewableLessons(progress).flatMap((l) => getPracticeBank(l.id));
@@ -297,7 +292,7 @@ export function getLevel(levelId: string): ResolvedLevel | undefined {
  * Aggregates the practice questions from every lesson in a level into one set,
  * so a level review can quiz concepts spanning all of its lessons at once.
  */
-export function getLevelReviewSteps(levelId: string): Step[] {
+function getLevelReviewSteps(levelId: string): Step[] {
   const level = getLevel(levelId);
   if (!level) return [];
   return level.lessons.flatMap((meta) => getPracticeBank(meta.id));

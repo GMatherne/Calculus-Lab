@@ -122,9 +122,11 @@
         "graph": {
           "fn": "x^3 - 3*x",
           "domain": [-2.2, 2.2],
+          "yDomain": [-5, 5],
           "xLabel": "x",
           "yLabel": "f",
-          "static": true
+          "static": true,
+          "showDerivative": true
         },
         "hintAfterAttempts": 1,
         "answer": {
@@ -224,30 +226,30 @@
     },
     {
       "id": "mm-step-8",
-      "type": "numeric",
+      "type": "match",
       "conceptTag": "extrema",
       "content": [
         {
           "type": "text",
-          "body": "Try it with algebra. For f(x) = x² − 6x, the slope is f'(x) = 2x − 6. Find the x where the tangent is flat (f'(x) = 0)."
+          "body": "Try it with algebra. For f(x) = x³ − 3x², f'(x) = 3x² − 6x. Plug in x = 0, x = 1, and x = 2, then drag a label onto each to classify it as a maximum, a minimum, or neither."
         },
-        { "type": "math", "latex": "f'(x) = 2x - 6" }
+        { "type": "math", "latex": "f'(x) = 3x^2 - 6x" }
       ],
       "interaction": {
-        "graph": {
-          "fn": "x^2 - 6*x",
-          "domain": [0, 6],
-          "xLabel": "x",
-          "yLabel": "f",
-          "static": true
-        },
         "hintAfterAttempts": 1,
-        "answer": { "type": "numeric", "value": 3, "tolerance": 0.01 }
+        "answer": {
+          "type": "match",
+          "pairs": [
+            { "prompt": "$x = 0$", "match": "Maximum" },
+            { "prompt": "$x = 1$", "match": "Neither" },
+            { "prompt": "$x = 2$", "match": "Minimum" }
+          ]
+        }
       },
       "feedback": {
-        "correct": "x = 3. Just left of it the slope 2x − 6 is negative (falling); just right it's positive (rising) — down then up, so x = 3 is a minimum.",
-        "incorrect": "Set 2x − 6 = 0 and solve for x.",
-        "hint": "2x − 6 = 0 → 2x = 6 → x = 3."
+        "correct": "Right — f'(x) = 3x(x − 2) is zero only at x = 0 and x = 2. At x = 0 the slope runs + → − (rising then falling), a maximum; at x = 2 it runs − → + (falling then rising), a minimum. At x = 1, f'(1) = −3 ≠ 0, so the curve is just falling there — neither.",
+        "incorrect": "First find where f'(x) = 3x(x − 2) equals 0 — only those x are candidates. Then check the sign of f' just left and right of each. A point where f' isn't 0 (like x = 1) can't be a max or min.",
+        "hint": "3x(x − 2) = 0 only at x = 0 and x = 2. + → − is a max, − → + is a min; since f'(1) = −3 ≠ 0, x = 1 is neither."
       }
     },
     {
@@ -287,9 +289,11 @@
         "graph": {
           "fn": "x^3 - 3*x",
           "domain": [-2.2, 2.2],
+          "yDomain": [-5, 5],
           "xLabel": "x",
           "yLabel": "f",
-          "static": true
+          "static": true,
+          "showDerivative": true
         },
         "answer": {
           "type": "multiple_choice",
@@ -322,9 +326,11 @@
         "graph": {
           "fn": "x^3 - 3*x",
           "domain": [-2.2, 2.2],
+          "yDomain": [-5, 5],
           "xLabel": "x",
           "yLabel": "f",
-          "static": true
+          "static": true,
+          "showDerivative": true
         },
         "answer": {
           "type": "multiple_choice",

@@ -31,13 +31,6 @@
         { "type": "text", "body": "Build the derivative of f(x) = x³. Use the steppers to set the coefficient and exponent of f′(x)." }
       ],
       "interaction": {
-        "graph": {
-          "fn": "x^3",
-          "domain": [-2, 2],
-          "xLabel": "x",
-          "yLabel": "f",
-          "static": true
-        },
         "hintAfterAttempts": 1,
         "answer": {
           "type": "power_term",
@@ -61,13 +54,6 @@
         { "type": "text", "body": "Now build the derivative of f(x) = x⁵." }
       ],
       "interaction": {
-        "graph": {
-          "fn": "x^5",
-          "domain": [-1.5, 1.5],
-          "xLabel": "x",
-          "yLabel": "f",
-          "static": true
-        },
         "hintAfterAttempts": 1,
         "answer": {
           "type": "power_term",
@@ -180,13 +166,6 @@
         }
       ],
       "interaction": {
-        "graph": {
-          "fn": "3*x^4",
-          "domain": [-1.5, 1.5],
-          "xLabel": "x",
-          "yLabel": "f",
-          "static": true
-        },
         "hintAfterAttempts": 1,
         "answer": {
           "type": "power_term",
@@ -213,14 +192,6 @@
         }
       ],
       "interaction": {
-        "graph": {
-          "fn": "7",
-          "domain": [0, 4],
-          "yDomain": [0, 9],
-          "xLabel": "x",
-          "yLabel": "f",
-          "static": true
-        },
         "hintAfterAttempts": 1,
         "answer": {
           "type": "power_term",
@@ -263,13 +234,6 @@
         { "type": "text", "body": "Use the power rule to build the derivative of x⁶." }
       ],
       "interaction": {
-        "graph": {
-          "fn": "x^6",
-          "domain": [-1.3, 1.3],
-          "xLabel": "x",
-          "yLabel": "f",
-          "static": true
-        },
         "answer": {
           "type": "power_term",
           "coefficient": 6,
@@ -323,13 +287,6 @@
         }
       ],
       "interaction": {
-        "graph": {
-          "fn": "2*x^4",
-          "domain": [-1.5, 1.5],
-          "xLabel": "x",
-          "yLabel": "f",
-          "static": true
-        },
         "answer": {
           "type": "power_term",
           "coefficient": 8,
@@ -352,13 +309,6 @@
         { "type": "text", "body": "Use the power rule to build the derivative of x⁷." }
       ],
       "interaction": {
-        "graph": {
-          "fn": "x^7",
-          "domain": [-1.3, 1.3],
-          "xLabel": "x",
-          "yLabel": "f",
-          "static": true
-        },
         "answer": {
           "type": "power_term",
           "coefficient": 7,
@@ -412,13 +362,6 @@
         }
       ],
       "interaction": {
-        "graph": {
-          "fn": "3*x^2",
-          "domain": [-2, 2],
-          "xLabel": "x",
-          "yLabel": "f",
-          "static": true
-        },
         "answer": {
           "type": "power_term",
           "coefficient": 6,

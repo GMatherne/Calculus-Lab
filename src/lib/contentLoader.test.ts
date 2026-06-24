@@ -127,6 +127,22 @@ describe("practice sessions", () => {
     const bankIds = new Set(bank.map((s) => s.id));
     expect(session.every((s) => bankIds.has(s.id))).toBe(true);
   });
+
+  it("excludes questions the learner already saw in the lesson", () => {
+    // Every published lesson has enough authored practice questions, so none of
+    // the lesson's own (already-seen) step questions should leak into practice.
+    for (const meta of published) {
+      const lesson = getLesson(meta.id)!;
+      const lessonStepIds = new Set(
+        lesson.steps
+          .filter((s) => s.type !== "read" && Boolean(s.interaction?.answer))
+          .map((s) => s.id),
+      );
+      const bank = getPracticeBank(meta.id);
+      expect(bank.length).toBeGreaterThanOrEqual(PRACTICE_SESSION_SIZE);
+      expect(bank.some((s) => lessonStepIds.has(s.id))).toBe(false);
+    }
+  });
 });
 
 describe("canReview", () => {

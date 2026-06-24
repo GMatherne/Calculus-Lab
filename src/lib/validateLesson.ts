@@ -5,6 +5,7 @@ import {
   PRACTICE_STEPS,
   PRACTICE_BANK_MIN,
   MIN_MC_OPTIONS,
+  MIN_MATCH_PAIRS,
 } from "../types/content";
 
 export function validateLesson(lesson: Lesson): string[] {
@@ -100,22 +101,26 @@ function validatePractice(lesson: Lesson): string[] {
 function validateStep(step: Step, lessonId: string): string[] {
   const errors: string[] = [];
   const interactive = step.type !== "read";
+  const answer = step.interaction?.answer;
 
-  if (interactive && !step.interaction?.answer) {
+  if (interactive && !answer) {
     errors.push(`Step "${step.id}" in "${lessonId}" is interactive but has no answer spec.`);
   }
 
-  // Every interactive question must carry a visual so the learner always has
-  // something to look at alongside the prompt. slider_graph steps and
-  // slider/graph_point answers need a live graph to interact with; other
-  // question types can use a static illustration (graph with "static": true).
-  if (interactive && !step.interaction?.graph) {
+  // A question only needs a graph when the answer is physically tied to one: a
+  // slider must move along a curve, a graph_point is a tap on the plot, and a
+  // slider_graph step is a graph by definition. Other question types (numeric,
+  // multiple_choice, power_term) are fine with just an interaction.
+  const needsGraph =
+    step.type === "slider_graph" ||
+    answer?.type === "slider" ||
+    answer?.type === "graph_point";
+  if (needsGraph && !step.interaction?.graph) {
+    const kind = answer ? `${answer.type} answer` : `${step.type} step`;
     errors.push(
-      `Step "${step.id}" in "${lessonId}" is interactive but has no graph/visual; every question must include a graph (set "static": true for a non-interactive illustration).`,
+      `Step "${step.id}" in "${lessonId}" has a ${kind} but has no graph config.`,
     );
   }
-
-  const answer = step.interaction?.answer;
 
   if (answer?.type === "multiple_choice" && answer.options.length < MIN_MC_OPTIONS) {
     errors.push(
@@ -130,6 +135,89 @@ function validateStep(step: Step, lessonId: string): string[] {
     errors.push(
       `Step "${step.id}" in "${lessonId}" has an invalid power_term answer (need a numeric coefficient and integer exponent).`,
     );
+  }
+
+  if (answer?.type === "multi_choice") {
+    // The point of this type is to ask about several things at once, so it
+    // needs more than one row. Each row needs a real choice (>= 2 options), but
+    // not the 4-option floor of a standalone multiple_choice — these rows are
+    // usually short classification labels (e.g. max/min/neither).
+    if (answer.parts.length < 2) {
+      errors.push(
+        `Step "${step.id}" in "${lessonId}" multi_choice needs at least two parts.`,
+      );
+    }
+    answer.parts.forEach((part, i) => {
+      const options = part.options ?? answer.options;
+      if (!options || options.length < 2) {
+        errors.push(
+          `Step "${step.id}" in "${lessonId}" multi_choice part ${i + 1} needs at least two options.`,
+        );
+      } else if (
+        !Number.isInteger(part.correctIndex) ||
+        part.correctIndex < 0 ||
+        part.correctIndex >= options.length
+      ) {
+        errors.push(
+          `Step "${step.id}" in "${lessonId}" multi_choice part ${i + 1} has a correctIndex outside its options.`,
+        );
+      }
+    });
+  }
+
+  if (answer?.type === "drag_drop") {
+    if (answer.blanks.length < 1) {
+      errors.push(
+        `Step "${step.id}" in "${lessonId}" drag_drop needs at least one blank.`,
+      );
+    }
+    const uniqueBank = new Set(answer.bank);
+    if (uniqueBank.size !== answer.bank.length) {
+      errors.push(
+        `Step "${step.id}" in "${lessonId}" drag_drop bank has duplicate tiles; each tile must be unique.`,
+      );
+    }
+    // The bank must offer at least one distractor beyond the correct tiles, or
+    // there's nothing to choose wrong and the question grades itself.
+    if (answer.bank.length <= answer.blanks.length) {
+      errors.push(
+        `Step "${step.id}" in "${lessonId}" drag_drop bank needs more tiles than blanks (add at least one distractor).`,
+      );
+    }
+    for (const blank of answer.blanks) {
+      if (!uniqueBank.has(blank.accept)) {
+        errors.push(
+          `Step "${step.id}" in "${lessonId}" drag_drop blank expects "${blank.accept}", which is not in the bank.`,
+        );
+      }
+    }
+  }
+
+  if (answer?.type === "match") {
+    // Matching needs more than one pair, or there's nothing to match.
+    if (answer.pairs.length < MIN_MATCH_PAIRS) {
+      errors.push(
+        `Step "${step.id}" in "${lessonId}" match needs at least ${MIN_MATCH_PAIRS} pairs.`,
+      );
+    }
+    answer.pairs.forEach((pair, i) => {
+      if (!pair.prompt || !pair.match) {
+        errors.push(
+          `Step "${step.id}" in "${lessonId}" match pair ${i + 1} needs both a prompt and a match.`,
+        );
+      }
+    });
+    // Grading maps an option back to a prompt by value, so every option in the
+    // bank (matches + distractors) must be unique.
+    const optionPool = [
+      ...answer.pairs.map((p) => p.match),
+      ...(answer.distractors ?? []),
+    ];
+    if (new Set(optionPool).size !== optionPool.length) {
+      errors.push(
+        `Step "${step.id}" in "${lessonId}" match has duplicate options; each match and distractor must be unique.`,
+      );
+    }
   }
 
   if (step.type === "read") {

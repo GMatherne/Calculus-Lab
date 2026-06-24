@@ -207,6 +207,25 @@ export async function clearAllProgress(uid: string): Promise<void> {
   await Promise.all(snap.docs.map((d) => deleteDoc(d.ref)));
 }
 
+/**
+ * Permanently remove a user's stored data: their profile plus every lesson
+ * progress document. Local persistence drops the stored blobs; Firestore
+ * deletes each progress document and then the profile document.
+ *
+ * For real accounts this must run while the user is still authenticated, since
+ * Firestore security rules only allow a user to delete their own documents.
+ */
+export async function deleteUserData(uid: string): Promise<void> {
+  if (useLocalPersistence || !db) {
+    localStorage.removeItem(`${LOCAL_PROGRESS_KEY}_${uid}`);
+    localStorage.removeItem(`${LOCAL_PROFILE_KEY}_${uid}`);
+    return;
+  }
+  const snap = await getDocs(collection(db, "users", uid, "progress"));
+  await Promise.all(snap.docs.map((d) => deleteDoc(d.ref)));
+  await deleteDoc(doc(db, "users", uid));
+}
+
 export function checkMilestones(
   milestones: string[],
   completedCount: number,

@@ -229,6 +229,46 @@ export function LessonPlayer({
     goToStep(index);
   };
 
+  // Drag-and-drop questions can't be submitted until every blank holds a tile.
+  const dragDropBlankCount =
+    step.interaction?.answer?.type === "drag_drop"
+      ? step.interaction.answer.blanks.length
+      : 0;
+  // Multi-choice questions can't be submitted until every row is answered.
+  const multiChoicePartCount =
+    step.interaction?.answer?.type === "multi_choice"
+      ? step.interaction.answer.parts.length
+      : 0;
+  // Match questions can't be submitted until every prompt has been matched.
+  const matchPairCount =
+    step.interaction?.answer?.type === "match"
+      ? step.interaction.answer.pairs.length
+      : 0;
+  const submitDisabled =
+    answerType === "slider" || answerType === "power_term"
+      ? false
+      : answerType === "graph_point"
+        ? clickedX === null
+        : answerType === "drag_drop"
+          ? !(
+              Array.isArray(answer) &&
+              dragDropBlankCount > 0 &&
+              answer.filter((v) => v != null).length === dragDropBlankCount
+            )
+          : answerType === "multi_choice"
+            ? !(
+                Array.isArray(answer) &&
+                multiChoicePartCount > 0 &&
+                answer.filter((v) => v != null).length === multiChoicePartCount
+              )
+            : answerType === "match"
+              ? !(
+                  Array.isArray(answer) &&
+                  matchPairCount > 0 &&
+                  answer.filter((v) => v != null).length === matchPairCount
+                )
+              : answer === undefined || answer === "";
+
   const graphSection = step.interaction?.graph ? (
     <GraphWidget
       config={step.interaction.graph}
@@ -340,13 +380,7 @@ export function LessonPlayer({
             <button
               type="button"
               onClick={() => void handleSubmit()}
-              disabled={
-                answerType === "slider" || answerType === "power_term"
-                  ? false
-                  : answerType === "graph_point"
-                    ? clickedX === null
-                    : answer === undefined || answer === ""
-              }
+              disabled={submitDisabled}
               className="flex-1 min-h-[48px] rounded-xl bg-indigo-600 text-white font-semibold text-base hover:bg-indigo-700 disabled:opacity-40 active:scale-[0.98] transition"
             >
               Check Answer

@@ -1,69 +1,122 @@
-# Derivatives — Learn by Doing
+# Calculus Lab — Learn by Doing
 
-**Subject:** Derivatives (AP Calculus BC Unit 2)  
-**Audience:** High school AP Calc BC students  
-**Stack:** React + TypeScript + Vite + Tailwind + Firebase
+**Live:** https://calculus-lab.web.app
+**Subject:** AP Calculus BC — derivatives **and** integrals
+**Audience:** High-school AP Calculus BC students
+**Stack:** React 19 · TypeScript 5.8 · Vite 6 · Tailwind CSS 4 · Firebase 11 · KaTeX · math.js
 
-An interactive Brilliant-style app for learning derivatives through hands-on graph manipulation, instant feedback, and a sequential lesson path.
+A Brilliant-style, **learn-by-doing** web app for the foundations of calculus. Instead of
+watching videos, you work through short interactive steps — drag a slider on a live graph,
+tap a point on a curve, build a derivative term-by-term, drag tiles to assemble an answer —
+and get **instant, hand-written feedback** on every attempt. All grading happens in the
+browser; there is no custom backend.
 
-## Live demo
-
-Deploy with Firebase Hosting (see [Deploy](#deploy)). Without Firebase config, the app runs in **demo mode** with localStorage persistence.
+> For a full tour of how everything works internally, see **[OVERVIEW.md](./OVERVIEW.md)**.
 
 ## Quick start
 
 ```bash
 npm install
-cp .env.example .env.local   # optional: add Firebase + OpenAI keys
-npm run dev
+
+# Optional: real auth + cross-device persistence.
+# Without it, the app runs in demo mode (localStorage, auto-login).
+cp .env.sample .env.local   # then fill in your Firebase web config
+
+npm run dev                 # http://localhost:5173  (demo user, no login)
 ```
 
-Open http://localhost:5173
+## Run modes
+
+| Mode | When | Auth | Storage |
+|------|------|------|---------|
+| **Demo / dev** | `npm run dev` (port **5173**) | Auto "Demo Student", no login | `localStorage` |
+| **Production** | `npm run build` / `preview` (port **5174**) / deployed | Real Firebase login | Firestore |
+
+If the Firebase env vars are missing (or `VITE_FIREBASE_API_KEY=demo`), the app also falls
+back to demo mode, so it runs with zero configuration.
 
 ## Scripts
 
 | Command | Description |
 |---------|-------------|
-| `npm run dev` | Dev server |
-| `npm run build` | Production build |
-| `npm run preview` | Preview production build |
-| `npm run validate:lessons` | Validate lesson JSON (4–6 steps, slider required) |
+| `npm run dev` | Dev server on **5173** (demo user, no login) |
+| `npm run build` | Type-check (`tsc -b`) + production bundle to `dist/` |
+| `npm run preview` | Preview the production build on **5174** (real login) |
+| `npm run lint` | ESLint |
+| `npm run test` | Run unit tests once (Vitest) |
+| `npm run test:watch` | Watch-mode tests |
+| `npm run test:coverage` | Tests with V8 coverage (`src/lib/**`) |
+| `npm run validate:lessons` | Validate every lesson JSON (6–10 steps, ≥1 slider graph, etc.) |
+
+## Question types
+
+Eight step types fit the concept being taught:
+
+| Type | Learner action | Graded |
+|------|----------------|:------:|
+| `read` | Tap **Continue** | No |
+| `multiple_choice` | Pick one option (≥ 4 choices) | Yes |
+| `multi_choice` | Answer several classification rows at once (e.g. max/min/neither) | Yes |
+| `numeric` | Type a number (tolerance-based) | Yes |
+| `slider_graph` | Move a slider on a live SVG graph | Yes |
+| `power_term` | Build a term `a·xⁿ` with steppers (power rule / reverse power rule) | Yes |
+| `drag_drop` | Drag tiles into ordered blanks to assemble an expression | Yes |
+| `match` | Pair each prompt with its match (e.g. function ↔ antiderivative) | Yes |
+
+Graph-backed steps can also carry a **slider** answer (drag to a target) or a **graph_point**
+answer (tap the correct point on the curve).
+
+## The course
+
+**Introduction to Calculus** — 11 lessons across 5 sequential levels (each lesson unlocks the
+next):
+
+1. **What Is a Derivative?** — What Is a Derivative? · Slope of a Curve
+2. **Finding Derivatives** — The Limit Definition of the Derivative · The Power Rule · Differentiating Polynomials
+3. **Using Derivatives** — Derivatives and Graph Shape · Finding Maxima and Minima
+4. **What Is an Integral?** — What Is an Integral? · Area Under a Curve
+5. **The Big Picture** — The Fundamental Theorem of Calculus · Integrating Polynomials
+
+Each lesson is ~6–8 minutes, has 6–10 steps, and includes at least one slider-graph
+interaction. Finished lessons unlock **Practice** and **Review**; completed levels unlock a
+**Level review**.
 
 ## Architecture
 
-```
-content/derivatives/     # Lesson JSON (version-controlled)
+A layered, server-free design — version-controlled JSON content, browser logic, React state,
+and Firebase only for identity + per-user storage.
+
+```text
+content/derivatives/     # course.json + 11 lesson JSON files (the entire course)
+scripts/                 # validate-lessons.ts (CLI lesson validator)
 src/
+  lib/                   # contentLoader · feedbackEngine · progressService ·
+                         #   masteryService · validateLesson · firebase  (+ *.test.ts)
+  contexts/              # AuthContext/AuthProvider · ProgressContext/ProgressProvider
   components/
-    lesson/              # LessonPlayer, FeedbackPanel
-    widgets/               # GraphWidget (SVG), MathBlock (KaTeX), AnswerInput
-    roadmap/               # Lesson list, unlock logic
-    habit/                 # Streaks, milestones
-  contexts/                # Auth + Firestore progress
-  lib/
-    feedbackEngine.ts      # Client-side answer check (<100ms)
-    progressService.ts     # Firestore + localStorage fallback
-    aiService.ts           # Optional Phase 2 hints (feature-flagged)
-  pages/                   # Landing, lessons, lesson player
+    auth/ layout/ lesson/ widgets/ roadmap/ habit/ profile/ dev/
+  pages/                 # Landing, Login, Signup, Roadmap, Lesson, Practice,
+                         #   Review, LevelReview, Profile, Settings
+  types/content.ts       # domain types + tuning constants
+firebase.json            # Hosting (SPA rewrite) + Firestore + Auth config
+firestore.rules          # per-user access rules
+vite.config.ts           # Vite + Tailwind + Vitest
 ```
 
-### Four layers (Phase 1 MVP)
-
-1. **Content model** — JSON steps with typed interactions and hand-written feedback  
-2. **Step renderer** — React components per step type; instant client-side grading  
-3. **Progress** — Firestore (or localStorage demo); sequential unlock; `complete` status  
-4. **Persistence** — Auth + cross-session progress and streaks  
-
-> **Phase 2 (AI)** and **Phase 3 (learning science)** are not implemented yet — see [BRAINLIFT.md](./BRAINLIFT.md) for planned scope.
+Key features: instant client-side grading (math.js), interactive SVG graphs (secant/tangent,
+area shading), sequential unlock, per-lesson practice + mixed/level review, XP, streaks,
+milestones, **per-concept mastery** with a profile dashboard (stats, activity heatmap, weak
+areas), and account management. The app is intentionally **AI-free** — every problem, hint,
+and explanation is hand-authored.
 
 ## Firebase setup
 
-1. Create a Firebase project at https://console.firebase.google.com  
-2. Enable **Authentication** (Email/Password + Google)  
-3. Create **Firestore** database  
-4. Copy web app config into `.env.local`:
+1. Create a project at https://console.firebase.google.com
+2. Enable **Authentication** → Email/Password and Google sign-in
+3. Create a **Firestore** database (production mode)
+4. Copy the web app config into `.env.local`:
 
-```
+```text
 VITE_FIREBASE_API_KEY=...
 VITE_FIREBASE_AUTH_DOMAIN=...
 VITE_FIREBASE_PROJECT_ID=...
@@ -72,32 +125,41 @@ VITE_FIREBASE_MESSAGING_SENDER_ID=...
 VITE_FIREBASE_APP_ID=...
 ```
 
-5. Deploy rules: `firebase deploy --only firestore:rules`
-
 ## Deploy
+
+This project deploys to **Firebase Hosting** (project `calculus-lab`, see `.firebaserc`) as a
+static SPA, with Firestore rules deployed alongside.
 
 ```bash
 npm run build
-firebase login
-firebase init hosting   # public directory: dist, SPA rewrite: yes
-firebase deploy
+npx -y firebase-tools@latest deploy                      # hosting + firestore rules
+# or scope it:
+npx -y firebase-tools@latest deploy --only hosting
+npx -y firebase-tools@latest deploy --only firestore:rules
 ```
 
-## Lessons (5)
+Live at **https://calculus-lab.web.app**. Auth providers (Email/Password, Google) are enabled
+in the Firebase Console; the deployed domains are authorized there by default.
 
-1. What Is a Derivative?  
-2. Slope of a Curve  
-3. The Difference Quotient  
-4. The Power Rule  
-5. Derivatives and Graph Shape  
+## Testing
 
-Each lesson: **4–6 steps**, at least one **slider + graph** interaction.
+Unit tests (Vitest) live next to the code they cover under `src/lib/`, with coverage scoped to
+`src/lib/**`:
+
+| Test file | Covers |
+|-----------|--------|
+| `feedbackEngine.test.ts` | Answer grading + function/slope math |
+| `progressService.test.ts` | Streaks, milestones, step progression, persistence |
+| `contentLoader.test.ts` | Loading, levels, sessions, unlock/completion logic |
+| `masteryService.test.ts` | Concept catalog + mastery/weak-area scoring |
+| `validateLesson.test.ts` | Lesson-schema validation rules |
+
+```bash
+npm run test            # run all
+npm run test:coverage   # with coverage report (also written to /coverage)
+```
 
 ## Mobile
 
-Mobile-first UI; portrait and landscape layouts; 44px touch targets; safe-area insets; graph resizes via `ResizeObserver`.
-
-## Submission artifacts
-
-- **Brainlift:** [BRAINLIFT.md](./BRAINLIFT.md)  
-- **Demo script:** [DEMO.md](./DEMO.md)  
+Mobile-first UI: portrait and landscape layouts, 44px+ touch targets, safe-area insets, and
+graphs that resize via `ResizeObserver`.

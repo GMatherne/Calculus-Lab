@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "site": "brilliantclone-eca87",
+    "site": "calculus-lab",
     "public": "dist",
     "ignore": [
       "firebase.json",
@@ -24,14 +24,14 @@
     "providers": {
       "emailPassword": true,
       "googleSignIn": {
-        "oAuthBrandDisplayName": "Derivatives Learn",
+        "oAuthBrandDisplayName": "Calculus Lab",
         "supportEmail": "grant.matherne@alphaaiengineering.com"
       }
     },
     "authorizedDomains": [
       "localhost",
-      "brilliantclone-eca87.firebaseapp.com",
-      "brilliantclone-eca87.web.app"
+      "calculus-lab.firebaseapp.com",
+      "calculus-lab.web.app"
     ]
   }
 }

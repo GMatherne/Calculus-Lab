@@ -1,9 +1,12 @@
 export type StepType =
   | "read"
   | "multiple_choice"
+  | "multi_choice"
   | "numeric"
   | "slider_graph"
-  | "power_term";
+  | "power_term"
+  | "drag_drop"
+  | "match";
 
 export type LessonStatus =
   | "not_started"
@@ -28,6 +31,15 @@ export interface GraphConfig {
   domain: [number, number];
   /** Explicit y-axis range. When omitted, the range is derived from the data. */
   yDomain?: [number, number];
+  /**
+   * Overlay the derivative f'(x) as a second curve on the same axes, so the
+   * learner can see how the sign and height of f' line up with where f rises,
+   * falls, and turns. Drawn in a distinct color with a small legend. The
+   * derivative is computed numerically, so this works for any `fn`. Pair with an
+   * explicit `yDomain` when f' grows much faster than f (e.g. a cubic), so f
+   * stays readable while the steep parts of f' are clipped to the plot box.
+   */
+  showDerivative?: boolean;
   fixedPoint?: number;
   sliderLabel?: string;
   showSecant?: boolean;
@@ -99,6 +111,36 @@ export interface MultipleChoiceAnswer {
   correctIndex: number;
 }
 
+/**
+ * One row inside a {@link MultiChoiceAnswer}: a short prompt (e.g. an x-value)
+ * plus the index of its correct option. Options come from this row's own
+ * `options`, falling back to the answer's shared `options` when omitted.
+ */
+export interface MultiChoicePart {
+  /** Short label for this row, e.g. "x = 0". Rendered with inline math ($…$). */
+  prompt: string;
+  /** Index (into the row's effective options) of the correct choice. */
+  correctIndex: number;
+  /** Options for this row; defaults to the answer's shared `options`. */
+  options?: string[];
+}
+
+/**
+ * A stack of independent multiple-choice rows graded as a single question: each
+ * row (e.g. one x-value) is answered on its own, and the step is correct only
+ * when every row is correct. Set the shared `options` for the common case where
+ * every row picks from the same labels (e.g. "Maximum" / "Minimum" / "Neither");
+ * a row may override them with its own `options`. The submitted answer is an
+ * array of chosen option indices, one per row (null where a row is unanswered).
+ */
+export interface MultiChoiceAnswer {
+  type: "multi_choice";
+  /** Default options shared by every row that doesn't define its own. */
+  options?: string[];
+  /** The independent rows, in display order. */
+  parts: MultiChoicePart[];
+}
+
 export interface NumericAnswer {
   type: "numeric";
   value: number;
@@ -141,14 +183,98 @@ export interface PowerTermAnswer {
   startCoefficient?: number;
   /** Exponent shown in the builder before editing — usually the original power. */
   startExponent?: number;
+  /**
+   * LaTeX prefix for the live preview of the term being built. Defaults to
+   * "f'(x) =" for a derivative builder; set to "F(x) =" when the learner is
+   * building an antiderivative via the reverse power rule.
+   */
+  previewPrefix?: string;
+}
+
+/** One blank in a {@link DragDropAnswer}, filled by dragging a tile from the bank. */
+export interface DragDropBlank {
+  /**
+   * LaTeX of the tile that correctly fills this blank. Must appear verbatim in
+   * the answer's `bank`.
+   */
+  accept: string;
+  /**
+   * Operator rendered just before this blank, e.g. "+" or "-". Ignored on the
+   * first blank. Defaults to "+", so a sum of positive terms needs no connectors.
+   */
+  connector?: string;
+}
+
+/**
+ * Drag-and-drop "assemble the answer" question: the learner drags term tiles
+ * from a shared bank into ordered blanks to build an expression — e.g. the
+ * derivative of a polynomial, one term per blank. Tiles are LaTeX strings, and
+ * the bank holds every correct tile plus distractors (shuffled when rendered).
+ * The submitted answer is the array of placed tile values, one entry per blank
+ * (null where a blank is still empty).
+ *
+ * Grading compares the multiset of *signed* terms, not their positions, so a sum
+ * can be built in any order (addition is commutative). Each blank's sign is the
+ * operator fixed in front of it, so a term in a "-" slot is treated as negative
+ * — keeping subtraction order-sensitive while pure sums are order-free.
+ */
+export interface DragDropAnswer {
+  type: "drag_drop";
+  /** LaTeX shown to the left of the blanks, e.g. "f'(x) =". Optional. */
+  prefix?: string;
+  /** The ordered blanks the learner fills, left to right. */
+  blanks: DragDropBlank[];
+  /**
+   * Full pool of draggable tiles (LaTeX). Must include each blank's `accept`
+   * value plus at least one distractor, with no duplicate entries.
+   */
+  bank: string[];
+}
+
+/**
+ * One row in a {@link MatchAnswer}: a fixed left-hand prompt and the LaTeX of
+ * the right-hand option that correctly matches it (e.g. a function paired with
+ * its antiderivative).
+ */
+export interface MatchPair {
+  /** Left-hand item shown in fixed order, e.g. "$x^2$". Rendered with inline math ($…$). */
+  prompt: string;
+  /**
+   * LaTeX of the right-hand option that matches this prompt. Must be unique
+   * across the question's pairs so a placed option maps to exactly one prompt.
+   */
+  match: string;
+}
+
+/**
+ * "Match the pairs" question: the learner pairs each fixed left-hand prompt with
+ * one right-hand option (e.g. each function with its antiderivative). The option
+ * bank holds every pair's `match` plus any `distractors`, shuffled when rendered,
+ * and each option can be used at most once. The submitted answer is an array of
+ * chosen option values, one per prompt by position (null where a prompt is still
+ * unmatched). Graded by position: every prompt must hold its own `match`.
+ */
+export interface MatchAnswer {
+  type: "match";
+  /** The pairs to match, with prompts shown in this order. */
+  pairs: MatchPair[];
+  /**
+   * Extra unmatched options (LaTeX) mixed into the bank as distractors, so the
+   * answer can't be reached purely by elimination. Each must be unique and must
+   * not collide with any pair's `match`.
+   */
+  distractors?: string[];
 }
 
 export type AnswerSpec =
   | MultipleChoiceAnswer
+  | MultiChoiceAnswer
   | NumericAnswer
   | SliderAnswer
   | GraphPointAnswer
-  | PowerTermAnswer;
+  | PowerTermAnswer
+  | DragDropAnswer
+  | MatchAnswer;
 
 export interface Interaction {
   graph?: GraphConfig;
@@ -339,6 +465,9 @@ export const PRACTICE_BANK_MIN = PRACTICE_SESSION_SIZE;
 
 /** Minimum number of answer choices every multiple-choice question must offer. */
 export const MIN_MC_OPTIONS = 4;
+
+/** Minimum number of pairs a match question must offer. */
+export const MIN_MATCH_PAIRS = 2;
 
 /**
  * First-try accuracy (0–1) needed to count a fully-covered concept as
