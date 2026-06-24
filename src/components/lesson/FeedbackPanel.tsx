@@ -1,3 +1,5 @@
+import { RichText } from "../widgets/MathBlock";
+
 interface FeedbackPanelProps {
   message: string;
   isCorrect: boolean | null;
@@ -28,10 +30,16 @@ export function FeedbackPanel({
       } ${prominentHint ? "ring-2 ring-amber-400" : ""}`}
       role="status"
     >
-      {message && <p>{message}</p>}
+      {message && (
+        <p>
+          <RichText text={message} />
+        </p>
+      )}
       {hint && isCorrect === false && (
         hintRevealed ? (
-          <p className="mt-2 text-sm font-medium">💡 Hint: {hint}</p>
+          <p className="mt-2 text-sm font-medium">
+            💡 Hint: <RichText text={hint} />
+          </p>
         ) : (
           <button
             type="button"

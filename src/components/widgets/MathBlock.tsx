@@ -17,12 +17,43 @@ export function MathBlock({ latex, display }: { latex: string; display?: boolean
   }
 }
 
+/**
+ * Renders a string that may contain inline LaTeX delimited by single dollar
+ * signs, e.g. "the antiderivative $\\frac{x^3}{3}$ checks out". Segments inside
+ * `$...$` are typeset with KaTeX; everything else renders as plain text.
+ * Strings with no `$` are returned unchanged, so existing copy is unaffected.
+ */
+export function RichText({ text }: { text: string }) {
+  if (!text.includes("$")) return <>{text}</>;
+  // Capturing group keeps the delimited segments in the split output.
+  const segments = text.split(/(\$[^$]+\$)/g);
+  return (
+    <>
+      {segments.map((seg, i) => {
+        if (seg.length > 2 && seg.startsWith("$") && seg.endsWith("$")) {
+          const latex = seg.slice(1, -1);
+          try {
+            return <InlineMath key={i} math={latex} />;
+          } catch {
+            return <code key={i} className="text-sm">{latex}</code>;
+          }
+        }
+        return seg ? <span key={i}>{seg}</span> : null;
+      })}
+    </>
+  );
+}
+
 export function ContentBlocks({ blocks }: { blocks: ContentBlock[] }) {
   return (
     <div className="space-y-3 text-base leading-relaxed text-slate-800">
       {blocks.map((block, i) => {
         if (block.type === "text") {
-          return <p key={i}>{block.body}</p>;
+          return (
+            <p key={i}>
+              <RichText text={block.body} />
+            </p>
+          );
         }
         return <MathBlock key={i} latex={block.latex} display={block.display} />;
       })}

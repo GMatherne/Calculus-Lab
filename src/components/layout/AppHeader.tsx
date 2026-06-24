@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import { XpBadge } from "../habit/XpBadge";
+import { UserMenu } from "./UserMenu";
 
 export function AppHeader() {
-  const { user, logout, isDemo } = useAuth();
+  const { user } = useAuth();
 
   return (
     <header className="flex items-center justify-between px-4 py-3 border-b border-slate-200 bg-white/90 backdrop-blur sticky top-0 z-10 safe-top">
@@ -15,17 +17,8 @@ export function AppHeader() {
         </Link>
         {user ? (
           <>
-            <span className="text-slate-500 hidden sm:inline">
-              {user.displayName ?? user.email}
-              {isDemo && " (demo)"}
-            </span>
-            <button
-              type="button"
-              onClick={() => void logout()}
-              className="text-slate-600 hover:text-indigo-600 min-h-[44px] px-2"
-            >
-              Log out
-            </button>
+            <XpBadge />
+            <UserMenu />
           </>
         ) : (
           <Link to="/login" className="text-indigo-600 font-medium min-h-[44px] flex items-center">

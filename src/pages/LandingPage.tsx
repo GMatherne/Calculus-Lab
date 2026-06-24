@@ -5,10 +5,12 @@ import { useAuth } from "../contexts/AuthContext";
 import { useProgress, isLessonDone } from "../contexts/ProgressContext";
 import {
   course,
-  getLessonStepStats,
   getLevels,
+  getContinueLessonId,
   getCompletionPercent,
+  isLessonUnlocked,
 } from "../lib/contentLoader";
+import type { ResolvedLevel } from "../lib/contentLoader";
 
 /**
  * Decorative, on-brand hero showing the two pillars of calculus on one graph:
@@ -130,126 +132,188 @@ function HeroGraph() {
   );
 }
 
-const FEATURES = [
-  {
-    title: "Interactive graphs",
-    body: "Drag sliders and tap curves to watch slopes, tangents, and shaded areas respond in real time.",
-    accent: "from-indigo-500 to-violet-500",
-    icon: (
-      <path
-        d="M4 19V5m0 14h16M4 15c4-1 6-9 9-9s4 5 7 4"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+type ProgressMap = ReturnType<typeof useProgress>["progress"];
+type LessonState = "done" | "in_progress" | "locked" | "todo";
+
+function StatusIcon({ state }: { state: LessonState }) {
+  if (state === "done") {
+    return (
+      <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white">
+        <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" aria-hidden>
+          <path
+            d="M5 13l4 4L19 7"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </span>
+    );
+  }
+  if (state === "in_progress") {
+    return (
+      <span
+        className="h-5 w-5 flex-shrink-0 rounded-full border-2 border-indigo-500 bg-indigo-100"
+        aria-hidden
       />
-    ),
-  },
-  {
-    title: "Instant feedback",
-    body: "Every answer is checked in under a second, with an optional hint when you get stuck.",
-    accent: "from-amber-500 to-orange-500",
-    icon: (
-      <path
-        d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    ),
-  },
-  {
-    title: "A path that builds",
-    body: "Lessons unlock in order — from rates of change to areas under curves, ending with how the two connect.",
-    accent: "from-emerald-500 to-teal-500",
-    icon: (
-      <path
-        d="M5 19h4l10-10-4-4L5 15v4Zm9-13 4 4"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    ),
-  },
-];
+    );
+  }
+  if (state === "locked") {
+    return (
+      <span
+        className="flex h-5 w-5 flex-shrink-0 items-center justify-center text-slate-300"
+        aria-hidden
+      >
+        <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
+          <rect x="5" y="11" width="14" height="9" rx="2" />
+          <path d="M8 11V8a4 4 0 0 1 8 0v3" strokeLinecap="round" />
+        </svg>
+      </span>
+    );
+  }
+  return (
+    <span className="h-5 w-5 flex-shrink-0 rounded-full border-2 border-slate-200" aria-hidden />
+  );
+}
+
+function LevelCard({
+  level,
+  signedIn,
+  progress,
+}: {
+  level: ResolvedLevel;
+  signedIn: boolean;
+  progress: ProgressMap;
+}) {
+  return (
+    <li className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+      <div className="flex items-start gap-3">
+        <span className="mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-sm font-bold text-indigo-700">
+          {level.order}
+        </span>
+        <div className="min-w-0">
+          <h3 className="font-semibold leading-tight text-slate-900">{level.title}</h3>
+          <p className="mt-0.5 text-sm text-slate-500">{level.description}</p>
+        </div>
+      </div>
+
+      <ul className="mt-3 divide-y divide-slate-100 sm:pl-11">
+        {level.lessons.map((lesson) => {
+          const status = progress[lesson.id]?.status;
+          const unlocked = !signedIn || isLessonUnlocked(lesson.id, progress);
+          const state: LessonState = !signedIn
+            ? "todo"
+            : isLessonDone(status)
+              ? "done"
+              : status === "in_progress"
+                ? "in_progress"
+                : unlocked
+                  ? "todo"
+                  : "locked";
+          const clickable = signedIn && unlocked;
+
+          const textColor =
+            state === "locked"
+              ? "text-slate-400"
+              : state === "done"
+                ? "text-slate-500"
+                : "text-slate-700";
+
+          const row = (
+            <span className="flex items-center gap-3 py-2.5">
+              <StatusIcon state={state} />
+              <span className={`text-sm ${textColor}`}>{lesson.title}</span>
+              {clickable && (
+                <span
+                  className="ml-auto text-slate-300 group-hover:text-indigo-500"
+                  aria-hidden
+                >
+                  →
+                </span>
+              )}
+            </span>
+          );
+
+          return (
+            <li key={lesson.id}>
+              {clickable ? (
+                <Link
+                  to={`/lesson/${lesson.id}`}
+                  className="group -mx-2 block rounded-lg px-2 hover:bg-slate-50"
+                >
+                  {row}
+                </Link>
+              ) : (
+                row
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </li>
+  );
+}
 
 export function LandingPage() {
   const { user } = useAuth();
   const { progress } = useProgress();
 
-  const { lessonCount, minSteps, maxSteps } = getLessonStepStats();
   const levels = getLevels();
   const completion = getCompletionPercent(progress);
+  const continueId = getContinueLessonId(progress);
   const hasStarted = Object.values(progress).some(
     (p) => p.status === "in_progress" || isLessonDone(p.status),
   );
-  const totalMinutes = course.lessons
-    .filter((l) => l.published)
-    .reduce((sum, l) => sum + (l.estimatedMinutes ?? 0), 0);
 
-  const stepValue =
-    minSteps === maxSteps ? `${minSteps}` : `${minSteps}–${maxSteps}`;
-
-  const primary = user
-    ? { to: "/lessons", label: hasStarted ? "Continue learning" : "Start learning" }
-    : { to: "/signup", label: "Create free account" };
+  const primaryTo = user
+    ? continueId
+      ? `/lesson/${continueId}`
+      : "/lessons"
+    : "/signup";
+  const primaryLabel = user
+    ? hasStarted
+      ? "Continue learning"
+      : "Start learning"
+    : "Get started";
   const secondary = user
-    ? { to: "/lessons", label: "Go to roadmap" }
+    ? { to: "/lessons", label: "Course roadmap" }
     : { to: "/login", label: "Log in" };
-
-  const stats = [
-    { value: String(lessonCount), label: "Interactive lessons" },
-    { value: stepValue, label: "Steps per lesson" },
-    { value: `~${totalMinutes}`, label: "Minutes of practice" },
-  ];
 
   return (
     <SafeArea>
       <AppHeader />
       <main className="flex-1 w-full">
-        {/* Hero */}
+        {/* Intro */}
         <section className="relative overflow-hidden">
           <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-            <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-indigo-300/30 blur-3xl" />
-            <div className="absolute -top-10 right-0 h-80 w-80 rounded-full bg-violet-300/30 blur-3xl" />
-            <div className="absolute bottom-0 left-1/3 h-64 w-64 rounded-full bg-fuchsia-200/30 blur-3xl" />
+            <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-indigo-200/30 blur-3xl" />
+            <div className="absolute -top-10 right-0 h-72 w-72 rounded-full bg-violet-200/25 blur-3xl" />
           </div>
 
-          <div className="mx-auto max-w-5xl px-4 pt-10 pb-12 sm:pt-16 sm:pb-16 grid lg:grid-cols-2 gap-10 lg:gap-12 items-center">
+          <div className="mx-auto grid max-w-5xl items-center gap-10 px-4 pt-10 pb-10 sm:pt-14 sm:pb-12 lg:grid-cols-2 lg:gap-12">
             <div className="hero-rise">
-              <span className="inline-flex items-center gap-2 rounded-full bg-white/70 ring-1 ring-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-700 uppercase tracking-wider">
-                <span className="h-1.5 w-1.5 rounded-full bg-indigo-500" />
-                AP Calculus BC · Derivatives &amp; Integrals
-              </span>
+              <p className="text-sm font-semibold text-indigo-600">{course.subject}</p>
 
-              <h1 className="mt-4 text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900 leading-[1.05]">
-                Master calculus,{" "}
-                <span className="bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 bg-clip-text text-transparent">
-                  from slopes to areas
-                </span>
+              <h1 className="mt-2 text-4xl font-extrabold leading-[1.08] tracking-tight text-slate-900 sm:text-5xl">
+                {course.title}
               </h1>
 
-              <p className="mt-4 text-base sm:text-lg text-slate-600 leading-relaxed max-w-xl">
-                Short, hands-on lessons on derivatives and integrals — with
-                graphs you can manipulate and instant feedback on every step.
-                Build real intuition for calculus, no passive lecturing.
+              <p className="mt-4 max-w-xl text-base leading-relaxed text-slate-600 sm:text-lg">
+                {course.description}
               </p>
 
-              <div className="mt-7 flex flex-col sm:flex-row gap-3 sm:items-center">
+              <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
                 <Link
-                  to={primary.to}
-                  className="inline-flex items-center justify-center min-h-[52px] px-6 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold shadow-lg shadow-indigo-600/20 hover:from-indigo-700 hover:to-violet-700 transition"
+                  to={primaryTo}
+                  className="inline-flex min-h-[52px] items-center justify-center rounded-xl bg-indigo-600 px-6 font-semibold text-white shadow-sm transition hover:bg-indigo-700"
                 >
-                  {primary.label}
+                  {primaryLabel}
                 </Link>
                 <Link
                   to={secondary.to}
-                  className="inline-flex items-center justify-center min-h-[52px] px-6 rounded-xl border border-slate-300 bg-white/70 text-slate-700 font-semibold hover:bg-white hover:border-slate-400 transition"
+                  className="inline-flex min-h-[52px] items-center justify-center rounded-xl border border-slate-300 bg-white px-6 font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
                 >
                   {secondary.label}
                 </Link>
@@ -257,13 +321,13 @@ export function LandingPage() {
 
               {user && hasStarted && (
                 <div className="mt-6 max-w-sm">
-                  <div className="flex items-center justify-between text-xs font-medium text-slate-500 mb-1">
+                  <div className="mb-1 flex items-center justify-between text-xs font-medium text-slate-500">
                     <span>Your progress</span>
                     <span>{completion}% complete</span>
                   </div>
-                  <div className="h-2 rounded-full bg-slate-200/80 overflow-hidden">
+                  <div className="h-2 overflow-hidden rounded-full bg-slate-200/80">
                     <div
-                      className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 transition-all"
+                      className="h-full rounded-full bg-indigo-500 transition-all"
                       style={{ width: `${Math.max(completion, 4)}%` }}
                     />
                   </div>
@@ -271,136 +335,31 @@ export function LandingPage() {
               )}
             </div>
 
-            <div className="hero-float order-first lg:order-last mx-auto w-full max-w-md lg:max-w-none">
+            <div className="hero-float order-first mx-auto w-full max-w-md lg:order-last lg:max-w-none">
               <HeroGraph />
             </div>
           </div>
         </section>
 
-        {/* Stats */}
-        <section className="mx-auto max-w-5xl px-4">
-          <div className="grid grid-cols-3 gap-3 sm:gap-4">
-            {stats.map((s) => (
-              <div
-                key={s.label}
-                className="rounded-2xl border border-slate-200 bg-white px-3 py-4 text-center"
-              >
-                <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">
-                  {s.value}
-                </div>
-                <div className="mt-1 text-xs sm:text-sm text-slate-500">
-                  {s.label}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Features */}
-        <section className="mx-auto max-w-5xl px-4 py-12 sm:py-16">
-          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 text-center">
-            Why it works
-          </h2>
-          <p className="mt-2 text-center text-slate-600">
-            Learning by doing beats reading every time.
+        {/* Course outline */}
+        <section className="mx-auto max-w-3xl px-4 pb-16">
+          <h2 className="text-xl font-bold text-slate-900 sm:text-2xl">Course outline</h2>
+          <p className="mt-1 text-sm text-slate-500">
+            {user
+              ? "Lessons unlock in order as you work through the course."
+              : "A guided path from rates of change to the area under a curve — and the idea that ties them together."}
           </p>
-          <div className="mt-8 grid sm:grid-cols-3 gap-4">
-            {FEATURES.map((f) => (
-              <div
-                key={f.title}
-                className="rounded-2xl border border-slate-200 bg-white p-5 hover:shadow-md hover:-translate-y-0.5 transition"
-              >
-                <div
-                  className={`inline-flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br ${f.accent} text-white`}
-                >
-                  <svg viewBox="0 0 24 24" className="h-6 w-6" aria-hidden>
-                    {f.icon}
-                  </svg>
-                </div>
-                <h3 className="mt-4 font-semibold text-lg text-slate-900">
-                  {f.title}
-                </h3>
-                <p className="mt-1.5 text-sm text-slate-600 leading-relaxed">
-                  {f.body}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
 
-        {/* Curriculum */}
-        <section className="mx-auto max-w-5xl px-4 pb-12 sm:pb-16">
-          <div className="flex items-end justify-between gap-4">
-            <div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">
-                What you&apos;ll learn
-              </h2>
-              <p className="mt-2 text-slate-600">
-                A guided path from intuition to computation.
-              </p>
-            </div>
-            <Link
-              to={primary.to}
-              className="hidden sm:inline text-sm font-semibold text-indigo-600 hover:text-indigo-700 whitespace-nowrap"
-            >
-              See all →
-            </Link>
-          </div>
-
-          <ol className="mt-6 space-y-3">
+          <ol className="mt-6 space-y-4">
             {levels.map((level) => (
-              <li
+              <LevelCard
                 key={level.id}
-                className="flex items-start gap-4 rounded-2xl border border-slate-200 bg-white p-4 sm:p-5"
-              >
-                <span className="flex-shrink-0 flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50 text-indigo-700 font-bold">
-                  {level.order}
-                </span>
-                <div className="min-w-0">
-                  <h3 className="font-semibold text-slate-900">{level.title}</h3>
-                  <p className="text-sm text-slate-600 mt-0.5">
-                    {level.description}
-                  </p>
-                  <p className="text-xs text-slate-400 mt-1.5">
-                    {level.lessons.length}{" "}
-                    {level.lessons.length === 1 ? "lesson" : "lessons"}
-                  </p>
-                </div>
-              </li>
+                level={level}
+                signedIn={Boolean(user)}
+                progress={progress}
+              />
             ))}
           </ol>
-        </section>
-
-        {/* Closing CTA */}
-        <section className="mx-auto max-w-5xl px-4 pb-16">
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-600 px-6 py-10 sm:px-12 sm:py-14 text-center">
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-0 opacity-20"
-              style={{
-                backgroundImage:
-                  "radial-gradient(circle at 20% 20%, white 1px, transparent 1px)",
-                backgroundSize: "22px 22px",
-              }}
-            />
-            <h2 className="relative text-2xl sm:text-3xl font-bold text-white">
-              Ready to see calculus click?
-            </h2>
-            <p className="relative mt-2 text-indigo-100 max-w-md mx-auto">
-              Jump into your first interactive lesson — it takes about six
-              minutes.
-            </p>
-            <Link
-              to={primary.to}
-              className="relative mt-6 inline-flex items-center justify-center min-h-[52px] px-8 rounded-xl bg-white text-indigo-700 font-semibold shadow-lg hover:bg-indigo-50 transition"
-            >
-              {primary.label}
-            </Link>
-          </div>
-          <p className="mt-6 text-center text-sm text-slate-400">
-            {lessonCount} {lessonCount === 1 ? "lesson" : "lessons"} ·{" "}
-            {stepValue} steps each · {course.subject}
-          </p>
         </section>
       </main>
     </SafeArea>

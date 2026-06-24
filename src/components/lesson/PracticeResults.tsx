@@ -1,5 +1,8 @@
+import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import type { PracticeResult } from "../../types/content";
+import { XP_PER_PRACTICE_CORRECT } from "../../types/content";
+import { useProgress } from "../../contexts/ProgressContext";
 import { AppHeader } from "../layout/AppHeader";
 import { SafeArea } from "../layout/SafeArea";
 
@@ -24,6 +27,17 @@ export function PracticeResults({
   const { correct, total } = result;
   const allCorrect = total > 0 && correct === total;
   const passed = correct >= Math.ceil(total / 2);
+
+  // XP for the questions cleared on the first try. Awarded once per results
+  // screen (the ref guards against React's double-invoked effects in dev).
+  const { addXp } = useProgress();
+  const xpGained = correct * XP_PER_PRACTICE_CORRECT;
+  const awardedRef = useRef(false);
+  useEffect(() => {
+    if (awardedRef.current || xpGained <= 0) return;
+    awardedRef.current = true;
+    void addXp(xpGained);
+  }, [addXp, xpGained]);
 
   const emoji = allCorrect ? "🎉" : passed ? "👏" : "💪";
   const heading = allCorrect
@@ -55,6 +69,10 @@ export function PracticeResults({
           <p className="text-5xl font-bold text-indigo-600 mt-1">
             {correct}
             <span className="text-2xl text-slate-400"> / {total}</span>
+          </p>
+          <p className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-amber-100 text-amber-800 px-3 py-1.5 text-sm font-semibold">
+            <span aria-hidden>⚡</span>
+            {xpGained > 0 ? `+${xpGained} XP earned` : "No XP this round"}
           </p>
         </div>
 

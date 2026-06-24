@@ -81,7 +81,7 @@ export function LevelSection({
         />
       </div>
 
-      <div className="mt-4 grid grid-cols-1 landscape:sm:grid-cols-2 gap-4">
+      <div className="mt-4 grid grid-cols-1 gap-4">
         {level.lessons.map((meta) => (
           <LessonCard
             key={meta.id}

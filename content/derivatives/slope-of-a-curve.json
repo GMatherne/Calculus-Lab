@@ -23,8 +23,28 @@
           "type": "math",
           "latex": "f(x) = x^2",
           "display": true
+        },
+        {
+          "type": "text",
+          "body": "Try it: drag x along f(x) = x² and watch the tangent line graze the curve. On the left, where f is decreasing, the slope is negative; at the bottom it's flat (slope 0); on the right, where f is increasing, the slope is positive. In general, the slope is positive wherever f is increasing and negative wherever f is decreasing."
         }
       ],
+      "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [-3, 3],
+          "sliderLabel": "x",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showTangent": true,
+          "slopeLabel": "Tangent slope",
+          "sliderMin": -3,
+          "sliderMax": 3,
+          "sliderStep": 0.1,
+          "initialSlider": -2
+        }
+      },
       "feedback": { "correct": "", "incorrect": "", "hint": "" }
     },
     {
@@ -58,7 +78,8 @@
           "options": [
             "Steeper — the slope grows",
             "Flatter — the slope shrinks",
-            "Unchanged — the slope is constant"
+            "Unchanged — the slope is constant",
+            "Steeper at first, then flatter"
           ],
           "correctIndex": 0
         }
@@ -85,19 +106,18 @@
           "domain": [-3, 3],
           "xLabel": "x",
           "yLabel": "f",
-          "pointSnap": 0.5
+          "pointChoices": [-2, -1, 0, 1, 2]
         },
         "hintAfterAttempts": 1,
         "answer": {
           "type": "graph_point",
           "x": 0,
-          "tolerance": 0.4,
-          "prompt": "Tap the bottom of the curve, where the tangent would be perfectly flat."
+          "tolerance": 0.1
         }
       },
       "feedback": {
-        "correct": "Exactly — at x = 0 the curve bottoms out and the tangent is horizontal, so the slope is 0.",
-        "incorrect": "The slope is zero where the curve is neither rising nor falling — the very bottom of the parabola.",
+        "correct": "Exactly — at x = 0 the curve bottoms out, switching from decreasing (negative slope) to increasing (positive slope), so the slope passes through 0.",
+        "incorrect": "The slope is zero where the curve is neither rising nor falling — where it stops falling and starts climbing.",
         "hint": "The lowest point of f(x) = x² is at x = 0."
       }
     },
@@ -108,7 +128,15 @@
       "content": [
         {
           "type": "text",
-          "body": "How do we measure the tangent slope? Start with a secant — a line through two points. Slide h to bring the second point toward x = 2 and watch the secant slope."
+          "body": "How do we measure the slope at a single point? We start with something easier: the slope between two points."
+        },
+        {
+          "type": "text",
+          "body": "A secant line is a straight line that passes through two points on the curve. Its slope is just rise over run between those points — the average rate of change of the curve from one point to the other."
+        },
+        {
+          "type": "text",
+          "body": "Here's how that connects to calculus: keep one point fixed at x = 2 and slide the second point toward it by shrinking h. Watch what the secant slope does as the two points close in."
         }
       ],
       "interaction": {
@@ -129,7 +157,8 @@
           "options": [
             "The secant slope approaches 4",
             "The secant slope approaches 0",
-            "The secant slope stays constant"
+            "The secant slope stays constant",
+            "The secant slope approaches 2"
           ],
           "correctIndex": 0
         }
@@ -142,30 +171,50 @@
     },
     {
       "id": "soc-step-5",
-      "type": "multiple_choice",
+      "type": "slider_graph",
       "conceptTag": "secant_tangent",
       "content": [
         {
           "type": "text",
-          "body": "You just watched the second point slide in. What does the secant line become as h → 0?"
+          "body": "See it for yourself. The solid green line is the tangent at x = 2. Slide h down to bring the moving point toward the fixed one, and watch the dashed secant rotate until it lies right on top of the green line."
+        },
+        {
+          "type": "text",
+          "body": "As h → 0 and the two points merge into one, the secant line becomes…"
         }
       ],
       "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 4],
+          "fixedPoint": 2,
+          "sliderLabel": "h",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": true,
+          "tangentAtFixedPoint": true,
+          "slopeLabel": "Secant slope",
+          "sliderMin": 0.1,
+          "sliderMax": 2,
+          "sliderStep": 0.1,
+          "initialSlider": 1.5
+        },
         "hintAfterAttempts": 1,
         "answer": {
           "type": "multiple_choice",
           "options": [
             "The tangent line at that point",
             "A horizontal line",
-            "A vertical line"
+            "A vertical line",
+            "A secant line through two points"
           ],
           "correctIndex": 0
         }
       },
       "feedback": {
-        "correct": "Correct — the limiting secant is exactly the tangent line.",
-        "incorrect": "As the two points merge into one, the line through them grazes the curve.",
-        "hint": "Shrinking h turns the secant into the line that touches the curve at a single point."
+        "correct": "Correct — as the points merge, the secant settles right onto the green tangent line.",
+        "incorrect": "Slide h toward 0 and watch which line the dashed secant lands on.",
+        "hint": "The dashed secant rotates until it overlaps the green line that just grazes the curve at x = 2 — the tangent."
       }
     },
     {
@@ -191,7 +240,7 @@
       "content": [
         {
           "type": "text",
-          "body": "Time to aim for a slope. On f(x) = x², drag x until the tangent slope reads 4. What x gives that slope?"
+          "body": "Time to work backward. For f(x) = x², the tangent slope at x is f'(x) = 2x. Find the value of x where that slope equals 4, then drag the slider there."
         }
       ],
       "interaction": {
@@ -204,6 +253,7 @@
           "showSecant": false,
           "showTangent": true,
           "slopeLabel": "Tangent slope",
+          "showSlopeValue": false,
           "sliderMin": 0,
           "sliderMax": 4,
           "sliderStep": 1,
@@ -213,13 +263,12 @@
         "answer": {
           "type": "slider",
           "value": 2,
-          "tolerance": 0.2,
-          "prompt": "Drag x until the tangent slope equals 4, then check your answer."
+          "tolerance": 0.2
         }
       },
       "feedback": {
         "correct": "Nailed it — at x = 2 the tangent slope is 4. Notice the pattern: the slope of x² is 2x.",
-        "incorrect": "The slope of x² is 2x. You want 2x = 4, so keep dragging until the readout hits 4.",
+        "incorrect": "The slope of x² is 2x. Set 2x = 4 and solve for x, then drag the slider there.",
         "hint": "Solve 2x = 4 → x = 2."
       }
     },
@@ -234,6 +283,15 @@
         }
       ],
       "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 5],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true,
+          "markerX": 3,
+          "showTangent": true
+        },
         "hintAfterAttempts": 1,
         "answer": { "type": "numeric", "value": 6, "tolerance": 0.01 }
       },
@@ -273,6 +331,15 @@
         }
       ],
       "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 6],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true,
+          "markerX": 5,
+          "showTangent": true
+        },
         "answer": { "type": "numeric", "value": 10, "tolerance": 0.01 }
       },
       "feedback": {
@@ -292,9 +359,18 @@
         }
       ],
       "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 4],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true,
+          "markerX": 3,
+          "showTangent": true
+        },
         "answer": {
           "type": "multiple_choice",
-          "options": ["It gets steeper", "It gets flatter", "It stays the same"],
+          "options": ["It gets steeper", "It gets flatter", "It stays the same", "It becomes vertical"],
           "correctIndex": 0
         }
       },
@@ -315,6 +391,13 @@
         }
       ],
       "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 5],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true
+        },
         "answer": { "type": "numeric", "value": 4, "tolerance": 0.01 }
       },
       "feedback": {
@@ -334,6 +417,15 @@
         }
       ],
       "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 8],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true,
+          "markerX": 7,
+          "showTangent": true
+        },
         "answer": { "type": "numeric", "value": 14, "tolerance": 0.01 }
       },
       "feedback": {
@@ -353,12 +445,20 @@
         }
       ],
       "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [-2, 2],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true
+        },
         "answer": {
           "type": "multiple_choice",
           "options": [
             "The tangent line at that point",
             "A vertical line through the point",
-            "The x-axis"
+            "The x-axis",
+            "A secant line through two points"
           ],
           "correctIndex": 0
         }
@@ -380,6 +480,13 @@
         }
       ],
       "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [-3, 3],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true
+        },
         "answer": { "type": "numeric", "value": 0, "tolerance": 0.01 }
       },
       "feedback": {

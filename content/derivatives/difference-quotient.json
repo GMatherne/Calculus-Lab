@@ -1,24 +1,41 @@
 {
   "id": "difference-quotient",
-  "title": "The Difference Quotient",
+  "title": "The Limit Definition of the Derivative",
   "order": 3,
   "estimatedMinutes": 8,
-  "conceptTags": ["difference_quotient"],
+  "conceptTags": ["difference_quotient", "limit_definition"],
   "published": true,
   "steps": [
     {
       "id": "dq-step-1",
       "type": "read",
-      "conceptTag": "difference_quotient",
+      "conceptTag": "limit_definition",
       "content": [
         {
           "type": "text",
-          "body": "The difference quotient measures the average rate of change of f over a small interval of width h. As h shrinks toward 0, that average becomes the instantaneous rate — the derivative."
+          "body": "Last lesson you shrank a secant line until it became the tangent. Now let's turn that idea into an exact formula — the very definition of the derivative."
+        },
+        {
+          "type": "text",
+          "body": "Pick a point a, then a second point a small step h away. The slope of the secant line through those two points is called the difference quotient:"
         },
         {
           "type": "math",
           "latex": "\\frac{f(a+h) - f(a)}{h}",
           "display": true
+        },
+        {
+          "type": "text",
+          "body": "The derivative is what this quotient becomes as h shrinks to 0. That limit IS the formal definition of the derivative:"
+        },
+        {
+          "type": "math",
+          "latex": "f'(a) = \\lim_{h \\to 0} \\frac{f(a+h) - f(a)}{h}",
+          "display": true
+        },
+        {
+          "type": "text",
+          "body": "In short: the difference quotient is a secant slope, and the derivative is its limit as h → 0. Let's watch it happen on a graph."
         }
       ],
       "feedback": { "correct": "", "incorrect": "", "hint": "" }
@@ -26,40 +43,49 @@
     {
       "id": "dq-step-2",
       "type": "slider_graph",
-      "conceptTag": "difference_quotient",
+      "conceptTag": "limit_definition",
       "content": [
         {
           "type": "text",
-          "body": "For f(x) = x² at a = 3, drag h to shrink the interval and watch the secant slope (the difference quotient). What value does it approach?"
+          "body": "Here is f(x) = x² with a secant anchored at a = 2. The readout below is the difference quotient (the secant slope). Drag h toward 0 and watch it. What value does the difference quotient approach?"
+        },
+        {
+          "type": "math",
+          "latex": "f(x) = x^2,\\quad a = 2"
         }
       ],
       "interaction": {
         "graph": {
           "fn": "x^2",
-          "domain": [0, 6],
-          "fixedPoint": 3,
+          "domain": [0, 5],
+          "fixedPoint": 2,
           "sliderLabel": "h",
+          "xLabel": "x",
+          "yLabel": "f",
           "showSecant": true,
-          "sliderMin": 0.1,
-          "sliderMax": 2,
+          "showValue": false,
+          "slopeLabel": "Difference quotient",
+          "sliderMin": 0.05,
+          "sliderMax": 2.5,
           "sliderStep": 0.05,
-          "initialSlider": 1
+          "initialSlider": 2
         },
         "hintAfterAttempts": 1,
         "answer": {
           "type": "multiple_choice",
           "options": [
-            "It approaches 6",
-            "It approaches 3",
-            "It grows without bound"
+            "4 — the tangent slope at x = 2",
+            "2 — the value of x",
+            "It blows up to infinity",
+            "0 — it shrinks to zero"
           ],
           "correctIndex": 0
         }
       },
       "feedback": {
-        "correct": "As h → 0, the difference quotient → f'(3) = 6.",
-        "incorrect": "Watch the secant-slope readout as h gets smaller and smaller.",
-        "hint": "For x², f'(x) = 2x, so at x = 3 the derivative is 6."
+        "correct": "Yes — as h → 0 the secant closes onto the tangent, and the difference quotient approaches f'(2) = 4.",
+        "incorrect": "Watch the 'Difference quotient' readout as h gets tiny. What number is it heading toward?",
+        "hint": "For x², the slope at x = 2 is 2(2) = 4."
       }
     },
     {
@@ -69,131 +95,211 @@
       "content": [
         {
           "type": "text",
-          "body": "Let's compute one by hand. For f(x) = x² at a = 1 with h = 0.5, evaluate the difference quotient."
+          "body": "Here's WHY that limit works. For f(x) = x², expand the difference quotient and simplify:"
         },
         {
           "type": "math",
-          "latex": "\\frac{(1.5)^2 - 1^2}{0.5}"
-        }
-      ],
-      "interaction": {
-        "hintAfterAttempts": 1,
-        "answer": { "type": "numeric", "value": 2.5, "tolerance": 0.05 }
-      },
-      "feedback": {
-        "correct": "(2.25 − 1) / 0.5 = 2.5. That's the average rate of change over a fairly wide step.",
-        "incorrect": "Compute 1.5² = 2.25, subtract 1, then divide by 0.5.",
-        "hint": "(2.25 − 1) / 0.5 = 1.25 / 0.5."
-      }
-    },
-    {
-      "id": "dq-step-4",
-      "type": "numeric",
-      "conceptTag": "difference_quotient",
-      "content": [
-        {
-          "type": "text",
-          "body": "Now shrink the step. For the same f(x) = x² at a = 1, use h = 0.1. Round to one decimal."
+          "latex": "\\frac{(a+h)^2 - a^2}{h} = \\frac{2ah + h^2}{h} = 2a + h",
+          "display": true
         },
         {
-          "type": "math",
-          "latex": "\\frac{(1.1)^2 - 1^2}{0.1}"
-        }
-      ],
-      "interaction": {
-        "hintAfterAttempts": 1,
-        "answer": { "type": "numeric", "value": 2.1, "tolerance": 0.05 }
-      },
-      "feedback": {
-        "correct": "(1.21 − 1) / 0.1 = 2.1. Smaller h gives a value closer to f'(1) = 2!",
-        "incorrect": "Compute 1.1² = 1.21, subtract 1, then divide by 0.1.",
-        "hint": "(1.21 − 1) / 0.1 = 0.21 / 0.1."
-      }
-    },
-    {
-      "id": "dq-step-5",
-      "type": "read",
-      "conceptTag": "difference_quotient",
-      "content": [
-        {
           "type": "text",
-          "body": "Notice the trend: with h = 0.5 you got 2.5, with h = 0.1 you got 2.1. As h keeps shrinking, the difference quotient closes in on 2 — and 2 is exactly f'(1). The limit of the difference quotient is the derivative."
-        }
-      ],
-      "feedback": { "correct": "", "incorrect": "", "hint": "" }
-    },
-    {
-      "id": "dq-step-6",
-      "type": "slider_graph",
-      "conceptTag": "difference_quotient",
-      "content": [
-        {
-          "type": "text",
-          "body": "Estimate a derivative yourself. For f(x) = x² at a = 2, drag h as small as it goes and read the secant slope. Round to the nearest whole number — what is f'(2)?"
+          "body": "So for x², the difference quotient is just 2a + h. Evaluate it at a = 2 with h = 0.5."
         }
       ],
       "interaction": {
         "graph": {
           "fn": "x^2",
           "domain": [0, 4],
-          "fixedPoint": 2,
-          "sliderLabel": "h",
-          "showSecant": true,
-          "sliderMin": 0.05,
-          "sliderMax": 1.5,
-          "sliderStep": 0.05,
-          "initialSlider": 1
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true,
+          "markerX": 2
         },
         "hintAfterAttempts": 1,
-        "answer": { "type": "numeric", "value": 4, "tolerance": 0.3 }
+        "answer": { "type": "numeric", "value": 4.5, "tolerance": 0.05 }
       },
       "feedback": {
-        "correct": "With h tiny the quotient is ≈ 4 — exactly f'(2) = 2(2).",
-        "incorrect": "Shrink h all the way down and read the secant slope; round it off.",
-        "hint": "f'(x) = 2x for x², so f'(2) = 4."
+        "correct": "Right — 2(2) + 0.5 = 4.5. Now picture shrinking h: as h → 0, the quotient 2a + h → 2a = 4, exactly f'(2). The 'limit' just sets that leftover h to 0.",
+        "incorrect": "Plug a = 2 and h = 0.5 into the simplified form 2a + h.",
+        "hint": "2·2 + 0.5 = 4.5."
+      }
+    },
+    {
+      "id": "dq-step-4",
+      "type": "slider_graph",
+      "conceptTag": "difference_quotient",
+      "content": [
+        {
+          "type": "text",
+          "body": "Your turn. On the same graph (f(x) = x², a = 2), the difference quotient equals 4 + h. Find the value of h that makes it equal 5, then drag the slider there."
+        },
+        {
+          "type": "math",
+          "latex": "\\frac{f(2+h) - f(2)}{h} = 4 + h"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 5],
+          "fixedPoint": 2,
+          "sliderLabel": "h",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": true,
+          "showValue": false,
+          "slopeLabel": "Difference quotient",
+          "showSlopeValue": false,
+          "sliderMin": 0.05,
+          "sliderMax": 2.5,
+          "sliderStep": 0.05,
+          "initialSlider": 2
+        },
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "slider",
+          "value": 1,
+          "tolerance": 0.025
+        }
+      },
+      "feedback": {
+        "correct": "Nice — at h = 1 the difference quotient is 4 + 1 = 5, the average slope of x² from x = 2 to x = 3. Shrink h further and it heads back toward 4.",
+        "incorrect": "Set 4 + h = 5 and solve for h, then drag the slider there.",
+        "hint": "4 + h = 5 means h = 1."
+      }
+    },
+    {
+      "id": "dq-step-5",
+      "type": "slider_graph",
+      "conceptTag": "limit_definition",
+      "content": [
+        {
+          "type": "text",
+          "body": "Now estimate a derivative straight from the definition. Here is f(x) = x² anchored at a = 1. Drag h as small as it will go and read the difference quotient. Rounded to a whole number, what is f'(1)?"
+        },
+        {
+          "type": "math",
+          "latex": "f(x) = x^2,\\quad a = 1"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 4],
+          "fixedPoint": 1,
+          "sliderLabel": "h",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": true,
+          "showValue": false,
+          "slopeLabel": "Difference quotient",
+          "sliderMin": 0.05,
+          "sliderMax": 2,
+          "sliderStep": 0.05,
+          "initialSlider": 1.5
+        },
+        "hintAfterAttempts": 1,
+        "answer": { "type": "numeric", "value": 2, "tolerance": 0.3 }
+      },
+      "feedback": {
+        "correct": "Right — the difference quotient closes in on 2, so f'(1) = 2 (which is 2a at a = 1).",
+        "incorrect": "Shrink h all the way down and read the difference quotient, then round it.",
+        "hint": "For x², 2a + h at a = 1 heads to 2 as h → 0."
+      }
+    },
+    {
+      "id": "dq-step-6",
+      "type": "slider_graph",
+      "conceptTag": "limit_definition",
+      "content": [
+        {
+          "type": "text",
+          "body": "The limit definition works for ANY function, not just x². Here is f(x) = x³ at a = 1. Drag h → 0 and read the difference quotient. Rounded, what value does it approach?"
+        },
+        {
+          "type": "math",
+          "latex": "f(x) = x^3,\\quad a = 1"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^3",
+          "domain": [0, 2],
+          "fixedPoint": 1,
+          "sliderLabel": "h",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": true,
+          "showValue": false,
+          "slopeLabel": "Difference quotient",
+          "sliderMin": 0.05,
+          "sliderMax": 0.9,
+          "sliderStep": 0.05,
+          "initialSlider": 0.7
+        },
+        "hintAfterAttempts": 1,
+        "answer": { "type": "numeric", "value": 3, "tolerance": 0.4 }
+      },
+      "feedback": {
+        "correct": "Exactly — for x³ the difference quotient at a = 1 approaches 3. The same limit definition gives the derivative of every function.",
+        "incorrect": "Drag h small and read the difference quotient, then round to the nearest whole number.",
+        "hint": "The difference quotient settles near 3 as h → 0."
       }
     },
     {
       "id": "dq-step-7",
       "type": "multiple_choice",
-      "conceptTag": "difference_quotient",
+      "conceptTag": "limit_definition",
       "content": [
         {
           "type": "text",
-          "body": "Putting it together: what does the limit of the difference quotient as h → 0 represent?"
+          "body": "Put it in one sentence: the limit of the difference quotient as h → 0 is…"
         }
       ],
       "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 4],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true
+        },
         "hintAfterAttempts": 1,
         "answer": {
           "type": "multiple_choice",
           "options": [
-            "The derivative f'(a)",
-            "The average value of f",
-            "The area under the curve"
+            "the derivative f'(a) — the slope of the tangent at a",
+            "the average value of f over the interval",
+            "the area under the curve",
+            "the second derivative f''(a)"
           ],
           "correctIndex": 0
         }
       },
       "feedback": {
-        "correct": "Exactly — that limit IS the definition of the derivative.",
-        "incorrect": "It's the instantaneous rate of change — the slope of the tangent at x = a.",
-        "hint": "You watched it converge to f'(a) in the steps above."
+        "correct": "Exactly — that limit is the definition of the derivative f'(a).",
+        "incorrect": "You watched the quotient converge to the tangent slope — the instantaneous rate of change.",
+        "hint": "Shrinking h turns the secant slope into the tangent slope at x = a."
       }
     },
     {
       "id": "dq-step-8",
       "type": "read",
-      "conceptTag": "difference_quotient",
+      "conceptTag": "limit_definition",
       "content": [
         {
           "type": "text",
-          "body": "You now have the formal definition of the derivative. Computing it by limit every time is tedious, though — next you'll learn the power rule, a shortcut for differentiating xⁿ instantly."
+          "body": "That's the limit definition of the derivative: the difference quotient is the secant slope, and its limit as h → 0 is the tangent slope — the derivative."
         },
         {
           "type": "math",
-          "latex": "f'(x) = \\lim_{h \\to 0} \\frac{f(x+h)-f(x)}{h}",
+          "latex": "f'(x) = \\lim_{h \\to 0} \\frac{f(x+h) - f(x)}{h}",
           "display": true
+        },
+        {
+          "type": "text",
+          "body": "Taking this limit by hand for every function would be slow. Next, the power rule gives you the derivative of xⁿ instantly."
         }
       ],
       "feedback": { "correct": "", "incorrect": "", "hint": "" }
@@ -207,93 +313,126 @@
       "content": [
         {
           "type": "text",
-          "body": "For f(x) = x² at a = 2 with h = 1, evaluate the difference quotient."
+          "body": "For f(x) = x², the difference quotient simplifies to 2a + h. Evaluate it at a = 3 with h = 0.1."
         },
         {
           "type": "math",
-          "latex": "\\frac{f(2+1) - f(2)}{1} = \\frac{3^2 - 2^2}{1}"
+          "latex": "2a + h = 2(3) + 0.1"
         }
       ],
       "interaction": {
-        "answer": { "type": "numeric", "value": 5, "tolerance": 0.01 }
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 5],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true,
+          "markerX": 3
+        },
+        "answer": { "type": "numeric", "value": 6.1, "tolerance": 0.05 }
       },
       "feedback": {
-        "correct": "Right — (9 − 4) / 1 = 5, the average rate of change over that step.",
-        "incorrect": "Compute 3² = 9 and 2² = 4, then divide the difference by 1.",
-        "hint": "(9 − 4) / 1 = 5."
+        "correct": "Right — 2(3) + 0.1 = 6.1, already close to f'(3) = 6.",
+        "incorrect": "Plug a = 3 and h = 0.1 into 2a + h.",
+        "hint": "2·3 + 0.1 = 6.1."
       }
     },
     {
       "id": "dq-practice-2",
-      "type": "numeric",
-      "conceptTag": "difference_quotient",
-      "content": [
-        {
-          "type": "text",
-          "body": "Now shrink the step for the same f(x) = x² at a = 2, using h = 0.1. Round to one decimal."
-        },
-        {
-          "type": "math",
-          "latex": "\\frac{(2.1)^2 - 2^2}{0.1}"
-        }
-      ],
-      "interaction": {
-        "answer": { "type": "numeric", "value": 4.1, "tolerance": 0.05 }
-      },
-      "feedback": {
-        "correct": "Yes — (4.41 − 4) / 0.1 = 4.1, already close to f'(2) = 4.",
-        "incorrect": "Compute 2.1² = 4.41, subtract 4, then divide by 0.1.",
-        "hint": "(4.41 − 4) / 0.1 = 0.41 / 0.1 = 4.1."
-      }
-    },
-    {
-      "id": "dq-practice-3",
       "type": "multiple_choice",
       "conceptTag": "difference_quotient",
       "content": [
         {
           "type": "text",
-          "body": "As h → 0, the difference quotient of f at a = 2 settles toward a single value. What is that value?"
+          "body": "The difference quotient (f(a+h) − f(a)) / h is the slope of which line?"
         }
       ],
       "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 4],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true
+        },
         "answer": {
           "type": "multiple_choice",
           "options": [
-            "f'(2), the derivative at x = 2",
-            "The y-intercept of f",
-            "The area under f"
+            "The secant line through the two points",
+            "The tangent line at a",
+            "The x-axis",
+            "A vertical line at a"
           ],
           "correctIndex": 0
         }
       },
       "feedback": {
-        "correct": "Exactly — the limit of the difference quotient is the derivative f'(2).",
-        "incorrect": "The averages 5, then 4.1, … are closing in on the instantaneous slope.",
-        "hint": "Smaller h makes the quotient approach f'(2) = 4."
+        "correct": "Correct — it's the secant slope: rise over run between the two points h apart.",
+        "incorrect": "It uses two points, so it's not yet the tangent — that comes only in the limit.",
+        "hint": "Two points define a secant; the numerator is the rise and h is the run."
+      }
+    },
+    {
+      "id": "dq-practice-3",
+      "type": "numeric",
+      "conceptTag": "limit_definition",
+      "content": [
+        {
+          "type": "text",
+          "body": "As h → 0, the difference quotient of f(x) = x² at a = 4 approaches what value? (Use 2a.)"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 5],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true,
+          "markerX": 4,
+          "showTangent": true
+        },
+        "answer": { "type": "numeric", "value": 8, "tolerance": 0.1 }
+      },
+      "feedback": {
+        "correct": "Yes — 2a + h → 2(4) = 8 as h → 0, so f'(4) = 8.",
+        "incorrect": "The limit of 2a + h as h → 0 is 2a. Plug in a = 4.",
+        "hint": "2·4 = 8."
       }
     },
     {
       "id": "dq-practice-4",
-      "type": "numeric",
-      "conceptTag": "difference_quotient",
+      "type": "multiple_choice",
+      "conceptTag": "limit_definition",
       "content": [
         {
           "type": "text",
-          "body": "For f(x) = x² at a = 3 with h = 1, evaluate the difference quotient."
-        },
-        {
-          "type": "math",
-          "latex": "\\frac{(3+1)^2 - 3^2}{1} = \\frac{16 - 9}{1}"
+          "body": "Taking the limit of the difference quotient as h → 0 gives the definition of…"
         }
       ],
       "interaction": {
-        "answer": { "type": "numeric", "value": 7, "tolerance": 0.01 }
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 4],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true
+        },
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "the derivative f'(a)",
+            "the integral of f",
+            "the average value of f",
+            "the slope of a secant line"
+          ],
+          "correctIndex": 0
+        }
       },
       "feedback": {
-        "correct": "Right — (16 − 9) / 1 = 7, the average rate of change over that step.",
-        "incorrect": "Compute 4² = 16 and 3² = 9, then divide the difference by 1.",
-        "hint": "(16 − 9) / 1 = 7."
+        "correct": "Exactly — that limit is the formal definition of the derivative.",
+        "incorrect": "The quotient converges to the instantaneous slope at a.",
+        "hint": "It's the slope of the tangent line — the derivative f'(a)."
       }
     },
     {
@@ -303,47 +442,28 @@
       "content": [
         {
           "type": "text",
-          "body": "Shrink the step. For f(x) = x² at a = 4 with h = 0.1, evaluate the difference quotient. Round to one decimal."
+          "body": "Using 2a + h for f(x) = x², evaluate the difference quotient at a = 5 with h = 0.2."
         },
         {
           "type": "math",
-          "latex": "\\frac{(4.1)^2 - 4^2}{0.1}"
+          "latex": "2a + h = 2(5) + 0.2"
         }
       ],
       "interaction": {
-        "answer": { "type": "numeric", "value": 8.1, "tolerance": 0.05 }
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 6],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true,
+          "markerX": 5
+        },
+        "answer": { "type": "numeric", "value": 10.2, "tolerance": 0.05 }
       },
       "feedback": {
-        "correct": "Yes — (16.81 − 16) / 0.1 = 8.1, already close to f'(4) = 8.",
-        "incorrect": "Compute 4.1² = 16.81, subtract 16, then divide by 0.1.",
-        "hint": "(16.81 − 16) / 0.1 = 0.81 / 0.1 = 8.1."
-      }
-    },
-    {
-      "id": "dq-practice-6",
-      "type": "multiple_choice",
-      "conceptTag": "difference_quotient",
-      "content": [
-        {
-          "type": "text",
-          "body": "The difference quotient (f(a+h) − f(a)) / h measures which of these?"
-        }
-      ],
-      "interaction": {
-        "answer": {
-          "type": "multiple_choice",
-          "options": [
-            "The average rate of change over a step of width h",
-            "The area under f",
-            "The value f(a)"
-          ],
-          "correctIndex": 0
-        }
-      },
-      "feedback": {
-        "correct": "Correct — it's the average rate of change over the interval of width h.",
-        "incorrect": "It's a slope: rise over run between two points h apart.",
-        "hint": "The numerator is the rise f(a+h) − f(a); the denominator h is the run."
+        "correct": "Right — 2(5) + 0.2 = 10.2, just above f'(5) = 10.",
+        "incorrect": "Plug a = 5 and h = 0.2 into 2a + h.",
+        "hint": "2·5 + 0.2 = 10.2."
       }
     }
   ]

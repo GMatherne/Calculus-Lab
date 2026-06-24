@@ -1,0 +1,349 @@
+{
+  "id": "differentiating-polynomials",
+  "title": "Differentiating Polynomials",
+  "order": 5,
+  "estimatedMinutes": 7,
+  "conceptTags": ["power_rule", "sum_rule"],
+  "published": true,
+  "steps": [
+    {
+      "id": "dp-step-1",
+      "type": "read",
+      "conceptTag": "sum_rule",
+      "content": [
+        {
+          "type": "text",
+          "body": "A polynomial is just a sum of power terms, like $x^2 + x$. The good news: the derivative of a sum is the sum of the derivatives. You can differentiate each term on its own and add the results — that's the sum rule."
+        },
+        {
+          "type": "math",
+          "latex": "\\frac{d}{dx}\\big(f(x) + g(x)\\big) = \\frac{d}{dx}f(x) + \\frac{d}{dx}g(x)",
+          "display": true
+        },
+        {
+          "type": "text",
+          "body": "So a whole polynomial breaks into a few easy power-rule problems. For $x^2 + x$:"
+        },
+        {
+          "type": "math",
+          "latex": "\\frac{d}{dx}(x^2 + x) = \\frac{d}{dx}(x^2) + \\frac{d}{dx}(x) = 2x + 1",
+          "display": true
+        }
+      ],
+      "feedback": { "correct": "", "incorrect": "", "hint": "" }
+    },
+    {
+      "id": "dp-step-2",
+      "type": "multiple_choice",
+      "conceptTag": "sum_rule",
+      "content": [
+        {
+          "type": "text",
+          "body": "Differentiate term by term. What is the derivative of $f(x) = x^3 + x^2$?"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^3 + x^2",
+          "domain": [-2, 2],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true
+        },
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "$3x^2 + 2x$",
+            "$3x^2 + x$",
+            "$x^2 + 2x$",
+            "$3x^3 + 2x^2$"
+          ],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "Right — $\\frac{d}{dx}(x^3) = 3x^2$ and $\\frac{d}{dx}(x^2) = 2x$, so the derivative is $3x^2 + 2x$.",
+        "incorrect": "Differentiate each term separately with the power rule, then add.",
+        "hint": "$\\frac{d}{dx}(x^3) = 3x^2$ and $\\frac{d}{dx}(x^2) = 2x$. Add them."
+      }
+    },
+    {
+      "id": "dp-step-3",
+      "type": "numeric",
+      "conceptTag": "sum_rule",
+      "content": [
+        {
+          "type": "text",
+          "body": "Differentiate term by term, then evaluate. For $f(x) = x^3 - 2x$, what is $f'(2)$?"
+        },
+        {
+          "type": "math",
+          "latex": "f(x) = x^3 - 2x"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^3 - 2*x",
+          "domain": [-2, 2.5],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true,
+          "markerX": 2,
+          "showTangent": true
+        },
+        "hintAfterAttempts": 1,
+        "answer": { "type": "numeric", "value": 10, "tolerance": 0.1 }
+      },
+      "feedback": {
+        "correct": "Exactly — $f'(x) = 3x^2 - 2$, so $f'(2) = 3 \\cdot 4 - 2 = 10$.",
+        "incorrect": "First differentiate: $f'(x) = 3x^2 - 2$. Then substitute $x = 2$.",
+        "hint": "$f'(x) = 3x^2 - 2$, so $f'(2) = 12 - 2 = 10$."
+      }
+    },
+    {
+      "id": "dp-step-4",
+      "type": "read",
+      "conceptTag": "power_rule",
+      "content": [
+        {
+          "type": "text",
+          "body": "Two more details and you can handle any polynomial. Coefficients ride along — multiply by them after applying the power rule — and the derivative of a constant is 0, so plain numbers drop away."
+        },
+        {
+          "type": "math",
+          "latex": "\\frac{d}{dx}(2x^3 + 4x^2 - x + 7) = 6x^2 + 8x - 1",
+          "display": true
+        },
+        {
+          "type": "text",
+          "body": "Term by term: $2x^3 \\to 6x^2$, $4x^2 \\to 8x$, $-x \\to -1$, and the $+7$ vanishes."
+        }
+      ],
+      "feedback": { "correct": "", "incorrect": "", "hint": "" }
+    },
+    {
+      "id": "dp-step-5",
+      "type": "multiple_choice",
+      "conceptTag": "power_rule",
+      "content": [
+        {
+          "type": "text",
+          "body": "Put it all together. What is the derivative of $f(x) = 2x^3 + 4x^2 - x + 7$?"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "2*x^3 + 4*x^2 - x + 7",
+          "domain": [-3, 1.5],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true
+        },
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "$6x^2 + 8x - 1$",
+            "$6x^2 + 8x + 7$",
+            "$2x^2 + 4x - 1$",
+            "$6x^3 + 8x^2 - 1$"
+          ],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "Yes — each term differentiates on its own, and the constant 7 becomes 0.",
+        "incorrect": "Apply the power rule to each term, and remember the derivative of 7 is 0.",
+        "hint": "$2x^3 \\to 6x^2$, $4x^2 \\to 8x$, $-x \\to -1$, $7 \\to 0$. So $6x^2 + 8x - 1$."
+      }
+    },
+    {
+      "id": "dp-step-6",
+      "type": "slider_graph",
+      "conceptTag": "sum_rule",
+      "content": [
+        {
+          "type": "text",
+          "body": "Here is $f(x) = x^2 + x$, whose derivative is $f'(x) = 2x + 1$. Find the value of $x$ where the tangent slope equals 5, then drag the slider there."
+        },
+        {
+          "type": "math",
+          "latex": "f'(x) = 2x + 1"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^2 + x",
+          "domain": [0, 4],
+          "yDomain": [0, 20],
+          "sliderLabel": "x",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showTangent": true,
+          "slopeLabel": "Tangent slope",
+          "showSlopeValue": false,
+          "sliderMin": 0,
+          "sliderMax": 4,
+          "sliderStep": 1,
+          "initialSlider": 0
+        },
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "slider",
+          "value": 2,
+          "tolerance": 0.2
+        }
+      },
+      "feedback": {
+        "correct": "Nice — $2x + 1 = 5$ gives $x = 2$, and the tangent there has slope 5.",
+        "incorrect": "Set the slope formula equal to 5: $2x + 1 = 5$. Solve for $x$, then drag the slider there.",
+        "hint": "$2x + 1 = 5 \\to 2x = 4 \\to x = 2$."
+      }
+    },
+    {
+      "id": "dp-step-7",
+      "type": "read",
+      "conceptTag": "power_rule",
+      "content": [
+        {
+          "type": "text",
+          "body": "That's all there is to differentiating polynomials: hit each term with the power rule, carry the coefficients, drop the constants, and add. With the sum rule, even a long polynomial is just a handful of one-line steps."
+        },
+        {
+          "type": "text",
+          "body": "Next, you'll use derivatives to read the shape of a graph — where it rises, falls, and turns."
+        }
+      ],
+      "feedback": { "correct": "", "incorrect": "", "hint": "" }
+    }
+  ],
+  "practiceBank": [
+    {
+      "id": "dp-practice-1",
+      "type": "numeric",
+      "conceptTag": "sum_rule",
+      "content": [
+        {
+          "type": "text",
+          "body": "For $f(x) = x^2 + 3x$, find $f'(1)$."
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^2 + 3*x",
+          "domain": [-4, 2],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true,
+          "markerX": 1,
+          "showTangent": true
+        },
+        "answer": { "type": "numeric", "value": 5, "tolerance": 0.1 }
+      },
+      "feedback": {
+        "correct": "Yes — $f'(x) = 2x + 3$, so $f'(1) = 2 + 3 = 5$.",
+        "incorrect": "Differentiate to $2x + 3$, then substitute $x = 1$.",
+        "hint": "$f'(x) = 2x + 3$, so $f'(1) = 5$."
+      }
+    },
+    {
+      "id": "dp-practice-2",
+      "type": "multiple_choice",
+      "conceptTag": "sum_rule",
+      "content": [
+        {
+          "type": "text",
+          "body": "What is the derivative of $f(x) = x^4 - x$?"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^4 - x",
+          "domain": [-1.5, 1.5],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true
+        },
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "$4x^3 - 1$",
+            "$4x^3 - x$",
+            "$4x^3$",
+            "$x^3 - 1$"
+          ],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "Right — $\\frac{d}{dx}(x^4) = 4x^3$ and $\\frac{d}{dx}(-x) = -1$.",
+        "incorrect": "Differentiate each term separately with the power rule, then combine.",
+        "hint": "$4x^3 - 1$."
+      }
+    },
+    {
+      "id": "dp-practice-3",
+      "type": "numeric",
+      "conceptTag": "sum_rule",
+      "content": [
+        {
+          "type": "text",
+          "body": "For $f(x) = 2x^3 - x^2$, find $f'(1)$."
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "2*x^3 - x^2",
+          "domain": [-1, 2],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true,
+          "markerX": 1,
+          "showTangent": true
+        },
+        "answer": { "type": "numeric", "value": 4, "tolerance": 0.1 }
+      },
+      "feedback": {
+        "correct": "Yes — $f'(x) = 6x^2 - 2x$, so $f'(1) = 6 - 2 = 4$.",
+        "incorrect": "Differentiate to $6x^2 - 2x$, then substitute $x = 1$.",
+        "hint": "$f'(x) = 6x^2 - 2x$, so $f'(1) = 4$."
+      }
+    },
+    {
+      "id": "dp-practice-4",
+      "type": "multiple_choice",
+      "conceptTag": "power_rule",
+      "content": [
+        {
+          "type": "text",
+          "body": "What is the derivative of $f(x) = x^3 + 2x^2 + 5$?"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^3 + 2*x^2 + 5",
+          "domain": [-3, 1.5],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true
+        },
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "$3x^2 + 4x$",
+            "$3x^2 + 4x + 5$",
+            "$3x^2 + 2x$",
+            "$x^2 + 4x$"
+          ],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "Right — $x^3 \\to 3x^2$, $2x^2 \\to 4x$, and the constant $5 \\to 0$.",
+        "incorrect": "Differentiate each term; the constant 5 has derivative 0.",
+        "hint": "$3x^2 + 4x$."
+      }
+    }
+  ]
+}

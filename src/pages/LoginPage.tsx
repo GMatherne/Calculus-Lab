@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth, GOOGLE_SIGN_IN_CANCELLED } from "../contexts/AuthContext";
 import { AppHeader } from "../components/layout/AppHeader";
 import { SafeArea } from "../components/layout/SafeArea";
+import { PasswordInput } from "../components/auth/PasswordInput";
 
 export function LoginPage() {
   const { login, loginWithGoogle, isDemo } = useAuth();
@@ -72,13 +73,12 @@ export function LoginPage() {
             onChange={(e) => setEmail(e.target.value)}
             className="w-full min-h-[48px] rounded-xl border border-slate-300 px-4 text-base"
           />
-          <input
-            type="password"
+          <PasswordInput
             placeholder="Password"
             required
+            autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full min-h-[48px] rounded-xl border border-slate-300 px-4 text-base"
           />
           {error && <p className="text-red-600 text-sm">{error}</p>}
           <button

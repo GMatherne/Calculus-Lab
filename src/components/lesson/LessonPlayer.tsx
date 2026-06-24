@@ -68,9 +68,19 @@ export function LessonPlayer({
 
   // Reset interactive widget state whenever the step changes.
   useEffect(() => {
-    setGraphValue(graphInitial(lesson.steps[stepIndex]));
+    const s = lesson.steps[stepIndex];
+    setGraphValue(graphInitial(s));
     setClickedX(null);
     setHintRevealed(false);
+    // The derivative builder starts from the original term so the learner
+    // performs the power-rule transformation themselves.
+    const a = s.interaction?.answer;
+    if (a?.type === "power_term") {
+      setAnswer({
+        coefficient: a.startCoefficient ?? 1,
+        exponent: a.startExponent ?? 1,
+      });
+    }
   }, [stepIndex, lesson]);
 
   const handleSubmit = useCallback(async () => {
@@ -180,9 +190,15 @@ export function LessonPlayer({
     setSubmitted(false);
     setFeedback({ isCorrect: null, message: "" });
     setHintRevealed(false);
-    setAnswer(undefined);
     setClickedX(null);
     setGraphValue(graphInitial(lesson.steps[stepIndex]));
+    // Reset the builder back to the original term so the retry starts clean.
+    const a = lesson.steps[stepIndex].interaction?.answer;
+    setAnswer(
+      a?.type === "power_term"
+        ? { coefficient: a.startCoefficient ?? 1, exponent: a.startExponent ?? 1 }
+        : undefined,
+    );
   }, [lesson, stepIndex]);
 
   const isCorrectAnswered = submitted && feedback.isCorrect === true;
@@ -221,7 +237,7 @@ export function LessonPlayer({
         setGraphValue(v);
         clearAfterWrong();
       }}
-      showSlider={!isTapPoint}
+      showSlider={!isTapPoint && !step.interaction.graph.static}
       onPointClick={
         isTapPoint
           ? (x) => {
@@ -233,12 +249,6 @@ export function LessonPlayer({
       selectedX={isTapPoint ? clickedX : null}
     />
   ) : null;
-
-  const widgetPrompt =
-    step.interaction?.answer?.type === "slider" ||
-    step.interaction?.answer?.type === "graph_point"
-      ? step.interaction.answer.prompt
-      : undefined;
 
   const contentSection = (
     <div className="space-y-4">
@@ -254,20 +264,6 @@ export function LessonPlayer({
           reveal={submitted}
           isCorrect={feedback.isCorrect === true}
         />
-      )}
-      {!isRead && usesWidgetAnswer && (
-        <p className="rounded-xl bg-indigo-50 border border-indigo-100 px-4 py-3 text-sm font-medium text-indigo-900">
-          {widgetPrompt ??
-            (isTapPoint
-              ? "Tap a point on the graph above."
-              : "Drag the slider above, then check your answer.")}
-          {isTapPoint && clickedX !== null && (
-            <span className="ml-2 font-semibold text-rose-600">
-              selected {step.interaction?.graph?.xLabel ?? "x"} ={" "}
-              {clickedX.toFixed(2)}
-            </span>
-          )}
-        </p>
       )}
       <FeedbackPanel
         message={feedback.message}
@@ -345,7 +341,7 @@ export function LessonPlayer({
               type="button"
               onClick={() => void handleSubmit()}
               disabled={
-                answerType === "slider"
+                answerType === "slider" || answerType === "power_term"
                   ? false
                   : answerType === "graph_point"
                     ? clickedX === null

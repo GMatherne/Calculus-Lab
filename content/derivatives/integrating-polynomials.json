@@ -1,0 +1,384 @@
+{
+  "id": "integrating-polynomials",
+  "title": "Integrating Polynomials",
+  "order": 11,
+  "estimatedMinutes": 8,
+  "conceptTags": ["antiderivative", "definite_integral"],
+  "published": true,
+  "steps": [
+    {
+      "id": "ip-step-1",
+      "type": "read",
+      "conceptTag": "antiderivative",
+      "content": [
+        {
+          "type": "text",
+          "body": "Integration runs differentiation in reverse, and it splits over sums in exactly the same way. To integrate a polynomial, integrate each term on its own and add the results — the sum rule again."
+        },
+        {
+          "type": "math",
+          "latex": "\\int \\big(f(x) + g(x)\\big)\\,dx = \\int f(x)\\,dx + \\int g(x)\\,dx",
+          "display": true
+        },
+        {
+          "type": "text",
+          "body": "Each term uses the reverse power rule: add 1 to the exponent, then divide by the new exponent. So $x^2 + x$ integrates to:"
+        },
+        {
+          "type": "math",
+          "latex": "\\int (x^2 + x)\\,dx = \\int x^2\\,dx + \\int x\\,dx = \\frac{x^3}{3} + \\frac{x^2}{2}",
+          "display": true
+        }
+      ],
+      "feedback": { "correct": "", "incorrect": "", "hint": "" }
+    },
+    {
+      "id": "ip-step-2",
+      "type": "multiple_choice",
+      "conceptTag": "antiderivative",
+      "content": [
+        {
+          "type": "text",
+          "body": "Integrate term by term. Which is an antiderivative of $f(x) = x^2 + x$?"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^2 + x",
+          "domain": [0, 3],
+          "yDomain": [0, 12],
+          "xLabel": "x",
+          "yLabel": "f",
+          "showArea": true,
+          "areaStart": 0,
+          "initialSlider": 2,
+          "static": true
+        },
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "$\\frac{x^3}{3} + \\frac{x^2}{2}$",
+            "$x^3 + x^2$",
+            "$2x + 1$",
+            "$\\frac{x^3}{3} + x^2$"
+          ],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "Right — reverse the power rule on each term: $x^2 \\to \\frac{x^3}{3}$ and $x \\to \\frac{x^2}{2}$.",
+        "incorrect": "Add 1 to each exponent and divide by the new exponent, term by term.",
+        "hint": "$x^2 \\to \\frac{x^3}{3}$ and $x \\to \\frac{x^2}{2}$, giving $\\frac{x^3}{3} + \\frac{x^2}{2}$."
+      }
+    },
+    {
+      "id": "ip-step-3",
+      "type": "read",
+      "conceptTag": "definite_integral",
+      "content": [
+        {
+          "type": "text",
+          "body": "To evaluate a definite integral, the Fundamental Theorem says: find an antiderivative $F$, then subtract its values at the endpoints, $F(b) - F(a)$. For polynomials, $F$ comes straight from the reverse power rule."
+        },
+        {
+          "type": "math",
+          "latex": "\\int_0^2 (2x + 1)\\,dx = \\big[x^2 + x\\big]_0^2 = (4 + 2) - 0 = 6",
+          "display": true
+        },
+        {
+          "type": "text",
+          "body": "Here $F(x) = x^2 + x$ is an antiderivative of $2x + 1$, and evaluating it from 0 to 2 gives 6."
+        }
+      ],
+      "feedback": { "correct": "", "incorrect": "", "hint": "" }
+    },
+    {
+      "id": "ip-step-4",
+      "type": "numeric",
+      "conceptTag": "definite_integral",
+      "content": [
+        {
+          "type": "text",
+          "body": "Your turn. Use the antiderivative $F(x) = x^2 + x$ to evaluate this integral as $F(3) - F(0)$."
+        },
+        {
+          "type": "math",
+          "latex": "\\int_0^3 (2x + 1)\\,dx",
+          "display": true
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "2*x + 1",
+          "domain": [0, 4],
+          "yDomain": [0, 9],
+          "xLabel": "x",
+          "yLabel": "f",
+          "showArea": true,
+          "areaStart": 0,
+          "initialSlider": 3,
+          "static": true
+        },
+        "hintAfterAttempts": 1,
+        "answer": { "type": "numeric", "value": 12, "tolerance": 0.1 }
+      },
+      "feedback": {
+        "correct": "Exactly — $F(3) - F(0) = (9 + 3) - 0 = 12$.",
+        "incorrect": "Evaluate $x^2 + x$ at 3 and at 0, then subtract.",
+        "hint": "$F(3) - F(0) = (9 + 3) - 0 = 12$."
+      }
+    },
+    {
+      "id": "ip-step-5",
+      "type": "slider_graph",
+      "conceptTag": "definite_integral",
+      "content": [
+        {
+          "type": "text",
+          "body": "The shaded region is the area under $f(x) = x + 1$ from 0 to $t$. Its antiderivative is $F(x) = \\frac{1}{2}x^2 + x$. Find the value of $t$ for which this area equals 4, then drag the slider there."
+        },
+        {
+          "type": "math",
+          "latex": "\\int_0^t (x + 1)\\,dx = 4",
+          "display": true
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x + 1",
+          "domain": [0, 4],
+          "yDomain": [0, 5],
+          "sliderLabel": "t",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showValue": false,
+          "showArea": true,
+          "areaStart": 0,
+          "showAreaValue": false,
+          "sliderMin": 0,
+          "sliderMax": 4,
+          "sliderStep": 0.5,
+          "initialSlider": 0
+        },
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "slider",
+          "value": 2,
+          "tolerance": 0.2
+        }
+      },
+      "feedback": {
+        "correct": "Nice — $\\frac{1}{2}t^2 + t = 4$ gives $t^2 + 2t - 8 = 0$, so $(t - 2)(t + 4) = 0$ and $t = 2$.",
+        "incorrect": "Set $\\frac{1}{2}t^2 + t = 4$ and solve for $t$, then drag the slider there.",
+        "hint": "$\\frac{1}{2}t^2 + t = 4 \\to t^2 + 2t - 8 = 0 \\to (t - 2)(t + 4) = 0 \\to t = 2$."
+      }
+    },
+    {
+      "id": "ip-step-6",
+      "type": "multiple_choice",
+      "conceptTag": "antiderivative",
+      "content": [
+        {
+          "type": "text",
+          "body": "Reverse the power rule with coefficients. Which is an antiderivative of $f(x) = 6x^2 + 2x$?"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "6*x^2 + 2*x",
+          "domain": [0, 2],
+          "yDomain": [0, 28],
+          "xLabel": "x",
+          "yLabel": "f",
+          "showArea": true,
+          "areaStart": 0,
+          "initialSlider": 1,
+          "static": true
+        },
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "$2x^3 + x^2$",
+            "$6x^3 + 2x^2$",
+            "$12x + 2$",
+            "$3x^3 + x^2$"
+          ],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "Right — $6x^2 \\to 6 \\cdot \\frac{x^3}{3} = 2x^3$ and $2x \\to 2 \\cdot \\frac{x^2}{2} = x^2$. Check by differentiating: $\\frac{d}{dx}(2x^3 + x^2) = 6x^2 + 2x$.",
+        "incorrect": "Integrate each term: raise the exponent and divide, keeping the coefficients.",
+        "hint": "$6x^2 \\to 2x^3$ and $2x \\to x^2$, giving $2x^3 + x^2$."
+      }
+    },
+    {
+      "id": "ip-step-7",
+      "type": "read",
+      "conceptTag": "definite_integral",
+      "content": [
+        {
+          "type": "text",
+          "body": "You can now run calculus in both directions on any polynomial: differentiate term by term with the power rule, or integrate term by term with the reverse power rule — and with the Fundamental Theorem, turn those antiderivatives into exact areas."
+        },
+        {
+          "type": "text",
+          "body": "Derivatives, integrals, and the theorem that unites them — that's the heart of calculus. Nice work making it through!"
+        }
+      ],
+      "feedback": { "correct": "", "incorrect": "", "hint": "" }
+    }
+  ],
+  "practiceBank": [
+    {
+      "id": "ip-practice-1",
+      "type": "numeric",
+      "conceptTag": "definite_integral",
+      "content": [
+        {
+          "type": "text",
+          "body": "Use $F(x) = x^2 + x$ to evaluate the integral of $2x + 1$ from 0 to 2."
+        },
+        {
+          "type": "math",
+          "latex": "\\int_0^2 (2x + 1)\\,dx",
+          "display": true
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "2*x + 1",
+          "domain": [0, 3],
+          "yDomain": [0, 7],
+          "xLabel": "x",
+          "yLabel": "f",
+          "showArea": true,
+          "areaStart": 0,
+          "initialSlider": 2,
+          "static": true
+        },
+        "answer": { "type": "numeric", "value": 6, "tolerance": 0.1 }
+      },
+      "feedback": {
+        "correct": "Yes — $(2^2 + 2) - 0 = 6$.",
+        "incorrect": "Evaluate $x^2 + x$ at 2 and 0, then subtract.",
+        "hint": "$(4 + 2) - 0 = 6$."
+      }
+    },
+    {
+      "id": "ip-practice-2",
+      "type": "multiple_choice",
+      "conceptTag": "antiderivative",
+      "content": [
+        {
+          "type": "text",
+          "body": "Which is an antiderivative of $f(x) = x^3 + x$?"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^3 + x",
+          "domain": [0, 2],
+          "yDomain": [0, 10],
+          "xLabel": "x",
+          "yLabel": "f",
+          "showArea": true,
+          "areaStart": 0,
+          "initialSlider": 1,
+          "static": true
+        },
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "$\\frac{x^4}{4} + \\frac{x^2}{2}$",
+            "$x^4 + x^2$",
+            "$3x^2 + 1$",
+            "$\\frac{x^4}{4} + x^2$"
+          ],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "Right — $x^3 \\to \\frac{x^4}{4}$ and $x \\to \\frac{x^2}{2}$.",
+        "incorrect": "Add 1 to each exponent and divide by the new exponent.",
+        "hint": "$\\frac{x^4}{4} + \\frac{x^2}{2}$."
+      }
+    },
+    {
+      "id": "ip-practice-3",
+      "type": "numeric",
+      "conceptTag": "definite_integral",
+      "content": [
+        {
+          "type": "text",
+          "body": "Evaluate the integral of $4x^3 + 2x$ from 0 to 1. (An antiderivative is $x^4 + x^2$.)"
+        },
+        {
+          "type": "math",
+          "latex": "\\int_0^1 (4x^3 + 2x)\\,dx",
+          "display": true
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "4*x^3 + 2*x",
+          "domain": [0, 1.5],
+          "yDomain": [0, 17],
+          "xLabel": "x",
+          "yLabel": "f",
+          "showArea": true,
+          "areaStart": 0,
+          "initialSlider": 1,
+          "static": true
+        },
+        "answer": { "type": "numeric", "value": 2, "tolerance": 0.1 }
+      },
+      "feedback": {
+        "correct": "Yes — $(1 + 1) - 0 = 2$.",
+        "incorrect": "Evaluate $x^4 + x^2$ at 1 and 0, then subtract.",
+        "hint": "$(1 + 1) - 0 = 2$."
+      }
+    },
+    {
+      "id": "ip-practice-4",
+      "type": "multiple_choice",
+      "conceptTag": "antiderivative",
+      "content": [
+        {
+          "type": "text",
+          "body": "Which is an antiderivative of $f(x) = 2x + 3$?"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "2*x + 3",
+          "domain": [0, 3],
+          "yDomain": [0, 9],
+          "xLabel": "x",
+          "yLabel": "f",
+          "showArea": true,
+          "areaStart": 0,
+          "initialSlider": 2,
+          "static": true
+        },
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "$x^2 + 3x$",
+            "$2x^2 + 3x$",
+            "$x^2 + 3$",
+            "$2$"
+          ],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "Right — $2x \\to x^2$ and $3 \\to 3x$.",
+        "incorrect": "Integrate each term separately with the reverse power rule, then combine.",
+        "hint": "$x^2 + 3x$."
+      }
+    }
+  ]
+}

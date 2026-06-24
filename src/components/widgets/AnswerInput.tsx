@@ -1,4 +1,68 @@
 import type { AnswerSpec } from "../../types/content";
+import { MathBlock, RichText } from "./MathBlock";
+
+const COEFF_MIN = 0;
+const COEFF_MAX = 99;
+const EXP_MIN = 0;
+const EXP_MAX = 9;
+
+/** Render a single power term a·xⁿ as LaTeX, collapsing trivial cases. */
+function termToLatex(coefficient: number, exponent: number): string {
+  if (coefficient === 0) return "0";
+  if (exponent === 0) return `${coefficient}`;
+  const c = coefficient === 1 ? "" : coefficient === -1 ? "-" : `${coefficient}`;
+  const p = exponent === 1 ? "x" : `x^{${exponent}}`;
+  return `${c}${p}`;
+}
+
+function clampInt(v: number, lo: number, hi: number): number {
+  return Math.min(Math.max(Math.round(v), lo), hi);
+}
+
+interface StepperProps {
+  label: string;
+  value: number;
+  min: number;
+  max: number;
+  disabled?: boolean;
+  onChange: (value: number) => void;
+}
+
+/** A labeled −/+ integer control sized for touch. */
+function Stepper({ label, value, min, max, disabled, onChange }: StepperProps) {
+  const btn =
+    "h-11 w-11 shrink-0 rounded-lg border border-slate-300 bg-white text-2xl font-semibold leading-none text-slate-700 hover:border-indigo-400 hover:text-indigo-600 disabled:opacity-30 disabled:hover:border-slate-300 disabled:hover:text-slate-700 active:scale-95 transition";
+  return (
+    <div className="flex flex-col items-center gap-1.5">
+      <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+        {label}
+      </span>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          aria-label={`Decrease ${label}`}
+          disabled={disabled || value <= min}
+          onClick={() => onChange(value - 1)}
+          className={btn}
+        >
+          −
+        </button>
+        <span className="w-10 text-center text-2xl font-bold tabular-nums text-slate-900">
+          {value}
+        </span>
+        <button
+          type="button"
+          aria-label={`Increase ${label}`}
+          disabled={disabled || value >= max}
+          onClick={() => onChange(value + 1)}
+          className={btn}
+        >
+          +
+        </button>
+      </div>
+    </div>
+  );
+}
 
 interface AnswerInputProps {
   spec: AnswerSpec;
@@ -47,7 +111,7 @@ export function AnswerInput({
               onClick={() => onChange(i)}
               className={`w-full min-h-[44px] rounded-xl border px-4 py-3 text-left text-base transition-colors ${stateClasses}`}
             >
-              {opt}
+              <RichText text={opt} />
             </button>
           );
         })}
@@ -74,6 +138,63 @@ export function AnswerInput({
         onChange={(e) => onChange(e.target.value === "" ? "" : parseFloat(e.target.value))}
         onFocus={(e) => e.target.scrollIntoView({ block: "center", behavior: "smooth" })}
       />
+    );
+  }
+
+  if (spec.type === "power_term") {
+    const v = value as { coefficient?: number; exponent?: number } | undefined;
+    const coefficient = clampInt(
+      Number.isFinite(Number(v?.coefficient))
+        ? Number(v?.coefficient)
+        : spec.startCoefficient ?? 1,
+      COEFF_MIN,
+      COEFF_MAX,
+    );
+    const exponent = clampInt(
+      Number.isFinite(Number(v?.exponent))
+        ? Number(v?.exponent)
+        : spec.startExponent ?? 1,
+      EXP_MIN,
+      EXP_MAX,
+    );
+    const set = (c: number, e: number) =>
+      onChange({
+        coefficient: clampInt(c, COEFF_MIN, COEFF_MAX),
+        exponent: clampInt(e, EXP_MIN, EXP_MAX),
+      });
+
+    const previewClasses = reveal
+      ? isCorrect
+        ? "border-emerald-500 bg-emerald-50"
+        : "border-rose-500 bg-rose-50"
+      : "border-slate-200 bg-slate-50";
+
+    return (
+      <div className="space-y-3">
+        <div className="flex items-start justify-center gap-8 py-1">
+          <Stepper
+            label="Coefficient"
+            value={coefficient}
+            min={COEFF_MIN}
+            max={COEFF_MAX}
+            disabled={disabled}
+            onChange={(c) => set(c, exponent)}
+          />
+          <Stepper
+            label="Exponent"
+            value={exponent}
+            min={EXP_MIN}
+            max={EXP_MAX}
+            disabled={disabled}
+            onChange={(e) => set(coefficient, e)}
+          />
+        </div>
+        <div
+          className={`rounded-xl border px-4 py-3 text-center text-lg ${previewClasses}`}
+        >
+          <MathBlock latex={`f'(x) = ${termToLatex(coefficient, exponent)}`} />
+        </div>
+      </div>
     );
   }
 

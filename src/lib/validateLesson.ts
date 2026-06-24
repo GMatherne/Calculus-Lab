@@ -4,6 +4,7 @@ import {
   MIN_STEPS,
   PRACTICE_STEPS,
   PRACTICE_BANK_MIN,
+  MIN_MC_OPTIONS,
 } from "../types/content";
 
 export function validateLesson(lesson: Lesson): string[] {
@@ -104,17 +105,30 @@ function validateStep(step: Step, lessonId: string): string[] {
     errors.push(`Step "${step.id}" in "${lessonId}" is interactive but has no answer spec.`);
   }
 
-  if (step.type === "slider_graph" && !step.interaction?.graph) {
-    errors.push(`Step "${step.id}" in "${lessonId}" is slider_graph but has no graph config.`);
+  // Every interactive question must carry a visual so the learner always has
+  // something to look at alongside the prompt. slider_graph steps and
+  // slider/graph_point answers need a live graph to interact with; other
+  // question types can use a static illustration (graph with "static": true).
+  if (interactive && !step.interaction?.graph) {
+    errors.push(
+      `Step "${step.id}" in "${lessonId}" is interactive but has no graph/visual; every question must include a graph (set "static": true for a non-interactive illustration).`,
+    );
   }
 
-  const answerType = step.interaction?.answer?.type;
+  const answer = step.interaction?.answer;
+
+  if (answer?.type === "multiple_choice" && answer.options.length < MIN_MC_OPTIONS) {
+    errors.push(
+      `Step "${step.id}" in "${lessonId}" has ${answer.options.length} multiple-choice options; expected at least ${MIN_MC_OPTIONS}.`,
+    );
+  }
+
   if (
-    (answerType === "slider" || answerType === "graph_point") &&
-    !step.interaction?.graph
+    answer?.type === "power_term" &&
+    (!Number.isFinite(answer.coefficient) || !Number.isInteger(answer.exponent))
   ) {
     errors.push(
-      `Step "${step.id}" in "${lessonId}" uses a ${answerType} answer but has no graph config.`,
+      `Step "${step.id}" in "${lessonId}" has an invalid power_term answer (need a numeric coefficient and integer exponent).`,
     );
   }
 

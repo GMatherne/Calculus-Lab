@@ -5,10 +5,12 @@ import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
 import { SignupPage } from "./pages/SignupPage";
 import { RoadmapPage } from "./pages/RoadmapPage";
+import { ProfilePage } from "./pages/ProfilePage";
 import { LessonPage } from "./pages/LessonPage";
 import { PracticePage } from "./pages/PracticePage";
 import { ReviewPage } from "./pages/ReviewPage";
 import { LevelReviewPage } from "./pages/LevelReviewPage";
+import { SettingsPage } from "./pages/SettingsPage";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 
 function App() {
@@ -25,6 +27,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <RoadmapPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
                 </ProtectedRoute>
               }
             />
@@ -57,6 +67,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <LevelReviewPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <SettingsPage />
                 </ProtectedRoute>
               }
             />

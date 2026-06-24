@@ -1,7 +1,7 @@
 {
   "id": "what-is-an-integral",
   "title": "What Is an Integral?",
-  "order": 6,
+  "order": 8,
   "estimatedMinutes": 7,
   "conceptTags": ["integral", "area_under_curve"],
   "published": true,
@@ -27,8 +27,32 @@
         {
           "type": "text",
           "body": "Let's build the idea up from the simplest shapes, just like we did with derivatives."
+        },
+        {
+          "type": "text",
+          "body": "First, get a feel for it: drag x to the right and watch the shaded region — the area between the curve and the x-axis — fill in and grow. That accumulating area is exactly what an integral measures."
         }
       ],
+      "interaction": {
+        "graph": {
+          "fn": "0.3*x^2 + 0.5",
+          "domain": [0, 4],
+          "yDomain": [0, 6],
+          "sliderLabel": "x",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showValue": false,
+          "showArea": true,
+          "areaStart": 0,
+          "showAreaValue": true,
+          "areaLabel": "Shaded area",
+          "sliderMin": 0,
+          "sliderMax": 4,
+          "sliderStep": 0.1,
+          "initialSlider": 0
+        }
+      },
       "feedback": { "correct": "", "incorrect": "", "hint": "" }
     },
     {
@@ -60,18 +84,18 @@
           "sliderMin": 0,
           "sliderMax": 5,
           "sliderStep": 1,
-          "initialSlider": 3
+          "initialSlider": 0
         },
         "hintAfterAttempts": 1,
         "answer": {
           "type": "multiple_choice",
-          "options": ["0", "2", "It depends on x"],
+          "options": ["0", "2", "It depends on x", "1"],
           "correctIndex": 1
         }
       },
       "feedback": {
         "correct": "Exactly! The strip you add each step is a 1-by-2 rectangle, so the area grows by 2 every time x increases by 1. Area = height × width.",
-        "incorrect": "Look at the new sliver added each step. It's 1 unit wide and 2 units tall.",
+        "incorrect": "Look at the new sliver added each step — it's a thin rectangle. How wide is it, and how tall? Its area is width × height.",
         "hint": "Each step adds a rectangle 1 wide and 2 tall, so its area is 1 × 2 = 2."
       }
     },
@@ -82,11 +106,12 @@
       "content": [
         {
           "type": "text",
-          "body": "Now tilt the line: f(x) = x. Drag x out to 4. The shaded region is a triangle. Using area = ½ · base · height, what is the shaded area from 0 to 4?"
+          "body": "Now tilt the line so f(x) = x, then drag x out to 4. The shaded triangle's area is exactly this integral — evaluate it using area = ½ · base · height."
         },
         {
           "type": "math",
-          "latex": "f(x) = x"
+          "latex": "\\int_0^4 x\\,dx",
+          "display": true
         }
       ],
       "interaction": {
@@ -111,7 +136,7 @@
         "answer": { "type": "numeric", "value": 8, "tolerance": 0.1 }
       },
       "feedback": {
-        "correct": "Right! The triangle has base 4 and height f(4) = 4, so the area is ½ · 4 · 4 = 8.",
+        "correct": "Right! That integral is the area of the triangle — base 4 and height f(4) = 4 — so it equals ½ · 4 · 4 = 8.",
         "incorrect": "The region is a right triangle. Its base runs from 0 to 4, and its height is f(4) = 4.",
         "hint": "Area of a triangle = ½ · base · height = ½ · 4 · 4 = 8."
       }
@@ -140,11 +165,12 @@
       "content": [
         {
           "type": "text",
-          "body": "Your turn to aim for a target. With f(x) = x, the shaded triangle has area ½ · x · x. Drag x until the shaded area reads exactly 2."
+          "body": "Your turn. The shaded region is the area under f(x) = x from 0 up to t. Find the value of t for which this integral equals 2, then drag the slider there."
         },
         {
           "type": "math",
-          "latex": "f(x) = x"
+          "latex": "\\int_0^t x\\,dx = 2",
+          "display": true
         }
       ],
       "interaction": {
@@ -152,13 +178,14 @@
           "fn": "x",
           "domain": [0, 5],
           "yDomain": [0, 5],
-          "sliderLabel": "x",
+          "sliderLabel": "t",
           "xLabel": "x",
           "yLabel": "f",
           "showSecant": false,
           "showValue": false,
           "showArea": true,
           "areaStart": 0,
+          "showAreaValue": false,
           "sliderMin": 0,
           "sliderMax": 5,
           "sliderStep": 0.1,
@@ -168,14 +195,13 @@
         "answer": {
           "type": "slider",
           "value": 2,
-          "tolerance": 0.2,
-          "prompt": "Drag x until the shaded area reads 2."
+          "tolerance": 0.05
         }
       },
       "feedback": {
-        "correct": "Nice — at x = 2 the triangle has area ½ · 2 · 2 = 2. You found the value of x that accumulates exactly 2 units of area.",
-        "incorrect": "You need ½ · x · x = 2, which means x² = 4. Slide a little until the area readout shows 2.",
-        "hint": "Solve ½ · x · x = 2 → x² = 4 → x = 2."
+        "correct": "Nice — the area under f(x) = x from 0 to t is ½ · t², and ½ · 2² = 2, so t = 2. That's where exactly 2 units of area have accumulated.",
+        "incorrect": "The area from 0 to t is ½ · t². Set ½ · t² = 2, so t² = 4. Solve for t, then drag the slider there.",
+        "hint": "½ · t² = 2 → t² = 4 → t = 2."
       }
     },
     {
@@ -189,12 +215,24 @@
         }
       ],
       "interaction": {
+        "graph": {
+          "fn": "0.3*x^2 + 0.5",
+          "domain": [0, 4],
+          "yDomain": [0, 6],
+          "xLabel": "x",
+          "yLabel": "f",
+          "showArea": true,
+          "areaStart": 0,
+          "initialSlider": 3,
+          "static": true
+        },
         "answer": {
           "type": "multiple_choice",
           "options": [
             "The integral of f(x) from a to b",
             "The slope f ′(x) at b",
-            "The value f(b) by itself"
+            "The value f(b) by itself",
+            "The derivative of f(x) at a"
           ],
           "correctIndex": 0
         }
@@ -230,10 +268,26 @@
       "content": [
         {
           "type": "text",
-          "body": "The constant function f(x) = 3 makes a rectangle. What is the area under it from x = 0 to x = 4?"
+          "body": "The constant function f(x) = 3 makes a rectangle. Evaluate this integral — it's the area of that rectangle (height × width)."
+        },
+        {
+          "type": "math",
+          "latex": "\\int_0^4 3\\,dx",
+          "display": true
         }
       ],
       "interaction": {
+        "graph": {
+          "fn": "3",
+          "domain": [0, 5],
+          "yDomain": [0, 5],
+          "xLabel": "x",
+          "yLabel": "f",
+          "showArea": true,
+          "areaStart": 0,
+          "initialSlider": 4,
+          "static": true
+        },
         "answer": { "type": "numeric", "value": 12, "tolerance": 0.1 }
       },
       "feedback": {
@@ -249,10 +303,26 @@
       "content": [
         {
           "type": "text",
-          "body": "For f(x) = x, the area under the line from 0 to 6 is a triangle. What is its area?"
+          "body": "For f(x) = x, the region under the line from 0 to 6 is a triangle. Evaluate this integral, the triangle's area (½ · base · height)."
+        },
+        {
+          "type": "math",
+          "latex": "\\int_0^6 x\\,dx",
+          "display": true
         }
       ],
       "interaction": {
+        "graph": {
+          "fn": "x",
+          "domain": [0, 7],
+          "yDomain": [0, 7],
+          "xLabel": "x",
+          "yLabel": "f",
+          "showArea": true,
+          "areaStart": 0,
+          "initialSlider": 6,
+          "static": true
+        },
         "answer": { "type": "numeric", "value": 18, "tolerance": 0.1 }
       },
       "feedback": {
@@ -272,12 +342,24 @@
         }
       ],
       "interaction": {
+        "graph": {
+          "fn": "5",
+          "domain": [0, 3],
+          "yDomain": [0, 6],
+          "xLabel": "x",
+          "yLabel": "f",
+          "showArea": true,
+          "areaStart": 0,
+          "initialSlider": 2,
+          "static": true
+        },
         "answer": {
           "type": "multiple_choice",
           "options": [
             "triangle with area 5",
             "rectangle with area 10",
-            "rectangle with area 5"
+            "rectangle with area 5",
+            "triangle with area 10"
           ],
           "correctIndex": 1
         }

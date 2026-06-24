@@ -13,11 +13,11 @@
       "content": [
         {
           "type": "text",
-          "body": "The power rule lets you differentiate xⁿ instantly — no limit required. Bring the exponent down in front, then reduce the exponent by 1."
+          "body": "The power rule lets you differentiate any power of x instantly — no limit required. Bring the exponent down in front, then reduce the exponent by 1. A coefficient a out front simply rides along, multiplied by that exponent."
         },
         {
           "type": "math",
-          "latex": "\\frac{d}{dx}(x^n) = n\\,x^{n-1}",
+          "latex": "\\frac{d}{dx}\\left(a x^n\\right) = a\\,n\\,x^{n-1}",
           "display": true
         }
       ],
@@ -25,43 +25,61 @@
     },
     {
       "id": "pr-step-2",
-      "type": "multiple_choice",
+      "type": "power_term",
       "conceptTag": "power_rule",
       "content": [
-        { "type": "text", "body": "What is the derivative of x³?" }
+        { "type": "text", "body": "Build the derivative of f(x) = x³. Use the steppers to set the coefficient and exponent of f′(x)." }
       ],
       "interaction": {
+        "graph": {
+          "fn": "x^3",
+          "domain": [-2, 2],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true
+        },
         "hintAfterAttempts": 1,
         "answer": {
-          "type": "multiple_choice",
-          "options": ["3x²", "x²", "3x³"],
-          "correctIndex": 0
+          "type": "power_term",
+          "coefficient": 3,
+          "exponent": 2,
+          "startCoefficient": 1,
+          "startExponent": 3
         }
       },
       "feedback": {
-        "correct": "3x² — bring down the 3, then reduce the exponent to 2.",
-        "incorrect": "Use the power rule: n·x^(n−1) with n = 3.",
-        "hint": "Multiply by the exponent, then subtract 1 from it."
+        "correct": "3x² — you brought the 3 down and reduced the exponent to 2.",
+        "incorrect": "Apply the power rule n·xⁿ⁻¹ to x³: bring the exponent down as the new coefficient, then reduce the exponent by 1.",
+        "hint": "Multiply by the exponent (coefficient → 3), then subtract 1 from the exponent (→ 2)."
       }
     },
     {
       "id": "pr-step-3",
-      "type": "multiple_choice",
+      "type": "power_term",
       "conceptTag": "power_rule",
       "content": [
-        { "type": "text", "body": "What is the derivative of f(x) = x⁵?" }
+        { "type": "text", "body": "Now build the derivative of f(x) = x⁵." }
       ],
       "interaction": {
+        "graph": {
+          "fn": "x^5",
+          "domain": [-1.5, 1.5],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true
+        },
         "hintAfterAttempts": 1,
         "answer": {
-          "type": "multiple_choice",
-          "options": ["5x⁴", "x⁴", "5x⁵"],
-          "correctIndex": 0
+          "type": "power_term",
+          "coefficient": 5,
+          "exponent": 4,
+          "startCoefficient": 1,
+          "startExponent": 5
         }
       },
       "feedback": {
-        "correct": "f'(x) = 5x⁴.",
-        "incorrect": "Apply d/dx(xⁿ) = n·x^(n−1) with n = 5.",
+        "correct": "f'(x) = 5x⁴ — the exponent 5 became the coefficient, and 5 − 1 = 4.",
+        "incorrect": "Apply d/dx(xⁿ) = n·xⁿ⁻¹ to x⁵: bring the exponent down as the new coefficient, then reduce the exponent by 1.",
         "hint": "The exponent 5 becomes the coefficient, and 5 − 1 = 4."
       }
     },
@@ -119,7 +137,7 @@
       "content": [
         {
           "type": "text",
-          "body": "For f(x) = x³ the slope formula is f'(x) = 3x². Drag x until the tangent slope reads 3. At what x does that happen?"
+          "body": "For f(x) = x³ the slope formula is f'(x) = 3x². Find the value of x where the tangent slope equals 3, then drag the slider there."
         }
       ],
       "interaction": {
@@ -132,6 +150,7 @@
           "showSecant": false,
           "showTangent": true,
           "slopeLabel": "Tangent slope",
+          "showSlopeValue": false,
           "sliderMin": 0,
           "sliderMax": 3,
           "sliderStep": 1,
@@ -141,59 +160,80 @@
         "answer": {
           "type": "slider",
           "value": 1,
-          "tolerance": 0.2,
-          "prompt": "Drag x until the tangent slope equals 3, then check your answer."
+          "tolerance": 0.2
         }
       },
       "feedback": {
         "correct": "Right — 3x² = 3 means x² = 1, so x = 1.",
-        "incorrect": "Set the slope formula equal to 3: 3x² = 3. Solve for x and drag there.",
+        "incorrect": "Set the slope formula equal to 3: 3x² = 3. Solve for x, then drag the slider there.",
         "hint": "3x² = 3 → x² = 1 → x = 1."
       }
     },
     {
       "id": "pr-step-6",
-      "type": "numeric",
+      "type": "power_term",
       "conceptTag": "power_rule",
       "content": [
         {
           "type": "text",
-          "body": "Apply the rule and evaluate. For f(x) = x⁴, what is f'(2)?"
-        },
-        { "type": "math", "latex": "f'(x) = 4x^3" }
+          "body": "Coefficients ride along too. Build the derivative of f(x) = 3x⁴ — use the steppers to set the coefficient and exponent of f′(x)."
+        }
       ],
       "interaction": {
+        "graph": {
+          "fn": "3*x^4",
+          "domain": [-1.5, 1.5],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true
+        },
         "hintAfterAttempts": 1,
-        "answer": { "type": "numeric", "value": 32, "tolerance": 0.5 }
+        "answer": {
+          "type": "power_term",
+          "coefficient": 12,
+          "exponent": 3,
+          "startCoefficient": 3,
+          "startExponent": 4
+        }
       },
       "feedback": {
-        "correct": "f'(2) = 4 · 2³ = 4 · 8 = 32.",
-        "incorrect": "Differentiate to 4x³, then substitute x = 2.",
-        "hint": "4 × 2³ = 4 × 8."
+        "correct": "12x³ — the exponent 4 drops down and multiplies the coefficient (3 · 4 = 12), and the exponent reduces to 3.",
+        "incorrect": "Use d/dx(a·xⁿ) = a·n·xⁿ⁻¹ with a = 3 and n = 4: coefficient 3 · 4 = 12, exponent 4 − 1 = 3.",
+        "hint": "Multiply the coefficient by the exponent (3 × 4 = 12), then reduce the exponent by 1 (4 → 3)."
       }
     },
     {
       "id": "pr-step-7",
-      "type": "multiple_choice",
+      "type": "power_term",
       "conceptTag": "power_rule",
       "content": [
         {
           "type": "text",
-          "body": "One special case to remember: what is the derivative of the constant function f(x) = 7?"
+          "body": "Build the derivative of f(x) = 7."
         }
       ],
       "interaction": {
+        "graph": {
+          "fn": "7",
+          "domain": [0, 4],
+          "yDomain": [0, 9],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true
+        },
         "hintAfterAttempts": 1,
         "answer": {
-          "type": "multiple_choice",
-          "options": ["0", "7", "1"],
-          "correctIndex": 0
+          "type": "power_term",
+          "coefficient": 0,
+          "exponent": 0,
+          "startCoefficient": 7,
+          "startExponent": 0
         }
       },
       "feedback": {
         "correct": "0 — a constant never changes, just like you saw in the first lesson.",
-        "incorrect": "A constant function is a flat line; its rate of change is zero.",
-        "hint": "Flat line → slope 0 → derivative 0."
+        "incorrect": "A constant like 7 graphs as a flat, horizontal line. Rewrite it as 7x⁰ and apply the power rule: multiply the coefficient by the exponent.",
+        "hint": "Write 7 as 7x⁰. Bringing the exponent (0) down multiplies by 0, so the coefficient becomes 0 — the same fact from the first lesson: the derivative of a constant is 0."
       }
     },
     {
@@ -203,7 +243,7 @@
       "content": [
         {
           "type": "text",
-          "body": "The power rule handles polynomials term by term: differentiate each xⁿ and keep any coefficients along for the ride. Next you'll use derivatives to read the shape of a graph — where it rises, falls, and turns."
+          "body": "The power rule handles one term at a time: differentiate each xⁿ and keep any coefficients along for the ride. Next, you'll bring in the sum rule to differentiate whole polynomials — every term in a single pass."
         },
         {
           "type": "math",
@@ -217,21 +257,30 @@
   "practiceBank": [
     {
       "id": "pr-practice-1",
-      "type": "multiple_choice",
+      "type": "power_term",
       "conceptTag": "power_rule",
       "content": [
-        { "type": "text", "body": "Use the power rule. What is the derivative of x⁶?" }
+        { "type": "text", "body": "Use the power rule to build the derivative of x⁶." }
       ],
       "interaction": {
+        "graph": {
+          "fn": "x^6",
+          "domain": [-1.3, 1.3],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true
+        },
         "answer": {
-          "type": "multiple_choice",
-          "options": ["6x⁵", "6x⁶", "x⁵"],
-          "correctIndex": 0
+          "type": "power_term",
+          "coefficient": 6,
+          "exponent": 5,
+          "startCoefficient": 1,
+          "startExponent": 6
         }
       },
       "feedback": {
         "correct": "Right — bring the 6 down and reduce the exponent: 6x⁵.",
-        "incorrect": "Apply d/dx(xⁿ) = n·x^(n−1) with n = 6.",
+        "incorrect": "Apply d/dx(xⁿ) = n·xⁿ⁻¹ to x⁶: bring the exponent down as the new coefficient, then reduce the exponent by 1.",
         "hint": "The exponent 6 becomes the coefficient, and 6 − 1 = 5."
       }
     },
@@ -246,6 +295,15 @@
         }
       ],
       "interaction": {
+        "graph": {
+          "fn": "x^3",
+          "domain": [-1, 2.5],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true,
+          "markerX": 2,
+          "showTangent": true
+        },
         "answer": { "type": "numeric", "value": 12, "tolerance": 0.01 }
       },
       "feedback": {
@@ -256,44 +314,62 @@
     },
     {
       "id": "pr-practice-3",
-      "type": "multiple_choice",
+      "type": "power_term",
       "conceptTag": "power_rule",
       "content": [
         {
           "type": "text",
-          "body": "Coefficients come along for the ride. What is the derivative of f(x) = 2x⁴?"
+          "body": "Coefficients come along for the ride. Build the derivative of f(x) = 2x⁴."
         }
       ],
       "interaction": {
+        "graph": {
+          "fn": "2*x^4",
+          "domain": [-1.5, 1.5],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true
+        },
         "answer": {
-          "type": "multiple_choice",
-          "options": ["8x³", "2x³", "8x⁴"],
-          "correctIndex": 0
+          "type": "power_term",
+          "coefficient": 8,
+          "exponent": 3,
+          "startCoefficient": 2,
+          "startExponent": 4
         }
       },
       "feedback": {
         "correct": "Correct — d/dx(2x⁴) = 2 · 4x³ = 8x³.",
-        "incorrect": "Use d/dx(a·xⁿ) = a·n·x^(n−1) with a = 2 and n = 4.",
+        "incorrect": "Use d/dx(a·xⁿ) = a·n·xⁿ⁻¹ with a = 2 and n = 4: multiply the coefficient by the exponent, then reduce the exponent by 1.",
         "hint": "2 × 4 = 8, and the exponent drops to 3."
       }
     },
     {
       "id": "pr-practice-4",
-      "type": "multiple_choice",
+      "type": "power_term",
       "conceptTag": "power_rule",
       "content": [
-        { "type": "text", "body": "Use the power rule. What is the derivative of x⁷?" }
+        { "type": "text", "body": "Use the power rule to build the derivative of x⁷." }
       ],
       "interaction": {
+        "graph": {
+          "fn": "x^7",
+          "domain": [-1.3, 1.3],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true
+        },
         "answer": {
-          "type": "multiple_choice",
-          "options": ["7x⁶", "x⁶", "7x⁷"],
-          "correctIndex": 0
+          "type": "power_term",
+          "coefficient": 7,
+          "exponent": 6,
+          "startCoefficient": 1,
+          "startExponent": 7
         }
       },
       "feedback": {
         "correct": "Right — bring the 7 down and reduce the exponent: 7x⁶.",
-        "incorrect": "Apply d/dx(xⁿ) = n·x^(n−1) with n = 7.",
+        "incorrect": "Apply d/dx(xⁿ) = n·xⁿ⁻¹ to x⁷: bring the exponent down as the new coefficient, then reduce the exponent by 1.",
         "hint": "The exponent 7 becomes the coefficient, and 7 − 1 = 6."
       }
     },
@@ -308,6 +384,15 @@
         }
       ],
       "interaction": {
+        "graph": {
+          "fn": "x^5",
+          "domain": [-1.5, 1.5],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true,
+          "markerX": 1,
+          "showTangent": true
+        },
         "answer": { "type": "numeric", "value": 5, "tolerance": 0.01 }
       },
       "feedback": {
@@ -318,24 +403,33 @@
     },
     {
       "id": "pr-practice-6",
-      "type": "multiple_choice",
+      "type": "power_term",
       "conceptTag": "power_rule",
       "content": [
         {
           "type": "text",
-          "body": "Coefficients come along for the ride. What is the derivative of f(x) = 3x²?"
+          "body": "Coefficients come along for the ride. Build the derivative of f(x) = 3x²."
         }
       ],
       "interaction": {
+        "graph": {
+          "fn": "3*x^2",
+          "domain": [-2, 2],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true
+        },
         "answer": {
-          "type": "multiple_choice",
-          "options": ["6x", "3x", "6x²"],
-          "correctIndex": 0
+          "type": "power_term",
+          "coefficient": 6,
+          "exponent": 1,
+          "startCoefficient": 3,
+          "startExponent": 2
         }
       },
       "feedback": {
         "correct": "Correct — d/dx(3x²) = 3 · 2x = 6x.",
-        "incorrect": "Use d/dx(a·xⁿ) = a·n·x^(n−1) with a = 3 and n = 2.",
+        "incorrect": "Use d/dx(a·xⁿ) = a·n·xⁿ⁻¹ with a = 3 and n = 2: multiply the coefficient by the exponent, then reduce the exponent by 1.",
         "hint": "3 × 2 = 6, and the exponent drops to 1."
       }
     }

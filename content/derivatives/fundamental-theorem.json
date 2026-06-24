@@ -1,7 +1,7 @@
 {
   "id": "fundamental-theorem",
   "title": "The Fundamental Theorem of Calculus",
-  "order": 8,
+  "order": 10,
   "estimatedMinutes": 8,
   "conceptTags": ["ftc", "antiderivative"],
   "published": true,
@@ -84,8 +84,32 @@
         {
           "type": "text",
           "body": "Differentiating an integral hands you back the original function. Integrating and differentiating cancel out."
+        },
+        {
+          "type": "text",
+          "body": "Watch it happen: drag x along f(x) = x. The readouts show the height f(x) and the area A(x) so far. Where the curve is taller, the shaded area piles up faster — the area's growth rate is just the height."
         }
       ],
+      "interaction": {
+        "graph": {
+          "fn": "x",
+          "domain": [0, 5],
+          "yDomain": [0, 5],
+          "sliderLabel": "x",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showValue": true,
+          "showArea": true,
+          "areaStart": 0,
+          "showAreaValue": true,
+          "areaLabel": "Area A(x)",
+          "sliderMin": 0,
+          "sliderMax": 5,
+          "sliderStep": 0.1,
+          "initialSlider": 0
+        }
+      },
       "feedback": { "correct": "", "incorrect": "", "hint": "" }
     },
     {
@@ -124,7 +148,7 @@
       },
       "feedback": {
         "correct": "Right — f(4) = 4, so at x = 4 the area is growing at a rate of 4 units of area per unit of x. The taller the curve, the faster the area accumulates.",
-        "incorrect": "Just evaluate the height: f(x) = x, so f(4) = 4.",
+        "incorrect": "The growth rate equals the height f(x) = x. Evaluate that height at x = 4.",
         "hint": "f(x) = x means f(4) = 4 — and that's how fast the area is growing there."
       }
     },
@@ -164,11 +188,22 @@
         }
       ],
       "interaction": {
+        "graph": {
+          "fn": "2*x",
+          "domain": [0, 4],
+          "yDomain": [0, 8],
+          "xLabel": "x",
+          "yLabel": "f",
+          "showArea": true,
+          "areaStart": 0,
+          "initialSlider": 3,
+          "static": true
+        },
         "answer": { "type": "numeric", "value": 9, "tolerance": 0.1 }
       },
       "feedback": {
         "correct": "Exactly — F(3) − F(0) = 3² − 0² = 9.",
-        "incorrect": "Use F(x) = x²: compute F(3) − F(0) = 3² − 0².",
+        "incorrect": "Use the antiderivative F(x) = x²: evaluate F(3) − F(0).",
         "hint": "3² − 0² = 9 − 0 = 9."
       }
     },
@@ -179,24 +214,36 @@
       "content": [
         {
           "type": "text",
-          "body": "Which function is an antiderivative of f(x) = x²? (Its derivative should be x².)"
+          "body": "Which function is an antiderivative of $f(x) = x^2$? (Its derivative should be $x^2$.)"
         }
       ],
       "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 3],
+          "yDomain": [0, 9],
+          "xLabel": "x",
+          "yLabel": "f",
+          "showArea": true,
+          "areaStart": 0,
+          "initialSlider": 2,
+          "static": true
+        },
         "answer": {
           "type": "multiple_choice",
           "options": [
-            "x³/3",
-            "2x",
-            "3x²"
+            "$\\frac{x^3}{3}$",
+            "$2x$",
+            "$3x^2$",
+            "$x^3$"
           ],
           "correctIndex": 0
         }
       },
       "feedback": {
-        "correct": "Correct — the derivative of x³/3 is x², so x³/3 is an antiderivative. That's exactly why the area under x² is b³/3.",
-        "incorrect": "Differentiate each option and see which gives x² back.",
-        "hint": "d/dx (x³/3) = 3x²/3 = x². That's the one."
+        "correct": "Correct — the derivative of $\\frac{x^3}{3}$ is $x^2$, so $\\frac{x^3}{3}$ is an antiderivative. That's exactly why the area under $x^2$ is $\\frac{b^3}{3}$.",
+        "incorrect": "Differentiate each option and see which gives $x^2$ back.",
+        "hint": "$\\frac{d}{dx}\\left(\\frac{x^3}{3}\\right) = \\frac{3x^2}{3} = x^2$. That's the one."
       }
     },
     {
@@ -210,7 +257,7 @@
         },
         {
           "type": "text",
-          "body": "Slopes and areas, finally tied together. Nice work making it through!"
+          "body": "Slopes and areas, finally tied together. Next, you'll put it all to work — integrating whole polynomials with the reverse power rule."
         }
       ],
       "feedback": { "correct": "", "incorrect": "", "hint": "" }
@@ -228,6 +275,17 @@
         }
       ],
       "interaction": {
+        "graph": {
+          "fn": "2*x",
+          "domain": [0, 3],
+          "yDomain": [0, 6],
+          "xLabel": "x",
+          "yLabel": "f",
+          "showArea": true,
+          "areaStart": 0,
+          "initialSlider": 2,
+          "static": true
+        },
         "answer": { "type": "numeric", "value": 4, "tolerance": 0.1 }
       },
       "feedback": {
@@ -247,9 +305,20 @@
         }
       ],
       "interaction": {
+        "graph": {
+          "fn": "2*x",
+          "domain": [0, 3],
+          "yDomain": [0, 6],
+          "xLabel": "x",
+          "yLabel": "f",
+          "showArea": true,
+          "areaStart": 0,
+          "initialSlider": 2,
+          "static": true
+        },
         "answer": {
           "type": "multiple_choice",
-          "options": ["x²", "2", "2x²"],
+          "options": ["x²", "2", "2x²", "x"],
           "correctIndex": 0
         }
       },
@@ -270,6 +339,17 @@
         }
       ],
       "interaction": {
+        "graph": {
+          "fn": "5",
+          "domain": [0, 4],
+          "yDomain": [0, 6],
+          "xLabel": "x",
+          "yLabel": "f",
+          "showArea": true,
+          "areaStart": 0,
+          "initialSlider": 3,
+          "static": true
+        },
         "answer": { "type": "numeric", "value": 5, "tolerance": 0.1 }
       },
       "feedback": {

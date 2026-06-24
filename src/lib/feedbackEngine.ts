@@ -104,6 +104,33 @@ export function checkAnswer(
             hint: step.feedback.hint,
           };
     }
+    case "power_term": {
+      const v = (answer ?? {}) as { coefficient?: number; exponent?: number };
+      const coeff = Number(v.coefficient);
+      const exp = Number(v.exponent);
+      if (!Number.isFinite(coeff) || !Number.isFinite(exp)) {
+        return {
+          correct: false,
+          message: step.feedback.incorrect,
+          showHint: false,
+          hint: step.feedback.hint,
+        };
+      }
+      // A zero coefficient means the term vanished (e.g. a constant's
+      // derivative), so the exponent doesn't matter in that case.
+      const verified =
+        spec.coefficient === 0
+          ? coeff === 0
+          : coeff === spec.coefficient && exp === spec.exponent;
+      return verified
+        ? { correct: true, message: step.feedback.correct }
+        : {
+            correct: false,
+            message: step.feedback.incorrect,
+            showHint: false,
+            hint: step.feedback.hint,
+          };
+    }
     default:
       return {
         correct: false,

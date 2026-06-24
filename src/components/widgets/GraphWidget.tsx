@@ -124,6 +124,15 @@ export function GraphWidget({
     const ratio = (e.clientX - rect.left) / rect.width;
     const svgX = ratio * size.w;
     let x = d0 + ((svgX - PAD) / (size.w - 2 * PAD)) * (d1 - d0);
+    const choices = config.pointChoices;
+    if (choices && choices.length > 0) {
+      // Snap to the nearest discrete candidate so the answer is always exact.
+      const nearest = choices.reduce((best, c) =>
+        Math.abs(c - x) < Math.abs(best - x) ? c : best,
+      );
+      onPointClick(nearest);
+      return;
+    }
     if (config.pointSnap && config.pointSnap > 0) {
       x = parseFloat((Math.round(x / config.pointSnap) * config.pointSnap).toFixed(6));
     }
@@ -181,12 +190,18 @@ export function GraphWidget({
   const p0 = toSvg(x0, y0);
   const p1 = toSvg(x1, y1);
 
-  // The tangent (and its slope readout) tracks the MOVING point. The derivative
-  // is well defined everywhere the curve is smooth, so there is no 0/0 case.
+  // The tangent normally tracks the MOVING point, but in `tangentAtFixedPoint`
+  // mode it stays anchored at the fixed point as a static target the sliding
+  // secant converges onto. The derivative is well defined everywhere the curve
+  // is smooth, so there is no 0/0 case.
+  const tangentAtFixed = config.tangentAtFixedPoint === true;
+  const showTangentLine = Boolean(config.showTangent) || tangentAtFixed;
+  const tanX = tangentAtFixed ? x0 : x1;
+  const tanY = tangentAtFixed ? y0 : y1;
   let tangentSlope = NaN;
-  if (config.showTangent) {
+  if (showTangentLine) {
     try {
-      tangentSlope = derivativeAt(config.fn, x1);
+      tangentSlope = derivativeAt(config.fn, tanX);
     } catch {
       tangentSlope = NaN;
     }
@@ -208,13 +223,53 @@ export function GraphWidget({
   // moving point, extended across part of the domain.
   const tdx = (d1 - d0) * 0.3;
   const tanA =
-    config.showTangent && Number.isFinite(tangentSlope)
-      ? toSvg(x1 - tdx, y1 - tangentSlope * tdx)
+    showTangentLine && Number.isFinite(tangentSlope)
+      ? toSvg(tanX - tdx, tanY - tangentSlope * tdx)
       : null;
   const tanB =
-    config.showTangent && Number.isFinite(tangentSlope)
-      ? toSvg(x1 + tdx, y1 + tangentSlope * tdx)
+    showTangentLine && Number.isFinite(tangentSlope)
+      ? toSvg(tanX + tdx, tanY + tangentSlope * tdx)
       : null;
+
+  // Secant line through (x0, y0) and (x1, y1), extended across the whole domain
+  // so it stays a clearly visible line — even as h → 0, where the bare chord
+  // between the two points would otherwise shrink to almost nothing.
+  const secSlope = x1 !== x0 ? (y1 - y0) / (x1 - x0) : NaN;
+  const secA =
+    config.showSecant !== false && Number.isFinite(secSlope)
+      ? toSvg(d0, y0 + secSlope * (d0 - x0))
+      : null;
+  const secB =
+    config.showSecant !== false && Number.isFinite(secSlope)
+      ? toSvg(d1, y0 + secSlope * (d1 - x0))
+      : null;
+
+  // Static illustration: a fixed marker (and optional tangent) drawn at
+  // config.markerX. Unlike the slider-driven point, these render even with the
+  // slider hidden, so a typed/picked/built question can still show a relevant
+  // visual anchored at the x it asks about.
+  const markerX =
+    config.static === true && typeof config.markerX === "number"
+      ? config.markerX
+      : null;
+  let markerPt: { sx: number; sy: number } | null = null;
+  let markTanA: { sx: number; sy: number } | null = null;
+  let markTanB: { sx: number; sy: number } | null = null;
+  if (markerX !== null) {
+    try {
+      const my = evalFunction(config.fn, markerX);
+      markerPt = toSvg(markerX, my);
+      if (config.showTangent) {
+        const m = derivativeAt(config.fn, markerX);
+        if (Number.isFinite(m)) {
+          markTanA = toSvg(markerX - tdx, my - m * tdx);
+          markTanB = toSvg(markerX + tdx, my + m * tdx);
+        }
+      }
+    } catch {
+      markerPt = null;
+    }
+  }
 
   // Marker for a tap-the-point selection.
   let selMarker: { sx: number; sy: number } | null = null;
@@ -225,6 +280,24 @@ export function GraphWidget({
       selMarker = null;
     }
   }
+
+  // Discrete candidate points the learner can tap (when configured). Each is
+  // drawn on the curve; the currently selected one is highlighted.
+  const choicePoints =
+    config.pointChoices?.flatMap((cx) => {
+      let cy: number;
+      try {
+        cy = evalFunction(config.fn, cx);
+      } catch {
+        return [];
+      }
+      const { sx, sy } = toSvg(cx, cy);
+      const isSel =
+        selectedX !== null &&
+        selectedX !== undefined &&
+        Math.abs(selectedX - cx) < 1e-6;
+      return [{ x: cx, sx, sy, isSel }];
+    }) ?? [];
 
   const min = config.sliderMin ?? d0 + 0.1;
   const max = config.sliderMax ?? d1 - 0.1;
@@ -248,8 +321,12 @@ export function GraphWidget({
         height={size.h}
         viewBox={`0 0 ${size.w} ${size.h}`}
         onClick={onPointClick ? handlePlotClick : undefined}
-        className={`rounded-xl bg-slate-50 border border-slate-200${
-          onPointClick ? " cursor-crosshair" : ""
+        className={`rounded-xl bg-slate-50 border border-slate-200 overflow-hidden${
+          onPointClick
+            ? config.pointChoices && config.pointChoices.length > 0
+              ? " cursor-pointer"
+              : " cursor-crosshair"
+            : ""
         }`}
         role="img"
         aria-label={`Graph of the function with ${xLabel} and ${yLabel} axes`}
@@ -375,14 +452,42 @@ export function GraphWidget({
         {/* curve */}
         <path d={pathD} fill="none" stroke="#4f46e5" strokeWidth={2.5} />
 
-        {showSlider && config.showSecant !== false && (
+        {/* static illustration: tangent line at the marked point */}
+        {markTanA && markTanB && (
           <line
-            x1={p0.sx}
-            y1={p0.sy}
-            x2={p1.sx}
-            y2={p1.sy}
+            x1={markTanA.sx}
+            y1={markTanA.sy}
+            x2={markTanB.sx}
+            y2={markTanB.sy}
+            stroke="#10b981"
+            strokeWidth={2.5}
+          />
+        )}
+        {/* static illustration: marked point with a guide down to the x-axis */}
+        {markerPt && (
+          <>
+            <line
+              x1={markerPt.sx}
+              y1={markerPt.sy}
+              x2={markerPt.sx}
+              y2={originY}
+              stroke="#f59e0b"
+              strokeWidth={1}
+              strokeDasharray="3 3"
+              opacity={0.6}
+            />
+            <circle cx={markerPt.sx} cy={markerPt.sy} r={6} fill="#4f46e5" />
+          </>
+        )}
+
+        {showSlider && config.showSecant !== false && secA && secB && (
+          <line
+            x1={secA.sx}
+            y1={secA.sy}
+            x2={secB.sx}
+            y2={secB.sy}
             stroke="#f59e0b"
-            strokeWidth={2}
+            strokeWidth={2.5}
             strokeDasharray="6 4"
           />
         )}
@@ -425,7 +530,14 @@ export function GraphWidget({
         )}
 
         {showSlider &&
-          (config.showTangent ? (
+          (tangentAtFixed ? (
+            <>
+              {/* Fixed point (green) anchors the static tangent; the moving
+                  point (amber) rides the sliding secant toward it. */}
+              <circle cx={p0.sx} cy={p0.sy} r={6} fill="#10b981" />
+              <circle cx={p1.sx} cy={p1.sy} r={6} fill="#f59e0b" />
+            </>
+          ) : config.showTangent ? (
             <circle cx={p1.sx} cy={p1.sy} r={6} fill="#10b981" />
           ) : config.showSecant !== false ? (
             <>
@@ -435,6 +547,19 @@ export function GraphWidget({
           ) : (
             <circle cx={p1.sx} cy={p1.sy} r={6} fill="#4f46e5" />
           ))}
+
+        {/* discrete tappable candidate points */}
+        {choicePoints.map((c) => (
+          <circle
+            key={`choice-${c.x}`}
+            cx={c.sx}
+            cy={c.sy}
+            r={7}
+            fill={c.isSel ? "#e11d48" : "#ffffff"}
+            stroke={c.isSel ? "#e11d48" : "#4f46e5"}
+            strokeWidth={2.5}
+          />
+        ))}
 
         {/* tap-the-point selection marker */}
         {selMarker && (
@@ -484,13 +609,15 @@ export function GraphWidget({
         </p>
       )}
 
-      {showSlider && (config.showSecant !== false || config.showTangent) && (
-        <p className="text-sm text-slate-600">
-          {config.slopeLabel ??
-            (config.showTangent ? "Tangent slope" : "Secant slope")}
-          : <strong>{slopeDisplay}</strong>
-        </p>
-      )}
+      {showSlider &&
+        (config.showSecant !== false || config.showTangent) &&
+        config.showSlopeValue !== false && (
+          <p className="text-sm text-slate-600">
+            {config.slopeLabel ??
+              (config.showTangent ? "Tangent slope" : "Secant slope")}
+            : <strong>{slopeDisplay}</strong>
+          </p>
+        )}
 
       {showSlider &&
         config.showArea &&

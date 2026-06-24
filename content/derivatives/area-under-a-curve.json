@@ -1,7 +1,7 @@
 {
   "id": "area-under-a-curve",
   "title": "Area Under a Curve",
-  "order": 7,
+  "order": 9,
   "estimatedMinutes": 7,
   "conceptTags": ["area_under_curve", "definite_integral"],
   "published": true,
@@ -13,7 +13,7 @@
       "content": [
         {
           "type": "text",
-          "body": "Rectangles and triangles were easy. But what is the area under a genuine curve like f(x) = x²? The trick is to slice the region into many thin strips, treat each as a skinny rectangle, and add them up. The thinner the strips, the better the estimate."
+          "body": "Rectangles and triangles were easy. But what is the area under a genuine curve like $f(x) = x^2$? The trick is to slice the region into many thin strips, treat each as a skinny rectangle, and add them up. The thinner the strips, the better the estimate."
         },
         {
           "type": "text",
@@ -29,7 +29,7 @@
       "content": [
         {
           "type": "text",
-          "body": "Here is f(x) = x². Drag x to the right and watch the shaded area pile up. As x grows, the area grows…"
+          "body": "Here is $f(x) = x^2$. Drag $x$ to the right and watch the shaded area pile up. As $x$ grows, the area grows…"
         },
         {
           "type": "math",
@@ -59,15 +59,16 @@
           "options": [
             "at a steady, constant rate",
             "faster and faster",
-            "slower and slower"
+            "slower and slower",
+            "not at all — it stays the same"
           ],
           "correctIndex": 1
         }
       },
       "feedback": {
-        "correct": "Right — because the curve gets taller as x grows, each new strip is taller than the last, so the area piles up faster and faster.",
+        "correct": "Right — because the curve gets taller as $x$ grows, each new strip is taller than the last, so the area piles up faster and faster.",
         "incorrect": "Watch how much area each step adds. As the curve rises, the new strips get taller.",
-        "hint": "Taller strips add more area. Since x² keeps rising, the area grows faster and faster."
+        "hint": "Taller strips add more area. Since $x^2$ keeps rising, the area grows faster and faster."
       }
     },
     {
@@ -77,16 +78,29 @@
       "content": [
         {
           "type": "text",
-          "body": "Adding up infinitely many strips by hand would be painful, so there's a shortcut. For f(x) = x², the area from 0 to b works out to:"
+          "body": "Adding up infinitely many strips by hand would be painful, so instead we run the power rule in reverse. An antiderivative of $f$ is a function $F$ whose derivative gives $f$ back: $F'(x) = f(x)$."
+        },
+        {
+          "type": "text",
+          "body": "To reverse the power rule on a power of $x$, undo each step: add 1 to the exponent, then divide by that new exponent. This is the reverse power rule."
         },
         {
           "type": "math",
-          "latex": "\\int_0^b x^2\\,dx = \\frac{b^3}{3}",
+          "latex": "f(x) = x^n \\;\\Rightarrow\\; F(x) = \\frac{x^{n+1}}{n+1}",
           "display": true
         },
         {
           "type": "text",
-          "body": "Check it against the graph: at b = 3 this gives 27/3 = 9, which matches the shaded area you swept out."
+          "body": "For $f(x) = x^2$, bump the exponent up to 3 and divide by 3, giving the antiderivative $F(x) = \\frac{x^3}{3}$. Check it forward: differentiating $\\frac{x^3}{3}$ gives $\\frac{3x^2}{3} = x^2$, right back to $f$."
+        },
+        {
+          "type": "text",
+          "body": "The area starts accumulating at 0, and $F(0) = 0$, so the area under $x^2$ from 0 to $b$ is just $F(b)$:"
+        },
+        {
+          "type": "math",
+          "latex": "\\int_0^b x^2\\,dx = F(b) = \\frac{b^3}{3}",
+          "display": true
         }
       ],
       "feedback": { "correct": "", "incorrect": "", "hint": "" }
@@ -98,20 +112,31 @@
       "content": [
         {
           "type": "text",
-          "body": "Use the formula b³/3. What is the area under f(x) = x² from 0 to 2? (Round to two decimals.)"
+          "body": "Use the antiderivative $F(x) = \\frac{x^3}{3}$. What is the area under $f(x) = x^2$ from 0 to 2? Evaluate $F(2) - F(0)$. (Round to two decimals.)"
         },
         {
           "type": "math",
-          "latex": "\\int_0^2 x^2\\,dx = \\frac{2^3}{3}"
+          "latex": "\\int_0^2 x^2\\,dx = F(2) - F(0) = \\frac{2^3}{3}"
         }
       ],
       "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 3],
+          "yDomain": [0, 9],
+          "xLabel": "x",
+          "yLabel": "f",
+          "showArea": true,
+          "areaStart": 0,
+          "initialSlider": 2,
+          "static": true
+        },
         "answer": { "type": "numeric", "value": 2.667, "tolerance": 0.05 }
       },
       "feedback": {
-        "correct": "Exactly — 2³/3 = 8/3 ≈ 2.67.",
-        "incorrect": "Plug b = 2 into b³/3: that's 8/3.",
-        "hint": "2³ = 8, and 8/3 ≈ 2.67."
+        "correct": "Exactly — $F(2) - F(0) = \\frac{2^3}{3} - 0 = \\frac{8}{3} \\approx 2.67$.",
+        "incorrect": "Evaluate the antiderivative at the endpoints: $F(2) - F(0) = \\frac{2^3}{3} - 0$.",
+        "hint": "$2^3 = 8$, and $\\frac{8}{3} \\approx 2.67$."
       }
     },
     {
@@ -121,11 +146,12 @@
       "content": [
         {
           "type": "text",
-          "body": "Back to the graph of f(x) = x². Drag x until the shaded area reads about 9. (Remember: the area from 0 to b is b³/3.)"
+          "body": "Back to the graph of $f(x) = x^2$. Find the value of $t$ for which the area from 0 to $t$ equals 9, then drag the slider there. (Remember: the antiderivative is $F(x) = \\frac{x^3}{3}$, so the area from 0 to $t$ is $\\frac{t^3}{3}$.)"
         },
         {
           "type": "math",
-          "latex": "f(x) = x^2"
+          "latex": "\\int_0^t x^2\\,dx = 9",
+          "display": true
         }
       ],
       "interaction": {
@@ -133,13 +159,14 @@
           "fn": "x^2",
           "domain": [0, 5],
           "yDomain": [0, 25],
-          "sliderLabel": "x",
+          "sliderLabel": "t",
           "xLabel": "x",
           "yLabel": "f",
           "showSecant": false,
           "showValue": false,
           "showArea": true,
           "areaStart": 0,
+          "showAreaValue": false,
           "sliderMin": 0,
           "sliderMax": 5,
           "sliderStep": 0.1,
@@ -149,14 +176,13 @@
         "answer": {
           "type": "slider",
           "value": 3,
-          "tolerance": 0.2,
-          "prompt": "Drag x until the shaded area reads about 9."
+          "tolerance": 0.05
         }
       },
       "feedback": {
-        "correct": "Nice — at x = 3 the area is 3³/3 = 9. You located exactly where 9 units of area have accumulated.",
-        "incorrect": "You need b³/3 = 9, so b³ = 27. Slide until the area readout reaches about 9.",
-        "hint": "Solve b³/3 = 9 → b³ = 27 → b = 3."
+        "correct": "Nice — the area from 0 to $t$ is $\\frac{t^3}{3}$, and $\\frac{3^3}{3} = 9$, so $t = 3$. You located exactly where 9 units of area have accumulated.",
+        "incorrect": "The area from 0 to $t$ is $\\frac{t^3}{3}$. Set $\\frac{t^3}{3} = 9$, so $t^3 = 27$. Solve for $t$, then drag the slider there.",
+        "hint": "$\\frac{t^3}{3} = 9 \\to t^3 = 27 \\to t = 3$."
       }
     },
     {
@@ -166,24 +192,36 @@
       "content": [
         {
           "type": "text",
-          "body": "For f(x) = x², suppose you double the interval from [0, b] to [0, 2b]. The area…"
+          "body": "For $f(x) = x^2$, suppose you double the interval from $[0, b]$ to $[0, 2b]$. The area…"
         }
       ],
       "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 5],
+          "yDomain": [0, 25],
+          "xLabel": "x",
+          "yLabel": "f",
+          "showArea": true,
+          "areaStart": 0,
+          "initialSlider": 3,
+          "static": true
+        },
         "answer": {
           "type": "multiple_choice",
           "options": [
             "exactly doubles",
             "more than doubles",
-            "stays the same"
+            "stays the same",
+            "less than doubles"
           ],
           "correctIndex": 1
         }
       },
       "feedback": {
-        "correct": "Right — the area is b³/3, so doubling b gives (2b)³/3 = 8 · b³/3. The area grows eightfold, far more than double.",
-        "incorrect": "The area depends on b³, not b. What happens to b³ when you double b?",
-        "hint": "(2b)³ = 8b³, so the area becomes 8 times as big — more than double."
+        "correct": "Right — the area is $\\frac{b^3}{3}$, so doubling $b$ gives $\\frac{(2b)^3}{3} = 8 \\cdot \\frac{b^3}{3}$. The area grows eightfold, far more than double.",
+        "incorrect": "The area depends on $b^3$, not $b$. What happens to $b^3$ when you double $b$?",
+        "hint": "$(2b)^3 = 8b^3$, so the area becomes 8 times as big — more than double."
       }
     },
     {
@@ -193,11 +231,11 @@
       "content": [
         {
           "type": "text",
-          "body": "You now know that area under a curve is built from thin strips and captured exactly by the definite integral — and for x² there's a clean formula, b³/3."
+          "body": "You now know that area under a curve is built from thin strips and captured exactly by the definite integral — and that reversing the power rule produces an antiderivative like $F(x) = \\frac{x^3}{3}$ that hands you the area."
         },
         {
           "type": "text",
-          "body": "But where do formulas like b³/3 come from? The answer ties areas back to derivatives through one of the most important results in all of calculus."
+          "body": "But why should undoing a derivative give an area at all? That surprising link between slopes and areas is the Fundamental Theorem of Calculus — coming up next."
         }
       ],
       "feedback": { "correct": "", "incorrect": "", "hint": "" }
@@ -211,16 +249,27 @@
       "content": [
         {
           "type": "text",
-          "body": "Using the formula b³/3, what is the area under f(x) = x² from 0 to 3?"
+          "body": "Using the antiderivative $F(x) = \\frac{x^3}{3}$, what is the area under $f(x) = x^2$ from 0 to 3?"
         }
       ],
       "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 4],
+          "yDomain": [0, 16],
+          "xLabel": "x",
+          "yLabel": "f",
+          "showArea": true,
+          "areaStart": 0,
+          "initialSlider": 3,
+          "static": true
+        },
         "answer": { "type": "numeric", "value": 9, "tolerance": 0.1 }
       },
       "feedback": {
-        "correct": "Yes — 3³/3 = 27/3 = 9.",
-        "incorrect": "Plug b = 3 into b³/3.",
-        "hint": "3³ = 27, and 27/3 = 9."
+        "correct": "Yes — $\\frac{3^3}{3} = \\frac{27}{3} = 9$.",
+        "incorrect": "Plug $b = 3$ into $\\frac{b^3}{3}$.",
+        "hint": "$3^3 = 27$, and $\\frac{27}{3} = 9$."
       }
     },
     {
@@ -230,16 +279,27 @@
       "content": [
         {
           "type": "text",
-          "body": "What is the area under f(x) = x² from 0 to 1? (Round to two decimals.)"
+          "body": "What is the area under $f(x) = x^2$ from 0 to 1? (Round to two decimals.)"
         }
       ],
       "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 2],
+          "yDomain": [0, 4],
+          "xLabel": "x",
+          "yLabel": "f",
+          "showArea": true,
+          "areaStart": 0,
+          "initialSlider": 1,
+          "static": true
+        },
         "answer": { "type": "numeric", "value": 0.333, "tolerance": 0.03 }
       },
       "feedback": {
-        "correct": "Right — 1³/3 = 1/3 ≈ 0.33.",
-        "incorrect": "Plug b = 1 into b³/3.",
-        "hint": "1³ = 1, and 1/3 ≈ 0.33."
+        "correct": "Right — $\\frac{1^3}{3} = \\frac{1}{3} \\approx 0.33$.",
+        "incorrect": "Plug $b = 1$ into $\\frac{b^3}{3}$.",
+        "hint": "$1^3 = 1$, and $\\frac{1}{3} \\approx 0.33$."
       }
     },
     {
@@ -253,9 +313,20 @@
         }
       ],
       "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 3],
+          "yDomain": [0, 9],
+          "xLabel": "x",
+          "yLabel": "f",
+          "showArea": true,
+          "areaStart": 0,
+          "initialSlider": 3,
+          "static": true
+        },
         "answer": {
           "type": "multiple_choice",
-          "options": ["tangent lines", "rectangles", "circles"],
+          "options": ["tangent lines", "rectangles", "circles", "triangles"],
           "correctIndex": 1
         }
       },

@@ -7,20 +7,26 @@ import lesson1 from "../../content/derivatives/what-is-a-derivative.json";
 import lesson2 from "../../content/derivatives/slope-of-a-curve.json";
 import lesson3 from "../../content/derivatives/difference-quotient.json";
 import lesson4 from "../../content/derivatives/power-rule.json";
+import lessonDifferentiatingPolynomials from "../../content/derivatives/differentiating-polynomials.json";
 import lesson5 from "../../content/derivatives/graph-shape.json";
-import lesson6 from "../../content/derivatives/what-is-an-integral.json";
-import lesson7 from "../../content/derivatives/area-under-a-curve.json";
-import lesson8 from "../../content/derivatives/fundamental-theorem.json";
+import lesson6 from "../../content/derivatives/maxima-and-minima.json";
+import lesson7 from "../../content/derivatives/what-is-an-integral.json";
+import lesson8 from "../../content/derivatives/area-under-a-curve.json";
+import lesson9 from "../../content/derivatives/fundamental-theorem.json";
+import lessonIntegratingPolynomials from "../../content/derivatives/integrating-polynomials.json";
 
 const rawLessons: Lesson[] = [
   lesson1 as Lesson,
   lesson2 as Lesson,
   lesson3 as Lesson,
   lesson4 as Lesson,
+  lessonDifferentiatingPolynomials as Lesson,
   lesson5 as Lesson,
   lesson6 as Lesson,
   lesson7 as Lesson,
   lesson8 as Lesson,
+  lesson9 as Lesson,
+  lessonIntegratingPolynomials as Lesson,
 ];
 
 for (const lesson of rawLessons) {
@@ -67,13 +73,35 @@ export function getLessonStepCount(lessonId: string): number {
   return lessonsById.get(lessonId)?.steps.length ?? 0;
 }
 
+/** Whether a question is hands-on, i.e. backed by a manipulable graph. */
+function isInteractive(step: Step): boolean {
+  return Boolean(step.interaction?.graph);
+}
+
+/** The lesson's own answerable questions (every step except "read"). */
+function lessonQuestions(lesson: Lesson | undefined): Step[] {
+  return (lesson?.steps ?? []).filter(
+    (s) => s.type !== "read" && Boolean(s.interaction?.answer),
+  );
+}
+
 /**
- * The full pool of practice questions for a lesson. Prefers the `practiceBank`
- * and falls back to the legacy `practice` set so older content still works.
+ * The full pool of practice questions for a lesson. Combines the authored
+ * `practiceBank` (or legacy `practice`) with the lesson's own interactive
+ * questions, so practice offers the same hands-on graph problems as the
+ * lesson rather than only plain text questions. Deduplicated by id.
  */
 export function getPracticeBank(lessonId: string): Step[] {
   const lesson = lessonsById.get(lessonId);
-  return lesson?.practiceBank ?? lesson?.practice ?? [];
+  const authored = lesson?.practiceBank ?? lesson?.practice ?? [];
+  const seen = new Set<string>();
+  const pool: Step[] = [];
+  for (const q of [...authored, ...lessonQuestions(lesson)]) {
+    if (seen.has(q.id)) continue;
+    seen.add(q.id);
+    pool.push(q);
+  }
+  return pool;
 }
 
 /** Whether a lesson has any practice questions available. */
@@ -92,14 +120,26 @@ function shuffle<T>(items: T[]): T[] {
 }
 
 /**
+ * Pick `size` questions for one session, preferring interactive (graph-based)
+ * questions so the session stays hands-on, then filling with plain questions
+ * for variety. The final order is shuffled so it isn't always graphs-first.
+ */
+function sampleSession(pool: Step[], size: number): Step[] {
+  const interactive = shuffle(pool.filter(isInteractive));
+  const plain = shuffle(pool.filter((s) => !isInteractive(s)));
+  return shuffle([...interactive, ...plain].slice(0, size));
+}
+
+/**
  * A randomly chosen subset of a lesson's practice bank — one practice session.
- * Different each call, so repeated practice stays varied.
+ * Different each call, so repeated practice stays varied, and interactive
+ * questions are favored so practice feels hands-on.
  */
 export function getPracticeSession(
   lessonId: string,
   size: number = PRACTICE_SESSION_SIZE,
 ): Step[] {
-  return shuffle(getPracticeBank(lessonId)).slice(0, size);
+  return sampleSession(getPracticeBank(lessonId), size);
 }
 
 /** Published lessons the learner has started or finished — eligible for review. */
@@ -124,7 +164,7 @@ export function getReviewSession(
   progress: Record<string, { status: string }>,
   size: number = REVIEW_SESSION_SIZE,
 ): Step[] {
-  return shuffle(getReviewBank(progress)).slice(0, size);
+  return sampleSession(getReviewBank(progress), size);
 }
 
 /** Whether the learner has covered enough material to run a mixed review. */

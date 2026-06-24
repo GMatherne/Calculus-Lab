@@ -14,13 +14,13 @@
       "id": "finding-derivatives",
       "title": "Finding Derivatives",
       "description": "Turn the limit definition into rules you can compute with.",
-      "lessonIds": ["difference-quotient", "power-rule"]
+      "lessonIds": ["difference-quotient", "power-rule", "differentiating-polynomials"]
     },
     {
       "id": "using-derivatives",
       "title": "Using Derivatives",
       "description": "Apply derivatives to read and analyze the shape of graphs.",
-      "lessonIds": ["graph-shape"]
+      "lessonIds": ["graph-shape", "maxima-and-minima"]
     },
     {
       "id": "intro-integrals",
@@ -31,8 +31,8 @@
     {
       "id": "connecting-calculus",
       "title": "The Big Picture",
-      "description": "See how derivatives and integrals are two sides of one idea.",
-      "lessonIds": ["fundamental-theorem"]
+      "description": "See how derivatives and integrals connect — then put antiderivatives to work on whole polynomials.",
+      "lessonIds": ["fundamental-theorem", "integrating-polynomials"]
     }
   ],
   "lessons": [
@@ -52,7 +52,7 @@
     },
     {
       "id": "difference-quotient",
-      "title": "The Difference Quotient",
+      "title": "The Limit Definition of the Derivative",
       "order": 3,
       "estimatedMinutes": 8,
       "published": true
@@ -65,30 +65,51 @@
       "published": true
     },
     {
-      "id": "graph-shape",
-      "title": "Derivatives and Graph Shape",
+      "id": "differentiating-polynomials",
+      "title": "Differentiating Polynomials",
       "order": 5,
       "estimatedMinutes": 7,
       "published": true
     },
     {
+      "id": "graph-shape",
+      "title": "Derivatives and Graph Shape",
+      "order": 6,
+      "estimatedMinutes": 7,
+      "published": true
+    },
+    {
+      "id": "maxima-and-minima",
+      "title": "Finding Maxima and Minima",
+      "order": 7,
+      "estimatedMinutes": 8,
+      "published": true
+    },
+    {
       "id": "what-is-an-integral",
       "title": "What Is an Integral?",
-      "order": 6,
+      "order": 8,
       "estimatedMinutes": 7,
       "published": true
     },
     {
       "id": "area-under-a-curve",
       "title": "Area Under a Curve",
-      "order": 7,
+      "order": 9,
       "estimatedMinutes": 7,
       "published": true
     },
     {
       "id": "fundamental-theorem",
       "title": "The Fundamental Theorem of Calculus",
-      "order": 8,
+      "order": 10,
+      "estimatedMinutes": 8,
+      "published": true
+    },
+    {
+      "id": "integrating-polynomials",
+      "title": "Integrating Polynomials",
+      "order": 11,
       "estimatedMinutes": 8,
       "published": true
     }

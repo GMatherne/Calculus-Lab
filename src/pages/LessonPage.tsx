@@ -4,15 +4,23 @@ import { getLesson } from "../lib/contentLoader";
 import { useAuth } from "../contexts/AuthContext";
 import { useProgress, isLessonDone } from "../contexts/ProgressContext";
 import { LessonPlayer } from "../components/lesson/LessonPlayer";
+import { LessonComplete } from "../components/lesson/LessonComplete";
 import { AppHeader } from "../components/layout/AppHeader";
 import { SafeArea } from "../components/layout/SafeArea";
 
 export function LessonPage() {
   const { lessonId } = useParams<{ lessonId: string }>();
   const { user } = useAuth();
-  const { progress, completeLesson, loading: progressLoading } = useProgress();
+  const {
+    progress,
+    profile,
+    completeLesson,
+    loading: progressLoading,
+  } = useProgress();
   const navigate = useNavigate();
   const [ready, setReady] = useState(false);
+  // XP earned on this finish; non-null drives the celebration screen.
+  const [xpGained, setXpGained] = useState<number | null>(null);
 
   const lesson = lessonId ? getLesson(lessonId) : undefined;
   const lessonProgress = lessonId ? progress[lessonId] : undefined;
@@ -39,6 +47,19 @@ export function LessonPage() {
     );
   }
 
+  // First-time completion earns XP and shows the reward screen; replaying or
+  // reviewing a finished lesson earns nothing and returns straight to lessons.
+  if (xpGained !== null) {
+    return (
+      <LessonComplete
+        lessonTitle={lesson.title}
+        xpGained={xpGained}
+        totalXp={profile?.xp}
+        onContinue={() => navigate("/lessons")}
+      />
+    );
+  }
+
   return (
     <SafeArea>
       <AppHeader />
@@ -51,8 +72,9 @@ export function LessonPage() {
             lesson={lesson}
             initialStepIndex={initialStep}
             onComplete={() => {
-              void completeLesson(lesson.id).then(() => {
-                navigate("/lessons");
+              void completeLesson(lesson.id).then((gained) => {
+                if (gained > 0) setXpGained(gained);
+                else navigate("/lessons");
               });
             }}
           />

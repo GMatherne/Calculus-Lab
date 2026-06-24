@@ -1,0 +1,464 @@
+{
+  "id": "maxima-and-minima",
+  "title": "Finding Maxima and Minima",
+  "order": 7,
+  "estimatedMinutes": 8,
+  "conceptTags": ["extrema"],
+  "published": true,
+  "steps": [
+    {
+      "id": "mm-step-1",
+      "type": "read",
+      "conceptTag": "extrema",
+      "content": [
+        {
+          "type": "text",
+          "body": "Last lesson you saw that a smooth curve turns around exactly where its tangent goes flat — where f'(x) = 0. But a flat tangent sits at the top of every hill and the bottom of every valley alike, so f'(x) = 0 on its own can't tell a maximum from a minimum."
+        },
+        {
+          "type": "text",
+          "body": "The tell is what the slope does on each side. A maximum is where the curve stops climbing and starts falling: f goes from increasing to decreasing, so the slope flips from positive to negative. A minimum is the mirror image — the curve stops falling and starts rising, so the slope flips from negative to positive."
+        }
+      ],
+      "feedback": { "correct": "", "incorrect": "", "hint": "" }
+    },
+    {
+      "id": "mm-step-2",
+      "type": "slider_graph",
+      "conceptTag": "extrema",
+      "content": [
+        {
+          "type": "text",
+          "body": "Here's a hilltop: f(x) = −x² + 4x. Drag x from left to right across the peak at x = 2 and watch the tangent slope. How does the slope change as you pass the top?"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "-x^2 + 4*x",
+          "domain": [0, 4],
+          "sliderLabel": "x",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showTangent": true,
+          "slopeLabel": "Tangent slope",
+          "sliderMin": 0,
+          "sliderMax": 4,
+          "sliderStep": 0.1,
+          "initialSlider": 0.5
+        },
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "From positive to negative",
+            "From negative to positive",
+            "It stays positive the whole time",
+            "It stays zero the whole time"
+          ],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "Right — left of the peak the slope is positive (f rising), and right of it the slope is negative (f falling). Increasing then decreasing makes x = 2 a maximum.",
+        "incorrect": "Watch the sign of the tangent slope just before and just after x = 2.",
+        "hint": "f'(x) = −2x + 4: positive for x < 2, negative for x > 2 — it flips from + to −."
+      }
+    },
+    {
+      "id": "mm-step-3",
+      "type": "slider_graph",
+      "conceptTag": "extrema",
+      "content": [
+        {
+          "type": "text",
+          "body": "Now a valley: f(x) = x² − 2x. Drag x across the lowest point at x = 1 and watch the tangent slope flip. What happens to the slope as you pass the bottom?"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^2 - 2*x",
+          "domain": [-1, 3],
+          "sliderLabel": "x",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showTangent": true,
+          "slopeLabel": "Tangent slope",
+          "sliderMin": -1,
+          "sliderMax": 3,
+          "sliderStep": 0.1,
+          "initialSlider": -1
+        },
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "From negative to positive",
+            "From positive to negative",
+            "It stays negative the whole time",
+            "It stays zero the whole time"
+          ],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "Exactly — the slope is negative as the curve falls toward the bottom, then positive as it rises away. Decreasing then increasing makes x = 1 a minimum.",
+        "incorrect": "Check the tangent slope just left and just right of x = 1.",
+        "hint": "f'(x) = 2x − 2: negative for x < 1, positive for x > 1 — it flips from − to +."
+      }
+    },
+    {
+      "id": "mm-step-4",
+      "type": "multiple_choice",
+      "conceptTag": "extrema",
+      "content": [
+        {
+          "type": "text",
+          "body": "Generalize the pattern. If the slope f'(x) changes from positive to negative as x increases through a point, what is the graph doing there?"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^3 - 3*x",
+          "domain": [-2.2, 2.2],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true
+        },
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "Rising then falling — a maximum",
+            "Falling then rising — a minimum",
+            "Rising the whole way — no turning point",
+            "Falling the whole way — no turning point"
+          ],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "Positive-to-negative slope means f increases then decreases, so the curve peaks — a maximum.",
+        "incorrect": "Positive slope means rising; negative slope means falling. Work out the order those happen in as x increases through the point.",
+        "hint": "+ slope = rising, − slope = falling. Rising then falling makes a peak."
+      }
+    },
+    {
+      "id": "mm-step-5",
+      "type": "read",
+      "conceptTag": "extrema",
+      "content": [
+        {
+          "type": "text",
+          "body": "This is the first-derivative test: to classify a point where f'(x) = 0, look at the sign of f' on each side. A flip from + to − is a maximum (up then down); a flip from − to + is a minimum (down then up)."
+        },
+        {
+          "type": "text",
+          "body": "A single curve can hold both. Next is f(x) = x³ − 3x, which climbs to a peak, dips into a valley, then climbs again — a maximum and a minimum on the same graph."
+        }
+      ],
+      "feedback": { "correct": "", "incorrect": "", "hint": "" }
+    },
+    {
+      "id": "mm-step-6",
+      "type": "slider_graph",
+      "conceptTag": "extrema",
+      "content": [
+        {
+          "type": "text",
+          "body": "On f(x) = x³ − 3x, tap the local maximum — the peak where the curve stops climbing and starts falling."
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^3 - 3*x",
+          "domain": [-2.2, 2.2],
+          "xLabel": "x",
+          "yLabel": "f",
+          "pointChoices": [-2, -1, 0, 1, 2]
+        },
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "graph_point",
+          "x": -1,
+          "tolerance": 0.1
+        }
+      },
+      "feedback": {
+        "correct": "Yes — at x = −1 the curve turns from rising to falling, so f'(−1) = 0 and it's a local maximum (the peak).",
+        "incorrect": "Look for the hilltop, where the curve switches from going up to going down.",
+        "hint": "f'(x) = 3x² − 3 = 0 gives x = ±1; the peak (rising → falling) is the one on the left, x = −1."
+      }
+    },
+    {
+      "id": "mm-step-7",
+      "type": "slider_graph",
+      "conceptTag": "extrema",
+      "content": [
+        {
+          "type": "text",
+          "body": "On the same curve, tap the local minimum — the valley where the curve stops falling and starts rising."
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^3 - 3*x",
+          "domain": [-2.2, 2.2],
+          "xLabel": "x",
+          "yLabel": "f",
+          "pointChoices": [-2, -1, 0, 1, 2]
+        },
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "graph_point",
+          "x": 1,
+          "tolerance": 0.1
+        }
+      },
+      "feedback": {
+        "correct": "Right — at x = 1 the curve turns from falling to rising, so f'(1) = 0 and it's a local minimum (the valley).",
+        "incorrect": "Look for the low point, where the curve switches from going down to going up.",
+        "hint": "Of the two turning points x = ±1, the valley (falling → rising) is the one on the right, x = 1."
+      }
+    },
+    {
+      "id": "mm-step-8",
+      "type": "numeric",
+      "conceptTag": "extrema",
+      "content": [
+        {
+          "type": "text",
+          "body": "Try it with algebra. For f(x) = x² − 6x, the slope is f'(x) = 2x − 6. Find the x where the tangent is flat (f'(x) = 0)."
+        },
+        { "type": "math", "latex": "f'(x) = 2x - 6" }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^2 - 6*x",
+          "domain": [0, 6],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true
+        },
+        "hintAfterAttempts": 1,
+        "answer": { "type": "numeric", "value": 3, "tolerance": 0.01 }
+      },
+      "feedback": {
+        "correct": "x = 3. Just left of it the slope 2x − 6 is negative (falling); just right it's positive (rising) — down then up, so x = 3 is a minimum.",
+        "incorrect": "Set 2x − 6 = 0 and solve for x.",
+        "hint": "2x − 6 = 0 → 2x = 6 → x = 3."
+      }
+    },
+    {
+      "id": "mm-step-9",
+      "type": "read",
+      "conceptTag": "extrema",
+      "content": [
+        {
+          "type": "text",
+          "body": "You can now locate and classify turning points: solve f'(x) = 0 to find the candidates, then read the sign change of f' to tell a peak from a valley."
+        },
+        {
+          "type": "math",
+          "latex": "f' : + \\to - \\Rightarrow \\text{maximum}, \\quad f' : - \\to + \\Rightarrow \\text{minimum}",
+          "display": true
+        },
+        {
+          "type": "text",
+          "body": "That wraps up reading a graph with derivatives. Next, you'll switch from the slope of a curve to the area beneath it — the integral."
+        }
+      ],
+      "feedback": { "correct": "", "incorrect": "", "hint": "" }
+    }
+  ],
+  "practiceBank": [
+    {
+      "id": "mm-practice-1",
+      "type": "multiple_choice",
+      "conceptTag": "extrema",
+      "content": [
+        {
+          "type": "text",
+          "body": "If f'(x) changes from negative to positive as x increases through x = c, what kind of point is c?"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^3 - 3*x",
+          "domain": [-2.2, 2.2],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true
+        },
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "A minimum",
+            "A maximum",
+            "A constant stretch",
+            "Not a turning point"
+          ],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "Right — negative-to-positive slope means the curve falls then rises, a valley (minimum).",
+        "incorrect": "Negative slope = falling, positive slope = rising. Work out the order those happen in as x passes through c.",
+        "hint": "− then + means down then up — a minimum."
+      }
+    },
+    {
+      "id": "mm-practice-2",
+      "type": "multiple_choice",
+      "conceptTag": "extrema",
+      "content": [
+        {
+          "type": "text",
+          "body": "As x increases through a local maximum, how does the tangent slope behave?"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^3 - 3*x",
+          "domain": [-2.2, 2.2],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true
+        },
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "From positive to negative",
+            "From negative to positive",
+            "It stays positive",
+            "It stays negative"
+          ],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "Yes — a maximum is rising then falling, so the slope runs from positive to negative.",
+        "incorrect": "A maximum is a peak: the curve rises up to it, then falls away.",
+        "hint": "Rising (+) before the peak, falling (−) after."
+      }
+    },
+    {
+      "id": "mm-practice-3",
+      "type": "numeric",
+      "conceptTag": "extrema",
+      "content": [
+        {
+          "type": "text",
+          "body": "For f(x) = x² − 8x, the slope is f'(x) = 2x − 8. Find the x where f'(x) = 0."
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^2 - 8*x",
+          "domain": [0, 8],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true
+        },
+        "answer": { "type": "numeric", "value": 4, "tolerance": 0.01 }
+      },
+      "feedback": {
+        "correct": "x = 4 — and since the slope runs − then +, it's a minimum.",
+        "incorrect": "Set 2x − 8 = 0 and solve.",
+        "hint": "2x − 8 = 0 → 2x = 8 → x = 4."
+      }
+    },
+    {
+      "id": "mm-practice-4",
+      "type": "numeric",
+      "conceptTag": "extrema",
+      "content": [
+        {
+          "type": "text",
+          "body": "For f(x) = −x² + 6x, the slope is f'(x) = −2x + 6. Find the x at the peak (where f'(x) = 0)."
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "-x^2 + 6*x",
+          "domain": [0, 6],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true
+        },
+        "answer": { "type": "numeric", "value": 3, "tolerance": 0.01 }
+      },
+      "feedback": {
+        "correct": "x = 3 — the slope goes + then −, so the peak (maximum) is at x = 3.",
+        "incorrect": "Set −2x + 6 = 0 and solve.",
+        "hint": "−2x + 6 = 0 → 2x = 6 → x = 3."
+      }
+    },
+    {
+      "id": "mm-practice-5",
+      "type": "slider_graph",
+      "conceptTag": "extrema",
+      "content": [
+        {
+          "type": "text",
+          "body": "On f(x) = x³ − 3x, tap the local minimum — the valley where the curve turns from falling to rising."
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^3 - 3*x",
+          "domain": [-2.2, 2.2],
+          "xLabel": "x",
+          "yLabel": "f",
+          "pointChoices": [-2, -1, 0, 1, 2]
+        },
+        "answer": {
+          "type": "graph_point",
+          "x": 1,
+          "tolerance": 0.1
+        }
+      },
+      "feedback": {
+        "correct": "Right — x = 1 is where the curve bottoms out and turns back up.",
+        "incorrect": "The valley is the low turning point, where the curve bottoms out and turns back up.",
+        "hint": "f'(x) = 3x² − 3 = 0 gives x = ±1; the valley (falling → rising) is x = 1."
+      }
+    },
+    {
+      "id": "mm-practice-6",
+      "type": "multiple_choice",
+      "conceptTag": "extrema",
+      "content": [
+        {
+          "type": "text",
+          "body": "The slope of a curve goes from positive to negative at x = 2. What does the graph look like near x = 2?"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^3 - 3*x",
+          "domain": [-2.2, 2.2],
+          "xLabel": "x",
+          "yLabel": "f",
+          "static": true
+        },
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "It rises then falls — a maximum",
+            "It falls then rises — a minimum",
+            "It rises the whole way",
+            "It falls the whole way"
+          ],
+          "correctIndex": 0
+        }
+      },
+      "feedback": {
+        "correct": "Positive then negative slope = rising then falling = a maximum at x = 2.",
+        "incorrect": "Positive slope is rising, negative slope is falling. Which order is that?",
+        "hint": "+ → − means up then down — a peak."
+      }
+    }
+  ]
+}
