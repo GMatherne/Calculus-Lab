@@ -1,7 +1,12 @@
 import { useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import { getLevel, getLevelReviewSession } from "../lib/contentLoader";
+import { Link, Navigate, useParams } from "react-router-dom";
+import {
+  getLevel,
+  getLevelReviewSession,
+  getLevelStatus,
+} from "../lib/contentLoader";
 import type { Lesson, PracticeResult } from "../types/content";
+import { useProgress } from "../contexts/ProgressContext";
 import { LessonPlayer } from "../components/lesson/LessonPlayer";
 import { PracticeResults } from "../components/lesson/PracticeResults";
 import { AppHeader } from "../components/layout/AppHeader";
@@ -9,6 +14,7 @@ import { SafeArea } from "../components/layout/SafeArea";
 
 export function LevelReviewPage() {
   const { levelId } = useParams<{ levelId: string }>();
+  const { progress, loading: progressLoading } = useProgress();
   const level = levelId ? getLevel(levelId) : undefined;
 
   const [result, setResult] = useState<PracticeResult | null>(null);
@@ -55,6 +61,24 @@ export function LevelReviewPage() {
         </main>
       </SafeArea>
     );
+  }
+
+  if (progressLoading) {
+    return (
+      <SafeArea>
+        <AppHeader />
+        <main className="flex-1 flex flex-col px-4 py-4 max-w-3xl mx-auto w-full min-h-0">
+          <p className="text-slate-500 text-center py-12">Loading review…</p>
+        </main>
+      </SafeArea>
+    );
+  }
+
+  // The review mixes questions from every lesson in the level, so it only opens
+  // once the level is complete — including via a hand-edited URL. This mirrors
+  // the roadmap, which surfaces the review link only for completed levels.
+  if (getLevelStatus(level, progress) !== "complete") {
+    return <Navigate to="/lessons" replace />;
   }
 
   if (result) {

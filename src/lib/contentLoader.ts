@@ -209,6 +209,25 @@ export function isLessonUnlocked(
   );
 }
 
+/**
+ * Whether the learner may open a lesson directly (e.g. by its URL). True when
+ * the lesson is unlocked by sequential progression, or when it's already been
+ * started or finished — so resuming or reviewing keeps working even if the
+ * strict unlock chain wouldn't hold (e.g. after content reordering). Route and
+ * page guards must use this: the roadmap only hides locked lessons in the UI,
+ * but direct navigation has to enforce the same rule.
+ */
+export function canAccessLesson(
+  lessonId: string,
+  progress: Record<string, { status: string }>,
+): boolean {
+  if (isLessonUnlocked(lessonId, progress)) return true;
+  const status = progress[lessonId]?.status;
+  return (
+    status === "in_progress" || status === "complete" || status === "mastered"
+  );
+}
+
 export function getContinueLessonId(
   progress: Record<string, { status: string; currentStepIndex?: number }>,
 ): string | null {

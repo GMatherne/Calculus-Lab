@@ -3,6 +3,7 @@ import {
   getLesson,
   getNextLessonId,
   isLessonUnlocked,
+  canAccessLesson,
   getLessonProgressPercent,
   getCompletionPercent,
   getLevels,
@@ -43,6 +44,31 @@ describe("isLessonUnlocked", () => {
     expect(
       isLessonUnlocked(second, { [published[0].id]: { status: "complete" } }),
     ).toBe(true);
+  });
+});
+
+describe("canAccessLesson", () => {
+  const first = published[0].id;
+  const second = published[1].id;
+
+  it("allows the first lesson and blocks a locked later lesson", () => {
+    expect(canAccessLesson(first, {})).toBe(true);
+    expect(canAccessLesson(second, {})).toBe(false);
+  });
+
+  it("allows a later lesson once the previous one is complete", () => {
+    expect(canAccessLesson(second, { [first]: { status: "complete" } })).toBe(
+      true,
+    );
+  });
+
+  it("allows a started or finished lesson even if it would otherwise be locked", () => {
+    expect(canAccessLesson(second, { [second]: { status: "in_progress" } })).toBe(
+      true,
+    );
+    expect(canAccessLesson(second, { [second]: { status: "complete" } })).toBe(
+      true,
+    );
   });
 });
 

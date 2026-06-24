@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { getLesson } from "../lib/contentLoader";
+import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
+import { canAccessLesson, getLesson } from "../lib/contentLoader";
 import { useAuth } from "../contexts/AuthContext";
 import { useProgress, isLessonDone } from "../contexts/ProgressContext";
 import { LessonPlayer } from "../components/lesson/LessonPlayer";
@@ -45,6 +45,14 @@ export function LessonPage() {
         </main>
       </SafeArea>
     );
+  }
+
+  // Locking is enforced here, not just in the roadmap UI: a locked lesson can't
+  // be reached by editing the URL. We wait for progress to load (`ready`) so an
+  // already-unlocked lesson isn't wrongly bounced before its prerequisites are
+  // known.
+  if (ready && !canAccessLesson(lesson.id, progress)) {
+    return <Navigate to="/lessons" replace />;
   }
 
   // First-time completion earns XP and shows the reward screen; replaying or

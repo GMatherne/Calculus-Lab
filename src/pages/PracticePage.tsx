@@ -1,7 +1,13 @@
 import { useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import { getLesson, getPracticeSession, hasPractice } from "../lib/contentLoader";
+import { Link, Navigate, useParams } from "react-router-dom";
+import {
+  canAccessLesson,
+  getLesson,
+  getPracticeSession,
+  hasPractice,
+} from "../lib/contentLoader";
 import type { Lesson, PracticeResult } from "../types/content";
+import { useProgress } from "../contexts/ProgressContext";
 import { LessonPlayer } from "../components/lesson/LessonPlayer";
 import { PracticeResults } from "../components/lesson/PracticeResults";
 import { AppHeader } from "../components/layout/AppHeader";
@@ -9,6 +15,7 @@ import { SafeArea } from "../components/layout/SafeArea";
 
 export function PracticePage() {
   const { lessonId } = useParams<{ lessonId: string }>();
+  const { progress, loading: progressLoading } = useProgress();
 
   const lesson = lessonId ? getLesson(lessonId) : undefined;
 
@@ -46,6 +53,23 @@ export function PracticePage() {
         </main>
       </SafeArea>
     );
+  }
+
+  if (progressLoading) {
+    return (
+      <SafeArea>
+        <AppHeader />
+        <main className="flex-1 flex flex-col px-4 py-4 max-w-3xl mx-auto w-full min-h-0">
+          <p className="text-slate-500 text-center py-12">Loading practice…</p>
+        </main>
+      </SafeArea>
+    );
+  }
+
+  // Practice draws from a lesson's question bank, so a locked lesson must not be
+  // practiceable via a hand-edited URL either.
+  if (!canAccessLesson(lessonId, progress)) {
+    return <Navigate to="/lessons" replace />;
   }
 
   if (result) {
