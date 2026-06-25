@@ -50,7 +50,7 @@ back to demo mode, so it runs with zero configuration.
 
 ## Question types
 
-Eight step types fit the concept being taught:
+Eleven step types fit the concept being taught:
 
 | Type | Learner action | Graded |
 |------|----------------|:------:|
@@ -62,6 +62,9 @@ Eight step types fit the concept being taught:
 | `power_term` | Build a term `a·xⁿ` with steppers (power rule / reverse power rule) | Yes |
 | `drag_drop` | Drag tiles into ordered blanks to assemble an expression | Yes |
 | `match` | Pair each prompt with its match (e.g. function ↔ antiderivative) | Yes |
+| `sign_chart` | Label each interval of a number line (e.g. increasing vs. decreasing) | Yes |
+| `order_list` | Drag shuffled items into their correct order | Yes |
+| `riemann` | Drag a slider to pile up rectangles until a Riemann sum converges | Yes |
 
 Graph-backed steps can also carry a **slider** answer (drag to a target) or a **graph_point**
 answer (tap the correct point on the curve).
@@ -87,7 +90,7 @@ A layered, server-free design — version-controlled JSON content, browser logic
 and Firebase only for identity + per-user storage.
 
 ```text
-content/derivatives/     # course.json + 11 lesson JSON files (the entire course)
+content/                 # course.json + 11 lesson JSON files (the entire course)
 scripts/                 # validate-lessons.ts (CLI lesson validator)
 src/
   lib/                   # contentLoader · feedbackEngine · progressService ·
