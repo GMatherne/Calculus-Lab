@@ -1,4 +1,4 @@
-export type StepType =
+type StepType =
   | "read"
   | "multiple_choice"
   | "multi_choice"
@@ -11,17 +11,17 @@ export type StepType =
   | "order_list"
   | "riemann";
 
-export type LessonStatus =
+type LessonStatus =
   | "not_started"
   | "in_progress"
   | "complete";
 
-export interface TextBlock {
+interface TextBlock {
   type: "text";
   body: string;
 }
 
-export interface MathBlock {
+interface MathBlock {
   type: "math";
   latex: string;
   display?: boolean;
@@ -108,7 +108,7 @@ export interface GraphConfig {
   areaLabel?: string;
 }
 
-export interface MultipleChoiceAnswer {
+interface MultipleChoiceAnswer {
   type: "multiple_choice";
   options: string[];
   correctIndex: number;
@@ -144,7 +144,7 @@ export interface MultiChoiceAnswer {
   parts: MultiChoicePart[];
 }
 
-export interface NumericAnswer {
+interface NumericAnswer {
   type: "numeric";
   value: number;
   tolerance?: number;
@@ -154,7 +154,7 @@ export interface NumericAnswer {
  * Drag-the-slider question: the learner moves the graph slider until a
  * condition is met. The submitted answer is the slider's value.
  */
-export interface SliderAnswer {
+interface SliderAnswer {
   type: "slider";
   value: number;
   tolerance?: number;
@@ -164,7 +164,7 @@ export interface SliderAnswer {
  * Tap-the-point question: the learner clicks a location on the curve. The
  * submitted answer is the x-coordinate of the tap.
  */
-export interface GraphPointAnswer {
+interface GraphPointAnswer {
   type: "graph_point";
   x: number;
   tolerance?: number;
@@ -178,7 +178,7 @@ export interface GraphPointAnswer {
  * term to 0 (e.g. the derivative of a constant), so the exponent is ignored when
  * grading that case.
  */
-export interface PowerTermAnswer {
+interface PowerTermAnswer {
   type: "power_term";
   coefficient: number;
   exponent: number;
@@ -195,7 +195,7 @@ export interface PowerTermAnswer {
 }
 
 /** One blank in a {@link DragDropAnswer}, filled by dragging a tile from the bank. */
-export interface DragDropBlank {
+interface DragDropBlank {
   /**
    * LaTeX of the tile that correctly fills this blank. Must appear verbatim in
    * the answer's `bank`.
@@ -239,7 +239,7 @@ export interface DragDropAnswer {
  * the right-hand option that correctly matches it (e.g. a function paired with
  * its antiderivative).
  */
-export interface MatchPair {
+interface MatchPair {
   /** Left-hand item shown in fixed order, e.g. "$x^2$". Rendered with inline math ($…$). */
   prompt: string;
   /**
@@ -270,7 +270,7 @@ export interface MatchAnswer {
 }
 
 /** One interval in a {@link SignChartAnswer}. */
-export interface SignChartRegion {
+interface SignChartRegion {
   /** Index into the answer's shared `options` that correctly labels this interval. */
   correctIndex: number;
 }
@@ -355,7 +355,7 @@ export type AnswerSpec =
   | OrderListAnswer
   | RiemannAnswer;
 
-export interface Interaction {
+interface Interaction {
   graph?: GraphConfig;
   answer?: AnswerSpec;
   /** Hints shown after this many wrong attempts (default 2; lesson 1 uses 1) */
@@ -416,7 +416,7 @@ export interface LessonMeta {
  * previous one (e.g. "What Is a Derivative?" → "Finding Derivatives"). Lessons
  * are referenced by id and rendered in the listed order.
  */
-export interface CourseLevel {
+interface CourseLevel {
   id: string;
   title: string;
   /** One-line summary of what this level builds toward. */
