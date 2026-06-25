@@ -40,6 +40,7 @@ Human Ideas:
             - Streak sympathy for newcomers
                 - Becomes more rigid as they use the app
             - Streak freezes
+            - Brilliant sent me emails a few minutes ago about my streak
 
         LS Idea: Spaced repetition is good
         Solutions:
