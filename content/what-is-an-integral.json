@@ -142,6 +142,39 @@
       }
     },
     {
+      "id": "int-step-riemann",
+      "type": "riemann",
+      "conceptTag": "area_under_curve",
+      "content": [
+        {
+          "type": "text",
+          "body": "A genuine curve like f(x) = x² isn't a rectangle or a triangle, so there's no single area formula to read off. Instead we slice the region into many thin rectangles, add up their areas, and use that as an estimate."
+        },
+        {
+          "type": "text",
+          "body": "Drag to add rectangles under f(x) = x² on [0, 2] and watch the running estimate. A few rectangles is rough, but as you add more they hug the curve and the estimate closes in on the true area ≈ 2.67."
+        }
+      ],
+      "interaction": {
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "riemann",
+          "fn": "x^2",
+          "a": 0,
+          "b": 2,
+          "trueArea": 2.6667,
+          "targetWithin": 0.2,
+          "maxRects": 40,
+          "domain": [0, 2]
+        }
+      },
+      "feedback": {
+        "correct": "That's the key idea — more rectangles hug the curve tighter, and the estimate closes in on the true area, 8/3 ≈ 2.67.",
+        "incorrect": "A couple of rectangles leave big gaps over the curve. Add more so they fit snugly and the estimate sharpens.",
+        "hint": "Slide right to add rectangles; the midpoint estimate settles near 2.67."
+      }
+    },
+    {
       "id": "int-step-4",
       "type": "read",
       "conceptTag": "integral",
@@ -263,111 +296,360 @@
   "practiceBank": [
     {
       "id": "int-practice-1",
-      "type": "numeric",
+      "type": "slider_graph",
       "conceptTag": "area_under_curve",
       "content": [
         {
           "type": "text",
-          "body": "The constant function f(x) = 3 makes a rectangle. Evaluate this integral — it's the area of that rectangle (height × width)."
-        },
-        {
-          "type": "math",
-          "latex": "\\int_0^4 3\\,dx",
-          "display": true
+          "body": "The shaded region is the area under f(x) = x from 0 to t. Drag t until that area is 8."
         }
       ],
       "interaction": {
         "graph": {
-          "fn": "3",
+          "fn": "x",
           "domain": [0, 5],
           "yDomain": [0, 5],
+          "sliderLabel": "t",
           "xLabel": "x",
           "yLabel": "f",
+          "showSecant": false,
+          "showValue": false,
           "showArea": true,
           "areaStart": 0,
-          "initialSlider": 4,
-          "static": true
+          "showAreaValue": false,
+          "sliderMin": 0,
+          "sliderMax": 5,
+          "sliderStep": 0.1,
+          "initialSlider": 0
         },
-        "answer": { "type": "numeric", "value": 12, "tolerance": 0.1 }
+        "answer": {
+          "type": "slider",
+          "value": 4,
+          "tolerance": 0.15
+        }
       },
       "feedback": {
-        "correct": "Right — a rectangle of height 3 and width 4 has area 3 × 4 = 12.",
-        "incorrect": "Area of a rectangle = height × width. Here height = 3 and width = 4.",
-        "hint": "3 × 4 = 12."
+        "correct": "Nice — ½ · 4² = 8, so t = 4 gives exactly 8 units of area.",
+        "incorrect": "Set ½t² = 8, so t² = 16. Solve for t, then drag the slider there.",
+        "hint": "½t² = 8 → t² = 16 → t = 4."
       }
     },
     {
       "id": "int-practice-2",
-      "type": "numeric",
+      "type": "slider_graph",
       "conceptTag": "area_under_curve",
       "content": [
         {
           "type": "text",
-          "body": "For f(x) = x, the region under the line from 0 to 6 is a triangle. Evaluate this integral, the triangle's area (½ · base · height)."
+          "body": "For the flat line f(x) = 2, drag t until the shaded area from 0 to t is 6."
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "2",
+          "domain": [0, 5],
+          "yDomain": [0, 4],
+          "sliderLabel": "t",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showValue": false,
+          "showArea": true,
+          "areaStart": 0,
+          "showAreaValue": false,
+          "sliderMin": 0,
+          "sliderMax": 5,
+          "sliderStep": 0.1,
+          "initialSlider": 0
+        },
+        "answer": {
+          "type": "slider",
+          "value": 3,
+          "tolerance": 0.15
+        }
+      },
+      "feedback": {
+        "correct": "Right — 2 · 3 = 6, so t = 3 encloses 6 units of area.",
+        "incorrect": "The area is height × width = 2t. Set 2t = 6 and solve.",
+        "hint": "2t = 6 → t = 3."
+      }
+    },
+    {
+      "id": "int-practice-3",
+      "type": "slider_graph",
+      "conceptTag": "area_under_curve",
+      "content": [
+        {
+          "type": "text",
+          "body": "This time the shaded region starts at x = 1, not 0. Drag t until the area under f(x) = x from 1 to t equals 4."
         },
         {
           "type": "math",
-          "latex": "\\int_0^6 x\\,dx",
+          "latex": "\\int_1^t x\\,dx = 4",
           "display": true
         }
       ],
       "interaction": {
         "graph": {
           "fn": "x",
-          "domain": [0, 7],
-          "yDomain": [0, 7],
+          "domain": [0, 5],
+          "yDomain": [0, 5],
+          "sliderLabel": "t",
           "xLabel": "x",
           "yLabel": "f",
+          "showSecant": false,
+          "showValue": false,
           "showArea": true,
-          "areaStart": 0,
-          "initialSlider": 6,
-          "static": true
+          "areaStart": 1,
+          "showAreaValue": false,
+          "sliderMin": 1,
+          "sliderMax": 5,
+          "sliderStep": 0.1,
+          "initialSlider": 1
         },
-        "answer": { "type": "numeric", "value": 18, "tolerance": 0.1 }
+        "answer": {
+          "type": "slider",
+          "value": 3,
+          "tolerance": 0.15
+        }
       },
       "feedback": {
-        "correct": "Yes — ½ · 6 · 6 = 18.",
-        "incorrect": "Triangle area = ½ · base · height, with base 6 and height f(6) = 6.",
-        "hint": "½ · 6 · 6 = 18."
+        "correct": "Nice — (t² − 1)/2 = 4 gives t² = 9, so t = 3. Starting at 1 instead of 0 leaves out the little triangle below x = 1.",
+        "incorrect": "Set (t² − 1)/2 = 4, so t² − 1 = 8 and t² = 9. Solve for t, then drag the slider there.",
+        "hint": "(t² − 1)/2 = 4 → t² = 9 → t = 3."
       }
     },
     {
-      "id": "int-practice-3",
-      "type": "multiple_choice",
-      "conceptTag": "integral",
+      "id": "int-practice-4",
+      "type": "match",
+      "conceptTag": "area_under_curve",
       "content": [
         {
           "type": "text",
-          "body": "The area under a constant function f(x) = 5 over an interval of width 2 is a…"
+          "body": "Match each integral to its value. Watch out: where the curve dips below the x-axis the area is negative, so some values are negative or zero."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "match",
+          "pairs": [
+            { "prompt": "$\\int_0^2 x\\,dx$", "match": "2" },
+            { "prompt": "$\\int_1^3 x\\,dx$", "match": "4" },
+            { "prompt": "$\\int_0^2 (x-2)\\,dx$", "match": "-2" },
+            { "prompt": "$\\int_0^4 (x-2)\\,dx$", "match": "0" }
+          ],
+          "distractors": ["6", "-4"]
+        }
+      },
+      "feedback": {
+        "correct": "Exactly — ∫₀² x = 2 and ∫₁³ x = 4 are positive areas, ∫₀² (x−2) = −2 sits below the axis, and ∫₀⁴ (x−2) = 0 because the area below on [0, 2] cancels the area above on [2, 4].",
+        "incorrect": "Use (b² − a²)/2 for ∫ₐᵇ x, and remember area below the axis counts as negative. ∫₀⁴ (x−2) cancels to 0.",
+        "hint": "∫₀² x = 2, ∫₁³ x = 4, ∫₀² (x−2) = −2, ∫₀⁴ (x−2) = 0."
+      }
+    },
+    {
+      "id": "int-practice-5",
+      "type": "slider_graph",
+      "conceptTag": "area_under_curve",
+      "content": [
+        {
+          "type": "text",
+          "body": "Again, the shaded region is the area under f(x) = x from 0 to t. Drag t until that area equals 2."
         }
       ],
       "interaction": {
         "graph": {
-          "fn": "5",
-          "domain": [0, 3],
-          "yDomain": [0, 6],
+          "fn": "x",
+          "domain": [0, 5],
+          "yDomain": [0, 5],
+          "sliderLabel": "t",
           "xLabel": "x",
           "yLabel": "f",
+          "showSecant": false,
+          "showValue": false,
           "showArea": true,
           "areaStart": 0,
-          "initialSlider": 2,
-          "static": true
+          "showAreaValue": false,
+          "sliderMin": 0,
+          "sliderMax": 5,
+          "sliderStep": 0.1,
+          "initialSlider": 0
         },
         "answer": {
-          "type": "multiple_choice",
-          "options": [
-            "triangle with area 5",
-            "rectangle with area 10",
-            "rectangle with area 5",
-            "triangle with area 10"
-          ],
-          "correctIndex": 1
+          "type": "slider",
+          "value": 2,
+          "tolerance": 0.15
         }
       },
       "feedback": {
-        "correct": "Correct — height 5 times width 2 gives a rectangle of area 10.",
-        "incorrect": "A constant function is flat, so the region is a rectangle: height × width.",
-        "hint": "5 × 2 = 10, and the shape is a rectangle."
+        "correct": "Yes — ½ · 2² = 2, so t = 2.",
+        "incorrect": "Set ½t² = 2, so t² = 4. Solve for t, then drag there.",
+        "hint": "½t² = 2 → t² = 4 → t = 2."
+      }
+    },
+    {
+      "id": "int-practice-6",
+      "type": "match",
+      "conceptTag": "integral",
+      "content": [
+        {
+          "type": "text",
+          "body": "Match each integral to the area it represents."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "match",
+          "pairs": [
+            { "prompt": "$\\int_0^4 3\\,dx$", "match": "12" },
+            { "prompt": "$\\int_0^6 x\\,dx$", "match": "18" },
+            { "prompt": "$\\int_0^5 2\\,dx$", "match": "10" },
+            { "prompt": "$\\int_1^3 x\\,dx$", "match": "4" }
+          ],
+          "distractors": ["16"]
+        }
+      },
+      "feedback": {
+        "correct": "Right — constants give rectangles (3 · 4 = 12, 2 · 5 = 10) and lines give triangular areas: ∫₀⁶ x = ½ · 6² = 18, and starting at 1, ∫₁³ x = (9 − 1)/2 = 4.",
+        "incorrect": "A constant f makes a rectangle (height × width). For f(x) = x use (b² − a²)/2 — and mind the lower bound when it isn't 0.",
+        "hint": "∫₀⁴ 3 = 12, ∫₀⁶ x = 18, ∫₀⁵ 2 = 10, ∫₁³ x = (9 − 1)/2 = 4."
+      }
+    },
+    {
+      "id": "int-practice-7",
+      "type": "slider_graph",
+      "conceptTag": "area_under_curve",
+      "content": [
+        {
+          "type": "text",
+          "body": "For the flat line f(x) = 2, drag t until the shaded area from 1 to t equals 6."
+        },
+        {
+          "type": "math",
+          "latex": "\\int_1^t 2\\,dx = 6",
+          "display": true
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "2",
+          "domain": [0, 6],
+          "yDomain": [0, 4],
+          "sliderLabel": "t",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showValue": false,
+          "showArea": true,
+          "areaStart": 1,
+          "showAreaValue": false,
+          "sliderMin": 1,
+          "sliderMax": 6,
+          "sliderStep": 0.1,
+          "initialSlider": 1
+        },
+        "answer": {
+          "type": "slider",
+          "value": 4,
+          "tolerance": 0.15
+        }
+      },
+      "feedback": {
+        "correct": "Right — 2(t − 1) = 6 gives t − 1 = 3, so t = 4. The width runs from 1 to 4, not from 0.",
+        "incorrect": "The area is height × width = 2(t − 1). Set 2(t − 1) = 6 and solve for t.",
+        "hint": "2(t − 1) = 6 → t − 1 = 3 → t = 4."
+      }
+    },
+    {
+      "id": "int-practice-8",
+      "type": "order_list",
+      "conceptTag": "integral",
+      "content": [
+        {
+          "type": "text",
+          "body": "Order these integrals from smallest area to largest."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "order_list",
+          "orderLabel": "Smallest → largest area",
+          "items": [
+            "$\\int_1^2 x\\,dx$",
+            "$\\int_0^2 x\\,dx$",
+            "$\\int_1^3 x\\,dx$",
+            "$\\int_0^4 x\\,dx$"
+          ]
+        }
+      },
+      "feedback": {
+        "correct": "Right — the areas are 1.5, 2, 4, and 8. Use (b² − a²)/2 for each.",
+        "incorrect": "Compute each with ∫ₐᵇ x = (b² − a²)/2, then order them smallest to largest.",
+        "hint": "∫₁² x = 1.5, ∫₀² x = 2, ∫₁³ x = 4, ∫₀⁴ x = 8."
+      }
+    },
+    {
+      "id": "int-practice-9",
+      "type": "drag_drop",
+      "conceptTag": "integral",
+      "content": [
+        {
+          "type": "text",
+          "body": "The area under f(x) = x from 0 to b is a triangle. Drag the matching expression for that area into the blank."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "drag_drop",
+          "prefix": "\\int_0^b x\\,dx =",
+          "blanks": [{ "accept": "\\frac{1}{2}b^2" }],
+          "bank": ["\\frac{1}{2}b^2", "b^2", "2b^2", "\\frac{1}{2}b"]
+        }
+      },
+      "feedback": {
+        "correct": "Exactly — a triangle of base b and height b has area ½b².",
+        "incorrect": "The region is a triangle: ½ · base · height, with base and height both b.",
+        "hint": "½ · b · b = ½b²."
+      }
+    },
+    {
+      "id": "int-practice-10",
+      "type": "slider_graph",
+      "conceptTag": "area_under_curve",
+      "content": [
+        {
+          "type": "text",
+          "body": "Here the curve f(x) = x − 2 dips below the axis, so area there counts as negative. The shaded region runs from 0 to t. Drag t to where the running (signed) area is the MOST NEGATIVE."
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x - 2",
+          "domain": [0, 4],
+          "yDomain": [-3, 3],
+          "sliderLabel": "t",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showValue": false,
+          "showArea": true,
+          "areaStart": 0,
+          "showAreaValue": true,
+          "sliderMin": 0,
+          "sliderMax": 4,
+          "sliderStep": 0.1,
+          "initialSlider": 0
+        },
+        "answer": {
+          "type": "slider",
+          "value": 2,
+          "tolerance": 0.2
+        }
+      },
+      "feedback": {
+        "correct": "Right — below the axis the area keeps subtracting, so the running total bottoms out exactly where the curve crosses zero, at t = 2 (area = −2).",
+        "incorrect": "While f is below the axis the running area keeps dropping; once f turns positive it climbs back. The minimum is where the curve crosses the axis.",
+        "hint": "f(x) = x − 2 is negative until x = 2, then positive — so the running area is most negative at t = 2."
       }
     }
   ]

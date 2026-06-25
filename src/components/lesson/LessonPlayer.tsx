@@ -8,6 +8,36 @@ import { FeedbackPanel } from "./FeedbackPanel";
 import { StepNavBar, type StepState } from "./StepNavBar";
 import { useProgress, isLessonDone } from "../../contexts/ProgressContext";
 
+/** Shuffle a list into an order that differs from the original when possible. */
+function shuffleOrder(items: string[]): string[] {
+  if (items.length < 2) return [...items];
+  for (let attempt = 0; attempt < 12; attempt++) {
+    const out = [...items];
+    for (let i = out.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [out[i], out[j]] = [out[j], out[i]];
+    }
+    if (out.some((v, i) => v !== items[i])) return out;
+  }
+  return [...items];
+}
+
+/**
+ * The starting answer for question types that begin from a non-empty state: the
+ * power-term builder opens on the original term, an order_list opens shuffled,
+ * and a Riemann sum opens at a single (clearly-too-coarse) rectangle. Everything
+ * else starts blank (undefined).
+ */
+function seedAnswer(step: Step): unknown {
+  const a = step.interaction?.answer;
+  if (a?.type === "power_term") {
+    return { coefficient: a.startCoefficient ?? 1, exponent: a.startExponent ?? 1 };
+  }
+  if (a?.type === "order_list") return shuffleOrder(a.items);
+  if (a?.type === "riemann") return 1;
+  return undefined;
+}
+
 interface LessonPlayerProps {
   lesson: Lesson;
   initialStepIndex?: number;
@@ -66,21 +96,16 @@ export function LessonPlayer({
   const isTapPoint = answerType === "graph_point";
   const usesWidgetAnswer = answerType === "slider" || answerType === "graph_point";
 
-  // Reset interactive widget state whenever the step changes.
+  // Reset interactive widget state whenever the step changes. Types that begin
+  // from a non-empty state (power_term, order_list, riemann) are seeded here so
+  // they open ready to manipulate; the rest start blank.
   useEffect(() => {
     const s = lesson.steps[stepIndex];
     setGraphValue(graphInitial(s));
     setClickedX(null);
     setHintRevealed(false);
-    // The derivative builder starts from the original term so the learner
-    // performs the power-rule transformation themselves.
-    const a = s.interaction?.answer;
-    if (a?.type === "power_term") {
-      setAnswer({
-        coefficient: a.startCoefficient ?? 1,
-        exponent: a.startExponent ?? 1,
-      });
-    }
+    const seeded = seedAnswer(s);
+    if (seeded !== undefined) setAnswer(seeded);
   }, [stepIndex, lesson]);
 
   const handleSubmit = useCallback(async () => {
@@ -192,13 +217,9 @@ export function LessonPlayer({
     setHintRevealed(false);
     setClickedX(null);
     setGraphValue(graphInitial(lesson.steps[stepIndex]));
-    // Reset the builder back to the original term so the retry starts clean.
-    const a = lesson.steps[stepIndex].interaction?.answer;
-    setAnswer(
-      a?.type === "power_term"
-        ? { coefficient: a.startCoefficient ?? 1, exponent: a.startExponent ?? 1 }
-        : undefined,
-    );
+    // Reseed builders (e.g. power_term, order_list, riemann) so the retry starts
+    // from a clean, manipulable state rather than a blank one.
+    setAnswer(seedAnswer(lesson.steps[stepIndex]));
   }, [lesson, stepIndex]);
 
   const isCorrectAnswered = submitted && feedback.isCorrect === true;
@@ -244,8 +265,16 @@ export function LessonPlayer({
     step.interaction?.answer?.type === "match"
       ? step.interaction.answer.pairs.length
       : 0;
+  // Sign-chart questions can't be submitted until every region is labeled.
+  const signChartRegionCount =
+    step.interaction?.answer?.type === "sign_chart"
+      ? step.interaction.answer.regions.length
+      : 0;
   const submitDisabled =
-    answerType === "slider" || answerType === "power_term"
+    answerType === "slider" ||
+    answerType === "power_term" ||
+    answerType === "order_list" ||
+    answerType === "riemann"
       ? false
       : answerType === "graph_point"
         ? clickedX === null
@@ -267,7 +296,14 @@ export function LessonPlayer({
                   matchPairCount > 0 &&
                   answer.filter((v) => v != null).length === matchPairCount
                 )
-              : answer === undefined || answer === "";
+              : answerType === "sign_chart"
+                ? !(
+                    Array.isArray(answer) &&
+                    signChartRegionCount > 0 &&
+                    answer.filter((v) => v != null).length ===
+                      signChartRegionCount
+                  )
+                : answer === undefined || answer === "";
 
   const graphSection = step.interaction?.graph ? (
     <GraphWidget

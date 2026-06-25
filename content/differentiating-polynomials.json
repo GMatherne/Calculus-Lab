@@ -212,128 +212,102 @@
   "practiceBank": [
     {
       "id": "dp-practice-1",
-      "type": "numeric",
+      "type": "drag_drop",
       "conceptTag": "sum_rule",
       "content": [
         {
           "type": "text",
-          "body": "For $f(x) = x^2 + 3x$, find $f'(1)$."
+          "body": "Assemble $f'(x)$ for $f(x) = x^3 + x^2$ by dragging a tile into each blank."
         }
       ],
       "interaction": {
-        "graph": {
-          "fn": "x^2 + 3*x",
-          "domain": [-4, 2],
-          "xLabel": "x",
-          "yLabel": "f",
-          "static": true,
-          "markerX": 1,
-          "showTangent": true
-        },
-        "answer": { "type": "numeric", "value": 5, "tolerance": 0.1 }
+        "answer": {
+          "type": "drag_drop",
+          "prefix": "f'(x) =",
+          "blanks": [{ "accept": "3x^2" }, { "accept": "2x" }],
+          "bank": ["3x^2", "2x", "x^2", "3x", "2x^2"]
+        }
       },
       "feedback": {
-        "correct": "Yes — $f'(x) = 2x + 3$, so $f'(1) = 2 + 3 = 5$.",
-        "incorrect": "Differentiate to $2x + 3$, then substitute $x = 1$.",
-        "hint": "$f'(x) = 2x + 3$, so $f'(1) = 5$."
+        "correct": "Exactly — $x^3 \\to 3x^2$ and $x^2 \\to 2x$, so $f'(x) = 3x^2 + 2x$.",
+        "incorrect": "Differentiate each term on its own with the power rule, then drag both pieces in.",
+        "hint": "$\\frac{d}{dx}(x^3) = 3x^2$ and $\\frac{d}{dx}(x^2) = 2x$."
       }
     },
     {
       "id": "dp-practice-2",
-      "type": "multiple_choice",
+      "type": "drag_drop",
       "conceptTag": "sum_rule",
       "content": [
         {
           "type": "text",
-          "body": "What is the derivative of $f(x) = x^4 - x$?"
+          "body": "Build $f'(x)$ for $f(x) = 2x^3 + 5x$. Drag a tile into each blank."
         }
       ],
       "interaction": {
-        "graph": {
-          "fn": "x^4 - x",
-          "domain": [-1.5, 1.5],
-          "xLabel": "x",
-          "yLabel": "f",
-          "static": true
-        },
         "answer": {
-          "type": "multiple_choice",
-          "options": [
-            "$4x^3 - 1$",
-            "$4x^3 - x$",
-            "$4x^3$",
-            "$x^3 - 1$"
-          ],
-          "correctIndex": 0
+          "type": "drag_drop",
+          "prefix": "f'(x) =",
+          "blanks": [{ "accept": "6x^2" }, { "accept": "5" }],
+          "bank": ["6x^2", "5", "6x", "5x", "2x^2"]
         }
       },
       "feedback": {
-        "correct": "Right — $\\frac{d}{dx}(x^4) = 4x^3$ and $\\frac{d}{dx}(-x) = -1$.",
-        "incorrect": "Differentiate each term separately with the power rule, then combine.",
-        "hint": "$4x^3 - 1$."
+        "correct": "Right — $2x^3 \\to 6x^2$ and $5x \\to 5$, so $f'(x) = 6x^2 + 5$.",
+        "incorrect": "Bring down each exponent as a coefficient, and remember $5x$ differentiates to a constant.",
+        "hint": "$2x^3 \\to 6x^2$ and $5x \\to 5$."
       }
     },
     {
       "id": "dp-practice-3",
-      "type": "numeric",
-      "conceptTag": "sum_rule",
-      "content": [
-        {
-          "type": "text",
-          "body": "For $f(x) = 2x^3 - x^2$, find $f'(1)$."
-        }
-      ],
-      "interaction": {
-        "graph": {
-          "fn": "2*x^3 - x^2",
-          "domain": [-1, 2],
-          "xLabel": "x",
-          "yLabel": "f",
-          "static": true,
-          "markerX": 1,
-          "showTangent": true
-        },
-        "answer": { "type": "numeric", "value": 4, "tolerance": 0.1 }
-      },
-      "feedback": {
-        "correct": "Yes — $f'(x) = 6x^2 - 2x$, so $f'(1) = 6 - 2 = 4$.",
-        "incorrect": "Differentiate to $6x^2 - 2x$, then substitute $x = 1$.",
-        "hint": "$f'(x) = 6x^2 - 2x$, so $f'(1) = 4$."
-      }
-    },
-    {
-      "id": "dp-practice-4",
-      "type": "multiple_choice",
+      "type": "drag_drop",
       "conceptTag": "power_rule",
       "content": [
         {
           "type": "text",
-          "body": "What is the derivative of $f(x) = x^3 + 2x^2 + 5$?"
+          "body": "Assemble $f'(x)$ for $f(x) = x^4 - 3x^2$. Mind the minus sign between the terms."
         }
       ],
       "interaction": {
-        "graph": {
-          "fn": "x^3 + 2*x^2 + 5",
-          "domain": [-3, 1.5],
-          "xLabel": "x",
-          "yLabel": "f",
-          "static": true
-        },
         "answer": {
-          "type": "multiple_choice",
-          "options": [
-            "$3x^2 + 4x$",
-            "$3x^2 + 4x + 5$",
-            "$3x^2 + 2x$",
-            "$x^2 + 4x$"
-          ],
-          "correctIndex": 0
+          "type": "drag_drop",
+          "prefix": "f'(x) =",
+          "blanks": [{ "accept": "4x^3" }, { "accept": "6x", "connector": "-" }],
+          "bank": ["4x^3", "6x", "4x^2", "6x^2", "3x"]
         }
       },
       "feedback": {
-        "correct": "Right — $x^3 \\to 3x^2$, $2x^2 \\to 4x$, and the constant $5 \\to 0$.",
-        "incorrect": "Differentiate each term; the constant 5 has derivative 0.",
-        "hint": "$3x^2 + 4x$."
+        "correct": "Nice — $x^4 \\to 4x^3$ and $3x^2 \\to 6x$, so $f'(x) = 4x^3 - 6x$.",
+        "incorrect": "Differentiate each term, then keep the subtraction so the second term stays negative.",
+        "hint": "$x^4 \\to 4x^3$ and $-3x^2 \\to -6x$."
+      }
+    },
+    {
+      "id": "dp-practice-4",
+      "type": "match",
+      "conceptTag": "sum_rule",
+      "content": [
+        {
+          "type": "text",
+          "body": "Match each function to its derivative."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "match",
+          "pairs": [
+            { "prompt": "$x^2 + x$", "match": "$2x+1$" },
+            { "prompt": "$x^3 + x$", "match": "$3x^2+1$" },
+            { "prompt": "$x^2 - x$", "match": "$2x-1$" },
+            { "prompt": "$2x^2$", "match": "$4x$" }
+          ],
+          "distractors": ["$x^2+1$"]
+        }
+      },
+      "feedback": {
+        "correct": "Great — differentiating each function term by term lines them up perfectly.",
+        "incorrect": "Apply the power rule to each term of every function, then find its match.",
+        "hint": "For $x^2 + x$, the derivative is $2x + 1$; use the same method for the rest."
       }
     },
     {
@@ -343,28 +317,150 @@
       "content": [
         {
           "type": "text",
-          "body": "Build the derivative of $f(x) = 2x^3 + 4x^2$ by dragging a tile into each blank."
+          "body": "Build $f'(x)$ for $f(x) = x^3 + 7$. Watch what happens to the constant."
         }
       ],
       "interaction": {
-        "graph": {
-          "fn": "2*x^3 + 4*x^2",
-          "domain": [-3, 1.5],
-          "xLabel": "x",
-          "yLabel": "f",
-          "static": true
-        },
         "answer": {
           "type": "drag_drop",
           "prefix": "f'(x) =",
-          "blanks": [{ "accept": "6x^2" }, { "accept": "8x" }],
-          "bank": ["6x^2", "8x", "6x^3", "8x^2", "4x", "2x^2"]
+          "blanks": [{ "accept": "3x^2" }],
+          "bank": ["3x^2", "3x^2+7", "7", "3x"]
         }
       },
       "feedback": {
-        "correct": "Yes — $2x^3 \\to 6x^2$ and $4x^2 \\to 8x$.",
-        "incorrect": "Apply the power rule to each term: multiply by the exponent, then drop the exponent by one.",
-        "hint": "$2x^3 \\to 6x^2$ and $4x^2 \\to 8x$."
+        "correct": "Yes — $x^3 \\to 3x^2$ and the constant $7$ becomes $0$, so $f'(x) = 3x^2$.",
+        "incorrect": "A constant term has slope $0$, so it drops away. What's left from $x^3$?",
+        "hint": "$\\frac{d}{dx}(x^3) = 3x^2$ and $\\frac{d}{dx}(7) = 0$."
+      }
+    },
+    {
+      "id": "dp-practice-6",
+      "type": "power_term",
+      "conceptTag": "power_rule",
+      "content": [
+        {
+          "type": "text",
+          "body": "Use the steppers to build the derivative of $f(x) = 4x^5$."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "power_term",
+          "coefficient": 20,
+          "exponent": 4,
+          "startCoefficient": 4,
+          "startExponent": 5
+        }
+      },
+      "feedback": {
+        "correct": "Exactly — multiply by the exponent ($4 \\cdot 5 = 20$) and drop it by one to get $20x^4$.",
+        "incorrect": "Power rule: multiply the coefficient by the exponent, then lower the exponent by one.",
+        "hint": "$4 \\cdot 5 = 20$ and $5 - 1 = 4$, giving $20x^4$."
+      }
+    },
+    {
+      "id": "dp-practice-7",
+      "type": "order_list",
+      "conceptTag": "sum_rule",
+      "content": [
+        {
+          "type": "text",
+          "body": "Put the steps for differentiating a polynomial in the right order."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "order_list",
+          "orderLabel": "How to differentiate a polynomial",
+          "items": [
+            "Split the polynomial into separate terms",
+            "Differentiate each term with the power rule",
+            "Add the resulting derivatives together"
+          ]
+        }
+      },
+      "feedback": {
+        "correct": "That's the routine — split the polynomial into terms, differentiate each with the power rule, then add the results back together.",
+        "incorrect": "Split the whole polynomial into separate terms first, differentiate each one, and combine them only at the end.",
+        "hint": "Start by breaking the polynomial into its separate terms."
+      }
+    },
+    {
+      "id": "dp-practice-8",
+      "type": "sign_chart",
+      "conceptTag": "sum_rule",
+      "content": [
+        {
+          "type": "text",
+          "body": "$f(x) = x^2 - 4x$ has $f'(x) = 2x - 4$, which is zero at $x = 2$. Label each interval as increasing or decreasing."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "sign_chart",
+          "variableLabel": "f(x) = x² − 4x",
+          "points": [2],
+          "options": ["Increasing", "Decreasing"],
+          "regions": [{ "correctIndex": 1 }, { "correctIndex": 0 }]
+        }
+      },
+      "feedback": {
+        "correct": "Right — $f' < 0$ left of $x = 2$ (decreasing) and $f' > 0$ to the right (increasing).",
+        "incorrect": "Plug a test value from each side of $x = 2$ into $f'(x) = 2x - 4$ and check its sign.",
+        "hint": "At $x = 0$, $f' = -4$ (decreasing); at $x = 3$, $f' = 2$ (increasing)."
+      }
+    },
+    {
+      "id": "dp-practice-9",
+      "type": "match",
+      "conceptTag": "sum_rule",
+      "content": [
+        {
+          "type": "text",
+          "body": "Match each function to the value of $f'(1)$."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "match",
+          "pairs": [
+            { "prompt": "$x^2 + 2x$", "match": "4" },
+            { "prompt": "$x^3$", "match": "3" },
+            { "prompt": "$x^2 - 2x$", "match": "0" },
+            { "prompt": "$3x^2$", "match": "6" }
+          ],
+          "distractors": ["2"]
+        }
+      },
+      "feedback": {
+        "correct": "Nice — differentiate each function, then plug in $x = 1$.",
+        "incorrect": "First find $f'(x)$ for each function, then substitute $x = 1$.",
+        "hint": "For $x^2 + 2x$, $f'(x) = 2x + 2$, so $f'(1) = 4$."
+      }
+    },
+    {
+      "id": "dp-practice-10",
+      "type": "drag_drop",
+      "conceptTag": "power_rule",
+      "content": [
+        {
+          "type": "text",
+          "body": "Assemble $f'(x)$ for $f(x) = x^3 + 2x^2 + x$ by filling each blank."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "drag_drop",
+          "prefix": "f'(x) =",
+          "blanks": [{ "accept": "3x^2" }, { "accept": "4x" }, { "accept": "1" }],
+          "bank": ["3x^2", "4x", "1", "2x", "x^2", "3x"]
+        }
+      },
+      "feedback": {
+        "correct": "Exactly — $x^3 \\to 3x^2$, $2x^2 \\to 4x$, and $x \\to 1$, so $f'(x) = 3x^2 + 4x + 1$.",
+        "incorrect": "Differentiate all three terms; don't forget that $x$ on its own becomes $1$.",
+        "hint": "$x^3 \\to 3x^2$, $2x^2 \\to 4x$, $x \\to 1$."
       }
     }
   ]

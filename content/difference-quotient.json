@@ -289,195 +289,313 @@
   "practiceBank": [
     {
       "id": "dq-practice-1",
-      "type": "numeric",
+      "type": "drag_drop",
       "conceptTag": "difference_quotient",
       "content": [
         {
           "type": "text",
-          "body": "The difference quotient is an average rate of change. Find the average rate of change of f(x) = x² from x = 0 to x = 2."
+          "body": "The difference quotient is the average rate of change of f over a step of size h. Drag the correct formula into the blank."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "drag_drop",
+          "prefix": "\\text{average rate} =",
+          "blanks": [{ "accept": "\\frac{f(x+h)-f(x)}{h}" }],
+          "bank": [
+            "\\frac{f(x+h)-f(x)}{h}",
+            "\\frac{f(x+h)+f(x)}{h}",
+            "\\frac{f(x)-f(x+h)}{h}",
+            "f(x+h)-f(x)"
+          ]
+        }
+      },
+      "feedback": {
+        "correct": "Exactly — it's the change in output, f(x+h) − f(x), divided by the step h.",
+        "incorrect": "You want rise over run: the change in f on top, the step size h on the bottom.",
+        "hint": "Put f(x+h) − f(x) over h."
+      }
+    },
+    {
+      "id": "dq-practice-2",
+      "type": "order_list",
+      "conceptTag": "difference_quotient",
+      "content": [
+        {
+          "type": "text",
+          "body": "Put the steps in order to find the average rate of change of f over the interval [a, b]."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "order_list",
+          "orderLabel": "Steps to find the average rate of change over [a, b]",
+          "items": [
+            "Subtract the outputs: $f(b) - f(a)$",
+            "Divide by the input change: $b - a$",
+            "Read the result as the average rate of change"
+          ]
+        }
+      },
+      "feedback": {
+        "correct": "Right — subtract the outputs for the rise, divide by the input change b − a for the run, and that ratio is the average rate of change.",
+        "incorrect": "It's rise over run: subtract the outputs first, then divide by b − a, and only then read it as the average rate of change.",
+        "hint": "Subtract f(b) − f(a), divide by b − a, then read off the average rate of change."
+      }
+    },
+    {
+      "id": "dq-practice-3",
+      "type": "slider_graph",
+      "conceptTag": "limit_definition",
+      "content": [
+        {
+          "type": "text",
+          "body": "The secant runs from x = 1 to x = 1 + h on f(x) = x². Drag h down toward 0 and watch the secant slope close in on 2 — drag it all the way to its smallest value."
         },
         {
           "type": "math",
-          "latex": "\\frac{f(2) - f(0)}{2 - 0}"
+          "latex": "f(x) = x^2,\\quad x = 1"
         }
       ],
       "interaction": {
         "graph": {
           "fn": "x^2",
           "domain": [0, 3],
+          "yDomain": [0, 9],
+          "fixedPoint": 1,
+          "sliderLabel": "h",
           "xLabel": "x",
           "yLabel": "f",
-          "static": true
+          "showSecant": true,
+          "showTangent": false,
+          "showSlopeValue": true,
+          "showValue": false,
+          "sliderMin": 0.1,
+          "sliderMax": 2,
+          "sliderStep": 0.1,
+          "initialSlider": 2
         },
-        "answer": { "type": "numeric", "value": 2, "tolerance": 0.05 }
+        "answer": { "type": "slider", "value": 0.1, "tolerance": 0.15 }
       },
       "feedback": {
-        "correct": "Right — (4 − 0) / (2 − 0) = 2, the slope of the secant from x = 0 to x = 2.",
-        "incorrect": "Average rate of change = (f(2) − f(0)) / (2 − 0). Use f(2) = 4 and f(0) = 0.",
-        "hint": "(4 − 0) / (2 − 0) = 2."
-      }
-    },
-    {
-      "id": "dq-practice-2",
-      "type": "multiple_choice",
-      "conceptTag": "difference_quotient",
-      "content": [
-        {
-          "type": "text",
-          "body": "For f(x) = x² starting at x = 2 with h = 0.5, the difference quotient works out to 4.5. That 4.5 is best described as…"
-        }
-      ],
-      "interaction": {
-        "graph": {
-          "fn": "x^2",
-          "domain": [0, 4],
-          "xLabel": "x",
-          "yLabel": "f",
-          "static": true
-        },
-        "answer": {
-          "type": "multiple_choice",
-          "options": [
-            "the average rate of change of f over [2, 2.5] (a secant slope)",
-            "the exact value of f'(2)",
-            "the instantaneous rate of change at x = 2",
-            "the area under f from 2 to 2.5"
-          ],
-          "correctIndex": 0
-        }
-      },
-      "feedback": {
-        "correct": "Yes — h = 0.5 is a real step, so 4.5 is the average rate across [2, 2.5]. The instantaneous rate f'(2) = 4 only appears as h → 0.",
-        "incorrect": "h = 0.5 keeps the two points apart, so it's an average over the interval, not an instantaneous value.",
-        "hint": "Nonzero h means a secant, which means an average rate of change."
-      }
-    },
-    {
-      "id": "dq-practice-3",
-      "type": "multiple_choice",
-      "conceptTag": "limit_definition",
-      "content": [
-        {
-          "type": "text",
-          "body": "Read the structure of this limit:"
-        },
-        {
-          "type": "math",
-          "latex": "\\lim_{h \\to 0} \\frac{(1+h)^2 - 1}{h}",
-          "display": true
-        },
-        {
-          "type": "text",
-          "body": "It is the derivative of f(x) = x² at which point?"
-        }
-      ],
-      "interaction": {
-        "answer": {
-          "type": "multiple_choice",
-          "options": ["x = 1", "x = 0", "x = 2", "x = −1"],
-          "correctIndex": 0
-        }
-      },
-      "feedback": {
-        "correct": "Right — (1 + h)² is f(1 + h) and 1 is f(1), so this is f'(1).",
-        "incorrect": "The numerator is f(1 + h) − f(1), which pins the base point at x = 1.",
-        "hint": "f(1 + h) = (1 + h)² means the point is x = 1."
+        "correct": "Nice — as h shrinks the secant slope 2 + h closes in on 2, the instantaneous rate f'(1).",
+        "incorrect": "Smaller h pulls the moving end toward x = 1. Drag h as small as it will go and watch the slope settle near 2.",
+        "hint": "Drag h all the way down to its smallest value, 0.1."
       }
     },
     {
       "id": "dq-practice-4",
-      "type": "numeric",
-      "conceptTag": "limit_definition",
+      "type": "match",
+      "conceptTag": "difference_quotient",
       "content": [
         {
           "type": "text",
-          "body": "Using the x → a form of the definition, evaluate this limit:"
+          "body": "For f(x) = x², match each interval to its average rate of change."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "match",
+          "pairs": [
+            { "prompt": "$[0, 2]$", "match": "2" },
+            { "prompt": "$[1, 3]$", "match": "4" },
+            { "prompt": "$[2, 4]$", "match": "6" },
+            { "prompt": "$[0, 1]$", "match": "1" }
+          ],
+          "distractors": ["3"]
+        }
+      },
+      "feedback": {
+        "correct": "Exactly — over [a, b] the average rate of x² is (b² − a²)/(b − a) = a + b.",
+        "incorrect": "The average rate of x² over [a, b] simplifies to a + b. Add each interval's endpoints.",
+        "hint": "(b² − a²)/(b − a) = a + b, so just add the two endpoints."
+      }
+    },
+    {
+      "id": "dq-practice-5",
+      "type": "slider_graph",
+      "conceptTag": "difference_quotient",
+      "content": [
+        {
+          "type": "text",
+          "body": "For the secant from x = 0 to a point x on f(x) = x², the secant slope simplifies to x. The slope readout is hidden — find where that slope equals 3, then drag the point there."
         },
         {
           "type": "math",
-          "latex": "\\lim_{x \\to 3} \\frac{x^2 - 9}{x - 3}",
-          "display": true
+          "latex": "f(x) = x^2"
         }
       ],
       "interaction": {
         "graph": {
           "fn": "x^2",
           "domain": [0, 5],
+          "yDomain": [0, 16],
+          "fixedPoint": 0,
+          "sliderLabel": "x",
           "xLabel": "x",
           "yLabel": "f",
-          "static": true,
-          "markerX": 3,
-          "showTangent": true
+          "showSecant": true,
+          "showTangent": false,
+          "showSlopeValue": false,
+          "showValue": false,
+          "sliderMin": 0.5,
+          "sliderMax": 5,
+          "sliderStep": 0.1,
+          "initialSlider": 4
         },
-        "answer": { "type": "numeric", "value": 6, "tolerance": 0.1 }
+        "answer": { "type": "slider", "value": 3, "tolerance": 0.2 }
       },
       "feedback": {
-        "correct": "Right — (x² − 9) / (x − 3) = x + 3 → 6, which is f'(3) for f(x) = x².",
-        "incorrect": "Factor: x² − 9 = (x − 3)(x + 3). Cancel x − 3, then let x → 3.",
-        "hint": "x + 3 at x = 3 is 6."
-      }
-    },
-    {
-      "id": "dq-practice-5",
-      "type": "multiple_choice",
-      "conceptTag": "limit_definition",
-      "content": [
-        {
-          "type": "text",
-          "body": "As h → 0, the secant line through (a, f(a)) and (a + h, f(a + h)) approaches…"
-        }
-      ],
-      "interaction": {
-        "graph": {
-          "fn": "x^2",
-          "domain": [0, 4],
-          "xLabel": "x",
-          "yLabel": "f",
-          "static": true
-        },
-        "answer": {
-          "type": "multiple_choice",
-          "options": [
-            "the tangent line at x = a — the instantaneous rate of change",
-            "a vertical line at x = a",
-            "the x-axis",
-            "a line whose slope grows without bound"
-          ],
-          "correctIndex": 0
-        }
-      },
-      "feedback": {
-        "correct": "Exactly — the two points merge, so the secant pivots onto the tangent at x = a, whose slope is f'(a).",
-        "incorrect": "Shrinking h slides the second point onto the first, so the secant rotates onto the tangent at x = a.",
-        "hint": "Secant becomes tangent as the gap h closes."
+        "correct": "Right — from 0 to x the secant slope of x² is just x, so a slope of 3 lands at x = 3.",
+        "incorrect": "From 0 to x, the average rate of x² equals x itself. Where does that make the slope 3?",
+        "hint": "The secant slope from 0 to x is x, so drag to x = 3."
       }
     },
     {
       "id": "dq-practice-6",
-      "type": "numeric",
+      "type": "slider_graph",
       "conceptTag": "limit_definition",
       "content": [
         {
           "type": "text",
-          "body": "For f(x) = x² at x = 2, the average rate of change over [2, 2 + h] gets closer and closer to one number as h → 0. What number?"
+          "body": "The average rate of x² from 0 to 2 is 2. Tap the point where the instantaneous slope also equals 2."
         }
       ],
       "interaction": {
         "graph": {
           "fn": "x^2",
-          "domain": [0, 4],
+          "domain": [0, 3],
+          "yDomain": [0, 9],
           "xLabel": "x",
           "yLabel": "f",
-          "static": true,
-          "markerX": 2,
-          "showTangent": true
+          "pointChoices": [0.5, 1, 1.5, 2, 2.5]
         },
-        "answer": { "type": "numeric", "value": 4, "tolerance": 0.1 }
+        "answer": { "type": "graph_point", "x": 1, "tolerance": 0.25 }
       },
       "feedback": {
-        "correct": "Right — the average rate closes in on the instantaneous rate f'(2) = 4 (the tangent slope at x = 2).",
-        "incorrect": "As h → 0 the secant slope approaches the tangent slope at x = 2 — the instantaneous rate there.",
-        "hint": "The tangent slope of x² at x = 2 is 4."
+        "correct": "Exactly — f'(x) = 2x equals 2 at x = 1, where the tangent is just as steep as that secant.",
+        "incorrect": "Set the instantaneous slope 2x equal to 2 and solve for x, then tap that point.",
+        "hint": "2x = 2 gives x = 1."
+      }
+    },
+    {
+      "id": "dq-practice-7",
+      "type": "slider_graph",
+      "conceptTag": "difference_quotient",
+      "content": [
+        {
+          "type": "text",
+          "body": "The secant is anchored at x = 1 on f(x) = x². From x = 1 to a point b, the secant slope simplifies to b + 1. The readout is hidden — find where that slope equals 5, then drag the moving point there."
+        },
+        {
+          "type": "math",
+          "latex": "f(x) = x^2,\\quad x = 1"
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 6],
+          "yDomain": [0, 30],
+          "fixedPoint": 1,
+          "sliderLabel": "x",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": true,
+          "showTangent": false,
+          "showSlopeValue": false,
+          "showValue": false,
+          "sliderMin": 1.2,
+          "sliderMax": 5,
+          "sliderStep": 0.1,
+          "initialSlider": 2
+        },
+        "answer": { "type": "slider", "value": 4, "tolerance": 0.2 }
+      },
+      "feedback": {
+        "correct": "Nice — from x = 1 to x = b the slope is (b² − 1)/(b − 1) = b + 1, so a slope of 5 means b = 4.",
+        "incorrect": "The secant slope from 1 to b simplifies to b + 1. Which b makes that 5?",
+        "hint": "b + 1 = 5, so drag the second point to x = 4."
+      }
+    },
+    {
+      "id": "dq-practice-8",
+      "type": "drag_drop",
+      "conceptTag": "difference_quotient",
+      "content": [
+        {
+          "type": "text",
+          "body": "For f(x) = x², the difference quotient becomes (2xh + h²)/h. Divide through by h and assemble the result."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "drag_drop",
+          "prefix": "\\frac{f(x+h)-f(x)}{h} =",
+          "blanks": [{ "accept": "2x" }, { "accept": "h" }],
+          "bank": ["2x", "h", "x^2", "2h", "h^2"]
+        }
+      },
+      "feedback": {
+        "correct": "Exactly — (2xh + h²)/h = 2x + h, which becomes 2x as h → 0.",
+        "incorrect": "Divide each term of 2xh + h² by h: what do 2xh/h and h²/h give?",
+        "hint": "2xh/h = 2x and h²/h = h, so the quotient is 2x + h."
+      }
+    },
+    {
+      "id": "dq-practice-9",
+      "type": "match",
+      "conceptTag": "difference_quotient",
+      "content": [
+        {
+          "type": "text",
+          "body": "For f(x) = x² with the secant anchored at x = 1, match each step h to the secant slope, which equals 2 + h."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "match",
+          "pairs": [
+            { "prompt": "$h = 1$", "match": "3" },
+            { "prompt": "$h = 0.5$", "match": "2.5" },
+            { "prompt": "$h = 0.1$", "match": "2.1" },
+            { "prompt": "$h = 2$", "match": "4" }
+          ],
+          "distractors": ["2"]
+        }
+      },
+      "feedback": {
+        "correct": "Right — the secant slope from x = 1 is 2 + h, and it heads toward 2 as h shrinks.",
+        "incorrect": "From x = 1, the difference quotient of x² is 2 + h. Add each h to 2.",
+        "hint": "Secant slope = 2 + h, so for example h = 0.5 gives 2.5."
+      }
+    },
+    {
+      "id": "dq-practice-10",
+      "type": "order_list",
+      "conceptTag": "limit_definition",
+      "content": [
+        {
+          "type": "text",
+          "body": "Order the steps that turn an average rate of change into the derivative."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "order_list",
+          "orderLabel": "From average rate to derivative",
+          "items": [
+            "Write the average rate $\\frac{f(x+h)-f(x)}{h}$",
+            "Simplify the quotient",
+            "Let $h \\to 0$",
+            "Get the instantaneous slope $f'(x)$"
+          ]
+        }
+      },
+      "feedback": {
+        "correct": "Exactly — start from the difference quotient, simplify, send h → 0, and you arrive at f'(x).",
+        "incorrect": "The derivative is the limit of the average rate: write the quotient, simplify, then let h → 0.",
+        "hint": "Begin with the difference quotient and end at f'(x) after letting h → 0."
       }
     }
   ]

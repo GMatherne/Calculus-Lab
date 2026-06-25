@@ -220,6 +220,84 @@ function validateStep(step: Step, lessonId: string): string[] {
     }
   }
 
+  if (answer?.type === "sign_chart") {
+    if (answer.points.length < 1) {
+      errors.push(
+        `Step "${step.id}" in "${lessonId}" sign_chart needs at least one critical point.`,
+      );
+    }
+    // Ticks must be listed in increasing order so the regions read left-to-right.
+    for (let i = 1; i < answer.points.length; i++) {
+      if (answer.points[i] <= answer.points[i - 1]) {
+        errors.push(
+          `Step "${step.id}" in "${lessonId}" sign_chart points must be in strictly increasing order.`,
+        );
+        break;
+      }
+    }
+    if (answer.options.length < 2) {
+      errors.push(
+        `Step "${step.id}" in "${lessonId}" sign_chart needs at least two options.`,
+      );
+    }
+    // There is always exactly one more region than there are dividing points.
+    if (answer.regions.length !== answer.points.length + 1) {
+      errors.push(
+        `Step "${step.id}" in "${lessonId}" sign_chart must have exactly points.length + 1 regions (got ${answer.regions.length} for ${answer.points.length} points).`,
+      );
+    }
+    answer.regions.forEach((region, i) => {
+      if (
+        !Number.isInteger(region.correctIndex) ||
+        region.correctIndex < 0 ||
+        region.correctIndex >= answer.options.length
+      ) {
+        errors.push(
+          `Step "${step.id}" in "${lessonId}" sign_chart region ${i + 1} has a correctIndex outside its options.`,
+        );
+      }
+    });
+  }
+
+  if (answer?.type === "order_list") {
+    if (answer.items.length < 2) {
+      errors.push(
+        `Step "${step.id}" in "${lessonId}" order_list needs at least two items.`,
+      );
+    }
+    // Items are graded by exact identity, so duplicates would be ambiguous.
+    if (new Set(answer.items).size !== answer.items.length) {
+      errors.push(
+        `Step "${step.id}" in "${lessonId}" order_list items must be unique.`,
+      );
+    }
+  }
+
+  if (answer?.type === "riemann") {
+    if (!(answer.b > answer.a)) {
+      errors.push(
+        `Step "${step.id}" in "${lessonId}" riemann needs b > a.`,
+      );
+    }
+    if (!Number.isFinite(answer.trueArea)) {
+      errors.push(
+        `Step "${step.id}" in "${lessonId}" riemann needs a finite trueArea.`,
+      );
+    }
+    if (!(answer.targetWithin > 0)) {
+      errors.push(
+        `Step "${step.id}" in "${lessonId}" riemann targetWithin must be positive.`,
+      );
+    }
+    // A Riemann step draws its own curve and rectangles, so a separate graph
+    // config would render a confusing duplicate plot above the widget.
+    if (step.interaction?.graph) {
+      errors.push(
+        `Step "${step.id}" in "${lessonId}" riemann must not also define a graph (the widget draws its own).`,
+      );
+    }
+  }
+
   if (step.type === "read") {
     return errors;
   }

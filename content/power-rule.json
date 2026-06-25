@@ -231,60 +231,29 @@
       "type": "power_term",
       "conceptTag": "power_rule",
       "content": [
-        { "type": "text", "body": "Use the power rule to build the derivative of x⁶." }
+        { "type": "text", "body": "Use the power rule to build the derivative of f(x) = x⁵." }
       ],
       "interaction": {
         "answer": {
           "type": "power_term",
-          "coefficient": 6,
-          "exponent": 5,
+          "coefficient": 5,
+          "exponent": 4,
           "startCoefficient": 1,
-          "startExponent": 6
+          "startExponent": 5
         }
       },
       "feedback": {
-        "correct": "Right — bring the 6 down and reduce the exponent: 6x⁵.",
-        "incorrect": "Apply d/dx(xⁿ) = n·xⁿ⁻¹ to x⁶: bring the exponent down as the new coefficient, then reduce the exponent by 1.",
-        "hint": "The exponent 6 becomes the coefficient, and 6 − 1 = 5."
+        "correct": "Right — bring the 5 down and reduce the exponent: 5x⁴.",
+        "incorrect": "Apply d/dx(xⁿ) = n·xⁿ⁻¹ to x⁵: the exponent becomes the coefficient, then drops by 1.",
+        "hint": "The exponent 5 becomes the coefficient, and 5 − 1 = 4."
       }
     },
     {
       "id": "pr-practice-2",
-      "type": "numeric",
-      "conceptTag": "power_rule",
-      "content": [
-        {
-          "type": "text",
-          "body": "For f(x) = x³, the derivative is f'(x) = 3x². Evaluate f'(2)."
-        }
-      ],
-      "interaction": {
-        "graph": {
-          "fn": "x^3",
-          "domain": [-1, 2.5],
-          "xLabel": "x",
-          "yLabel": "f",
-          "static": true,
-          "markerX": 2,
-          "showTangent": true
-        },
-        "answer": { "type": "numeric", "value": 12, "tolerance": 0.01 }
-      },
-      "feedback": {
-        "correct": "Yes — f'(2) = 3 · 2² = 3 · 4 = 12.",
-        "incorrect": "Substitute x = 2 into 3x².",
-        "hint": "3 × 2² = 3 × 4 = 12."
-      }
-    },
-    {
-      "id": "pr-practice-3",
       "type": "power_term",
       "conceptTag": "power_rule",
       "content": [
-        {
-          "type": "text",
-          "body": "Coefficients come along for the ride. Build the derivative of f(x) = 2x⁴."
-        }
+        { "type": "text", "body": "Coefficients ride along. Build the derivative of f(x) = 2x⁴." }
       ],
       "interaction": {
         "answer": {
@@ -302,64 +271,11 @@
       }
     },
     {
-      "id": "pr-practice-4",
+      "id": "pr-practice-3",
       "type": "power_term",
       "conceptTag": "power_rule",
       "content": [
-        { "type": "text", "body": "Use the power rule to build the derivative of x⁷." }
-      ],
-      "interaction": {
-        "answer": {
-          "type": "power_term",
-          "coefficient": 7,
-          "exponent": 6,
-          "startCoefficient": 1,
-          "startExponent": 7
-        }
-      },
-      "feedback": {
-        "correct": "Right — bring the 7 down and reduce the exponent: 7x⁶.",
-        "incorrect": "Apply d/dx(xⁿ) = n·xⁿ⁻¹ to x⁷: bring the exponent down as the new coefficient, then reduce the exponent by 1.",
-        "hint": "The exponent 7 becomes the coefficient, and 7 − 1 = 6."
-      }
-    },
-    {
-      "id": "pr-practice-5",
-      "type": "numeric",
-      "conceptTag": "power_rule",
-      "content": [
-        {
-          "type": "text",
-          "body": "For f(x) = x⁵, the derivative is f'(x) = 5x⁴. Evaluate f'(1)."
-        }
-      ],
-      "interaction": {
-        "graph": {
-          "fn": "x^5",
-          "domain": [-1.5, 1.5],
-          "xLabel": "x",
-          "yLabel": "f",
-          "static": true,
-          "markerX": 1,
-          "showTangent": true
-        },
-        "answer": { "type": "numeric", "value": 5, "tolerance": 0.01 }
-      },
-      "feedback": {
-        "correct": "Yes — f'(1) = 5 · 1⁴ = 5.",
-        "incorrect": "Substitute x = 1 into 5x⁴.",
-        "hint": "5 × 1⁴ = 5 × 1 = 5."
-      }
-    },
-    {
-      "id": "pr-practice-6",
-      "type": "power_term",
-      "conceptTag": "power_rule",
-      "content": [
-        {
-          "type": "text",
-          "body": "Coefficients come along for the ride. Build the derivative of f(x) = 3x²."
-        }
+        { "type": "text", "body": "Coefficients ride along. Build the derivative of f(x) = 3x²." }
       ],
       "interaction": {
         "answer": {
@@ -372,8 +288,166 @@
       },
       "feedback": {
         "correct": "Correct — d/dx(3x²) = 3 · 2x = 6x.",
-        "incorrect": "Use d/dx(a·xⁿ) = a·n·xⁿ⁻¹ with a = 3 and n = 2: multiply the coefficient by the exponent, then reduce the exponent by 1.",
-        "hint": "3 × 2 = 6, and the exponent drops to 1."
+        "incorrect": "Use d/dx(a·xⁿ) = a·n·xⁿ⁻¹ with a = 3 and n = 2: multiply 3 by 2, then reduce the exponent by 1.",
+        "hint": "3 × 2 = 6, and the exponent drops to 1, giving 6x."
+      }
+    },
+    {
+      "id": "pr-practice-4",
+      "type": "power_term",
+      "conceptTag": "power_rule",
+      "content": [
+        { "type": "text", "body": "Use the power rule to build the derivative of f(x) = x⁷." }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "power_term",
+          "coefficient": 7,
+          "exponent": 6,
+          "startCoefficient": 1,
+          "startExponent": 7
+        }
+      },
+      "feedback": {
+        "correct": "Right — bring the 7 down and reduce the exponent: 7x⁶.",
+        "incorrect": "Apply d/dx(xⁿ) = n·xⁿ⁻¹ to x⁷: the exponent becomes the coefficient, then drops by 1.",
+        "hint": "The exponent 7 becomes the coefficient, and 7 − 1 = 6."
+      }
+    },
+    {
+      "id": "pr-practice-5",
+      "type": "match",
+      "conceptTag": "power_rule",
+      "content": [
+        { "type": "text", "body": "Match each function to its derivative." }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "match",
+          "pairs": [
+            { "prompt": "$x^2$", "match": "$2x$" },
+            { "prompt": "$x^3$", "match": "$3x^2$" },
+            { "prompt": "$x^4$", "match": "$4x^3$" },
+            { "prompt": "$x^5$", "match": "$5x^4$" }
+          ],
+          "distractors": ["$x^4$"]
+        }
+      },
+      "feedback": {
+        "correct": "Exactly — each derivative drops the exponent out front and reduces the power by 1.",
+        "incorrect": "For xⁿ the derivative is n·xⁿ⁻¹. Apply that to each function.",
+        "hint": "x² → 2x, x³ → 3x², and so on."
+      }
+    },
+    {
+      "id": "pr-practice-6",
+      "type": "order_list",
+      "conceptTag": "power_rule",
+      "content": [
+        { "type": "text", "body": "Order these functions from smallest to largest derivative value at x = 1." }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "order_list",
+          "orderLabel": "Smallest → largest derivative at x = 1",
+          "items": ["$x^2$", "$x^3$", "$x^4$", "$x^5$"]
+        }
+      },
+      "feedback": {
+        "correct": "Right — for xⁿ, f'(1) = n, so the values are 2, 3, 4, 5 in that order.",
+        "incorrect": "Differentiate each: f'(x) = n·xⁿ⁻¹, and at x = 1 that's just n. Order by n.",
+        "hint": "At x = 1, f'(1) = n, so a larger exponent gives a larger derivative."
+      }
+    },
+    {
+      "id": "pr-practice-7",
+      "type": "drag_drop",
+      "conceptTag": "power_rule",
+      "content": [
+        { "type": "text", "body": "Drag the derivative of x⁶ into the blank." }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "drag_drop",
+          "prefix": "\\frac{d}{dx}(x^6) =",
+          "blanks": [{ "accept": "6x^5" }],
+          "bank": ["6x^5", "6x^6", "5x^6", "x^5"]
+        }
+      },
+      "feedback": {
+        "correct": "Exactly — d/dx(x⁶) = 6x⁵.",
+        "incorrect": "Bring the exponent 6 down as the coefficient and reduce the power by 1.",
+        "hint": "6 · x⁶⁻¹ = 6x⁵."
+      }
+    },
+    {
+      "id": "pr-practice-8",
+      "type": "power_term",
+      "conceptTag": "power_rule",
+      "content": [
+        { "type": "text", "body": "Coefficients ride along. Build the derivative of f(x) = 5x²." }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "power_term",
+          "coefficient": 10,
+          "exponent": 1,
+          "startCoefficient": 5,
+          "startExponent": 2
+        }
+      },
+      "feedback": {
+        "correct": "Correct — d/dx(5x²) = 5 · 2x = 10x.",
+        "incorrect": "Use d/dx(a·xⁿ) = a·n·xⁿ⁻¹ with a = 5 and n = 2: multiply 5 by 2, then reduce the exponent by 1.",
+        "hint": "5 × 2 = 10, and the exponent drops to 1, giving 10x."
+      }
+    },
+    {
+      "id": "pr-practice-9",
+      "type": "match",
+      "conceptTag": "power_rule",
+      "content": [
+        { "type": "text", "body": "Match each function to its derivative's value at x = 1, that is f'(1)." }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "match",
+          "pairs": [
+            { "prompt": "$x^3$", "match": "3" },
+            { "prompt": "$2x^2$", "match": "4" },
+            { "prompt": "$x^5$", "match": "5" },
+            { "prompt": "$3x^2$", "match": "6" }
+          ],
+          "distractors": ["2"]
+        }
+      },
+      "feedback": {
+        "correct": "Right — differentiate, then plug in x = 1 to get each value.",
+        "incorrect": "First find f'(x) with the power rule, then evaluate it at x = 1.",
+        "hint": "For example, 2x² → 4x, and 4x at x = 1 is 4."
+      }
+    },
+    {
+      "id": "pr-practice-10",
+      "type": "slider_graph",
+      "conceptTag": "power_rule",
+      "content": [
+        { "type": "text", "body": "For f(x) = x³, the power rule gives f'(x) = 3x². Tap the point with positive x where the tangent slope equals 12." }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^3",
+          "domain": [-3, 3],
+          "xLabel": "x",
+          "yLabel": "f",
+          "pointChoices": [-2, -1, 0, 1, 2]
+        },
+        "answer": { "type": "graph_point", "x": 2, "tolerance": 0.25 }
+      },
+      "feedback": {
+        "correct": "Exactly — 3x² = 12 gives x² = 4, so x = ±2; the positive point is x = 2, where the tangent climbs with slope 12.",
+        "incorrect": "Set the slope formula equal to 12: 3x² = 12. Solve for the positive x, then tap that point.",
+        "hint": "3x² = 12 → x² = 4 → x = 2 (the positive root)."
       }
     }
   ]

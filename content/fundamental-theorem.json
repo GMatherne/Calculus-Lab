@@ -208,6 +208,48 @@
       }
     },
     {
+      "id": "ftc-step-6b",
+      "type": "slider_graph",
+      "conceptTag": "antiderivative",
+      "content": [
+        {
+          "type": "text",
+          "body": "A definite integral can start anywhere. Find the value of $t$ for which this integral equals 8, then drag the slider there."
+        },
+        {
+          "type": "math",
+          "latex": "\\int_1^t 2x\\,dx = 8",
+          "display": true
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "2*x",
+          "domain": [0, 4],
+          "yDomain": [0, 8],
+          "sliderLabel": "t",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showValue": false,
+          "showArea": true,
+          "areaStart": 1,
+          "showAreaValue": false,
+          "sliderMin": 1,
+          "sliderMax": 3.5,
+          "sliderStep": 0.1,
+          "initialSlider": 1
+        },
+        "hintAfterAttempts": 1,
+        "answer": { "type": "slider", "value": 3, "tolerance": 0.15 }
+      },
+      "feedback": {
+        "correct": "Yes — $t^2 - 1 = 8$ gives $t^2 = 9$, so $t = 3$. The lower limit is 1, not 0, and the Fundamental Theorem handles it just the same.",
+        "incorrect": "Set $t^2 - 1 = 8$ and solve for $t$, then drag the slider there.",
+        "hint": "$t^2 - 1 = 8 \\to t^2 = 9 \\to t = 3$."
+      }
+    },
+    {
       "id": "ftc-step-7",
       "type": "multiple_choice",
       "conceptTag": "antiderivative",
@@ -266,96 +308,356 @@
   "practiceBank": [
     {
       "id": "ftc-practice-1",
-      "type": "numeric",
+      "type": "match",
       "conceptTag": "antiderivative",
       "content": [
         {
           "type": "text",
-          "body": "An antiderivative of 2x is x². Compute the integral of 2x from 0 to 2: that's F(2) − F(0)."
+          "body": "Match each function to its antiderivative — the function whose derivative gives it back."
         }
       ],
       "interaction": {
-        "graph": {
-          "fn": "2*x",
-          "domain": [0, 3],
-          "yDomain": [0, 6],
-          "xLabel": "x",
-          "yLabel": "f",
-          "showArea": true,
-          "areaStart": 0,
-          "initialSlider": 2,
-          "static": true
-        },
-        "answer": { "type": "numeric", "value": 4, "tolerance": 0.1 }
+        "answer": {
+          "type": "match",
+          "pairs": [
+            {
+              "prompt": "$x^2$",
+              "match": "$\\frac{x^3}{3}$"
+            },
+            {
+              "prompt": "$x$",
+              "match": "$\\frac{x^2}{2}$"
+            },
+            {
+              "prompt": "$x^3$",
+              "match": "$\\frac{x^4}{4}$"
+            },
+            {
+              "prompt": "$1$",
+              "match": "$x$"
+            }
+          ],
+          "distractors": [
+            "$\\frac{x^3}{2}$"
+          ]
+        }
       },
       "feedback": {
-        "correct": "Yes — 2² − 0² = 4.",
-        "incorrect": "Use F(x) = x²: compute F(2) − F(0).",
-        "hint": "2² − 0² = 4."
+        "correct": "Right — reverse the power rule: $x^n \\to \\frac{x^{n+1}}{n+1}$.",
+        "incorrect": "Differentiate each candidate; the one landing back on the prompt is its antiderivative.",
+        "hint": "$x^2 \\to \\frac{x^3}{3}$ and the constant $1 \\to x$."
       }
     },
     {
       "id": "ftc-practice-2",
-      "type": "multiple_choice",
+      "type": "order_list",
       "conceptTag": "antiderivative",
       "content": [
         {
           "type": "text",
-          "body": "Which function is an antiderivative of f(x) = 2x?"
+          "body": "Put the steps for evaluating a definite integral with the Fundamental Theorem in order."
         }
       ],
       "interaction": {
-        "graph": {
-          "fn": "2*x",
-          "domain": [0, 3],
-          "yDomain": [0, 6],
-          "xLabel": "x",
-          "yLabel": "f",
-          "showArea": true,
-          "areaStart": 0,
-          "initialSlider": 2,
-          "static": true
-        },
         "answer": {
-          "type": "multiple_choice",
-          "options": ["x²", "2", "2x²", "x"],
-          "correctIndex": 0
+          "type": "order_list",
+          "orderLabel": "Evaluating a definite integral with the FTC",
+          "items": [
+            "Find an antiderivative $F(x)$",
+            "Plug both limits into $F$",
+            "Subtract: $F(b) - F(a)$"
+          ]
         }
       },
       "feedback": {
-        "correct": "Right — the derivative of x² is 2x.",
-        "incorrect": "Which option has derivative equal to 2x?",
-        "hint": "d/dx (x²) = 2x."
+        "correct": "Exactly — find an antiderivative $F$, plug both limits in, then subtract $F(b) - F(a)$.",
+        "incorrect": "You need an antiderivative before you can plug in the limits, and you subtract only after both are in.",
+        "hint": "Antiderivative first, then plug in both limits, then subtract: $F(b) - F(a)$."
       }
     },
     {
       "id": "ftc-practice-3",
-      "type": "numeric",
+      "type": "drag_drop",
+      "conceptTag": "antiderivative",
+      "content": [
+        {
+          "type": "text",
+          "body": "Drag the antiderivative of $2x$ into the blank. (For an indefinite integral we would also add $+ C$.)"
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "drag_drop",
+          "prefix": "\\int 2x\\,dx =",
+          "blanks": [
+            {
+              "accept": "x^2"
+            }
+          ],
+          "bank": [
+            "x^2",
+            "2x^2",
+            "\\frac{x^2}{2}",
+            "\\frac{x^3}{3}"
+          ]
+        }
+      },
+      "feedback": {
+        "correct": "Right — $\\frac{d}{dx}(x^2) = 2x$, so $\\int 2x\\,dx = x^2 + C$.",
+        "incorrect": "Which tile differentiates back to $2x$?",
+        "hint": "Reverse the power rule: $2x \\to x^2$."
+      }
+    },
+    {
+      "id": "ftc-practice-4",
+      "type": "match",
       "conceptTag": "ftc",
       "content": [
         {
           "type": "text",
-          "body": "Suppose A(x) is the area under f up to x, and f(x) = 5 (a flat line). Since the area's growth rate equals the height, what is A′(3)?"
+          "body": "Match each definite integral to its value, evaluating $F(b) - F(a)$ for each."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "match",
+          "pairs": [
+            {
+              "prompt": "$\\int_0^2 2x\\,dx$",
+              "match": "4"
+            },
+            {
+              "prompt": "$\\int_0^3 2x\\,dx$",
+              "match": "9"
+            },
+            {
+              "prompt": "$\\int_1^3 2x\\,dx$",
+              "match": "8"
+            },
+            {
+              "prompt": "$\\int_0^1 3x^2\\,dx$",
+              "match": "1"
+            }
+          ],
+          "distractors": [
+            "6"
+          ]
+        }
+      },
+      "feedback": {
+        "correct": "Nice — using $\\int 2x\\,dx = x^2$ and $\\int 3x^2\\,dx = x^3$, every value checks out.",
+        "incorrect": "Find the antiderivative, then subtract its values at the two limits.",
+        "hint": "$\\int_0^2 2x\\,dx = [x^2]_0^2 = 4$."
+      }
+    },
+    {
+      "id": "ftc-practice-5",
+      "type": "drag_drop",
+      "conceptTag": "ftc",
+      "content": [
+        {
+          "type": "text",
+          "body": "The first part of the Fundamental Theorem says differentiating an accumulation function hands back the integrand. Drag the result into the blank."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "drag_drop",
+          "prefix": "\\frac{d}{dx}\\int_a^x t^2\\,dt =",
+          "blanks": [
+            {
+              "accept": "x^2"
+            }
+          ],
+          "bank": [
+            "x^2",
+            "\\frac{x^3}{3}",
+            "2x",
+            "t^2"
+          ]
+        }
+      },
+      "feedback": {
+        "correct": "Exactly — $\\frac{d}{dx}\\int_a^x t^2\\,dt = x^2$. Differentiation undoes the integral.",
+        "incorrect": "The derivative of $\\int_a^x f(t)\\,dt$ is just $f$ evaluated at $x$.",
+        "hint": "Replace $t$ with $x$ in the integrand $t^2$."
+      }
+    },
+    {
+      "id": "ftc-practice-6",
+      "type": "order_list",
+      "conceptTag": "ftc",
+      "content": [
+        {
+          "type": "text",
+          "body": "Evaluate each integral, then drag them into order from the smallest value to the largest."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "order_list",
+          "orderLabel": "Smallest → largest value",
+          "items": [
+            "$\\int_0^2 (x-2)\\,dx$",
+            "$\\int_1^2 x\\,dx$",
+            "$\\int_0^3 2\\,dx$",
+            "$\\int_1^3 2x\\,dx$"
+          ]
+        }
+      },
+      "feedback": {
+        "correct": "Right — the values are $-2$, $1.5$, $6$, and $8$. The first dips below the axis, so its signed area is negative.",
+        "incorrect": "Evaluate each integral first — watch the one that dips below the axis — then compare the numbers.",
+        "hint": "$\\int_0^2 (x-2)\\,dx = -2$ is smallest (area below the axis); $\\int_1^3 2x\\,dx = 8$ is largest."
+      }
+    },
+    {
+      "id": "ftc-practice-7",
+      "type": "match",
+      "conceptTag": "antiderivative",
+      "content": [
+        {
+          "type": "text",
+          "body": "Match each function to its antiderivative."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "match",
+          "pairs": [
+            {
+              "prompt": "$2x$",
+              "match": "x^2"
+            },
+            {
+              "prompt": "$3x^2$",
+              "match": "x^3"
+            },
+            {
+              "prompt": "$4x^3$",
+              "match": "x^4"
+            },
+            {
+              "prompt": "$2$",
+              "match": "2x"
+            }
+          ],
+          "distractors": [
+            "\\frac{x^2}{2}"
+          ]
+        }
+      },
+      "feedback": {
+        "correct": "Right — differentiate each answer and it returns the prompt.",
+        "incorrect": "Differentiate each option; it should give the prompt back.",
+        "hint": "$2x \\to x^2$ and the constant $2 \\to 2x$."
+      }
+    },
+    {
+      "id": "ftc-practice-8",
+      "type": "slider_graph",
+      "conceptTag": "ftc",
+      "content": [
+        {
+          "type": "text",
+          "body": "$\\int_0^t (x - 2)\\,dx$ dips negative, then climbs back. Drag $t$ to where this signed area returns to 0."
         }
       ],
       "interaction": {
         "graph": {
-          "fn": "5",
+          "fn": "x - 2",
           "domain": [0, 4],
-          "yDomain": [0, 6],
+          "yDomain": [-3, 3],
+          "sliderLabel": "t",
           "xLabel": "x",
           "yLabel": "f",
+          "showSecant": false,
+          "showValue": false,
           "showArea": true,
           "areaStart": 0,
-          "initialSlider": 3,
-          "static": true
+          "showAreaValue": false,
+          "sliderMin": 0,
+          "sliderMax": 4,
+          "sliderStep": 0.1,
+          "initialSlider": 0
         },
-        "answer": { "type": "numeric", "value": 5, "tolerance": 0.1 }
+        "hintAfterAttempts": 1,
+        "answer": { "type": "slider", "value": 4, "tolerance": 0.2 }
       },
       "feedback": {
-        "correct": "Exactly — by the Fundamental Theorem, A′(x) = f(x), so A′(3) = f(3) = 5.",
-        "incorrect": "The theorem says A′(x) = f(x). What is f(3) here?",
-        "hint": "A′(x) = f(x) = 5 everywhere, so A′(3) = 5."
+        "correct": "Yes — $A(t) = \\frac{t^2}{2} - 2t = 0$ at $t = 4$: the negative area on $[0,2]$ exactly cancels the positive area on $[2,4]$.",
+        "incorrect": "The signed area is negative while $x < 2$, then grows positive. Find the $t > 0$ where it cancels back to 0.",
+        "hint": "$\\frac{t^2}{2} - 2t = 0 \\to \\frac{t}{2}(t - 4) = 0 \\to t = 4$."
+      }
+    },
+    {
+      "id": "ftc-practice-9",
+      "type": "drag_drop",
+      "conceptTag": "antiderivative",
+      "content": [
+        {
+          "type": "text",
+          "body": "Drag the antiderivative of $x$ into the blank. (With no limits we would also write $+ C$.)"
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "drag_drop",
+          "prefix": "\\int x\\,dx =",
+          "blanks": [
+            {
+              "accept": "\\frac{x^2}{2}"
+            }
+          ],
+          "bank": [
+            "\\frac{x^2}{2}",
+            "x^2",
+            "\\frac{x^3}{3}",
+            "2x"
+          ]
+        }
+      },
+      "feedback": {
+        "correct": "Right — $\\frac{d}{dx}\\!\\left(\\frac{x^2}{2}\\right) = x$, so $\\int x\\,dx = \\frac{x^2}{2} + C$.",
+        "incorrect": "Which tile differentiates back to $x$?",
+        "hint": "Reverse the power rule: $x \\to \\frac{x^2}{2}$."
+      }
+    },
+    {
+      "id": "ftc-practice-10",
+      "type": "drag_drop",
+      "conceptTag": "ftc",
+      "content": [
+        {
+          "type": "text",
+          "body": "Evaluate $\\int_1^3 2x\\,dx$ with $F(x) = x^2$ by filling in $F(3) - F(1)$."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "drag_drop",
+          "prefix": "\\int_1^3 2x\\,dx = F(3) - F(1) =",
+          "blanks": [
+            {
+              "accept": "9"
+            },
+            {
+              "accept": "1",
+              "connector": "-"
+            }
+          ],
+          "bank": [
+            "9",
+            "1",
+            "8",
+            "6"
+          ]
+        }
+      },
+      "feedback": {
+        "correct": "Exactly — $F(3) - F(1) = 9 - 1 = 8$, so $\\int_1^3 2x\\,dx = 8$.",
+        "incorrect": "With $F(x) = x^2$, compute $F(3)$ and $F(1)$, then subtract in that order.",
+        "hint": "$F(3) = 3^2 = 9$ and $F(1) = 1^2 = 1$, so $9 - 1 = 8$."
       }
     }
   ]

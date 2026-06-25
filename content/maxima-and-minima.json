@@ -277,193 +277,294 @@
   "practiceBank": [
     {
       "id": "mm-practice-1",
-      "type": "multiple_choice",
-      "conceptTag": "extrema",
-      "content": [
-        {
-          "type": "text",
-          "body": "If f'(x) changes from negative to positive as x increases through x = c, what kind of point is c?"
-        }
-      ],
-      "interaction": {
-        "graph": {
-          "fn": "x^3 - 3*x",
-          "domain": [-2.2, 2.2],
-          "yDomain": [-5, 5],
-          "xLabel": "x",
-          "yLabel": "f",
-          "static": true,
-          "showDerivative": true
-        },
-        "answer": {
-          "type": "multiple_choice",
-          "options": [
-            "A minimum",
-            "A maximum",
-            "A constant stretch",
-            "Not a turning point"
-          ],
-          "correctIndex": 0
-        }
-      },
-      "feedback": {
-        "correct": "Right — negative-to-positive slope means the curve falls then rises, a valley (minimum).",
-        "incorrect": "Negative slope = falling, positive slope = rising. Work out the order those happen in as x passes through c.",
-        "hint": "− then + means down then up — a minimum."
-      }
-    },
-    {
-      "id": "mm-practice-2",
-      "type": "multiple_choice",
-      "conceptTag": "extrema",
-      "content": [
-        {
-          "type": "text",
-          "body": "As x increases through a local maximum, how does the tangent slope behave?"
-        }
-      ],
-      "interaction": {
-        "graph": {
-          "fn": "x^3 - 3*x",
-          "domain": [-2.2, 2.2],
-          "yDomain": [-5, 5],
-          "xLabel": "x",
-          "yLabel": "f",
-          "static": true,
-          "showDerivative": true
-        },
-        "answer": {
-          "type": "multiple_choice",
-          "options": [
-            "From positive to negative",
-            "From negative to positive",
-            "It stays positive",
-            "It stays negative"
-          ],
-          "correctIndex": 0
-        }
-      },
-      "feedback": {
-        "correct": "Yes — a maximum is rising then falling, so the slope runs from positive to negative.",
-        "incorrect": "A maximum is a peak: the curve rises up to it, then falls away.",
-        "hint": "Rising (+) before the peak, falling (−) after."
-      }
-    },
-    {
-      "id": "mm-practice-3",
-      "type": "numeric",
-      "conceptTag": "extrema",
-      "content": [
-        {
-          "type": "text",
-          "body": "For f(x) = x² − 8x, the slope is f'(x) = 2x − 8. Find the x where f'(x) = 0."
-        }
-      ],
-      "interaction": {
-        "graph": {
-          "fn": "x^2 - 8*x",
-          "domain": [0, 8],
-          "xLabel": "x",
-          "yLabel": "f",
-          "static": true
-        },
-        "answer": { "type": "numeric", "value": 4, "tolerance": 0.01 }
-      },
-      "feedback": {
-        "correct": "x = 4 — and since the slope runs − then +, it's a minimum.",
-        "incorrect": "Set 2x − 8 = 0 and solve.",
-        "hint": "2x − 8 = 0 → 2x = 8 → x = 4."
-      }
-    },
-    {
-      "id": "mm-practice-4",
-      "type": "numeric",
-      "conceptTag": "extrema",
-      "content": [
-        {
-          "type": "text",
-          "body": "For f(x) = −x² + 6x, the slope is f'(x) = −2x + 6. Find the x at the peak (where f'(x) = 0)."
-        }
-      ],
-      "interaction": {
-        "graph": {
-          "fn": "-x^2 + 6*x",
-          "domain": [0, 6],
-          "xLabel": "x",
-          "yLabel": "f",
-          "static": true
-        },
-        "answer": { "type": "numeric", "value": 3, "tolerance": 0.01 }
-      },
-      "feedback": {
-        "correct": "x = 3 — the slope goes + then −, so the peak (maximum) is at x = 3.",
-        "incorrect": "Set −2x + 6 = 0 and solve.",
-        "hint": "−2x + 6 = 0 → 2x = 6 → x = 3."
-      }
-    },
-    {
-      "id": "mm-practice-5",
       "type": "slider_graph",
       "conceptTag": "extrema",
       "content": [
         {
           "type": "text",
-          "body": "On f(x) = x³ − 3x, tap the local minimum — the valley where the curve turns from falling to rising."
+          "body": "Below is the graph of the DERIVATIVE $f'(x)$ of $f(x) = x^3 - 3x$ (not $f$). Tap the $x$ where $f$ has a local MAXIMUM — where $f'$ crosses zero from positive to negative."
         }
       ],
       "interaction": {
         "graph": {
-          "fn": "x^3 - 3*x",
+          "fn": "3*x^2 - 3",
           "domain": [-2.2, 2.2],
+          "yDomain": [-6, 12],
           "xLabel": "x",
-          "yLabel": "f",
+          "yLabel": "f'(x)",
+          "pointChoices": [-2, -1, 0, 1, 2]
+        },
+        "answer": {
+          "type": "graph_point",
+          "x": -1,
+          "tolerance": 0.25
+        }
+      },
+      "feedback": {
+        "correct": "Yes — $f'$ is positive for $x < -1$ and negative just after, so it crosses zero downward at $x = -1$. A $+ \\to -$ crossing means $f$ rises then falls: a local maximum.",
+        "incorrect": "This curve is $f'$, not $f$. A maximum of $f$ sits where $f'$ crosses zero from positive (f rising) to negative (f falling). Find that downward crossing.",
+        "hint": "$f'(x) = 3x^2 - 3 = 0$ at $x = \\pm 1$. At $x = -1$, $f'$ goes $+ \\to -$ (a max); at $x = 1$ it goes $- \\to +$ (a min)."
+      }
+    },
+    {
+      "id": "mm-practice-2",
+      "type": "slider_graph",
+      "conceptTag": "extrema",
+      "content": [
+        {
+          "type": "text",
+          "body": "Below is the same DERIVATIVE $f'(x)$ of $f(x) = x^3 - 3x$ (not $f$). Tap the $x$ where $f$ has a local MINIMUM — where $f'$ crosses zero from negative to positive."
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "3*x^2 - 3",
+          "domain": [-2.2, 2.2],
+          "yDomain": [-6, 12],
+          "xLabel": "x",
+          "yLabel": "f'(x)",
           "pointChoices": [-2, -1, 0, 1, 2]
         },
         "answer": {
           "type": "graph_point",
           "x": 1,
-          "tolerance": 0.1
+          "tolerance": 0.25
         }
       },
       "feedback": {
-        "correct": "Right — x = 1 is where the curve bottoms out and turns back up.",
-        "incorrect": "The valley is the low turning point, where the curve bottoms out and turns back up.",
-        "hint": "f'(x) = 3x² − 3 = 0 gives x = ±1; the valley (falling → rising) is x = 1."
+        "correct": "Right — at $x = 1$, $f'$ rises through zero from negative to positive. A $- \\to +$ crossing means $f$ falls then rises: a local minimum.",
+        "incorrect": "Read $f'$: a minimum of $f$ is where $f'$ crosses zero from negative (f falling) to positive (f rising). The downward crossing at $x = -1$ is the maximum instead.",
+        "hint": "$f'(x) = 3x^2 - 3 = 0$ at $x = \\pm 1$. The $- \\to +$ crossing is at $x = 1$ (a min); the $+ \\to -$ crossing at $x = -1$ is the max."
       }
     },
     {
-      "id": "mm-practice-6",
-      "type": "multiple_choice",
+      "id": "mm-practice-3",
+      "type": "sign_chart",
       "conceptTag": "extrema",
       "content": [
         {
           "type": "text",
-          "body": "The slope of a curve goes from positive to negative at x = 2. What does the graph look like near x = 2?"
+          "body": "f(x) = x³ − 3x has critical points at x = −1 and x = 1. Label each interval as increasing or decreasing."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "sign_chart",
+          "variableLabel": "f(x) = x³ − 3x",
+          "points": [-1, 1],
+          "options": ["Increasing", "Decreasing"],
+          "regions": [
+            { "correctIndex": 0 },
+            { "correctIndex": 1 },
+            { "correctIndex": 0 }
+          ]
+        }
+      },
+      "feedback": {
+        "correct": "Exactly — f'(x) = 3x² − 3 is positive outside (−1, 1) and negative inside, so f climbs, dips, then climbs again.",
+        "incorrect": "Plug a test x from each interval into f'(x) = 3x² − 3 and read off its sign.",
+        "hint": "f' < 0 means decreasing, f' > 0 means increasing. Test x = −2, x = 0, and x = 2."
+      }
+    },
+    {
+      "id": "mm-practice-4",
+      "type": "multi_choice",
+      "conceptTag": "extrema",
+      "content": [
+        {
+          "type": "text",
+          "body": "Classify each critical point of f(x) = x³ − 3x as a maximum, a minimum, or neither."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "multi_choice",
+          "options": ["Maximum", "Minimum", "Neither"],
+          "parts": [
+            { "prompt": "$x = -1$", "correctIndex": 0 },
+            { "prompt": "$x = 1$", "correctIndex": 1 },
+            { "prompt": "$x = 0$", "correctIndex": 2 }
+          ]
+        }
+      },
+      "feedback": {
+        "correct": "Right — f' = 3x² − 3 is zero at x = ±1: x = −1 runs + → − (a maximum) and x = 1 runs − → + (a minimum). At x = 0, f' = −3 ≠ 0, so it's neither.",
+        "incorrect": "Only x = ±1 are critical (f' = 0). Check the sign change of f' at each; x = 0 isn't a critical point at all.",
+        "hint": "+ → − is a max, − → + is a min. f'(0) = −3 ≠ 0, so x = 0 is neither."
+      }
+    },
+    {
+      "id": "mm-practice-5",
+      "type": "match",
+      "conceptTag": "extrema",
+      "content": [
+        {
+          "type": "text",
+          "body": "Each function below has one critical point at x = −b/2a. Match every function to that x-value."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "match",
+          "pairs": [
+            { "prompt": "$x^2 - 4x$", "match": "2" },
+            { "prompt": "$x^2 + 6x$", "match": "-3" },
+            { "prompt": "$x^2 - 2x$", "match": "1" },
+            { "prompt": "$-x^2 + 8x$", "match": "4" }
+          ],
+          "distractors": ["0"]
+        }
+      },
+      "feedback": {
+        "correct": "Nice — setting f' = 0 gives x = −b/2a each time: 2, −3, 1, and 4.",
+        "incorrect": "For ax² + bx, the critical point sits at x = −b/2a. Read off a and b for each.",
+        "hint": "x = −b/2a. For x² − 4x: −(−4)/2 = 2."
+      }
+    },
+    {
+      "id": "mm-practice-6",
+      "type": "slider_graph",
+      "conceptTag": "extrema",
+      "content": [
+        {
+          "type": "text",
+          "body": "Below is the graph of the DERIVATIVE $f'(x) = 2x - 6$ of $f(x) = x^2 - 6x + 5$ (not $f$). Tap the $x$ where $f$ has its MINIMUM — where $f'$ crosses zero from negative to positive."
         }
       ],
       "interaction": {
         "graph": {
-          "fn": "x^3 - 3*x",
-          "domain": [-2.2, 2.2],
+          "fn": "2*x - 6",
+          "domain": [0, 6],
+          "yDomain": [-7, 7],
           "xLabel": "x",
-          "yLabel": "f",
-          "static": true
+          "yLabel": "f'(x)",
+          "pointChoices": [0, 1, 2, 3, 4, 5, 6]
         },
         "answer": {
-          "type": "multiple_choice",
-          "options": [
-            "It rises then falls — a maximum",
-            "It falls then rises — a minimum",
-            "It rises the whole way",
-            "It falls the whole way"
-          ],
-          "correctIndex": 0
+          "type": "graph_point",
+          "x": 3,
+          "tolerance": 0.25
         }
       },
       "feedback": {
-        "correct": "Positive then negative slope = rising then falling = a maximum at x = 2.",
-        "incorrect": "Positive slope is rising, negative slope is falling. Which order is that?",
-        "hint": "+ → − means up then down — a peak."
+        "correct": "Right — $f'(x) = 2x - 6$ is negative before $x = 3$ and positive after, crossing zero upward there. A $- \\to +$ crossing makes $x = 3$ the minimum of $f$.",
+        "incorrect": "This line is $f'$. The minimum of $f$ is where $f'$ passes through zero going from negative (f falling) to positive (f rising) — find where the line crosses the $x$-axis.",
+        "hint": "Set $f'(x) = 2x - 6 = 0$, so $x = 3$. Left of it $f' < 0$ (f falling); right of it $f' > 0$ (f rising) — a minimum."
+      }
+    },
+    {
+      "id": "mm-practice-7",
+      "type": "slider_graph",
+      "conceptTag": "extrema",
+      "content": [
+        {
+          "type": "text",
+          "body": "Below is the graph of the DERIVATIVE $f'(x) = -2x + 6$ of $f(x) = -x^2 + 6x$ (not $f$). Tap the $x$ where $f$ has its MAXIMUM — where $f'$ crosses zero from positive to negative."
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "-2*x + 6",
+          "domain": [0, 6],
+          "yDomain": [-7, 7],
+          "xLabel": "x",
+          "yLabel": "f'(x)",
+          "pointChoices": [0, 1, 2, 3, 4, 5, 6]
+        },
+        "answer": {
+          "type": "graph_point",
+          "x": 3,
+          "tolerance": 0.25
+        }
+      },
+      "feedback": {
+        "correct": "Yes — $f'(x) = -2x + 6$ is positive before $x = 3$ and negative after, crossing zero downward there. A $+ \\to -$ crossing makes $x = 3$ the maximum of $f$.",
+        "incorrect": "This line is $f'$. The maximum of $f$ is where $f'$ drops through zero from positive (f rising) to negative (f falling) — find where the falling line crosses the $x$-axis.",
+        "hint": "Set $f'(x) = -2x + 6 = 0$, so $x = 3$. Left of it $f' > 0$ (f rising); right of it $f' < 0$ (f falling) — a maximum."
+      }
+    },
+    {
+      "id": "mm-practice-8",
+      "type": "order_list",
+      "conceptTag": "extrema",
+      "content": [
+        {
+          "type": "text",
+          "body": "Put the steps for finding a function's maxima and minima in order."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "order_list",
+          "orderLabel": "Finding maxima and minima",
+          "items": [
+            "Compute the derivative $f'(x)$",
+            "Solve $f'(x) = 0$ for critical points",
+            "Check the sign of $f'$ on each side",
+            "Classify each as max, min, or neither"
+          ]
+        }
+      },
+      "feedback": {
+        "correct": "Exactly — differentiate, solve f' = 0, test the sign on each side, then classify.",
+        "incorrect": "You can't classify a point before you've found it. Start by differentiating.",
+        "hint": "First get f', then where it's zero, then how its sign changes, then label each point."
+      }
+    },
+    {
+      "id": "mm-practice-9",
+      "type": "sign_chart",
+      "conceptTag": "extrema",
+      "content": [
+        {
+          "type": "text",
+          "body": "For f(x) = x³ − 6x², the derivative is f'(x) = 3x² − 12x = 3x(x − 4), with critical points at x = 0 and x = 4. Label each interval."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "sign_chart",
+          "variableLabel": "f(x) = x³ − 6x²",
+          "points": [0, 4],
+          "options": ["Increasing", "Decreasing"],
+          "regions": [
+            { "correctIndex": 0 },
+            { "correctIndex": 1 },
+            { "correctIndex": 0 }
+          ]
+        }
+      },
+      "feedback": {
+        "correct": "Right — 3x(x − 4) is positive for x < 0, negative on (0, 4), and positive for x > 4.",
+        "incorrect": "Test a point in each interval in f'(x) = 3x(x − 4) and read its sign.",
+        "hint": "At x = −1: +; at x = 2: −; at x = 5: +. So increasing, decreasing, increasing."
+      }
+    },
+    {
+      "id": "mm-practice-10",
+      "type": "match",
+      "conceptTag": "extrema",
+      "content": [
+        {
+          "type": "text",
+          "body": "Match each slope-sign pattern to what it means for the curve."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "match",
+          "pairs": [
+            { "prompt": "Slope goes + then −", "match": "Maximum" },
+            { "prompt": "Slope goes − then +", "match": "Minimum" },
+            { "prompt": "Slope stays +", "match": "Not an extremum" }
+          ],
+          "distractors": ["Both"]
+        }
+      },
+      "feedback": {
+        "correct": "Exactly — a sign flip in f' marks a turning point; no flip means no extremum.",
+        "incorrect": "A max is rising then falling; a min is falling then rising; a steady sign means no turn.",
+        "hint": "+ → − tops out (max), − → + bottoms out (min), and a constant sign just keeps going."
       }
     }
   ]

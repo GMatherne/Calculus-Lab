@@ -39,6 +39,22 @@ export function derivativeAt(fn: string, x: number, h = 1e-4): number {
   return (evalFunction(fn, x + h) - evalFunction(fn, x - h)) / (2 * h);
 }
 
+/**
+ * Midpoint Riemann sum of `fn` over [a, b] with `n` equal-width rectangles. The
+ * same routine drives the interactive widget's rectangles and grades how close
+ * the learner's chosen `n` gets, so the picture and the verdict always agree.
+ */
+export function riemannSum(fn: string, a: number, b: number, n: number): number {
+  if (n <= 0 || !Number.isFinite(n)) return 0;
+  const count = Math.round(n);
+  const w = (b - a) / count;
+  let sum = 0;
+  for (let i = 0; i < count; i++) {
+    sum += evalFunction(fn, a + (i + 0.5) * w) * w;
+  }
+  return sum;
+}
+
 export function checkAnswer(
   step: Step,
   answer: unknown,
@@ -181,6 +197,58 @@ export function checkAnswer(
       const allCorrect =
         allMatched && spec.pairs.every((p, i) => picks[i] === p.match);
       return allCorrect
+        ? { correct: true, message: step.feedback.correct }
+        : {
+            correct: false,
+            message: step.feedback.incorrect,
+            showHint: false,
+            hint: step.feedback.hint,
+          };
+    }
+    case "sign_chart": {
+      const picks = Array.isArray(answer) ? (answer as (number | null)[]) : [];
+      const allAnswered =
+        spec.regions.length > 0 &&
+        spec.regions.every((_, i) => typeof picks[i] === "number");
+      const allCorrect =
+        allAnswered &&
+        spec.regions.every((r, i) => picks[i] === r.correctIndex);
+      return allCorrect
+        ? { correct: true, message: step.feedback.correct }
+        : {
+            correct: false,
+            message: step.feedback.incorrect,
+            showHint: false,
+            hint: step.feedback.hint,
+          };
+    }
+    case "order_list": {
+      const order = Array.isArray(answer) ? (answer as string[]) : [];
+      const allCorrect =
+        order.length === spec.items.length &&
+        spec.items.every((item, i) => order[i] === item);
+      return allCorrect
+        ? { correct: true, message: step.feedback.correct }
+        : {
+            correct: false,
+            message: step.feedback.incorrect,
+            showHint: false,
+            hint: step.feedback.hint,
+          };
+    }
+    case "riemann": {
+      const n = Number(answer);
+      if (!Number.isFinite(n) || n <= 0) {
+        return {
+          correct: false,
+          message: "Drag the slider to add rectangles.",
+          showHint: false,
+          hint: step.feedback.hint,
+        };
+      }
+      const estimate = riemannSum(spec.fn, spec.a, spec.b, n);
+      const verified = Math.abs(estimate - spec.trueArea) <= spec.targetWithin;
+      return verified
         ? { correct: true, message: step.feedback.correct }
         : {
             correct: false,

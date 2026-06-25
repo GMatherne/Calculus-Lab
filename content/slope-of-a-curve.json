@@ -322,177 +322,287 @@
   "practiceBank": [
     {
       "id": "soc-practice-1",
-      "type": "numeric",
+      "type": "slider_graph",
       "conceptTag": "secant_tangent",
       "content": [
         {
           "type": "text",
-          "body": "For f(x) = x², the tangent slope is given by 2x. What is the slope of the tangent line at x = 5?"
+          "body": "Here is f(x) = x², whose tangent slope is 2x. The slope readout is hidden — drag the point until the tangent slope equals 6."
         }
       ],
       "interaction": {
         "graph": {
           "fn": "x^2",
-          "domain": [0, 6],
+          "domain": [-4, 4],
+          "yDomain": [0, 16],
+          "sliderLabel": "x",
           "xLabel": "x",
           "yLabel": "f",
-          "static": true,
-          "markerX": 5,
-          "showTangent": true
+          "showSecant": false,
+          "showTangent": true,
+          "showSlopeValue": false,
+          "showValue": false,
+          "sliderMin": -4,
+          "sliderMax": 4,
+          "sliderStep": 0.1,
+          "initialSlider": 0
         },
-        "answer": { "type": "numeric", "value": 10, "tolerance": 0.01 }
+        "answer": { "type": "slider", "value": 3, "tolerance": 0.2 }
       },
       "feedback": {
-        "correct": "Right — f'(5) = 2(5) = 10.",
-        "incorrect": "Use the slope formula for x²: multiply x by 2.",
-        "hint": "2 × 5 = 10."
+        "correct": "Nailed it — the slope of x² is 2x, and 2x = 6 at x = 3.",
+        "incorrect": "The readout is hidden, so compute it: the slope of x² is 2x. Set 2x = 6 and drag there.",
+        "hint": "Solve 2x = 6 → x = 3."
       }
     },
     {
       "id": "soc-practice-2",
-      "type": "multiple_choice",
+      "type": "slider_graph",
       "conceptTag": "secant_tangent",
       "content": [
         {
           "type": "text",
-          "body": "On f(x) = x², how does the tangent line change as x increases from 1 to 4?"
+          "body": "The secant line from x = 0 to x = 2 on f(x) = x² has slope 2. Tap the point where the TANGENT has that same slope."
         }
       ],
       "interaction": {
         "graph": {
           "fn": "x^2",
-          "domain": [0, 4],
+          "domain": [-1, 3],
+          "yDomain": [0, 9],
           "xLabel": "x",
           "yLabel": "f",
-          "static": true,
-          "markerX": 3,
-          "showTangent": true
+          "pointChoices": [-1, -0.5, 0, 0.5, 1, 1.5, 2, 2.5, 3]
         },
-        "answer": {
-          "type": "multiple_choice",
-          "options": ["It gets steeper", "It gets flatter", "It stays the same", "It becomes vertical"],
-          "correctIndex": 0
-        }
+        "answer": { "type": "graph_point", "x": 1, "tolerance": 0.25 }
       },
       "feedback": {
-        "correct": "Correct — since the slope 2x grows with x, the tangent gets steeper.",
-        "incorrect": "Compare the slope 2x at x = 1 versus x = 4.",
-        "hint": "At x = 1 the slope is 2; at x = 4 it is 8 — larger means steeper."
+        "correct": "Exactly — the average rate over [0, 2] is 2, and the tangent slope 2x equals 2 at x = 1.",
+        "incorrect": "Set the tangent slope 2x equal to the secant slope 2 and solve for x, then tap that point.",
+        "hint": "Solve 2x = 2 → x = 1, the midpoint of 0 and 2."
       }
     },
     {
       "id": "soc-practice-3",
-      "type": "numeric",
+      "type": "match",
       "conceptTag": "secant_tangent",
       "content": [
         {
           "type": "text",
-          "body": "Still on f(x) = x² with slope 2x: at what value of x does the tangent slope equal 8?"
+          "body": "For f(x) = x² the tangent slope is 2x. Match each x-value to its slope."
         }
       ],
       "interaction": {
-        "graph": {
-          "fn": "x^2",
-          "domain": [0, 5],
-          "xLabel": "x",
-          "yLabel": "f",
-          "static": true
-        },
-        "answer": { "type": "numeric", "value": 4, "tolerance": 0.01 }
+        "answer": {
+          "type": "match",
+          "pairs": [
+            { "prompt": "$x = -3$", "match": "-6" },
+            { "prompt": "$x = -1$", "match": "-2" },
+            { "prompt": "$x = 2$", "match": "4" },
+            { "prompt": "$x = 4$", "match": "8" }
+          ],
+          "distractors": ["6"]
+        }
       },
       "feedback": {
-        "correct": "Yes — set 2x = 8, so x = 4.",
-        "incorrect": "Set the slope formula equal to 8: 2x = 8, then solve for x.",
-        "hint": "2x = 8 → x = 4."
+        "correct": "Perfect — doubling each x gives the slope: −6, −2, 4, and 8.",
+        "incorrect": "Multiply each x by 2 to find its tangent slope.",
+        "hint": "Slope = 2x, so x = −3 gives −6 and x = 4 gives 8."
       }
     },
     {
       "id": "soc-practice-4",
-      "type": "numeric",
+      "type": "order_list",
       "conceptTag": "secant_tangent",
       "content": [
         {
           "type": "text",
-          "body": "For f(x) = x², the tangent slope is given by 2x. What is the tangent slope at x = 7?"
+          "body": "On y = x³ the tangent slope is 3x². Order these points from the least steep tangent to the steepest."
         }
       ],
       "interaction": {
-        "graph": {
-          "fn": "x^2",
-          "domain": [0, 8],
-          "xLabel": "x",
-          "yLabel": "f",
-          "static": true,
-          "markerX": 7,
-          "showTangent": true
-        },
-        "answer": { "type": "numeric", "value": 14, "tolerance": 0.01 }
+        "answer": {
+          "type": "order_list",
+          "orderLabel": "Least steep → steepest (y = x³)",
+          "items": ["$x = 0$", "$x = 0.5$", "$x = 1$", "$x = 1.5$"]
+        }
       },
       "feedback": {
-        "correct": "Right — f'(7) = 2(7) = 14.",
-        "incorrect": "Use the slope formula for x²: multiply x by 2.",
-        "hint": "2 × 7 = 14."
+        "correct": "Right — 3x² gives 0, 0.75, 3, and 6.75, so steepness climbs in that order.",
+        "incorrect": "The slope of x³ is 3x². Compare that value at each x.",
+        "hint": "3x² gives 0, 0.75, 3, and 6.75."
       }
     },
     {
       "id": "soc-practice-5",
-      "type": "multiple_choice",
+      "type": "slider_graph",
       "conceptTag": "secant_tangent",
       "content": [
         {
           "type": "text",
-          "body": "The derivative of a function at a point is the slope of which line?"
+          "body": "Here is f(x) = x² − 2x, slope 2x − 2. Drag the point until the tangent slope equals 4."
         }
       ],
       "interaction": {
         "graph": {
-          "fn": "x^2",
-          "domain": [-2, 2],
+          "fn": "x^2 - 2*x",
+          "domain": [-2, 4],
+          "yDomain": [-2, 8],
+          "sliderLabel": "x",
           "xLabel": "x",
           "yLabel": "f",
-          "static": true
+          "showSecant": false,
+          "showTangent": true,
+          "showSlopeValue": false,
+          "showValue": false,
+          "sliderMin": -2,
+          "sliderMax": 4,
+          "sliderStep": 0.1,
+          "initialSlider": 0
         },
-        "answer": {
-          "type": "multiple_choice",
-          "options": [
-            "The tangent line at that point",
-            "A vertical line through the point",
-            "The x-axis",
-            "A secant line through two points"
-          ],
-          "correctIndex": 0
-        }
+        "answer": { "type": "slider", "value": 3, "tolerance": 0.2 }
       },
       "feedback": {
-        "correct": "Exactly — the derivative at a point is the slope of the tangent line there.",
-        "incorrect": "It's the line that just grazes the curve at that single point.",
-        "hint": "Shrinking a secant until its two points merge gives the tangent line."
+        "correct": "Nailed it — 2x − 2 = 4 gives 2x = 6, so x = 3.",
+        "incorrect": "The slope here is 2x − 2. Set 2x − 2 = 4 and solve, then drag there.",
+        "hint": "Solve 2x − 2 = 4 → x = 3."
       }
     },
     {
       "id": "soc-practice-6",
-      "type": "numeric",
+      "type": "sign_chart",
       "conceptTag": "secant_tangent",
       "content": [
         {
           "type": "text",
-          "body": "On f(x) = x² with slope 2x, at what value of x is the tangent perfectly flat (slope 0)?"
+          "body": "The parabola f(x) = x² − 2x turns around at x = 1. Label how f behaves on each side."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "sign_chart",
+          "variableLabel": "Behavior of f(x) = x² − 2x",
+          "points": [1],
+          "options": ["Increasing", "Decreasing"],
+          "regions": [{ "correctIndex": 1 }, { "correctIndex": 0 }]
+        }
+      },
+      "feedback": {
+        "correct": "Right — f' = 2x − 2 is negative before x = 1 and positive after, so f decreases then increases.",
+        "incorrect": "Check the sign of f' = 2x − 2 on each side of x = 1.",
+        "hint": "At x = 0, f' = −2 (falling); at x = 2, f' = +2 (rising)."
+      }
+    },
+    {
+      "id": "soc-practice-7",
+      "type": "slider_graph",
+      "conceptTag": "secant_tangent",
+      "content": [
+        {
+          "type": "text",
+          "body": "Here is f(x) = x², whose tangent slope is 2x. The slope readout is hidden — drag the point until the tangent slope equals −4."
         }
       ],
       "interaction": {
         "graph": {
           "fn": "x^2",
-          "domain": [-3, 3],
+          "domain": [-4, 4],
+          "yDomain": [0, 16],
+          "sliderLabel": "x",
           "xLabel": "x",
           "yLabel": "f",
-          "static": true
+          "showSecant": false,
+          "showTangent": true,
+          "showSlopeValue": false,
+          "showValue": false,
+          "sliderMin": -4,
+          "sliderMax": 4,
+          "sliderStep": 0.1,
+          "initialSlider": 0
         },
-        "answer": { "type": "numeric", "value": 0, "tolerance": 0.01 }
+        "answer": { "type": "slider", "value": -2, "tolerance": 0.2 }
       },
       "feedback": {
-        "correct": "Yes — 2x = 0 gives x = 0, the bottom of the parabola.",
-        "incorrect": "Set the slope formula equal to zero: 2x = 0.",
-        "hint": "2x = 0 → x = 0."
+        "correct": "Nailed it — the slope of x² is 2x, and 2x = −4 at x = −2.",
+        "incorrect": "The readout is hidden, so compute it: the slope of x² is 2x. Set 2x = −4 and drag there.",
+        "hint": "Solve 2x = −4 → x = −2."
+      }
+    },
+    {
+      "id": "soc-practice-8",
+      "type": "slider_graph",
+      "conceptTag": "secant_tangent",
+      "content": [
+        {
+          "type": "text",
+          "body": "For f(x) = x² − 4x + 3, the slope is 2x − 4. Tap where the tangent slope equals 2."
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^2 - 4*x + 3",
+          "domain": [-1, 5],
+          "yDomain": [-2, 9],
+          "xLabel": "x",
+          "yLabel": "f",
+          "pointChoices": [-1, 0, 1, 2, 3, 4, 5]
+        },
+        "answer": { "type": "graph_point", "x": 3, "tolerance": 0.25 }
+      },
+      "feedback": {
+        "correct": "Exactly — the slope is 2x − 4, and 2x − 4 = 2 gives x = 3.",
+        "incorrect": "Set the slope 2x − 4 equal to 2 and solve for x, then tap that point.",
+        "hint": "Solve 2x − 4 = 2 → x = 3."
+      }
+    },
+    {
+      "id": "soc-practice-9",
+      "type": "order_list",
+      "conceptTag": "secant_tangent",
+      "content": [
+        {
+          "type": "text",
+          "body": "On y = x² − 2x the slope is 2x − 2. Order these points from the most negative slope to the most positive."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "order_list",
+          "orderLabel": "Most negative slope → most positive (y = x² − 2x)",
+          "items": ["$x = -1$", "$x = 0$", "$x = 2$", "$x = 3$"]
+        }
+      },
+      "feedback": {
+        "correct": "Right — 2x − 2 gives −4, −2, 2, 4, from most negative to most positive.",
+        "incorrect": "Plug each x into 2x − 2, keep the sign, and order low to high.",
+        "hint": "2x − 2 gives −4, −2, 2, and 4."
+      }
+    },
+    {
+      "id": "soc-practice-10",
+      "type": "slider_graph",
+      "conceptTag": "secant_tangent",
+      "content": [
+        {
+          "type": "text",
+          "body": "For f(x) = −x² + 4, the slope is −2x. Tap where the tangent slope equals −2."
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "-x^2 + 4",
+          "domain": [-3, 3],
+          "yDomain": [-6, 5],
+          "xLabel": "x",
+          "yLabel": "f",
+          "pointChoices": [-3, -2, -1, 0, 1, 2, 3]
+        },
+        "answer": { "type": "graph_point", "x": 1, "tolerance": 0.25 }
+      },
+      "feedback": {
+        "correct": "Exactly — the slope is −2x, and −2x = −2 gives x = 1.",
+        "incorrect": "Set the slope −2x equal to −2 and solve for x, then tap that point.",
+        "hint": "Solve −2x = −2 → x = 1."
       }
     }
   ]

@@ -72,6 +72,39 @@
       }
     },
     {
+      "id": "auc-step-riemann",
+      "type": "riemann",
+      "conceptTag": "area_under_curve",
+      "content": [
+        {
+          "type": "text",
+          "body": "Let's make that slicing idea concrete. Drag to lay thin rectangles under $f(x) = x^2$ on $[0, 2]$ and add up their areas."
+        },
+        {
+          "type": "text",
+          "body": "With only a few rectangles the estimate is rough, but as you add more they trace the curve closely and your running total closes in on the true area $\\approx 2.67$. That limit is exactly the integral."
+        }
+      ],
+      "interaction": {
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "riemann",
+          "fn": "x^2",
+          "a": 0,
+          "b": 2,
+          "trueArea": 2.6667,
+          "targetWithin": 0.2,
+          "maxRects": 40,
+          "domain": [0, 2]
+        }
+      },
+      "feedback": {
+        "correct": "Exactly — adding rectangles tightens the fit, and the estimate converges on $\\frac{8}{3} \\approx 2.67$, the true area.",
+        "incorrect": "Too few rectangles leave gaps between the steps and the curve. Add more to sharpen the estimate.",
+        "hint": "Drag right to add rectangles; the midpoint estimate settles near 2.67."
+      }
+    },
+    {
       "id": "auc-step-3",
       "type": "read",
       "conceptTag": "definite_integral",
@@ -142,7 +175,7 @@
       "content": [
         {
           "type": "text",
-          "body": "Back to the graph of $f(x) = x^2$. Find the value of $t$ for which the area from 0 to $t$ equals 9, then drag the slider there. (Remember: the antiderivative is $F(x) = \\frac{x^3}{3}$, so the area from 0 to $t$ is $\\frac{t^3}{3}$.)"
+          "body": "Back to the graph of $f(x) = x^2$. Find the value of $t$ for which the area from 0 to $t$ equals 9, then drag the slider there."
         },
         {
           "type": "math",
@@ -221,6 +254,52 @@
       }
     },
     {
+      "id": "auc-step-belowaxis",
+      "type": "slider_graph",
+      "conceptTag": "definite_integral",
+      "content": [
+        {
+          "type": "text",
+          "body": "One subtlety: where the curve dips below the $x$-axis, its area counts as negative. Here $f(x) = x - 2$ starts below the axis and crosses up at $x = 2$. Drag $x$ and watch the running (signed) area: it first goes negative, then climbs back as the part above the axis cancels it. Drag $x$ to where the running area returns to 0."
+        },
+        {
+          "type": "math",
+          "latex": "\\int_0^x (t-2)\\,dt = 0",
+          "display": true
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x - 2",
+          "domain": [0, 4],
+          "yDomain": [-3, 3],
+          "sliderLabel": "x",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showValue": false,
+          "showArea": true,
+          "areaStart": 0,
+          "showAreaValue": true,
+          "sliderMin": 0,
+          "sliderMax": 4,
+          "sliderStep": 0.1,
+          "initialSlider": 0
+        },
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "slider",
+          "value": 4,
+          "tolerance": 0.2
+        }
+      },
+      "feedback": {
+        "correct": "Yes — from 0 to 2 the area below the axis is $-2$, and from 2 to 4 the area above is $+2$. They cancel, so by $x = 4$ the running total is back to 0.",
+        "incorrect": "The negative chunk on $[0, 2]$ is $-2$. You need an equal amount of positive area above the axis to cancel it. Where does the running total reach 0 again?",
+        "hint": "The area below on $[0, 2]$ is $-2$; it is cancelled by $+2$ of area on $[2, 4]$, so the total returns to 0 at $x = 4$."
+      }
+    },
+    {
       "id": "auc-step-7",
       "type": "read",
       "conceptTag": "definite_integral",
@@ -240,12 +319,17 @@
   "practiceBank": [
     {
       "id": "auc-practice-1",
-      "type": "numeric",
-      "conceptTag": "definite_integral",
+      "type": "slider_graph",
+      "conceptTag": "area_under_curve",
       "content": [
         {
           "type": "text",
-          "body": "Using the antiderivative $F(x) = \\frac{x^3}{3}$, what is the area under $f(x) = x^2$ from 0 to 3?"
+          "body": "The shaded region under $f(x) = x^2$ now starts at $x = 1$. Drag $t$ until the area from 1 to $t$ reaches about 8.67 (exactly $\\frac{26}{3}$)."
+        },
+        {
+          "type": "math",
+          "latex": "\\int_1^t x^2\\,dx = \\frac{26}{3}",
+          "display": true
         }
       ],
       "interaction": {
@@ -253,83 +337,370 @@
           "fn": "x^2",
           "domain": [0, 4],
           "yDomain": [0, 16],
+          "sliderLabel": "t",
           "xLabel": "x",
           "yLabel": "f",
+          "showSecant": false,
+          "showValue": false,
           "showArea": true,
-          "areaStart": 0,
-          "initialSlider": 3,
-          "static": true
+          "areaStart": 1,
+          "showAreaValue": false,
+          "sliderMin": 1,
+          "sliderMax": 4,
+          "sliderStep": 0.1,
+          "initialSlider": 1
         },
-        "answer": { "type": "numeric", "value": 9, "tolerance": 0.1 }
+        "answer": {
+          "type": "slider",
+          "value": 3,
+          "tolerance": 0.15
+        }
       },
       "feedback": {
-        "correct": "Yes — $\\frac{3^3}{3} = \\frac{27}{3} = 9$.",
-        "incorrect": "Plug $b = 3$ into $\\frac{b^3}{3}$.",
-        "hint": "$3^3 = 27$, and $\\frac{27}{3} = 9$."
+        "correct": "Nice — $\\frac{t^3 - 1}{3} = \\frac{26}{3}$ gives $t^3 = 27$, so $t = 3$.",
+        "incorrect": "Set $\\frac{t^3 - 1}{3} = \\frac{26}{3}$, so $t^3 - 1 = 26$ and $t^3 = 27$. Solve for $t$, then drag there.",
+        "hint": "$\\frac{t^3 - 1}{3} = \\frac{26}{3} \\to t^3 = 27 \\to t = 3$."
       }
     },
     {
       "id": "auc-practice-2",
-      "type": "numeric",
-      "conceptTag": "definite_integral",
-      "content": [
-        {
-          "type": "text",
-          "body": "What is the area under $f(x) = x^2$ from 0 to 1? (Round to two decimals.)"
-        }
-      ],
-      "interaction": {
-        "graph": {
-          "fn": "x^2",
-          "domain": [0, 2],
-          "yDomain": [0, 4],
-          "xLabel": "x",
-          "yLabel": "f",
-          "showArea": true,
-          "areaStart": 0,
-          "initialSlider": 1,
-          "static": true
-        },
-        "answer": { "type": "numeric", "value": 0.333, "tolerance": 0.03 }
-      },
-      "feedback": {
-        "correct": "Right — $\\frac{1^3}{3} = \\frac{1}{3} \\approx 0.33$.",
-        "incorrect": "Plug $b = 1$ into $\\frac{b^3}{3}$.",
-        "hint": "$1^3 = 1$, and $\\frac{1}{3} \\approx 0.33$."
-      }
-    },
-    {
-      "id": "auc-practice-3",
-      "type": "multiple_choice",
+      "type": "slider_graph",
       "conceptTag": "area_under_curve",
       "content": [
         {
           "type": "text",
-          "body": "To approximate the area under a curve, we add up many thin…"
+          "body": "Here the area under $f(x) = x$ is measured from $x = 2$. Drag $t$ until the area from 2 to $t$ equals 6."
+        },
+        {
+          "type": "math",
+          "latex": "\\int_2^t x\\,dx = 6",
+          "display": true
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x",
+          "domain": [0, 5],
+          "yDomain": [0, 5],
+          "sliderLabel": "t",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showValue": false,
+          "showArea": true,
+          "areaStart": 2,
+          "showAreaValue": false,
+          "sliderMin": 2,
+          "sliderMax": 5,
+          "sliderStep": 0.1,
+          "initialSlider": 2
+        },
+        "answer": {
+          "type": "slider",
+          "value": 4,
+          "tolerance": 0.15
+        }
+      },
+      "feedback": {
+        "correct": "Right — $\\frac{t^2 - 4}{2} = 6$ gives $t^2 = 16$, so $t = 4$.",
+        "incorrect": "Set $\\frac{t^2 - 4}{2} = 6$, so $t^2 - 4 = 12$ and $t^2 = 16$. Solve for $t$, then drag there.",
+        "hint": "$\\frac{t^2 - 4}{2} = 6 \\to t^2 = 16 \\to t = 4$."
+      }
+    },
+    {
+      "id": "auc-practice-3",
+      "type": "slider_graph",
+      "conceptTag": "area_under_curve",
+      "content": [
+        {
+          "type": "text",
+          "body": "The curve $f(x) = x^2 - 4$ starts below the $x$-axis, so the shaded area there is negative. The region runs from 0 to $t$. Drag $t$ to where the running signed area is the MOST NEGATIVE."
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^2 - 4",
+          "domain": [0, 3],
+          "yDomain": [-5, 5],
+          "sliderLabel": "t",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showValue": false,
+          "showArea": true,
+          "areaStart": 0,
+          "showAreaValue": true,
+          "sliderMin": 0,
+          "sliderMax": 3,
+          "sliderStep": 0.1,
+          "initialSlider": 0
+        },
+        "answer": {
+          "type": "slider",
+          "value": 2,
+          "tolerance": 0.2
+        }
+      },
+      "feedback": {
+        "correct": "Right — $f$ is negative until it crosses the axis at $x = 2$, so the running area keeps dropping until $t = 2$ and then climbs. The minimum is at $t = 2$.",
+        "incorrect": "While $f$ stays below the axis the running area keeps subtracting; the moment $f$ turns positive it begins to recover. Find where the curve crosses zero.",
+        "hint": "$x^2 - 4 = 0$ at $x = 2$, so the running area bottoms out at $t = 2$."
+      }
+    },
+    {
+      "id": "auc-practice-4",
+      "type": "match",
+      "conceptTag": "area_under_curve",
+      "content": [
+        {
+          "type": "text",
+          "body": "Match each definite integral to its value. Some run from a non-zero lower bound, and one dips below the axis to a negative value."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "match",
+          "pairs": [
+            { "prompt": "$\\int_2^4 x\\,dx$", "match": "6" },
+            { "prompt": "$\\int_1^4 x\\,dx$", "match": "7.5" },
+            { "prompt": "$\\int_0^2 (x-2)\\,dx$", "match": "-2" },
+            { "prompt": "$\\int_1^3 x\\,dx$", "match": "4" }
+          ],
+          "distractors": ["8", "-6"]
+        }
+      },
+      "feedback": {
+        "correct": "Exactly — $\\int_2^4 x\\,dx = 6$, $\\int_1^4 x\\,dx = 7.5$, $\\int_1^3 x\\,dx = 4$, and $\\int_0^2 (x-2)\\,dx = -2$ because that region sits below the axis.",
+        "incorrect": "Use $\\int_a^b x\\,dx = \\frac{b^2 - a^2}{2}$, and remember a region below the axis contributes negative area.",
+        "hint": "$\\int_2^4 x\\,dx = 6$, $\\int_1^4 x\\,dx = 7.5$, $\\int_1^3 x\\,dx = 4$, $\\int_0^2 (x-2)\\,dx = -2$."
+      }
+    },
+    {
+      "id": "auc-practice-5",
+      "type": "order_list",
+      "conceptTag": "area_under_curve",
+      "content": [
+        {
+          "type": "text",
+          "body": "More rectangles means a sharper area estimate. Drag these rectangle counts into order, from the least accurate estimate to the most accurate."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "order_list",
+          "orderLabel": "Least accurate → most accurate area estimate",
+          "items": [
+            "$n = 2$ rectangles",
+            "$n = 4$ rectangles",
+            "$n = 10$ rectangles",
+            "$n = 50$ rectangles"
+          ]
+        }
+      },
+      "feedback": {
+        "correct": "Right — more rectangles always hug the curve more tightly, so $n = 50$ is the sharpest.",
+        "incorrect": "Think about which count leaves the biggest gaps between the rectangles and the curve.",
+        "hint": "Fewer rectangles is rougher; accuracy climbs as $n$ grows."
+      }
+    },
+    {
+      "id": "auc-practice-6",
+      "type": "match",
+      "conceptTag": "definite_integral",
+      "content": [
+        {
+          "type": "text",
+          "body": "Each definite integral is an exact area. Match every integral to its value."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "match",
+          "pairs": [
+            {
+              "prompt": "$\\int_0^2 x^2\\,dx$",
+              "match": "2.67"
+            },
+            {
+              "prompt": "$\\int_0^3 x^2\\,dx$",
+              "match": "9"
+            },
+            {
+              "prompt": "$\\int_0^2 x\\,dx$",
+              "match": "2"
+            },
+            {
+              "prompt": "$\\int_2^4 x\\,dx$",
+              "match": "6"
+            }
+          ],
+          "distractors": [
+            "4"
+          ]
+        }
+      },
+      "feedback": {
+        "correct": "Nice — $\\int_0^2 x^2\\,dx = \\frac{8}{3} \\approx 2.67$, $\\int_0^3 x^2\\,dx = 9$, $\\int_0^2 x\\,dx = 2$, and $\\int_2^4 x\\,dx = \\frac{16 - 4}{2} = 6$.",
+        "incorrect": "Use $\\int_0^b x^2\\,dx = \\frac{b^3}{3}$ and $\\int_a^b x\\,dx = \\frac{b^2 - a^2}{2}$ — mind the lower bound when it is not 0.",
+        "hint": "For example, $\\int_2^4 x\\,dx = \\frac{16 - 4}{2} = 6$."
+      }
+    },
+    {
+      "id": "auc-practice-7",
+      "type": "slider_graph",
+      "conceptTag": "definite_integral",
+      "content": [
+        {
+          "type": "text",
+          "body": "The shaded region is the area under $f(x) = x^2$ from 0 to $t$. Drag $t$ until that area equals 9."
+        },
+        {
+          "type": "math",
+          "latex": "\\int_0^t x^2\\,dx = 9",
+          "display": true
         }
       ],
       "interaction": {
         "graph": {
           "fn": "x^2",
-          "domain": [0, 3],
-          "yDomain": [0, 9],
+          "domain": [
+            0,
+            4
+          ],
+          "yDomain": [
+            0,
+            16
+          ],
+          "sliderLabel": "t",
           "xLabel": "x",
           "yLabel": "f",
+          "showSecant": false,
+          "showValue": false,
           "showArea": true,
           "areaStart": 0,
-          "initialSlider": 3,
-          "static": true
+          "showAreaValue": false,
+          "sliderMin": 0,
+          "sliderMax": 4,
+          "sliderStep": 0.1,
+          "initialSlider": 0
         },
         "answer": {
-          "type": "multiple_choice",
-          "options": ["tangent lines", "rectangles", "circles", "triangles"],
-          "correctIndex": 1
+          "type": "slider",
+          "value": 3,
+          "tolerance": 0.15
         }
       },
       "feedback": {
-        "correct": "Correct — we slice the region into thin rectangles (strips) and sum their areas.",
-        "incorrect": "Think about the shape of each thin slice under the curve.",
-        "hint": "Each thin strip is treated as a skinny rectangle."
+        "correct": "Spot on — $\\frac{t^3}{3} = 9$ gives $t^3 = 27$, so $t = 3$.",
+        "incorrect": "Set $\\frac{t^3}{3} = 9$ and solve for $t$ before dragging the slider.",
+        "hint": "$\\frac{t^3}{3} = 9 \\to t^3 = 27 \\to t = 3$."
+      }
+    },
+    {
+      "id": "auc-practice-8",
+      "type": "order_list",
+      "conceptTag": "area_under_curve",
+      "content": [
+        {
+          "type": "text",
+          "body": "Order these integrals from smallest (most negative) to largest. One region lies below the axis, so its value is negative."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "order_list",
+          "orderLabel": "Smallest → largest value",
+          "items": [
+            "$\\int_0^2 (x-2)\\,dx$",
+            "$\\int_0^1 x\\,dx$",
+            "$\\int_1^3 x\\,dx$",
+            "$\\int_0^3 x^2\\,dx$"
+          ]
+        }
+      },
+      "feedback": {
+        "correct": "Right — the values are $-2$, $0.5$, $4$, and $9$. The below-axis region makes the first one negative.",
+        "incorrect": "Compute each value (area below the axis is negative), then order from most negative to largest.",
+        "hint": "$\\int_0^2 (x-2)\\,dx = -2$, $\\int_0^1 x\\,dx = 0.5$, $\\int_1^3 x\\,dx = 4$, $\\int_0^3 x^2\\,dx = 9$."
+      }
+    },
+    {
+      "id": "auc-practice-9",
+      "type": "order_list",
+      "conceptTag": "area_under_curve",
+      "content": [
+        {
+          "type": "text",
+          "body": "Put the steps of building a Riemann sum in order, from first to last."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "order_list",
+          "orderLabel": "Building a Riemann sum",
+          "items": [
+            "Divide [a, b] into n strips",
+            "Find each strip's width Δx",
+            "Multiply each strip's height by Δx",
+            "Add up all the rectangle areas"
+          ]
+        }
+      },
+      "feedback": {
+        "correct": "Exactly — split the interval, find Δx, scale each height, then sum the pieces.",
+        "incorrect": "You have to chop $[a, b]$ into strips before you can measure any of them.",
+        "hint": "Width first, then height × width, then add the rectangle areas up."
+      }
+    },
+    {
+      "id": "auc-practice-10",
+      "type": "slider_graph",
+      "conceptTag": "definite_integral",
+      "content": [
+        {
+          "type": "text",
+          "body": "Now the curve is $f(x) = x$. Drag $t$ until the shaded area from 0 to $t$ equals 4.5."
+        },
+        {
+          "type": "math",
+          "latex": "\\int_0^t x\\,dx = 4.5",
+          "display": true
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x",
+          "domain": [
+            0,
+            5
+          ],
+          "yDomain": [
+            0,
+            5
+          ],
+          "sliderLabel": "t",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showValue": false,
+          "showArea": true,
+          "areaStart": 0,
+          "showAreaValue": false,
+          "sliderMin": 0,
+          "sliderMax": 5,
+          "sliderStep": 0.1,
+          "initialSlider": 0
+        },
+        "answer": {
+          "type": "slider",
+          "value": 3,
+          "tolerance": 0.15
+        }
+      },
+      "feedback": {
+        "correct": "Nice — $\\frac{1}{2}t^2 = 4.5$ gives $t^2 = 9$, so $t = 3$.",
+        "incorrect": "Set $\\frac{1}{2}t^2 = 4.5$ and solve for $t$ before dragging.",
+        "hint": "$\\frac{1}{2}t^2 = 4.5 \\to t^2 = 9 \\to t = 3$."
       }
     }
   ]

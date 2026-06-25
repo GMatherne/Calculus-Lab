@@ -6,7 +6,10 @@ export type StepType =
   | "slider_graph"
   | "power_term"
   | "drag_drop"
-  | "match";
+  | "match"
+  | "sign_chart"
+  | "order_list"
+  | "riemann";
 
 export type LessonStatus =
   | "not_started"
@@ -266,6 +269,79 @@ export interface MatchAnswer {
   distractors?: string[];
 }
 
+/** One interval in a {@link SignChartAnswer}. */
+export interface SignChartRegion {
+  /** Index into the answer's shared `options` that correctly labels this interval. */
+  correctIndex: number;
+}
+
+/**
+ * "Sign chart" question: the learner reads the behavior of a quantity (usually
+ * f') across a number line split by its critical points and labels every
+ * interval — e.g. tagging each stretch "Increasing" or "Decreasing". This is the
+ * standard hands-on tool for analyzing where a function rises and falls. The
+ * critical x-values in `points` are shown as labeled ticks, and the intervals
+ * between and beyond them are the regions, so there is always exactly one more
+ * region than there are points. The submitted answer is an array of chosen
+ * option indices, one per region in left-to-right order (null where a region is
+ * still unlabeled); graded by position, every region must hold its correct label.
+ */
+export interface SignChartAnswer {
+  type: "sign_chart";
+  /** Critical x-values dividing the line, in increasing order (display only). */
+  points: number[];
+  /** Labels every region picks from, e.g. ["Increasing", "Decreasing"]. */
+  options: string[];
+  /** One entry per region (points.length + 1), left to right. */
+  regions: SignChartRegion[];
+  /** Optional caption for what's being analyzed, e.g. "Sign of f'(x)". */
+  variableLabel?: string;
+}
+
+/**
+ * "Put in order" question: the learner drags shuffled items into the right
+ * sequence — the steps of a computation, or values sorted least-to-greatest, for
+ * example. The authored `items` are listed in their CORRECT order and rendered
+ * shuffled; the submitted answer is the current ordering (the item strings),
+ * graded by an exact match against the authored order.
+ */
+export interface OrderListAnswer {
+  type: "order_list";
+  /** Items in their correct order; rendered shuffled. Each supports inline $…$ math. */
+  items: string[];
+  /** Optional instruction, e.g. "Order the steps from first to last". */
+  orderLabel?: string;
+}
+
+/**
+ * Interactive Riemann-sum question: the learner drags a slider to pile more
+ * rectangles under a curve and watches the running estimate close in on the true
+ * area, feeling the limit that defines the integral. The submitted answer is the
+ * rectangle count n; it grades correct once the midpoint estimate lands within
+ * `targetWithin` of `trueArea`, so the learner has to refine the approximation by
+ * hand. The widget draws the curve, the rectangles, and the live readouts itself,
+ * so a Riemann step needs no separate `graph` config.
+ */
+export interface RiemannAnswer {
+  type: "riemann";
+  /** Curve to integrate, a math.js expression in x (e.g. "x^2"). */
+  fn: string;
+  /** Left endpoint of the integration interval. */
+  a: number;
+  /** Right endpoint of the integration interval (must exceed `a`). */
+  b: number;
+  /** Exact area over [a, b], used for the readout and to grade convergence. */
+  trueArea: number;
+  /** Correct once |estimate − trueArea| ≤ this (must be positive). */
+  targetWithin: number;
+  /** Largest rectangle count the slider allows (default 40). */
+  maxRects?: number;
+  /** Plot window; defaults to [a, b]. Widen it to leave margin around the interval. */
+  domain?: [number, number];
+  /** Explicit y-axis maximum; defaults to the curve's peak across the domain. */
+  yMax?: number;
+}
+
 export type AnswerSpec =
   | MultipleChoiceAnswer
   | MultiChoiceAnswer
@@ -274,7 +350,10 @@ export type AnswerSpec =
   | GraphPointAnswer
   | PowerTermAnswer
   | DragDropAnswer
-  | MatchAnswer;
+  | MatchAnswer
+  | SignChartAnswer
+  | OrderListAnswer
+  | RiemannAnswer;
 
 export interface Interaction {
   graph?: GraphConfig;

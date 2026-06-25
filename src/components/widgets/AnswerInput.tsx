@@ -3,6 +3,9 @@ import { MathBlock, RichText } from "./MathBlock";
 import { DragDropInput } from "./DragDropInput";
 import { MultiChoiceInput } from "./MultiChoiceInput";
 import { MatchInput } from "./MatchInput";
+import { SignChartInput } from "./SignChartInput";
+import { OrderListInput } from "./OrderListInput";
+import { RiemannInput } from "./RiemannInput";
 
 const COEFF_MIN = 0;
 const COEFF_MAX = 99;
@@ -234,6 +237,45 @@ export function AnswerInput({
       <MatchInput
         spec={spec}
         value={value as (string | null)[] | undefined}
+        onChange={onChange}
+        disabled={disabled}
+        reveal={reveal}
+        isCorrect={isCorrect}
+      />
+    );
+  }
+
+  if (spec.type === "sign_chart") {
+    return (
+      <SignChartInput
+        spec={spec}
+        value={value as (number | null)[] | undefined}
+        onChange={onChange}
+        disabled={disabled}
+        reveal={reveal}
+        isCorrect={isCorrect}
+      />
+    );
+  }
+
+  if (spec.type === "order_list") {
+    return (
+      <OrderListInput
+        spec={spec}
+        value={value as string[] | undefined}
+        onChange={onChange}
+        disabled={disabled}
+        reveal={reveal}
+        isCorrect={isCorrect}
+      />
+    );
+  }
+
+  if (spec.type === "riemann") {
+    return (
+      <RiemannInput
+        spec={spec}
+        value={value as number | undefined}
         onChange={onChange}
         disabled={disabled}
         reveal={reveal}

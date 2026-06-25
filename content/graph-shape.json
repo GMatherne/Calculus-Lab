@@ -285,98 +285,261 @@
   "practiceBank": [
     {
       "id": "gs-practice-1",
-      "type": "multiple_choice",
+      "type": "sign_chart",
       "conceptTag": "graph_shape",
       "content": [
         {
           "type": "text",
-          "body": "If f'(x) < 0 on an interval, what is the graph of f doing there?"
+          "body": "$f(x) = x^2 - 4x$ has $f'(x) = 2x - 4$, zero at $x = 2$. Label where the curve is increasing and where it's decreasing."
         }
       ],
       "interaction": {
-        "graph": {
-          "fn": "x^3 - 3*x",
-          "domain": [-2.2, 2.2],
-          "yDomain": [-5, 5],
-          "xLabel": "x",
-          "yLabel": "f",
-          "static": true,
-          "showDerivative": true
-        },
         "answer": {
-          "type": "multiple_choice",
-          "options": ["Falling", "Rising", "Staying flat", "At a minimum"],
-          "correctIndex": 0
+          "type": "sign_chart",
+          "variableLabel": "Where is f(x) = x² − 4x increasing or decreasing?",
+          "points": [2],
+          "options": ["Increasing", "Decreasing"],
+          "regions": [{ "correctIndex": 1 }, { "correctIndex": 0 }]
         }
       },
       "feedback": {
-        "correct": "Right — f' < 0 means f is decreasing, so the graph falls (the tangent points downhill).",
-        "incorrect": "A negative slope tilts the tangent downward.",
-        "hint": "f' < 0 → f is decreasing, so the graph falls."
+        "correct": "Right — $f' < 0$ before $x = 2$ so $f$ falls, and $f' > 0$ after so it rises.",
+        "incorrect": "Test the sign of $f'(x) = 2x - 4$ on each side of $x = 2$.",
+        "hint": "At $x = 0$, $f' = -4$ (decreasing); at $x = 3$, $f' = 2$ (increasing)."
       }
     },
     {
       "id": "gs-practice-2",
-      "type": "numeric",
+      "type": "sign_chart",
       "conceptTag": "graph_shape",
       "content": [
         {
           "type": "text",
-          "body": "Given the graph f(x) = x² − 4x + 3, at what x does f'(x) = 0?"
+          "body": "$f(x) = x^3 - 3x$ has $f'(x) = 3x^2 - 3$, zero at $x = -1$ and $x = 1$. Label each interval."
         }
       ],
       "interaction": {
-        "graph": {
-          "fn": "x^2 - 4*x + 3",
-          "domain": [-1, 5],
-          "xLabel": "x",
-          "yLabel": "f",
-          "static": true
-        },
-        "answer": { "type": "numeric", "value": 2, "tolerance": 0.01 }
+        "answer": {
+          "type": "sign_chart",
+          "variableLabel": "Where is f(x) = x³ − 3x increasing or decreasing?",
+          "points": [-1, 1],
+          "options": ["Increasing", "Decreasing"],
+          "regions": [{ "correctIndex": 0 }, { "correctIndex": 1 }, { "correctIndex": 0 }]
+        }
       },
       "feedback": {
-        "correct": "Yes — 2x − 4 = 0 gives x = 2, the turning point of the parabola.",
-        "incorrect": "Set 2x − 4 = 0 and solve for x.",
-        "hint": "2x − 4 = 0 → 2x = 4 → x = 2."
+        "correct": "Exactly — $f$ rises, dips, then rises again: increasing, decreasing, increasing.",
+        "incorrect": "Plug a test value from each of the three intervals into $f'(x) = 3x^2 - 3$.",
+        "hint": "At $x = -2$, $f' = 9 > 0$; at $x = 0$, $f' = -3 < 0$; at $x = 2$, $f' = 9 > 0$."
       }
     },
     {
       "id": "gs-practice-3",
-      "type": "numeric",
+      "type": "slider_graph",
       "conceptTag": "graph_shape",
       "content": [
         {
           "type": "text",
-          "body": "For f(x) = x² − 6x + 5, the slope is f'(x) = 2x − 6. Compute f'(1)."
+          "body": "This is the graph of the DERIVATIVE $f'(x) = 3x^2 - 3$ of $f(x) = x^3 - 3x$ (not $f$). Tap the $x$ where $f$ has a local MAXIMUM — where $f'$ crosses zero from positive to negative."
         }
       ],
       "interaction": {
         "graph": {
-          "fn": "x^2 - 6*x + 5",
-          "domain": [-1, 6],
+          "fn": "3*x^2 - 3",
+          "domain": [-2.2, 2.2],
+          "yDomain": [-6, 12],
           "xLabel": "x",
-          "yLabel": "f",
-          "static": true,
-          "markerX": 1,
-          "showTangent": true
+          "yLabel": "f'(x)",
+          "pointChoices": [-2, -1, 0, 1, 2]
         },
-        "answer": { "type": "numeric", "value": -4, "tolerance": 0.01 }
+        "answer": {
+          "type": "graph_point",
+          "x": -1,
+          "tolerance": 0.25
+        }
       },
       "feedback": {
-        "correct": "Right — f'(1) = 2(1) − 6 = −4, so f is decreasing and the curve is falling at x = 1.",
-        "incorrect": "Substitute x = 1 into 2x − 6.",
-        "hint": "2 × 1 − 6 = 2 − 6 = −4."
+        "correct": "Yes — $f'$ runs positive then negative through $x = -1$, crossing zero downward. A $+ \\to -$ crossing means $f$ rises then falls: a local maximum.",
+        "incorrect": "Remember this curve is $f'$, not $f$. A maximum of $f$ is where $f'$ crosses zero from positive (f rising) to negative (f falling). Look for the downward crossing.",
+        "hint": "$f'(x) = 3x^2 - 3 = 0$ at $x = \\pm 1$. The $+ \\to -$ crossing is at $x = -1$ (a max); $x = 1$ is the $- \\to +$ crossing (a min)."
       }
     },
     {
       "id": "gs-practice-4",
-      "type": "multiple_choice",
+      "type": "sign_chart",
       "conceptTag": "graph_shape",
       "content": [
         {
           "type": "text",
-          "body": "At a peak or a valley of a smooth curve, what is the value of f'(x)?"
+          "body": "For $f(x) = x^2$, the slope is $f'(x) = 2x$. Label the sign of $f'(x)$ on each side of $x = 0$."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "sign_chart",
+          "variableLabel": "Sign of f'(x) for f(x) = x²",
+          "points": [0],
+          "options": ["f'(x) > 0", "f'(x) < 0"],
+          "regions": [{ "correctIndex": 1 }, { "correctIndex": 0 }]
+        }
+      },
+      "feedback": {
+        "correct": "Right — $2x$ is negative for $x < 0$ and positive for $x > 0$.",
+        "incorrect": "Substitute a negative and then a positive $x$ into $f'(x) = 2x$ and read off the sign.",
+        "hint": "At $x = -1$, $2x = -2 < 0$; at $x = 1$, $2x = 2 > 0$."
+      }
+    },
+    {
+      "id": "gs-practice-5",
+      "type": "slider_graph",
+      "conceptTag": "graph_shape",
+      "content": [
+        {
+          "type": "text",
+          "body": "This is the graph of the DERIVATIVE $f'(x) = 2x - 4$ of $f(x) = x^2 - 4x$ (not $f$). Tap the $x$ where $f$ stops decreasing and starts increasing — its minimum, where $f'$ crosses zero from negative to positive."
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "2*x - 4",
+          "domain": [-1, 5],
+          "yDomain": [-7, 7],
+          "xLabel": "x",
+          "yLabel": "f'(x)",
+          "pointChoices": [-1, 0, 1, 2, 3, 4, 5]
+        },
+        "answer": {
+          "type": "graph_point",
+          "x": 2,
+          "tolerance": 0.25
+        }
+      },
+      "feedback": {
+        "correct": "Right — $f'(x) = 2x - 4$ is negative before $x = 2$ (so $f$ falls) and positive after (so $f$ rises), crossing zero upward at $x = 2$: a minimum.",
+        "incorrect": "This line is $f'$. Where $f$ turns from decreasing to increasing, $f'$ goes from negative to positive — find where the rising line crosses the $x$-axis.",
+        "hint": "Set $f'(x) = 2x - 4 = 0$, so $x = 2$. $f' < 0$ to the left (f falling) and $f' > 0$ to the right (f rising) — a minimum."
+      }
+    },
+    {
+      "id": "gs-practice-6",
+      "type": "slider_graph",
+      "conceptTag": "graph_shape",
+      "content": [
+        {
+          "type": "text",
+          "body": "This is the graph of the DERIVATIVE $f'(x) = 3x^2 - 3$ of $f(x) = x^3 - 3x$ (not $f$). Tap the $x$ where $f$ has a local MINIMUM — where $f'$ crosses zero from negative to positive."
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "3*x^2 - 3",
+          "domain": [-2.2, 2.2],
+          "yDomain": [-6, 12],
+          "xLabel": "x",
+          "yLabel": "f'(x)",
+          "pointChoices": [-2, -1, 0, 1, 2]
+        },
+        "answer": {
+          "type": "graph_point",
+          "x": 1,
+          "tolerance": 0.25
+        }
+      },
+      "feedback": {
+        "correct": "Yes — at $x = 1$, $f'$ rises through zero from negative to positive. A $- \\to +$ crossing means $f$ falls then rises: a local minimum.",
+        "incorrect": "This curve is $f'$, not $f$. A minimum of $f$ is where $f'$ crosses zero from negative (f falling) to positive (f rising). The downward crossing at $x = -1$ is the maximum.",
+        "hint": "$f'(x) = 3x^2 - 3 = 0$ at $x = \\pm 1$. The $- \\to +$ crossing is at $x = 1$ (a min); $x = -1$ is the $+ \\to -$ crossing (a max)."
+      }
+    },
+    {
+      "id": "gs-practice-7",
+      "type": "order_list",
+      "conceptTag": "graph_shape",
+      "content": [
+        {
+          "type": "text",
+          "body": "For $f(x) = x^2$ the slope is $f'(x) = 2x$. Order these points from the most negative slope to the most positive."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "order_list",
+          "orderLabel": "Most negative f'(x) → most positive (f(x) = x²)",
+          "items": ["$x = -2$", "$x = -1$", "$x = 1$", "$x = 2$"]
+        }
+      },
+      "feedback": {
+        "correct": "Right — $2x$ grows steadily, so the slope climbs from $-4$ up to $4$.",
+        "incorrect": "Evaluate $2x$ at each point and sort from the smallest (most negative) upward.",
+        "hint": "$f'(-2) = -4$, $f'(-1) = -2$, $f'(1) = 2$, $f'(2) = 4$."
+      }
+    },
+    {
+      "id": "gs-practice-8",
+      "type": "slider_graph",
+      "conceptTag": "graph_shape",
+      "content": [
+        {
+          "type": "text",
+          "body": "This is the graph of the DERIVATIVE $f'(x) = -2x + 4$ of $f(x) = -x^2 + 4x$ (not $f$). Tap the $x$ where $f$ has its MAXIMUM — where $f'$ crosses zero from positive to negative."
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "-2*x + 4",
+          "domain": [-1, 5],
+          "yDomain": [-7, 7],
+          "xLabel": "x",
+          "yLabel": "f'(x)",
+          "pointChoices": [-1, 0, 1, 2, 3, 4, 5]
+        },
+        "answer": {
+          "type": "graph_point",
+          "x": 2,
+          "tolerance": 0.25
+        }
+      },
+      "feedback": {
+        "correct": "Right — $f'(x) = -2x + 4$ is positive before $x = 2$ (so $f$ rises) and negative after (so $f$ falls), crossing zero downward at $x = 2$: a maximum.",
+        "incorrect": "This line is $f'$. The maximum of $f$ is where $f'$ drops through zero from positive (f rising) to negative (f falling) — find where the falling line crosses the $x$-axis.",
+        "hint": "Set $f'(x) = -2x + 4 = 0$, so $x = 2$. $f' > 0$ to the left (f rising) and $f' < 0$ to the right (f falling) — a maximum."
+      }
+    },
+    {
+      "id": "gs-practice-9",
+      "type": "match",
+      "conceptTag": "graph_shape",
+      "content": [
+        {
+          "type": "text",
+          "body": "Match each sign of $f'(x)$ to what the graph is doing."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "match",
+          "pairs": [
+            { "prompt": "$f'(x) > 0$", "match": "Increasing" },
+            { "prompt": "$f'(x) < 0$", "match": "Decreasing" },
+            { "prompt": "$f'(x) = 0$", "match": "Flat (turning point)" }
+          ],
+          "distractors": ["Vertical"]
+        }
+      },
+      "feedback": {
+        "correct": "Right — positive slope rises, negative slope falls, and zero slope is a flat turning point.",
+        "incorrect": "Recall how the sign of the slope translates into the curve's direction.",
+        "hint": "$f' > 0$ rises, $f' < 0$ falls, $f' = 0$ is flat."
+      }
+    },
+    {
+      "id": "gs-practice-10",
+      "type": "slider_graph",
+      "conceptTag": "graph_shape",
+      "content": [
+        {
+          "type": "text",
+          "body": "Tap the point on $f(x) = x^3 - 3x$ where the curve heads downhill most steeply — the most negative slope."
         }
       ],
       "interaction": {
@@ -386,73 +549,18 @@
           "yDomain": [-5, 5],
           "xLabel": "x",
           "yLabel": "f",
-          "static": true,
-          "showDerivative": true
+          "pointChoices": [-1.5, -0.5, 0, 0.5, 1.5]
         },
         "answer": {
-          "type": "multiple_choice",
-          "options": ["0", "Positive", "Negative", "Undefined"],
-          "correctIndex": 0
+          "type": "graph_point",
+          "x": 0,
+          "tolerance": 0.25
         }
       },
       "feedback": {
-        "correct": "Right — at a turning point the tangent is flat, so f'(x) = 0.",
-        "incorrect": "Think about the slope of the tangent at the very top or bottom.",
-        "hint": "A flat tangent means slope 0."
-      }
-    },
-    {
-      "id": "gs-practice-5",
-      "type": "numeric",
-      "conceptTag": "graph_shape",
-      "content": [
-        {
-          "type": "text",
-          "body": "Given the graph f(x) = x² − 10x, at what x does f'(x) = 0?"
-        }
-      ],
-      "interaction": {
-        "graph": {
-          "fn": "x^2 - 10*x",
-          "domain": [0, 10],
-          "xLabel": "x",
-          "yLabel": "f",
-          "static": true
-        },
-        "answer": { "type": "numeric", "value": 5, "tolerance": 0.01 }
-      },
-      "feedback": {
-        "correct": "Yes — 2x − 10 = 0 gives x = 5, the turning point of the parabola.",
-        "incorrect": "Set 2x − 10 = 0 and solve for x.",
-        "hint": "2x − 10 = 0 → 2x = 10 → x = 5."
-      }
-    },
-    {
-      "id": "gs-practice-6",
-      "type": "numeric",
-      "conceptTag": "graph_shape",
-      "content": [
-        {
-          "type": "text",
-          "body": "For f(x) = −x² + 4x, the slope is f'(x) = −2x + 4. Compute f'(1)."
-        }
-      ],
-      "interaction": {
-        "graph": {
-          "fn": "-x^2 + 4*x",
-          "domain": [0, 4],
-          "xLabel": "x",
-          "yLabel": "f",
-          "static": true,
-          "markerX": 1,
-          "showTangent": true
-        },
-        "answer": { "type": "numeric", "value": 2, "tolerance": 0.01 }
-      },
-      "feedback": {
-        "correct": "f'(1) = −2(1) + 4 = 2 — positive, so f is increasing and the curve is rising at x = 1.",
-        "incorrect": "Substitute x = 1 into −2x + 4.",
-        "hint": "−2 × 1 + 4 = 2."
+        "correct": "Yes — $f'(x) = 3x^2 - 3$ bottoms out at $x = 0$, where the slope is $-3$.",
+        "incorrect": "The slope $f'(x) = 3x^2 - 3$ is smallest where $3x^2$ is smallest.",
+        "hint": "$3x^2 - 3$ is most negative at $x = 0$, giving $f' = -3$."
       }
     }
   ]

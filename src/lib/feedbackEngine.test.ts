@@ -2,6 +2,7 @@ import {
   evalFunction,
   secantSlope,
   derivativeAt,
+  riemannSum,
   checkAnswer,
   verifyNumericWithMathJs,
 } from "./feedbackEngine";
@@ -245,6 +246,121 @@ describe("checkAnswer", () => {
       expect(checkAnswer(step, ["x^3/3", "x^2/2"]).correct).toBe(false);
       expect(checkAnswer(step, undefined).correct).toBe(false);
     });
+  });
+
+  describe("sign_chart", () => {
+    // f(x) = x^2 falls on x < 0 and rises on x > 0, so the two regions split at 0.
+    const step = stepWith({
+      type: "sign_chart",
+      points: [0],
+      options: ["Increasing", "Decreasing"],
+      regions: [{ correctIndex: 1 }, { correctIndex: 0 }],
+    });
+
+    it("accepts when every region holds its correct label", () => {
+      expect(checkAnswer(step, [1, 0]).correct).toBe(true);
+    });
+
+    it("rejects a wrong region and surfaces the hint", () => {
+      const res = checkAnswer(step, [0, 0]);
+      expect(res.correct).toBe(false);
+      if (!res.correct) {
+        expect(res.message).toBe(feedback.incorrect);
+        expect(res.hint).toBe(feedback.hint);
+      }
+    });
+
+    it("rejects an incomplete or missing answer", () => {
+      expect(checkAnswer(step, [1, null]).correct).toBe(false);
+      expect(checkAnswer(step, [1]).correct).toBe(false);
+      expect(checkAnswer(step, undefined).correct).toBe(false);
+    });
+
+    it("treats option index 0 as a real selection, not a blank", () => {
+      const allFirst = stepWith({
+        type: "sign_chart",
+        points: [0],
+        options: ["Increasing", "Decreasing"],
+        regions: [{ correctIndex: 0 }, { correctIndex: 0 }],
+      });
+      expect(checkAnswer(allFirst, [0, 0]).correct).toBe(true);
+    });
+  });
+
+  describe("order_list", () => {
+    const step = stepWith({
+      type: "order_list",
+      items: ["First", "Second", "Third"],
+    });
+
+    it("accepts the exact authored order", () => {
+      expect(checkAnswer(step, ["First", "Second", "Third"]).correct).toBe(true);
+    });
+
+    it("rejects any other ordering and surfaces the hint", () => {
+      const res = checkAnswer(step, ["Second", "First", "Third"]);
+      expect(res.correct).toBe(false);
+      if (!res.correct) {
+        expect(res.message).toBe(feedback.incorrect);
+        expect(res.hint).toBe(feedback.hint);
+      }
+    });
+
+    it("rejects an incomplete or missing answer", () => {
+      expect(checkAnswer(step, ["First", "Second"]).correct).toBe(false);
+      expect(checkAnswer(step, undefined).correct).toBe(false);
+    });
+  });
+
+  describe("riemann", () => {
+    // ∫₀⁴ x² dx = 64/3 ≈ 21.33; the midpoint rule converges quickly.
+    const step = stepWith({
+      type: "riemann",
+      fn: "x^2",
+      a: 0,
+      b: 4,
+      trueArea: 64 / 3,
+      targetWithin: 0.2,
+    });
+
+    it("accepts once enough rectangles bring the estimate within tolerance", () => {
+      // n = 20 midpoint rectangles is well inside 0.2 of the true area.
+      expect(checkAnswer(step, 20).correct).toBe(true);
+    });
+
+    it("rejects a coarse estimate that is still too far off", () => {
+      const res = checkAnswer(step, 1);
+      expect(res.correct).toBe(false);
+      if (!res.correct) {
+        expect(res.message).toBe(feedback.incorrect);
+        expect(res.hint).toBe(feedback.hint);
+      }
+    });
+
+    it("rejects a non-positive or missing rectangle count", () => {
+      expect(checkAnswer(step, 0).correct).toBe(false);
+      expect(checkAnswer(step, undefined).correct).toBe(false);
+    });
+  });
+});
+
+describe("riemannSum", () => {
+  it("approaches the true integral as rectangles increase", () => {
+    // ∫₀⁴ x² dx = 64/3 ≈ 21.333…
+    const exact = 64 / 3;
+    expect(Math.abs(riemannSum("x^2", 0, 4, 4) - exact)).toBeGreaterThan(
+      Math.abs(riemannSum("x^2", 0, 4, 40) - exact),
+    );
+    expect(riemannSum("x^2", 0, 4, 200)).toBeCloseTo(exact, 1);
+  });
+
+  it("is exact for a constant function at any rectangle count", () => {
+    expect(riemannSum("3", 0, 5, 1)).toBeCloseTo(15, 6);
+    expect(riemannSum("3", 0, 5, 7)).toBeCloseTo(15, 6);
+  });
+
+  it("returns 0 for a non-positive count", () => {
+    expect(riemannSum("x^2", 0, 4, 0)).toBe(0);
   });
 });
 

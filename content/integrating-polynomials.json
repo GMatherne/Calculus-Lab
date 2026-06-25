@@ -190,13 +190,55 @@
       }
     },
     {
+      "id": "ip-step-6b",
+      "type": "slider_graph",
+      "conceptTag": "definite_integral",
+      "content": [
+        {
+          "type": "text",
+          "body": "The lower limit doesn't have to be 0. Find the value of $t$ for which this integral equals 10, then drag the slider there."
+        },
+        {
+          "type": "math",
+          "latex": "\\int_1^t (2x + 1)\\,dx = 10",
+          "display": true
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "2*x + 1",
+          "domain": [0, 4],
+          "yDomain": [0, 9],
+          "sliderLabel": "t",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showValue": false,
+          "showArea": true,
+          "areaStart": 1,
+          "showAreaValue": false,
+          "sliderMin": 1,
+          "sliderMax": 3.5,
+          "sliderStep": 0.1,
+          "initialSlider": 1
+        },
+        "hintAfterAttempts": 1,
+        "answer": { "type": "slider", "value": 3, "tolerance": 0.15 }
+      },
+      "feedback": {
+        "correct": "Nice — $(t^2 + t) - 2 = 10$ gives $t^2 + t - 12 = 0$, so $(t - 3)(t + 4) = 0$ and $t = 3$.",
+        "incorrect": "Set $(t^2 + t) - 2 = 10$ and solve for $t$, then drag the slider there.",
+        "hint": "$t^2 + t - 12 = 0 \\to (t - 3)(t + 4) = 0 \\to t = 3$."
+      }
+    },
+    {
       "id": "ip-step-7",
       "type": "slider_graph",
       "conceptTag": "definite_integral",
       "content": [
         {
           "type": "text",
-          "body": "The shaded region is the area under $f(x) = x + 1$ from 0 to $t$. Its antiderivative is $F(x) = \\frac{1}{2}x^2 + x$. Find the value of $t$ for which this area equals 4, then drag the slider there."
+          "body": "The shaded region is the area under $f(x) = x + 1$ from 0 to $t$. Find the value of $t$ for which this area equals 4, then drag the slider there."
         },
         {
           "type": "math",
@@ -293,109 +335,114 @@
   "practiceBank": [
     {
       "id": "ip-practice-1",
-      "type": "numeric",
-      "conceptTag": "definite_integral",
-      "content": [
-        {
-          "type": "text",
-          "body": "Use $F(x) = x^2 + x$ to evaluate the integral of $2x + 1$ from 0 to 2."
-        },
-        {
-          "type": "math",
-          "latex": "\\int_0^2 (2x + 1)\\,dx",
-          "display": true
-        }
-      ],
-      "interaction": {
-        "graph": {
-          "fn": "2*x + 1",
-          "domain": [0, 3],
-          "yDomain": [0, 7],
-          "xLabel": "x",
-          "yLabel": "f",
-          "showArea": true,
-          "areaStart": 0,
-          "initialSlider": 2,
-          "static": true
-        },
-        "answer": { "type": "numeric", "value": 6, "tolerance": 0.1 }
-      },
-      "feedback": {
-        "correct": "Yes — $(2^2 + 2) - 0 = 6$.",
-        "incorrect": "Evaluate $x^2 + x$ at 2 and 0, then subtract.",
-        "hint": "$(4 + 2) - 0 = 6$."
-      }
-    },
-    {
-      "id": "ip-practice-2",
-      "type": "power_term",
+      "type": "match",
       "conceptTag": "antiderivative",
       "content": [
         {
           "type": "text",
-          "body": "Coefficients come along for the ride. Build an antiderivative of $f(x) = 12x^3$ by setting the coefficient and exponent of $F(x)$."
+          "body": "Match each power of $x$ to its antiderivative."
         }
       ],
       "interaction": {
-        "graph": {
-          "fn": "12*x^3",
-          "domain": [0, 1],
-          "yDomain": [0, 12],
-          "xLabel": "x",
-          "yLabel": "f",
-          "showArea": true,
-          "areaStart": 0,
-          "initialSlider": 1,
-          "static": true
-        },
         "answer": {
-          "type": "power_term",
-          "coefficient": 3,
-          "exponent": 4,
-          "startCoefficient": 12,
-          "startExponent": 3,
-          "previewPrefix": "F(x) ="
+          "type": "match",
+          "pairs": [
+            {
+              "prompt": "$x^2$",
+              "match": "$\\frac{x^3}{3}$"
+            },
+            {
+              "prompt": "$x^3$",
+              "match": "$\\frac{x^4}{4}$"
+            },
+            {
+              "prompt": "$x^4$",
+              "match": "$\\frac{x^5}{5}$"
+            },
+            {
+              "prompt": "$x^5$",
+              "match": "$\\frac{x^6}{6}$"
+            }
+          ],
+          "distractors": [
+            "$\\frac{x^3}{2}$"
+          ]
         }
       },
       "feedback": {
-        "correct": "Correct — $12x^3 \\to 12 \\cdot \\frac{x^4}{4} = 3x^4$.",
-        "incorrect": "Raise the exponent by 1, then divide the coefficient by the new exponent: $\\frac{12}{4}x^4$.",
-        "hint": "Exponent $3 \\to 4$, then $12 \\div 4 = 3$, giving $3x^4$."
+        "correct": "Right — $x^n \\to \\frac{x^{n+1}}{n+1}$: raise the power, divide by the new one.",
+        "incorrect": "Add 1 to the exponent, then divide by that new exponent.",
+        "hint": "$x^2 \\to \\frac{x^3}{3}$, $x^3 \\to \\frac{x^4}{4}$, and so on."
+      }
+    },
+    {
+      "id": "ip-practice-2",
+      "type": "drag_drop",
+      "conceptTag": "antiderivative",
+      "content": [
+        {
+          "type": "text",
+          "body": "Integrate term by term to build $\\int (x^2 + x)\\,dx$. Drag a tile into each blank — an indefinite integral also picks up a $+ C$."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "drag_drop",
+          "prefix": "\\int (x^2 + x)\\,dx =",
+          "blanks": [
+            {
+              "accept": "\\frac{x^3}{3}"
+            },
+            {
+              "accept": "\\frac{x^2}{2}"
+            }
+          ],
+          "bank": [
+            "\\frac{x^3}{3}",
+            "\\frac{x^2}{2}",
+            "\\frac{x^2}{3}",
+            "x^3",
+            "\\frac{x^4}{4}"
+          ]
+        }
+      },
+      "feedback": {
+        "correct": "Right — $x^2 \\to \\frac{x^3}{3}$ and $x \\to \\frac{x^2}{2}$, so the integral is $\\frac{x^3}{3} + \\frac{x^2}{2} + C$.",
+        "incorrect": "Reverse the power rule on each term on its own.",
+        "hint": "$x^2 \\to \\frac{x^3}{3}$ and $x \\to \\frac{x^2}{2}$."
       }
     },
     {
       "id": "ip-practice-3",
-      "type": "numeric",
-      "conceptTag": "definite_integral",
+      "type": "drag_drop",
+      "conceptTag": "antiderivative",
       "content": [
         {
           "type": "text",
-          "body": "Evaluate the integral of $4x^3 + 2x$ from 0 to 1. (An antiderivative is $x^4 + x^2$.)"
-        },
-        {
-          "type": "math",
-          "latex": "\\int_0^1 (4x^3 + 2x)\\,dx",
-          "display": true
+          "body": "Drag the antiderivative of $3x^2$ into the blank. (Add $+ C$ for the full indefinite integral.)"
         }
       ],
       "interaction": {
-        "graph": {
-          "fn": "4*x^3 + 2*x",
-          "domain": [0, 1.5],
-          "yDomain": [0, 17],
-          "xLabel": "x",
-          "yLabel": "f",
-          "showArea": true,
-          "areaStart": 0,
-          "initialSlider": 1,
-          "static": true
-        },
-        "answer": { "type": "numeric", "value": 2, "tolerance": 0.1 }
+        "answer": {
+          "type": "drag_drop",
+          "prefix": "\\int 3x^2\\,dx =",
+          "blanks": [
+            {
+              "accept": "x^3"
+            }
+          ],
+          "bank": [
+            "x^3",
+            "3x^3",
+            "\\frac{x^3}{3}",
+            "x^2"
+          ]
+        }
       },
       "feedback": {
-        "correct": "Yes — $(1 + 1) - 0 = 2$.",
-        "incorrect": "Evaluate $x^4 + x^2$ at 1 and 0, then subtract.",
-        "hint": "$(1 + 1) - 0 = 2$."
+        "correct": "Right — $3x^2 \\to 3 \\cdot \\frac{x^3}{3} = x^3$, so $\\int 3x^2\\,dx = x^3 + C$.",
+        "incorrect": "Raise the exponent, then divide the coefficient by the new exponent.",
+        "hint": "$3x^2 \\to \\frac{3}{3}x^3 = x^3$."
       }
     },
     {
@@ -405,52 +452,247 @@
       "content": [
         {
           "type": "text",
-          "body": "Match each function with its antiderivative. Remember a constant integrates to a linear term."
+          "body": "Match each function to its antiderivative."
         }
       ],
       "interaction": {
         "answer": {
           "type": "match",
           "pairs": [
-            { "prompt": "$2x$", "match": "$x^2$" },
-            { "prompt": "$3$", "match": "$3x$" },
-            { "prompt": "$4x$", "match": "$2x^2$" }
+            {
+              "prompt": "$2x$",
+              "match": "$x^2$"
+            },
+            {
+              "prompt": "$3x^2$",
+              "match": "$x^3$"
+            },
+            {
+              "prompt": "$4x^3$",
+              "match": "$x^4$"
+            },
+            {
+              "prompt": "$5x^4$",
+              "match": "$x^5$"
+            }
           ],
-          "distractors": ["$3x^2$"]
+          "distractors": [
+            "$\\frac{x^2}{2}$"
+          ]
         }
       },
       "feedback": {
-        "correct": "Right — $2x \\to x^2$, $3 \\to 3x$, and $4x \\to 2x^2$.",
-        "incorrect": "Integrate each term with the reverse power rule; a constant $c$ becomes $cx$.",
-        "hint": "$2x \\to x^2$ and the constant $3 \\to 3x$."
+        "correct": "Right — each coefficient divides by the new exponent to land on a clean power.",
+        "incorrect": "Raise the exponent by 1 and divide the coefficient by that new exponent.",
+        "hint": "$2x \\to x^2$ and $3x^2 \\to x^3$."
       }
     },
     {
       "id": "ip-practice-5",
-      "type": "multiple_choice",
+      "type": "order_list",
       "conceptTag": "antiderivative",
       "content": [
         {
           "type": "text",
-          "body": "Evaluate the indefinite integral below. With no limits, don't forget the constant of integration."
-        },
-        {
-          "type": "math",
-          "latex": "\\int 4x\\,dx",
-          "display": true
+          "body": "Put the steps for integrating a polynomial in order."
         }
       ],
       "interaction": {
         "answer": {
-          "type": "multiple_choice",
-          "options": ["$2x^2 + C$", "$2x^2$", "$4x^2 + C$", "$x^2 + C$"],
-          "correctIndex": 0
+          "type": "order_list",
+          "orderLabel": "Integrating a polynomial",
+          "items": [
+            "Raise each term's exponent by 1",
+            "Divide each term by its new exponent",
+            "Add the constant of integration $C$"
+          ]
         }
       },
       "feedback": {
-        "correct": "Yes — $4x \\to \\frac{4}{2}x^2 = 2x^2$, and an indefinite integral always carries $+ C$: $2x^2 + C$.",
-        "incorrect": "Reverse the power rule on $4x$, then add $+ C$ because there are no limits.",
-        "hint": "$4x \\to 2x^2$, then include the constant: $2x^2 + C$."
+        "correct": "Exactly — raise each exponent, divide by the new exponent, then finish with $+ C$.",
+        "incorrect": "You must raise the exponent before you can divide by the new one, and $C$ comes last.",
+        "hint": "Raise the power, divide by the new power, then add $C$."
+      }
+    },
+    {
+      "id": "ip-practice-6",
+      "type": "drag_drop",
+      "conceptTag": "antiderivative",
+      "content": [
+        {
+          "type": "text",
+          "body": "Integrate $\\int (2x + 1)\\,dx$ term by term. Drag a tile into each blank — add $+ C$ for the full indefinite integral."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "drag_drop",
+          "prefix": "\\int (2x + 1)\\,dx =",
+          "blanks": [
+            {
+              "accept": "x^2"
+            },
+            {
+              "accept": "x"
+            }
+          ],
+          "bank": [
+            "x^2",
+            "x",
+            "2x",
+            "\\frac{x^2}{2}",
+            "x^3"
+          ]
+        }
+      },
+      "feedback": {
+        "correct": "Right — $2x \\to x^2$ and $1 \\to x$, so the integral is $x^2 + x + C$.",
+        "incorrect": "Reverse the power rule on each term; a constant $c$ becomes $cx$.",
+        "hint": "$2x \\to x^2$ and $1 \\to x$."
+      }
+    },
+    {
+      "id": "ip-practice-7",
+      "type": "match",
+      "conceptTag": "antiderivative",
+      "content": [
+        {
+          "type": "text",
+          "body": "Match each function to its antiderivative."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "match",
+          "pairs": [
+            {
+              "prompt": "$6x^2$",
+              "match": "$2x^3$"
+            },
+            {
+              "prompt": "$4x$",
+              "match": "$2x^2$"
+            },
+            {
+              "prompt": "$1$",
+              "match": "$x$"
+            },
+            {
+              "prompt": "$x$",
+              "match": "$\\frac{x^2}{2}$"
+            }
+          ],
+          "distractors": [
+            "$x^2$"
+          ]
+        }
+      },
+      "feedback": {
+        "correct": "Right — divide each coefficient by the new exponent: $6x^2 \\to 2x^3$ and $4x \\to 2x^2$.",
+        "incorrect": "Raise the exponent by 1, then divide the coefficient by that new exponent.",
+        "hint": "$6x^2 \\to \\frac{6}{3}x^3 = 2x^3$ and $x \\to \\frac{x^2}{2}$."
+      }
+    },
+    {
+      "id": "ip-practice-8",
+      "type": "slider_graph",
+      "conceptTag": "definite_integral",
+      "content": [
+        {
+          "type": "text",
+          "body": "Drag $t$ until $\\int_1^t x^2\\,dx \\approx 8.67$ (which is $\\frac{26}{3}$). Note the lower limit is 1, not 0."
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 4],
+          "yDomain": [0, 16],
+          "sliderLabel": "t",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showValue": false,
+          "showArea": true,
+          "areaStart": 1,
+          "showAreaValue": false,
+          "sliderMin": 1,
+          "sliderMax": 4,
+          "sliderStep": 0.1,
+          "initialSlider": 1
+        },
+        "hintAfterAttempts": 1,
+        "answer": { "type": "slider", "value": 3, "tolerance": 0.15 }
+      },
+      "feedback": {
+        "correct": "Yes — $\\int_1^t x^2\\,dx = \\frac{t^3 - 1}{3}$, and $\\frac{t^3 - 1}{3} = \\frac{26}{3}$ gives $t^3 = 27$, so $t = 3$.",
+        "incorrect": "Set $\\frac{t^3 - 1}{3} = \\frac{26}{3}$ and solve for $t$, then drag the slider there.",
+        "hint": "$\\frac{t^3 - 1}{3} = \\frac{26}{3} \\to t^3 = 27 \\to t = 3$."
+      }
+    },
+    {
+      "id": "ip-practice-9",
+      "type": "drag_drop",
+      "conceptTag": "antiderivative",
+      "content": [
+        {
+          "type": "text",
+          "body": "Integrate $\\int (x^3 + 2)\\,dx$ term by term. Drag a tile into each blank — add $+ C$ for the indefinite integral."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "drag_drop",
+          "prefix": "\\int (x^3 + 2)\\,dx =",
+          "blanks": [
+            {
+              "accept": "\\frac{x^4}{4}"
+            },
+            {
+              "accept": "2x"
+            }
+          ],
+          "bank": [
+            "\\frac{x^4}{4}",
+            "2x",
+            "\\frac{x^4}{2}",
+            "2",
+            "x^4"
+          ]
+        }
+      },
+      "feedback": {
+        "correct": "Right — $x^3 \\to \\frac{x^4}{4}$ and the constant $2 \\to 2x$, so the integral is $\\frac{x^4}{4} + 2x + C$.",
+        "incorrect": "Integrate each term; a constant $c$ integrates to $cx$.",
+        "hint": "$x^3 \\to \\frac{x^4}{4}$ and $2 \\to 2x$."
+      }
+    },
+    {
+      "id": "ip-practice-10",
+      "type": "order_list",
+      "conceptTag": "definite_integral",
+      "content": [
+        {
+          "type": "text",
+          "body": "Each integral's antiderivative is a power of $x$. Drag them into order from the lowest power to the highest."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "order_list",
+          "orderLabel": "Lowest → highest power of the antiderivative",
+          "items": [
+            "$\\int x\\,dx$",
+            "$\\int x^2\\,dx$",
+            "$\\int x^3\\,dx$",
+            "$\\int x^4\\,dx$"
+          ]
+        }
+      },
+      "feedback": {
+        "correct": "Right — the antiderivatives are $\\frac{x^2}{2}, \\frac{x^3}{3}, \\frac{x^4}{4}, \\frac{x^5}{5}$ — powers 2 through 5.",
+        "incorrect": "Integrate each one: $\\int x^n\\,dx$ produces an $x^{n+1}$ term.",
+        "hint": "$\\int x\\,dx \\to x^2$ (lowest), up to $\\int x^4\\,dx \\to x^5$ (highest)."
       }
     }
   ]
