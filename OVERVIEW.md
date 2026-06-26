@@ -6,8 +6,10 @@ problems, and instant feedback. Built for AP Calculus BC students.
 
 - **Subject:** AP Calculus BC (derivatives → integrals)
 - **Stack:** React 19 · TypeScript · Vite 6 · Tailwind CSS 4 · Firebase 11 · KaTeX · math.js
-- **Content:** 11 lessons grouped into 5 levels, all hand-authored as JSON
-- **Backend:** Firebase (Auth + Firestore), with a zero-config localStorage demo mode
+- **Content:** 10 lessons grouped into 5 levels, all hand-authored as JSON
+- **Backend:** Firebase (Auth + Firestore), with a zero-config localStorage demo mode. An
+  **optional** AI concept tutor uses Firebase AI Logic (Gemini) to *explain* graded steps —
+  it never grades, and the app is fully functional without it.
 
 > This document describes what the app can do and how it works internally. For a
 > quickstart and setup, see [`README.md`](./README.md).
@@ -57,8 +59,11 @@ Key principles baked into the build:
   nothing waits on the network.
 - **Learn by manipulation** — every lesson is required to contain at least one
   hands-on graph interaction.
-- **Works before any AI** — all feedback is hand-written. The app contains no AI
-  features and teaches fully on its own.
+- **Teaches without AI; AI only explains** — every problem, hint, and answer key
+  is hand-written, and **all grading is deterministic and AI-free**, so the app
+  teaches fully on its own. An **optional** AI concept tutor (Firebase AI Logic +
+  Gemini) can layer on top to *explain* a step the engine has already graded; it
+  never grades or generates problems, and disabling it changes nothing else.
 
 ---
 
@@ -105,17 +110,32 @@ Key principles baked into the build:
 ### Reinforcement (learning-science layer)
 - **Per-lesson practice** — each lesson has a *practice bank*; a session samples
   a fresh random subset, favoring hands-on graph questions (retrieval practice).
-- **Mixed review** — a cross-lesson session that pulls random questions from
-  everything the learner has touched (spaced repetition + interleaving).
+- **Targeted mixed review** — a cross-lesson session weighted toward the concepts
+  the learner is *weakest* on (low first-try accuracy) and hasn't seen *recently*
+  (spacing), interleaved across the top few concepts and backfilled from the wider
+  pool. There's no schedule and nothing extra is stored — both signals are computed
+  on the fly from existing progress.
+- **Custom practice** — the learner picks which concepts to drill and how many
+  questions, with the weakest/stalest topics flagged as "recommended" (the same
+  signal that drives targeted review).
 - **Level review** — a mixed quiz spanning all lessons in a completed level.
 
 ### Habit & motivation
 - **XP** for completing lessons (+50) and for first-try-correct practice/review
   answers (+10 each), shown in the header and on the roadmap.
 - **Streaks** — consecutive-day activity tracking with a flame badge.
-- **Milestones** — achievement badges (first lesson, three lessons, 5-day
-  streak, course complete).
+- **Achievements** — 12 badges grouped into themed sections (Lessons, Practice,
+  Concept mastery, Streaks, Experience), each with a live progress bar toward the
+  next one on the profile.
 - **Celebration screens** on lesson completion and practice results.
+
+### AI concept tutor (optional)
+- After **any graded step**, an "explain this" tutor can walk through *why* the
+  answer was right or wrong — grounded in the engine's verdict and the correct
+  answer, so it only explains and never grades. Responses stream in, follow-up
+  questions are capped per step, and an exhausted Gemini free-tier quota surfaces a
+  friendly message. Requires a configured Firebase project (Firebase AI Logic +
+  Gemini); in the zero-config demo it simply stays hidden and nothing else changes.
 
 ### Platform
 - **Accounts** via email/password or Google sign-in.
@@ -165,32 +185,39 @@ slider-graph interaction. Lessons that are finished expose **Practice** and
 ```mermaid
 flowchart TD
     subgraph Content["Content layer (version-controlled JSON)"]
-        C1["course.json + 11 lesson files"]
+        C1["course.json + 10 lesson files"]
     end
     subgraph Logic["Browser logic (no server)"]
         L1["contentLoader.ts<br/>load · validate · levels · sessions · unlock"]
         L2["feedbackEngine.ts<br/>math.js grading + graph math"]
         L3["progressService.ts<br/>persistence · streaks · milestones"]
+        L4["masteryService.ts<br/>per-concept mastery + weak areas"]
+        L5["reviewPlanner.ts<br/>targeted review (weakness + recency)"]
     end
     subgraph State["React state (Context)"]
         S1["AuthContext<br/>who is signed in"]
         S2["ProgressContext<br/>profile · progress · XP"]
     end
     subgraph UI["UI (pages + components)"]
-        U1["Pages: Landing, Roadmap, Lesson, Practice, Review"]
+        U1["Pages: Landing, Roadmap, Lesson, Practice, Custom practice, Review"]
         U2["LessonPlayer + GraphWidget + AnswerInput"]
     end
     subgraph BaaS["Firebase (Backend-as-a-Service)"]
         F1["Auth"]
         F2["Firestore"]
+        F3["AI Logic — Gemini<br/>(optional concept tutor)"]
     end
 
     C1 --> L1 --> U1
     U2 --> L2
     S2 --> L3 --> F2
+    L5 --> L4
+    L4 --> U1
+    L5 --> U1
     S1 --> F1
     U1 --> S2
     U2 --> S2
+    U2 -. optional .-> F3
     S3["localStorage (demo / dev fallback)"]
     L3 -.fallback.-> S3
 ```
@@ -209,27 +236,36 @@ The app is built in four conceptual layers:
 ### Directory structure
 
 ```text
-content/                     # Course manifest + 11 lesson JSON files
+content/                     # Course manifest + 10 lesson JSON files
   course.json                #   levels, lesson metadata, ordering
   what-is-a-derivative.json  #   one file per lesson (steps + practiceBank)
   ...
 
 scripts/
   validate-lessons.ts        # CLI: validate every lesson file
+  kill-ports.mjs             # Stop stray Vite dev servers (protects port 5173)
 
 src/
   main.tsx                   # React entry point
-  App.tsx                    # Routes + provider nesting
-  types/content.ts           # Domain types + tuning constants
+  App.tsx                    # Data router (routes) + provider nesting
+  index.css                  # Tailwind + global styles
+  types/content.ts           # Domain types, tuning constants, milestone defs
 
   lib/
-    firebase.ts              # Firebase init + mode flags
-    contentLoader.ts         # Import/validate lessons; levels, sessions, unlock
+    firebase.ts              # Firebase init + mode flags + AI Logic client
+    contentLoader.ts         # Import/validate lessons; levels, sessions, custom practice, unlock
     feedbackEngine.ts        # math.js grading + secant/tangent/derivative math
     progressService.ts       # Firestore/localStorage; streaks, milestones, activity
     masteryService.ts        # Per-concept mastery tiers + weak-area recommendations
+    reviewPlanner.ts         # Targeted review: weakness + recency ranking and session draws
     validateLesson.ts        # Lesson-schema validation
+    inlineMarkup.ts          # Normalize math delimiters + tokenize inline tutor/authored text
+    aiTutor.ts               # Optional grounded concept tutor (Firebase AI Logic + Gemini)
     *.test.ts                # Unit tests for the above
+
+  hooks/
+    useSessionExitGuard.ts   # Warn before abandoning an unfinished practice/review session
+    useCountUp.ts            # Animated number count-up (XP, stats)
 
   contexts/
     AuthContext.tsx          # Auth hook/types (provided by AuthProvider.tsx)
@@ -239,21 +275,23 @@ src/
 
   components/
     auth/        ProtectedRoute, PasswordInput
+    common/      Icon, icons (Lucide registry), ConfirmDialog
     layout/      AppHeader, UserMenu, SafeArea
     lesson/      LessonPlayer, FeedbackPanel, StepNavBar,
-                 LessonComplete, PracticeResults
-    widgets/     GraphWidget, MathBlock, AnswerInput, MultiChoiceInput,
+                 LessonComplete, PracticeResults, TutorPanel
+    widgets/     GraphWidget, MathBlock (+ RichText), AnswerInput, MultiChoiceInput,
                  DragDropInput, MatchInput, SignChartInput, OrderListInput,
                  RiemannInput
     roadmap/     LevelSection, LessonCard
-    habit/       StreakBadge, XpBadge
-    profile/     StatsStrip, ActivityHeatmap, WeakAreas, ConceptMasteryList
+    habit/       StreakBadge, XpBadge, Sparkles, FireFX, ElectricityFX
+    profile/     StatsStrip, ActivityHeatmap, WeakAreas, ConceptMasteryList,
+                 AchievementsSection
     dev/         DevTools
 
   pages/
     LandingPage, LoginPage, SignupPage, RoadmapPage,
-    LessonPage, PracticePage, ReviewPage, LevelReviewPage,
-    ProfilePage, SettingsPage
+    LessonPage, PracticePage, CustomPracticePage, ReviewPage,
+    LevelReviewPage, ProfilePage, SettingsPage
 
 firebase.json                # Hosting + Firestore + Auth config
 firestore.rules              # Per-user access rules
