@@ -1,5 +1,8 @@
 import { AppHeader } from "../layout/AppHeader";
 import { SafeArea } from "../layout/SafeArea";
+import { Sparkles } from "../habit/Sparkles";
+import { Icon } from "../common/Icon";
+import { useCountUp } from "../../hooks/useCountUp";
 
 interface LessonCompleteProps {
   lessonTitle: string;
@@ -21,34 +24,54 @@ export function LessonComplete({
   totalXp,
   onContinue,
 }: LessonCompleteProps) {
+  const animatedGain = useCountUp(xpGained, { initial: 0 });
+  const animatedTotal = useCountUp(totalXp ?? 0, { initial: 0 });
+
   return (
     <SafeArea>
       <AppHeader />
       <main className="flex-1 flex flex-col px-4 py-8 max-w-md mx-auto w-full">
         <div className="flex-1 flex flex-col items-center justify-center text-center">
           <p className="text-sm font-semibold text-indigo-600">{lessonTitle}</p>
-          <div className="text-6xl mt-3 mb-4" aria-hidden>
-            🎉
+          <div className="mt-3 mb-4 flex justify-center xp-bounce-in">
+            <Icon name="celebrate" className="h-16 w-16 text-amber-500" />
           </div>
           <h1 className="text-2xl font-bold text-slate-900">Lesson complete!</h1>
           <p className="text-slate-500 mt-2">
             Great work — here's the XP you just earned.
           </p>
 
-          <div className="my-8 flex flex-col items-center gap-1 rounded-2xl bg-amber-100 text-amber-800 px-10 py-6">
-            <span className="flex items-center gap-2 text-5xl font-bold">
-              <span aria-hidden>⚡</span>+{xpGained}
-            </span>
-            <span className="text-xs font-semibold uppercase tracking-wide">
-              XP earned
-            </span>
+          <div className="relative my-8">
+            <div
+              className="xp-bounce-in flex flex-col items-center gap-1 rounded-2xl bg-gradient-to-br from-amber-300 to-yellow-200 text-amber-900 px-10 py-6 shadow-md"
+              aria-label={`${xpGained} XP earned`}
+            >
+              <span
+                className="flex items-center gap-2 text-5xl font-bold"
+                aria-hidden
+              >
+                <Icon
+                  name="zap"
+                  className="xp-bolt-wiggle h-12 w-12 text-amber-900"
+                  fill="currentColor"
+                />
+                +{animatedGain}
+              </span>
+              <span
+                className="text-xs font-semibold uppercase tracking-wide"
+                aria-hidden
+              >
+                XP earned
+              </span>
+            </div>
+            <Sparkles trigger={1} />
           </div>
 
           {typeof totalXp === "number" && (
             <p className="text-sm text-slate-500">
               Total XP:{" "}
               <span className="font-semibold text-slate-700">
-                {totalXp.toLocaleString()}
+                {animatedTotal.toLocaleString()}
               </span>
             </p>
           )}

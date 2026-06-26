@@ -1,7 +1,7 @@
 {
   "id": "differentiating-polynomials",
   "title": "Differentiating Polynomials",
-  "order": 5,
+  "order": 4,
   "estimatedMinutes": 7,
   "conceptTags": ["power_rule", "sum_rule"],
   "published": true,

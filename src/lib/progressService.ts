@@ -1,4 +1,12 @@
-import type { LessonProgress, StreakData, UserProfile } from "../types/content";
+import type {
+  LessonProgress,
+  MilestoneStats,
+  StreakData,
+  UserProfile,
+} from "../types/content";
+import { MILESTONE_DEFS, milestoneProgress } from "../types/content";
+import { getConceptMastery } from "./masteryService";
+import { getPublishedLessons } from "./contentLoader";
 import { useLocalPersistence, db } from "./firebase";
 import {
   doc,
@@ -113,6 +121,7 @@ function withProfileDefaults(profile: UserProfile): UserProfile {
   return {
     ...profile,
     xp: profile.xp ?? 0,
+    practiceQuestionsAnswered: profile.practiceQuestionsAnswered ?? 0,
     activityLog: profile.activityLog ?? {},
   };
 }
@@ -138,6 +147,7 @@ export async function createUserProfile(
     streak: { count: 0, lastActiveDate: "" },
     milestones: [],
     xp: 0,
+    practiceQuestionsAnswered: 0,
     activityLog: {},
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -226,19 +236,44 @@ export async function deleteUserData(uid: string): Promise<void> {
   await deleteDoc(doc(db, "users", uid));
 }
 
+/**
+ * Assembles every learner statistic a milestone might track from the live
+ * profile and progress. Single source of truth shared by the award logic
+ * (ProgressProvider) and the achievements UI so both read identical numbers.
+ */
+export function buildMilestoneStats(
+  profile: UserProfile,
+  progress: Record<string, LessonProgress>,
+): MilestoneStats {
+  const published = getPublishedLessons();
+  const mastery = getConceptMastery(progress);
+  return {
+    lessonsCompleted: published.filter((l) =>
+      isLessonComplete(progress[l.id]?.status),
+    ).length,
+    totalLessons: published.length,
+    streak: profile.streak.count,
+    xp: profile.xp ?? 0,
+    practiceQuestionsAnswered: profile.practiceQuestionsAnswered ?? 0,
+    conceptsMastered: mastery.filter((m) => m.tier === "mastered").length,
+    totalConcepts: mastery.length,
+  };
+}
+
+/**
+ * Returns the milestone list with any newly-earned ids appended. Idempotent:
+ * already-earned milestones are kept once, and a `target > 0` guard prevents a
+ * brand-new (empty-course) account from earning "complete everything" badges.
+ */
 export function checkMilestones(
   milestones: string[],
-  completedCount: number,
-  streak: number,
-  totalLessons: number,
+  stats: MilestoneStats,
 ): string[] {
   const next = [...milestones];
-  const add = (id: string) => {
-    if (!next.includes(id)) next.push(id);
-  };
-  if (completedCount >= 1) add("first_lesson");
-  if (completedCount >= 3) add("three_lessons");
-  if (streak >= 5) add("five_day_streak");
-  if (completedCount >= totalLessons) add("course_complete");
+  for (const [id, def] of Object.entries(MILESTONE_DEFS)) {
+    if (next.includes(id)) continue;
+    const { current, target } = milestoneProgress(def, stats);
+    if (target > 0 && current >= target) next.push(id);
+  }
   return next;
 }

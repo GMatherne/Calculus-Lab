@@ -71,11 +71,11 @@ answer (tap the correct point on the curve).
 
 ## The course
 
-**Introduction to Calculus** — 11 lessons across 5 sequential levels (each lesson unlocks the
+**Introduction to Calculus** — 10 lessons across 5 sequential levels (each lesson unlocks the
 next):
 
-1. **What Is a Derivative?** — What Is a Derivative? · Slope of a Curve
-2. **Finding Derivatives** — The Limit Definition of the Derivative · The Power Rule · Differentiating Polynomials
+1. **What Is a Derivative?** — What Is a Derivative? · Slope of a Curve (introduces the limit definition)
+2. **Finding Derivatives** — The Power Rule · Differentiating Polynomials
 3. **Using Derivatives** — Derivatives and Graph Shape · Finding Maxima and Minima
 4. **What Is an Integral?** — What Is an Integral? · Area Under a Curve
 5. **The Big Picture** — The Fundamental Theorem of Calculus · Integrating Polynomials
@@ -109,8 +109,10 @@ vite.config.ts           # Vite + Tailwind + Vitest
 Key features: instant client-side grading (math.js), interactive SVG graphs (secant/tangent,
 area shading), sequential unlock, per-lesson practice + mixed/level review, XP, streaks,
 milestones, **per-concept mastery** with a profile dashboard (stats, activity heatmap, weak
-areas), and account management. The app is intentionally **AI-free** — every problem, hint,
-and explanation is hand-authored.
+areas), and account management. All **grading is deterministic and AI-free** — every problem,
+hint, and answer key is hand-authored and checked in the browser. An **optional AI concept
+tutor** (Firebase AI Logic + Gemini) can layer on top to _explain_ a graded step; it never
+grades, and the app runs unchanged when it is disabled (see **AI concept tutor** below).
 
 ## Firebase setup
 
@@ -126,7 +128,34 @@ VITE_FIREBASE_PROJECT_ID=...
 VITE_FIREBASE_STORAGE_BUCKET=...
 VITE_FIREBASE_MESSAGING_SENDER_ID=...
 VITE_FIREBASE_APP_ID=...
+# Optional — only needed for the AI concept tutor (see below):
+VITE_FIREBASE_APPCHECK_SITE_KEY=...
 ```
+
+## AI concept tutor (optional)
+
+After a step is graded, learners can optionally ask an AI tutor to _explain_ why their answer
+was right or wrong and walk through the concept. The deterministic engine stays the only judge:
+the model is handed the verdict and the correct answer and is asked only to explain. When the
+service below isn't provisioned (including the zero-config demo and offline use), the tutor
+simply stays hidden and nothing else changes.
+
+To enable it:
+
+1. Provision **Firebase AI Logic** (enables the Gemini Developer API on your project):
+
+```bash
+npx -y firebase-tools@latest init ailogic
+```
+
+2. Set up **App Check** with **reCAPTCHA Enterprise** in the Firebase Console (it protects the
+   Gemini quota from abuse), then add the site key to `.env.local` as
+   `VITE_FIREBASE_APPCHECK_SITE_KEY`. In dev, a debug token is registered automatically.
+3. Run with a real Firebase config — the tutor needs an initialized Firebase app, so it is
+   automatically unavailable in the zero-config demo.
+
+The Gemini model id is a single constant (`TUTOR_MODEL` in `src/lib/aiTutor.ts`), and follow-up
+questions are capped per step (`MAX_FOLLOWUPS`).
 
 ## Deploy
 

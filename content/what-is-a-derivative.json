@@ -335,24 +335,35 @@
       "content": [
         {
           "type": "text",
-          "body": "For f(x) = x², the tangent slope is 2x. Tap the point where the tangent slope equals 4."
+          "body": "This is the line f(x) = 3x − 4. Drag x one unit at a time and watch the output climb. What is f'(x)?"
+        },
+        {
+          "type": "math",
+          "latex": "f(x) = 3x - 4"
         }
       ],
       "interaction": {
         "graph": {
-          "fn": "x^2",
-          "domain": [-4, 4],
-          "yDomain": [0, 16],
+          "fn": "3*x - 4",
+          "domain": [0, 5],
+          "sliderLabel": "x",
           "xLabel": "x",
           "yLabel": "f",
-          "pointChoices": [-3, -2, -1, 0, 1, 2, 3]
+          "showSecant": false,
+          "showTangent": false,
+          "showValue": true,
+          "sliderMin": 0,
+          "sliderMax": 5,
+          "sliderStep": 1,
+          "initialSlider": 0
         },
-        "answer": { "type": "graph_point", "x": 2, "tolerance": 0.25 }
+        "hintAfterAttempts": 1,
+        "answer": { "type": "numeric", "value": 3, "tolerance": 0.01 }
       },
       "feedback": {
-        "correct": "Exactly — the slope of x² is 2x, and 2x = 4 at x = 2.",
-        "incorrect": "The tangent slope of x² is 2x. Set 2x = 4 and solve for x, then tap that point.",
-        "hint": "Solve 2x = 4 → x = 2."
+        "correct": "Right — each step in x raises f by 3, so the rate of change is 3. The −4 only shifts the line down, so the derivative of a line is just its slope: f'(x) = 3.",
+        "incorrect": "Compare neighbors: f(0) = −4, f(1) = −1, f(2) = 2. How much does f climb per step? The −4 doesn't affect that.",
+        "hint": "Each step of 1 in x adds 3 to f, so the derivative is that slope, 3."
       }
     },
     {
@@ -362,32 +373,35 @@
       "content": [
         {
           "type": "text",
-          "body": "Here is f(x) = x², whose tangent slope is 2x. The slope readout is hidden — drag the point until the tangent slope equals −2."
+          "body": "Here is the line f(x) = 6 − 2x. Drag x and watch the output change for each change in x. What is the derivative of f(x)?"
+        },
+        {
+          "type": "math",
+          "latex": "f(x) = 6 - 2x"
         }
       ],
       "interaction": {
         "graph": {
-          "fn": "x^2",
-          "domain": [-4, 4],
-          "yDomain": [0, 16],
+          "fn": "6 - 2*x",
+          "domain": [0, 5],
           "sliderLabel": "x",
           "xLabel": "x",
           "yLabel": "f",
           "showSecant": false,
-          "showTangent": true,
-          "showSlopeValue": false,
-          "showValue": false,
-          "sliderMin": -4,
-          "sliderMax": 4,
-          "sliderStep": 0.1,
-          "initialSlider": 3
+          "showTangent": false,
+          "showValue": true,
+          "sliderMin": 0,
+          "sliderMax": 5,
+          "sliderStep": 1,
+          "initialSlider": 0
         },
-        "answer": { "type": "slider", "value": -1, "tolerance": 0.2 }
+        "hintAfterAttempts": 1,
+        "answer": { "type": "numeric", "value": -2, "tolerance": 0.01 }
       },
       "feedback": {
-        "correct": "Nailed it — the slope of x² is 2x, and 2x = −2 at x = −1.",
-        "incorrect": "The readout is hidden, so compute it: the slope of x² is 2x. Set 2x = −2 and drag there.",
-        "hint": "Solve 2x = −2 → x = −1."
+        "correct": "Yes — each step in x drops f by 2, so the rate of change is −2. A line heading downhill has a negative derivative: f'(x) = −2.",
+        "incorrect": "The line falls as x grows, so the derivative is negative. By how much does f drop for each step in x?",
+        "hint": "f(0) = 6, f(1) = 4, f(2) = 2 — down 2 each step, so f'(x) = −2."
       }
     },
     {
@@ -401,6 +415,20 @@
         }
       ],
       "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [-4, 4],
+          "sliderLabel": "x",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showTangent": false,
+          "showValue": true,
+          "sliderMin": -4,
+          "sliderMax": 4,
+          "sliderStep": 0.1,
+          "initialSlider": 0
+        },
         "answer": {
           "type": "sign_chart",
           "variableLabel": "Behavior of f(x) = x²",
@@ -422,24 +450,45 @@
       "content": [
         {
           "type": "text",
-          "body": "For f(x) = x², the tangent slope is 2x. Tap where the tangent slope equals −4."
+          "body": "Drag x along the line f(x) = 8 and watch the output. What is its derivative, f'(x)?"
+        },
+        {
+          "type": "math",
+          "latex": "f(x) = 8"
         }
       ],
       "interaction": {
         "graph": {
-          "fn": "x^2",
-          "domain": [-4, 4],
-          "yDomain": [0, 16],
+          "fn": "8",
+          "domain": [0, 5],
+          "yDomain": [0, 10],
+          "sliderLabel": "x",
           "xLabel": "x",
           "yLabel": "f",
-          "pointChoices": [-3, -2, -1, 0, 1, 2, 3]
+          "showSecant": false,
+          "showTangent": false,
+          "showValue": true,
+          "sliderMin": 0,
+          "sliderMax": 5,
+          "sliderStep": 1,
+          "initialSlider": 0
         },
-        "answer": { "type": "graph_point", "x": -2, "tolerance": 0.25 }
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "0 — the output never changes, so it isn't changing at any rate",
+            "8 — the derivative equals the function's value",
+            "1 — the output goes up by 1 each step",
+            "It has no derivative because the line is flat"
+          ],
+          "correctIndex": 0
+        }
       },
       "feedback": {
-        "correct": "Exactly — the slope of x² is 2x, and 2x = −4 at x = −2.",
-        "incorrect": "The tangent slope of x² is 2x. Set 2x = −4 and solve for x, then tap that point.",
-        "hint": "Solve 2x = −4 → x = −2."
+        "correct": "Right — a horizontal line has the same output everywhere, so it changes by 0 per step. Its derivative is 0; don't confuse the value 8 with the rate of change.",
+        "incorrect": "Watch the output as you drag x — does the height ever move up or down?",
+        "hint": "The value stays 8 no matter what x is, so f changes by 0. The derivative is 0, not 8."
       }
     },
     {
@@ -449,20 +498,25 @@
       "content": [
         {
           "type": "text",
-          "body": "On y = x² the tangent steepens as x moves away from 0. Order these points from the least steep tangent to the steepest."
+          "body": "Each function below is linear. Order them by their derivative from most negative to most positive."
         }
       ],
       "interaction": {
         "answer": {
           "type": "order_list",
-          "orderLabel": "Least steep → steepest tangent (y = x²)",
-          "items": ["$x = 0$", "$x = 0.5$", "$x = 1.5$", "$x = 2.5$"]
+          "orderLabel": "Most negative derivative → most positive",
+          "items": [
+            "$f(x) = 4 - 2x$",
+            "$f(x) = 5 - x$",
+            "$f(x) = 0.5x$",
+            "$f(x) = 3x + 1$"
+          ]
         }
       },
       "feedback": {
-        "correct": "Right — steepness is |2x|, which grows as x leaves 0: 0, 1, 3, 5.",
-        "incorrect": "The steepness of the tangent is |2x|. Compare that size at each x.",
-        "hint": "|slope| = |2x| gives 0, 1, 3, and 5 — already in order."
+        "correct": "Right — the derivative of a line is its slope: −2, −1, 0.5, and 3. The constant terms don't change the slope.",
+        "incorrect": "Read the slope — the number multiplying x — off each line, keep its sign, and order them low to high.",
+        "hint": "The slopes are −2, −1, 0.5, and 3 (the +4, +5, and +1 don't matter)."
       }
     },
     {
@@ -472,25 +526,25 @@
       "content": [
         {
           "type": "text",
-          "body": "For f(x) = x² the tangent slope is 2x. Match each x-value to its tangent slope."
+          "body": "Match each linear function to its derivative."
         }
       ],
       "interaction": {
         "answer": {
           "type": "match",
           "pairs": [
-            { "prompt": "$x = -2$", "match": "-4" },
-            { "prompt": "$x = -1$", "match": "-2" },
-            { "prompt": "$x = 1$", "match": "2" },
-            { "prompt": "$x = 3$", "match": "6" }
+            { "prompt": "$f(x) = 2x$", "match": "2" },
+            { "prompt": "$f(x) = -3x$", "match": "-3" },
+            { "prompt": "$f(x) = x + 4$", "match": "1" },
+            { "prompt": "$f(x) = 5$", "match": "0" }
           ],
-          "distractors": ["4"]
+          "distractors": ["4", "-2"]
         }
       },
       "feedback": {
-        "correct": "Perfect — each slope is just 2x: −4, −2, 2, and 6.",
-        "incorrect": "Double each x-value to get its tangent slope (slope = 2x).",
-        "hint": "Slope = 2x, so x = −2 gives −4 and x = 3 gives 6."
+        "correct": "Perfect — a line's derivative is the number multiplying x: 2, −3, and 1. A constant like 5 is a flat line, so its derivative is 0.",
+        "incorrect": "The derivative is the slope — the coefficient of x. A constant function (just a number) is flat, so its derivative is 0.",
+        "hint": "f(x) = x + 4 has slope 1 (the +4 doesn't matter), and f(x) = 5 has slope 0."
       }
     },
     {
@@ -500,57 +554,73 @@
       "content": [
         {
           "type": "text",
-          "body": "Here is f(x) = (x − 1)², whose tangent slope is 2(x − 1). Drag the point until the tangent slope equals 2."
+          "body": "Drag x back and forth along the line f(x) = 2x + 1. How does the derivative behave as you move x?"
+        },
+        {
+          "type": "math",
+          "latex": "f(x) = 2x + 1"
         }
       ],
       "interaction": {
         "graph": {
-          "fn": "(x-1)^2",
-          "domain": [-2, 4],
-          "yDomain": [0, 9],
+          "fn": "2*x + 1",
+          "domain": [0, 5],
           "sliderLabel": "x",
           "xLabel": "x",
           "yLabel": "f",
           "showSecant": false,
-          "showTangent": true,
-          "showSlopeValue": false,
-          "showValue": false,
-          "sliderMin": -2,
-          "sliderMax": 4,
-          "sliderStep": 0.1,
-          "initialSlider": -1
+          "showTangent": false,
+          "slopeLabel": "Slope",
+          "sliderMin": 0,
+          "sliderMax": 5,
+          "sliderStep": 1,
+          "initialSlider": 0
         },
-        "answer": { "type": "slider", "value": 2, "tolerance": 0.2 }
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "It stays 2 the whole time — a straight line has one constant slope everywhere",
+            "It grows larger as x increases",
+            "It shrinks toward 0 as x increases",
+            "It is 0 until x > 0, then jumps to 2"
+          ],
+          "correctIndex": 0
+        }
       },
       "feedback": {
-        "correct": "Nailed it — 2(x − 1) = 2 gives x − 1 = 1, so x = 2.",
-        "incorrect": "The slope here is 2(x − 1). Set 2(x − 1) = 2 and solve, then drag there.",
-        "hint": "Solve 2(x − 1) = 2 → x = 2."
+        "correct": "Exactly — unlike a curve, a straight line has the same slope at every point, so its derivative is constant: f'(x) = 2 everywhere.",
+        "incorrect": "Watch the slope readout as you drag. Does the number change at all, or hold steady?",
+        "hint": "The slope readout stays at 2 no matter where x is — a line's rate of change never varies."
       }
     },
     {
       "id": "wid-practice-8",
-      "type": "sign_chart",
+      "type": "multiple_choice",
       "conceptTag": "rate_of_change",
       "content": [
         {
           "type": "text",
-          "body": "f(x) = x³ − 3x has turning points at x = −1 and x = 1. Label how f behaves on each interval."
+          "body": "In one sentence, what does the derivative f'(x) tell you about a function f?"
         }
       ],
       "interaction": {
+        "hintAfterAttempts": 1,
         "answer": {
-          "type": "sign_chart",
-          "variableLabel": "Behavior of f(x) = x³ − 3x",
-          "points": [-1, 1],
-          "options": ["Increasing", "Decreasing"],
-          "regions": [{ "correctIndex": 0 }, { "correctIndex": 1 }, { "correctIndex": 0 }]
+          "type": "multiple_choice",
+          "options": [
+            "How fast f's output changes as x changes — the slope of its graph",
+            "The total area trapped between the graph of f and the x-axis",
+            "The highest value that f ever reaches",
+            "The value of f when x = 0"
+          ],
+          "correctIndex": 0
         }
       },
       "feedback": {
-        "correct": "Right — f' = 3x² − 3 is positive, then negative, then positive: increasing, decreasing, increasing.",
-        "incorrect": "Test the slope f' = 3x² − 3 in each interval — is it positive (rising) or negative (falling)?",
-        "hint": "At x = −2 the slope is +9, at x = 0 it's −3, at x = 2 it's +9."
+        "correct": "Right — the derivative measures the rate of change of f: how steeply its output rises or falls as x moves, which is exactly the slope of its graph.",
+        "incorrect": "Think back to the lines: the derivative was the amount the output changed for each step in x.",
+        "hint": "A derivative is a rate of change — equivalently, the slope of the function's graph."
       }
     },
     {
@@ -582,25 +652,31 @@
     },
     {
       "id": "wid-practice-10",
-      "type": "order_list",
+      "type": "multiple_choice",
       "conceptTag": "rate_of_change",
       "content": [
         {
           "type": "text",
-          "body": "On y = x², order these points from the most negative tangent slope to the most positive."
+          "body": "The line h(x) = 4x + 9 is the line g(x) = 4x shifted straight up by 9. How do their derivatives compare?"
         }
       ],
       "interaction": {
+        "hintAfterAttempts": 1,
         "answer": {
-          "type": "order_list",
-          "orderLabel": "Most negative slope → most positive slope (y = x²)",
-          "items": ["$x = -2$", "$x = -1$", "$x = 1$", "$x = 2$"]
+          "type": "multiple_choice",
+          "options": [
+            "Identical — both have derivative 4",
+            "h'(x) is 9 more than g'(x)",
+            "h'(x) = 4 and g'(x) = 0",
+            "They can't be compared without knowing x"
+          ],
+          "correctIndex": 0
         }
       },
       "feedback": {
-        "correct": "Right — the slope is 2x: −4, −2, 2, 4, from most negative to most positive.",
-        "incorrect": "The tangent slope is 2x — keep the sign and order those values low to high.",
-        "hint": "Slope = 2x gives −4, −2, 2, and 4."
+        "correct": "Right — shifting a line up or down changes where it sits, not how steep it is. Adding a constant leaves the slope, and therefore the derivative, unchanged at 4.",
+        "incorrect": "Shifting a graph vertically doesn't tilt it. Does moving the whole line up by 9 make it any steeper?",
+        "hint": "A constant term only slides the line up or down; the slope (and the derivative) stays 4."
       }
     }
   ]

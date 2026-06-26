@@ -14,7 +14,7 @@
       "id": "finding-derivatives",
       "title": "Finding Derivatives",
       "description": "Turn the limit definition into rules you can compute with.",
-      "lessonIds": ["difference-quotient", "power-rule", "differentiating-polynomials"]
+      "lessonIds": ["power-rule", "differentiating-polynomials"]
     },
     {
       "id": "using-derivatives",
@@ -51,65 +51,58 @@
       "published": true
     },
     {
-      "id": "difference-quotient",
-      "title": "The Limit Definition of the Derivative",
-      "order": 3,
-      "estimatedMinutes": 8,
-      "published": true
-    },
-    {
       "id": "power-rule",
       "title": "The Power Rule",
-      "order": 4,
+      "order": 3,
       "estimatedMinutes": 6,
       "published": true
     },
     {
       "id": "differentiating-polynomials",
       "title": "Differentiating Polynomials",
-      "order": 5,
+      "order": 4,
       "estimatedMinutes": 7,
       "published": true
     },
     {
       "id": "graph-shape",
       "title": "Derivatives and Graph Shape",
-      "order": 6,
+      "order": 5,
       "estimatedMinutes": 7,
       "published": true
     },
     {
       "id": "maxima-and-minima",
       "title": "Finding Maxima and Minima",
-      "order": 7,
+      "order": 6,
       "estimatedMinutes": 8,
       "published": true
     },
     {
       "id": "what-is-an-integral",
       "title": "What Is an Integral?",
-      "order": 8,
+      "order": 7,
       "estimatedMinutes": 7,
       "published": true
     },
     {
       "id": "area-under-a-curve",
       "title": "Area Under a Curve",
-      "order": 9,
+      "order": 8,
       "estimatedMinutes": 7,
       "published": true
     },
     {
       "id": "fundamental-theorem",
       "title": "The Fundamental Theorem of Calculus",
-      "order": 10,
+      "order": 9,
       "estimatedMinutes": 8,
       "published": true
     },
     {
       "id": "integrating-polynomials",
       "title": "Integrating Polynomials",
-      "order": 11,
+      "order": 10,
       "estimatedMinutes": 8,
       "published": true
     }

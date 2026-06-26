@@ -1,5 +1,9 @@
 import type { ConceptMastery, ConceptMasteryTier } from "../types/content";
-import { MASTERY_MASTERED, MASTERY_PROFICIENT } from "../types/content";
+import {
+  MASTERY_MASTERED,
+  MASTERY_PROFICIENT,
+  isInstructionStep,
+} from "../types/content";
 import { getLesson, getPublishedLessons, hasPractice } from "./contentLoader";
 
 /**
@@ -23,7 +27,7 @@ const CONCEPT_LABELS: Record<string, string> = {
 };
 
 /** Title-case a snake_case slug as a fallback label, e.g. "graph_shape" -> "Graph Shape". */
-function conceptLabel(concept: string): string {
+export function conceptLabel(concept: string): string {
   return (
     CONCEPT_LABELS[concept] ??
     concept
@@ -78,7 +82,9 @@ export function getConceptCatalog(): ConceptCatalogEntry[] {
     if (!lesson) continue;
 
     lesson.steps.forEach((step, stepIndex) => {
-      if (step.type === "read" || !step.interaction?.answer) return;
+      // Skip ungraded steps (read steps and Riemann demos); they're never
+      // persisted as cleared, so they can't contribute to mastery.
+      if (isInstructionStep(step) || !step.interaction?.answer) return;
       const concept = step.conceptTag;
       if (!concept) return;
 

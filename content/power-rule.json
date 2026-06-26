@@ -1,7 +1,7 @@
 {
   "id": "power-rule",
   "title": "The Power Rule",
-  "order": 4,
+  "order": 3,
   "estimatedMinutes": 8,
   "conceptTags": ["power_rule"],
   "published": true,
