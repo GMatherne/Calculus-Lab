@@ -66,7 +66,7 @@ Key principles baked into the build:
 
 ### Learning experience
 - **Interactive lessons** made of 6–10 bite-sized steps each.
-- **Eight step/answer types** so problems fit the concept:
+- **Eleven step/answer types** so problems fit the concept:
   | Type | Learner action | Graded |
   |------|----------------|--------|
   | `read` | Tap **Continue** | No |
@@ -77,13 +77,17 @@ Key principles baked into the build:
   | `power_term` | Build a term `a·xⁿ` with steppers (power rule / reverse power rule) | Yes |
   | `drag_drop` | Drag tiles into ordered blanks to assemble an expression | Yes |
   | `match` | Pair each prompt with its match (e.g. function ↔ antiderivative) | Yes |
-  | `match` | Pair each prompt with its matching option | Yes |
+  | `sign_chart` | Label each interval of a number line (e.g. increasing vs. decreasing) | Yes |
+  | `order_list` | Drag shuffled items into their correct order | Yes |
+  | `riemann` | Drag a slider to pile up rectangles until a Riemann sum converges | Yes |
 
   Graph-backed steps can also carry a **slider** answer (drag to a target value)
   or a **graph_point** answer (tap the correct point on the curve).
-- **Live, manipulable graphs** rendered as SVG: plot any function, show
-  secant/tangent lines, shade the area under a curve (integrals), and display
-  live readouts for value, slope, and area.
+- **Live, manipulable graphs** rendered as SVG: plot any function, overlay the
+  derivative `f'`, show secant/tangent lines, shade the area under a curve
+  (integrals), and display live readouts for value, slope, and area. A dedicated
+  Riemann widget stacks rectangles under a curve so the area estimate converges
+  as the learner adds more.
 - **Instant feedback with progressive hints** — correct/incorrect messages are
   authored per step; hints stay hidden behind a "Show hint" button so they never
   give the answer away.
@@ -238,8 +242,9 @@ src/
     layout/      AppHeader, UserMenu, SafeArea
     lesson/      LessonPlayer, FeedbackPanel, StepNavBar,
                  LessonComplete, PracticeResults
-    widgets/     GraphWidget, MathBlock, AnswerInput,
-                 MultiChoiceInput, DragDropInput, MatchInput
+    widgets/     GraphWidget, MathBlock, AnswerInput, MultiChoiceInput,
+                 DragDropInput, MatchInput, SignChartInput, OrderListInput,
+                 RiemannInput
     roadmap/     LevelSection, LessonCard
     habit/       StreakBadge, XpBadge
     profile/     StatsStrip, ActivityHeatmap, WeakAreas, ConceptMasteryList
@@ -298,14 +303,16 @@ interface Lesson {
 // A step renders content, optionally captures an interaction, and carries feedback.
 interface Step {
   id: string;
-  type: "read" | "multiple_choice" | "numeric" | "slider_graph" | "power_term";
+  type: "read" | "multiple_choice" | "multi_choice" | "numeric"
+      | "slider_graph" | "power_term" | "drag_drop" | "match"
+      | "sign_chart" | "order_list" | "riemann";
   conceptTag?: string;
   content: ContentBlock[];          // text or math (LaTeX) blocks
   interaction?: Interaction;        // graph config + answer spec + hint timing
   feedback: { correct: string; incorrect: string; hint: string };
 }
 
-// Eight answer shapes, each graded by the feedback engine.
+// Eleven answer shapes, each graded by the feedback engine.
 type AnswerSpec =
   | { type: "multiple_choice"; options: string[]; correctIndex: number }
   | { type: "multi_choice"; options?: string[]; parts: MultiChoicePart[] }
@@ -315,7 +322,13 @@ type AnswerSpec =
   | { type: "power_term"; coefficient: number; exponent: number;
       startCoefficient?: number; startExponent?: number; previewPrefix?: string }
   | { type: "drag_drop"; prefix?: string; blanks: DragDropBlank[]; bank: string[] }
-  | { type: "match"; pairs: MatchPair[]; distractors?: string[] };
+  | { type: "match"; pairs: MatchPair[]; distractors?: string[] }
+  | { type: "sign_chart"; points: number[]; options: string[];
+      regions: SignChartRegion[]; variableLabel?: string }
+  | { type: "order_list"; items: string[]; orderLabel?: string }
+  | { type: "riemann"; fn: string; a: number; b: number; trueArea: number;
+      targetWithin: number; maxRects?: number;
+      domain?: [number, number]; yMax?: number };
 ```
 
 Per-user state:
@@ -354,6 +367,7 @@ Tuning constants (also in `content.ts`):
 | `PRACTICE_SESSION_SIZE` | 3 | Questions per practice session |
 | `REVIEW_SESSION_SIZE` | 5 | Questions per mixed-review session |
 | `PRACTICE_BANK_MIN` | 3 | Minimum questions in a practice bank |
+| `PRACTICE_STEPS` | 3 | Size of the legacy fixed practice set (deprecated) |
 | `MASTERY_PROFICIENT` / `MASTERY_MASTERED` | 0.6 / 0.9 | First-try accuracy for concept tiers |
 
 ---
@@ -437,6 +451,9 @@ centerpiece. It renders a function as an SVG plot and supports:
 
 - **Function plotting** — samples `config.fn` across the domain using math.js,
   with auto-computed or explicit y-range, "nice" axis ticks, and gridlines.
+- **Derivative overlay** — optionally draws `f'(x)` as a second curve in a
+  distinct color (computed numerically), so the learner can line up the sign and
+  height of `f'` with where `f` rises, falls, and turns.
 - **Secant & tangent lines** — for the "slope of a curve" idea. A special
   `tangentAtFixedPoint` mode draws a static tangent while a secant slides toward
   it as `h → 0`, with a live secant-slope readout.
@@ -460,6 +477,9 @@ The slope/derivative math behind it lives in `feedbackEngine.ts`:
 - `secantSlope(fn, x0, h)` — average rate of change.
 - `derivativeAt(fn, x)` — instantaneous slope via a central difference (no 0/0
   blow-up).
+- `riemannSum(fn, a, b, n)` — midpoint Riemann sum that drives both the
+  `RiemannInput` widget's rectangles and the grading of `riemann` steps, so the
+  picture and the verdict always agree.
 
 ---
 
@@ -477,7 +497,9 @@ function that returns a `FeedbackResult`. Grading per answer type:
 | `power_term` | Coefficient **and** exponent must match; a 0 coefficient passes regardless of exponent (a constant's derivative) |
 | `drag_drop` | Multiset of **signed** placed terms must equal the target (order-free for sums; a `-` slot negates its term) |
 | `match` | Every prompt must hold its own `match` (graded by position) |
-| `match` | Every prompt must hold its own correct option (graded by position) |
+| `sign_chart` | Every interval's chosen label must match its `correctIndex` (graded by position) |
+| `order_list` | The submitted ordering must exactly equal the authored order |
+| `riemann` | The midpoint Riemann sum for the chosen `n` must land within `targetWithin` of `trueArea` |
 
 Feedback is rendered by `FeedbackPanel`:
 
@@ -642,8 +664,17 @@ import time (`assertValidLesson`) and via a CLI script.
   steps must include a graph config.
 - Multiple-choice steps need ≥ 4 options.
 - `power_term` answers need a numeric coefficient and integer exponent.
+- `multi_choice` questions need ≥ 2 rows, each with ≥ 2 options and an in-range
+  correct index.
+- `drag_drop` questions need ≥ 1 blank, a duplicate-free tile bank with at least
+  one distractor, and every blank's accepted tile present in the bank.
 - `match` questions need ≥ 2 pairs, each with a prompt and match, and a unique
   option pool (every match and distractor distinct).
+- `sign_chart` questions need ≥ 1 strictly-increasing critical point, ≥ 2
+  labels, exactly one more region than points, and each region labeled in range.
+- `order_list` questions need ≥ 2 unique items.
+- `riemann` questions need `b > a`, a finite `trueArea`, a positive
+  `targetWithin`, and no separate graph config (the widget draws its own).
 - Non-read steps must have all three feedback fields (correct/incorrect/hint).
 - Practice banks must hold ≥ 3 interactive questions with unique IDs.
 
