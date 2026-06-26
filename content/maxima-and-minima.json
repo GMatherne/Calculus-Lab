@@ -1,7 +1,7 @@
 {
   "id": "maxima-and-minima",
   "title": "Finding Maxima and Minima",
-  "order": 7,
+  "order": 6,
   "estimatedMinutes": 8,
   "conceptTags": ["extrema"],
   "published": true,
@@ -282,7 +282,7 @@
       "content": [
         {
           "type": "text",
-          "body": "Below is the graph of the DERIVATIVE $f'(x)$ of $f(x) = x^3 - 3x$ (not $f$). Tap the $x$ where $f$ has a local MAXIMUM — where $f'$ crosses zero from positive to negative."
+          "body": "Below is the graph of the DERIVATIVE $f'(x)$ of $f(x) = x^3 - 3x$. Tap the $x$ where $f$ has a local MAXIMUM."
         }
       ],
       "interaction": {
@@ -313,7 +313,7 @@
       "content": [
         {
           "type": "text",
-          "body": "Below is the same DERIVATIVE $f'(x)$ of $f(x) = x^3 - 3x$ (not $f$). Tap the $x$ where $f$ has a local MINIMUM — where $f'$ crosses zero from negative to positive."
+          "body": "Below is the same DERIVATIVE $f'(x)$ of $f(x) = x^3 - 3x$. Tap the $x$ where $f$ has a local MINIMUM."
         }
       ],
       "interaction": {
@@ -428,7 +428,7 @@
       "content": [
         {
           "type": "text",
-          "body": "Below is the graph of the DERIVATIVE $f'(x) = 2x - 6$ of $f(x) = x^2 - 6x + 5$ (not $f$). Tap the $x$ where $f$ has its MINIMUM — where $f'$ crosses zero from negative to positive."
+          "body": "Below is the graph of the DERIVATIVE $f'(x) = 2x - 6$ of $f(x) = x^2 - 6x + 5$. Tap the $x$ where $f$ has its MINIMUM."
         }
       ],
       "interaction": {
@@ -459,7 +459,7 @@
       "content": [
         {
           "type": "text",
-          "body": "Below is the graph of the DERIVATIVE $f'(x) = -2x + 6$ of $f(x) = -x^2 + 6x$ (not $f$). Tap the $x$ where $f$ has its MAXIMUM — where $f'$ crosses zero from positive to negative."
+          "body": "Below is the graph of the DERIVATIVE $f'(x) = -2x + 6$ of $f(x) = -x^2 + 6x$. Tap the $x$ where $f$ has its MAXIMUM."
         }
       ],
       "interaction": {

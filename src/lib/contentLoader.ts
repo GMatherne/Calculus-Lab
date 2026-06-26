@@ -9,7 +9,6 @@ import { assertValidLesson } from "./validateLesson";
 import courseData from "../../content/course.json";
 import lesson1 from "../../content/what-is-a-derivative.json";
 import lesson2 from "../../content/slope-of-a-curve.json";
-import lesson3 from "../../content/difference-quotient.json";
 import lesson4 from "../../content/power-rule.json";
 import lessonDifferentiatingPolynomials from "../../content/differentiating-polynomials.json";
 import lesson5 from "../../content/graph-shape.json";
@@ -22,7 +21,6 @@ import lessonIntegratingPolynomials from "../../content/integrating-polynomials.
 const rawLessons: Lesson[] = [
   lesson1 as Lesson,
   lesson2 as Lesson,
-  lesson3 as Lesson,
   lesson4 as Lesson,
   lessonDifferentiatingPolynomials as Lesson,
   lesson5 as Lesson,
@@ -105,7 +103,7 @@ export function hasPractice(lessonId: string): boolean {
 }
 
 /** Fisher–Yates shuffle returning a new array (source is left untouched). */
-function shuffle<T>(items: T[]): T[] {
+export function shuffle<T>(items: T[]): T[] {
   const copy = [...items];
   for (let i = copy.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -148,7 +146,7 @@ function reviewableLessons(
 }
 
 /** Combined pool of practice questions across every lesson eligible for review. */
-function getReviewBank(
+export function getReviewBank(
   progress: Record<string, { status: string }>,
 ): Step[] {
   return reviewableLessons(progress).flatMap((l) => getPracticeBank(l.id));
@@ -167,6 +165,47 @@ export function canReview(
   progress: Record<string, { status: string }>,
 ): boolean {
   return getReviewBank(progress).length > 0;
+}
+
+/**
+ * The concepts a learner can practice right now — every distinct `conceptTag`
+ * found in the practice banks of lessons they've started or finished, paired
+ * with how many questions back it. Ordered by first appearance so the picker is
+ * stable. Concepts from not-yet-started lessons are excluded, matching mixed
+ * review's eligibility.
+ */
+export function getCustomPracticeTopics(
+  progress: Record<string, { status: string }>,
+): { concept: string; count: number }[] {
+  const counts = new Map<string, number>();
+  const order: string[] = [];
+  for (const l of reviewableLessons(progress)) {
+    for (const s of getPracticeBank(l.id)) {
+      if (!s.conceptTag) continue;
+      if (!counts.has(s.conceptTag)) order.push(s.conceptTag);
+      counts.set(s.conceptTag, (counts.get(s.conceptTag) ?? 0) + 1);
+    }
+  }
+  return order.map((concept) => ({ concept, count: counts.get(concept)! }));
+}
+
+/**
+ * A learner-configured practice set: up to `size` questions drawn from the
+ * practice banks of started lessons, restricted to the chosen concepts. Returns
+ * an empty set when nothing is selected. Sampling favors interactive questions,
+ * just like the other session builders.
+ */
+export function getCustomPracticeSession(
+  progress: Record<string, { status: string }>,
+  concepts: string[],
+  size: number,
+): Step[] {
+  const selected = new Set(concepts);
+  if (selected.size === 0) return [];
+  const bank = reviewableLessons(progress)
+    .flatMap((l) => getPracticeBank(l.id))
+    .filter((s) => s.conceptTag !== undefined && selected.has(s.conceptTag));
+  return sampleSession(bank, size);
 }
 
 /**

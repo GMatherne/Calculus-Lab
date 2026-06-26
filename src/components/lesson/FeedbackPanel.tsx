@@ -1,4 +1,5 @@
 import { RichText } from "../widgets/MathBlock";
+import { Icon } from "../common/Icon";
 
 interface FeedbackPanelProps {
   message: string;
@@ -37,16 +38,23 @@ export function FeedbackPanel({
       )}
       {hint && isCorrect === false && (
         hintRevealed ? (
-          <p className="mt-2 text-sm font-medium">
-            💡 Hint: <RichText text={hint} />
+          <p className="mt-2 flex items-start gap-1.5 text-sm font-medium">
+            <Icon
+              name="lightbulb"
+              className="mt-0.5 h-4 w-4 shrink-0 text-amber-600"
+            />
+            <span>
+              Hint: <RichText text={hint} />
+            </span>
           </p>
         ) : (
           <button
             type="button"
             onClick={onRevealHint}
-            className="mt-2 inline-flex items-center gap-1 rounded-lg border border-amber-300 bg-white/70 px-3 py-1.5 text-sm font-semibold text-amber-800 hover:bg-white active:scale-[0.98] transition"
+            className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-amber-300 bg-white/70 px-3 py-1.5 text-sm font-semibold text-amber-800 hover:bg-white active:scale-[0.98] transition"
           >
-            💡 Show hint
+            <Icon name="lightbulb" className="h-4 w-4" />
+            Show hint
           </button>
         )
       )}

@@ -1,7 +1,7 @@
 {
   "id": "graph-shape",
   "title": "Derivatives and Graph Shape",
-  "order": 6,
+  "order": 5,
   "estimatedMinutes": 8,
   "conceptTags": ["graph_shape"],
   "published": true,
@@ -340,7 +340,7 @@
       "content": [
         {
           "type": "text",
-          "body": "This is the graph of the DERIVATIVE $f'(x) = 3x^2 - 3$ of $f(x) = x^3 - 3x$ (not $f$). Tap the $x$ where $f$ has a local MAXIMUM — where $f'$ crosses zero from positive to negative."
+          "body": "This is the graph of the DERIVATIVE $f'(x) = 3x^2 - 3$ of $f(x) = x^3 - 3x$. Tap the $x$ where $f$ has a local MAXIMUM."
         }
       ],
       "interaction": {
@@ -396,7 +396,7 @@
       "content": [
         {
           "type": "text",
-          "body": "This is the graph of the DERIVATIVE $f'(x) = 2x - 4$ of $f(x) = x^2 - 4x$ (not $f$). Tap the $x$ where $f$ stops decreasing and starts increasing — its minimum, where $f'$ crosses zero from negative to positive."
+          "body": "This is the graph of the DERIVATIVE $f'(x) = 2x - 4$ of $f(x) = x^2 - 4x$. Tap the $x$ where $f$ stops decreasing and starts increasing."
         }
       ],
       "interaction": {
@@ -427,7 +427,7 @@
       "content": [
         {
           "type": "text",
-          "body": "This is the graph of the DERIVATIVE $f'(x) = 3x^2 - 3$ of $f(x) = x^3 - 3x$ (not $f$). Tap the $x$ where $f$ has a local MINIMUM — where $f'$ crosses zero from negative to positive."
+          "body": "This is the graph of the DERIVATIVE $f'(x) = 3x^2 - 3$ of $f(x) = x^3 - 3x$. Tap the $x$ where $f$ has a local MINIMUM."
         }
       ],
       "interaction": {
@@ -481,7 +481,7 @@
       "content": [
         {
           "type": "text",
-          "body": "This is the graph of the DERIVATIVE $f'(x) = -2x + 4$ of $f(x) = -x^2 + 4x$ (not $f$). Tap the $x$ where $f$ has its MAXIMUM — where $f'$ crosses zero from positive to negative."
+          "body": "This is the graph of the DERIVATIVE $f'(x) = -2x + 4$ of $f(x) = -x^2 + 4x$. Tap the $x$ where $f$ has its MAXIMUM."
         }
       ],
       "interaction": {

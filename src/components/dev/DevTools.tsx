@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { useProgress } from "../../contexts/ProgressContext";
+import { Icon } from "../common/Icon";
 
 /**
  * Dev-only panel for skipping past lesson locks while testing. It renders only
@@ -28,7 +29,7 @@ export function DevTools() {
   return (
     <div className="mb-6 rounded-2xl border border-dashed border-amber-300 bg-amber-50 p-4">
       <div className="flex items-center gap-2">
-        <span aria-hidden>🛠️</span>
+        <Icon name="wrench" className="h-4 w-4 text-amber-700" />
         <p className="text-sm font-semibold text-amber-900">Dev tools</p>
         <span className="text-xs text-amber-700">local dev only</span>
       </div>

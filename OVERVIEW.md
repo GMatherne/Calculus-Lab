@@ -124,12 +124,12 @@ Key principles baked into the build:
 ## 3. The course
 
 The course (`content/course.json`) is **"Introduction to Calculus"**,
-organized into 5 levels and 11 lessons:
+organized into 5 levels and 10 lessons:
 
 | Level | Title | Lessons |
 |------:|-------|---------|
-| 1 | **What Is a Derivative?** | What Is a Derivative? · Slope of a Curve |
-| 2 | **Finding Derivatives** | The Limit Definition of the Derivative · The Power Rule · Differentiating Polynomials |
+| 1 | **What Is a Derivative?** | What Is a Derivative? · Slope of a Curve (introduces the limit definition) |
+| 2 | **Finding Derivatives** | The Power Rule · Differentiating Polynomials |
 | 3 | **Using Derivatives** | Derivatives and Graph Shape · Finding Maxima and Minima |
 | 4 | **What Is an Integral?** | What Is an Integral? · Area Under a Curve |
 | 5 | **The Big Picture** | The Fundamental Theorem of Calculus · Integrating Polynomials |
@@ -520,14 +520,37 @@ step and on lesson completion.
 
 ### Milestones
 
-`checkMilestones()` awards (idempotently):
+`checkMilestones(milestones, stats)` awards (idempotently) against a
+`MilestoneStats` snapshot built by `buildMilestoneStats(profile, progress)`
+(lessons completed, streak, XP, practice questions answered, and concepts
+mastered). The metrics are `lessons`, `streak`, `course`, `xp`, `questions`,
+`concepts`, and `allConcepts`; `course`/`allConcepts` use a live target and are
+guarded so an empty course can't award them. Checked on every answered step,
+lesson completion, and practice/review session, so XP-, question-, and
+concept-based badges unlock the moment their threshold is reached.
 
-| ID | Title | Earned when |
-|----|-------|-------------|
-| `first_lesson` | First Steps | 1 lesson complete |
-| `three_lessons` | On a Roll | 3 lessons complete |
-| `five_day_streak` | Consistent Learner | 5-day streak |
-| `course_complete` | Calculus Master | All lessons complete |
+The `questions` metric counts only practice/review questions cleared on the
+first try (tracked on `UserProfile.practiceQuestionsAnswered`, incremented by
+`addXp` with the session's first-try count); lesson-walkthrough questions and
+questions that needed more than one attempt do not count.
+
+In the profile UI, achievements are grouped into sections (`MILESTONE_SECTIONS`)
+and `MILESTONE_ORDER` is derived from that grouping:
+
+| Section | ID | Title | Earned when |
+|---------|----|-------|-------------|
+| Lessons | `first_lesson` | First Steps | 1 lesson complete |
+| Lessons | `three_lessons` | On a Roll | 3 lessons complete |
+| Lessons | `course_complete` | Calculus Master | All lessons complete |
+| Practice | `questions_10` | Warming Up | 10 practice questions cleared first try |
+| Practice | `questions_25` | Getting Reps In | 25 practice questions cleared first try |
+| Practice | `questions_50` | Practice Pro | 50 practice questions cleared first try |
+| Practice | `questions_100` | Century | 100 practice questions cleared first try |
+| Concept mastery | `concepts_3` | Concept Explorer | 3 concepts mastered |
+| Concept mastery | `all_concepts` | Concept Conqueror | Every concept mastered |
+| Streaks | `five_day_streak` | Consistent Learner | 5-day streak |
+| Experience | `xp_250` | Point Collector | 250 XP earned |
+| Experience | `xp_1000` | XP Champion | 1,000 XP earned |
 
 ### XP
 

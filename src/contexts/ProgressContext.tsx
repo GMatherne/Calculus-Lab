@@ -15,8 +15,11 @@ interface ProgressContextValue {
   ) => Promise<void>;
   /** Finish a lesson and return the XP gained (0 when reviewing an already-done lesson). */
   completeLesson: (lessonId: string) => Promise<number>;
-  /** Award XP for an activity that isn't a fresh lesson completion (e.g. practice). */
-  addXp: (amount: number) => Promise<void>;
+  /**
+   * Record a finished practice/review session: award `amount` XP and count
+   * `practiceQuestions` toward the practice-question achievements.
+   */
+  addXp: (amount: number, practiceQuestions?: number) => Promise<void>;
   /** Persist editable profile fields (display name / email) and update state. */
   updateProfileInfo: (
     fields: Partial<Pick<UserProfile, "displayName" | "email">>,

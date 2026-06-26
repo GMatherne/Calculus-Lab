@@ -6,7 +6,7 @@ import {
   isLessonComplete,
   nextStepProgress,
 } from "./progressService";
-import type { UserProfile } from "../types/content";
+import type { MilestoneStats, UserProfile } from "../types/content";
 
 function baseProfile(overrides: Partial<UserProfile> = {}): UserProfile {
   return {
@@ -15,9 +15,23 @@ function baseProfile(overrides: Partial<UserProfile> = {}): UserProfile {
     streak: { count: 0, lastActiveDate: "" },
     milestones: [],
     xp: 0,
+    practiceQuestionsAnswered: 0,
     activityLog: {},
     createdAt: "2026-03-01T00:00:00.000Z",
     updatedAt: "2026-03-01T00:00:00.000Z",
+    ...overrides,
+  };
+}
+
+function baseStats(overrides: Partial<MilestoneStats> = {}): MilestoneStats {
+  return {
+    lessonsCompleted: 0,
+    totalLessons: 8,
+    streak: 0,
+    xp: 0,
+    practiceQuestionsAnswered: 0,
+    conceptsMastered: 0,
+    totalConcepts: 6,
     ...overrides,
   };
 }
@@ -91,28 +105,85 @@ describe("computeLongestStreak", () => {
 });
 
 describe("checkMilestones", () => {
-  const total = 8;
-
   it("awards the first-lesson milestone after one completion", () => {
-    expect(checkMilestones([], 1, 0, total)).toContain("first_lesson");
+    expect(checkMilestones([], baseStats({ lessonsCompleted: 1 }))).toContain(
+      "first_lesson",
+    );
   });
 
   it("awards three-lessons after three completions", () => {
-    const res = checkMilestones([], 3, 0, total);
+    const res = checkMilestones([], baseStats({ lessonsCompleted: 3 }));
     expect(res).toContain("first_lesson");
     expect(res).toContain("three_lessons");
   });
 
   it("awards the five-day-streak milestone", () => {
-    expect(checkMilestones([], 0, 5, total)).toContain("five_day_streak");
+    expect(checkMilestones([], baseStats({ streak: 5 }))).toContain(
+      "five_day_streak",
+    );
   });
 
   it("awards course-complete when every lesson is done", () => {
-    expect(checkMilestones([], total, 0, total)).toContain("course_complete");
+    expect(
+      checkMilestones([], baseStats({ lessonsCompleted: 8, totalLessons: 8 })),
+    ).toContain("course_complete");
+  });
+
+  it("awards XP milestones once their thresholds are reached", () => {
+    const res = checkMilestones([], baseStats({ xp: 1000 }));
+    expect(res).toContain("xp_250");
+    expect(res).toContain("xp_1000");
+  });
+
+  it("does not award an XP milestone below its threshold", () => {
+    expect(checkMilestones([], baseStats({ xp: 249 }))).not.toContain("xp_250");
+  });
+
+  it("awards every practice-question tier once the count is high enough", () => {
+    const res = checkMilestones([], baseStats({ practiceQuestionsAnswered: 100 }));
+    expect(res).toContain("questions_10");
+    expect(res).toContain("questions_25");
+    expect(res).toContain("questions_50");
+    expect(res).toContain("questions_100");
+  });
+
+  it("awards only the practice-question tiers that have been reached", () => {
+    const res = checkMilestones([], baseStats({ practiceQuestionsAnswered: 30 }));
+    expect(res).toContain("questions_10");
+    expect(res).toContain("questions_25");
+    expect(res).not.toContain("questions_50");
+    expect(res).not.toContain("questions_100");
+  });
+
+  it("awards the concepts milestone at the fixed threshold", () => {
+    expect(checkMilestones([], baseStats({ conceptsMastered: 3 }))).toContain(
+      "concepts_3",
+    );
+  });
+
+  it("awards all-concepts only when every concept is mastered", () => {
+    expect(
+      checkMilestones([], baseStats({ conceptsMastered: 5, totalConcepts: 6 })),
+    ).not.toContain("all_concepts");
+    expect(
+      checkMilestones([], baseStats({ conceptsMastered: 6, totalConcepts: 6 })),
+    ).toContain("all_concepts");
+  });
+
+  it("does not award complete-everything milestones to an empty course", () => {
+    const res = checkMilestones(
+      [],
+      baseStats({ totalLessons: 0, totalConcepts: 0 }),
+    );
+    expect(res).not.toContain("course_complete");
+    expect(res).not.toContain("all_concepts");
   });
 
   it("does not duplicate already-earned milestones", () => {
-    const res = checkMilestones(["first_lesson"], 1, 0, total);
+    const res = checkMilestones(
+      ["first_lesson"],
+      baseStats({ lessonsCompleted: 1 }),
+    );
     expect(res.filter((m) => m === "first_lesson")).toHaveLength(1);
   });
 });

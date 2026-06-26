@@ -1,7 +1,7 @@
 {
   "id": "what-is-an-integral",
   "title": "What Is an Integral?",
-  "order": 8,
+  "order": 7,
   "estimatedMinutes": 7,
   "conceptTags": ["integral", "area_under_curve"],
   "published": true,
@@ -46,7 +46,8 @@
           "showArea": true,
           "areaStart": 0,
           "showAreaValue": true,
-          "areaLabel": "Shaded area",
+          "areaReadoutMath": true,
+          "integrand": "(0.3x^2 + 0.5)",
           "sliderMin": 0,
           "sliderMax": 4,
           "sliderStep": 0.1,
@@ -81,6 +82,9 @@
           "showValue": false,
           "showArea": true,
           "areaStart": 0,
+          "showAreaValue": false,
+          "areaReadoutMath": true,
+          "integrand": "2",
           "sliderMin": 0,
           "sliderMax": 5,
           "sliderStep": 1,
@@ -127,6 +131,8 @@
           "showArea": true,
           "showAreaValue": false,
           "areaStart": 0,
+          "areaReadoutMath": true,
+          "integrand": "x",
           "sliderMin": 0,
           "sliderMax": 5,
           "sliderStep": 1,
@@ -156,9 +162,9 @@
         }
       ],
       "interaction": {
-        "hintAfterAttempts": 1,
         "answer": {
           "type": "riemann",
+          "demo": true,
           "fn": "x^2",
           "a": 0,
           "b": 2,
@@ -168,10 +174,35 @@
           "domain": [0, 2]
         }
       },
+      "feedback": { "correct": "", "incorrect": "", "hint": "" }
+    },
+    {
+      "id": "int-step-riemann-q",
+      "type": "multiple_choice",
+      "conceptTag": "area_under_curve",
+      "content": [
+        {
+          "type": "text",
+          "body": "You just watched the estimate sharpen as you piled on more rectangles. As the number of rectangles grows without bound — each one infinitely thin — what does the running estimate approach?"
+        }
+      ],
+      "interaction": {
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "Zero, since each rectangle becomes infinitely thin",
+            "A fixed overestimate that never quite reaches the area",
+            "The exact area under the curve — the value of the integral",
+            "The height of the curve at the right endpoint"
+          ],
+          "correctIndex": 2
+        }
+      },
       "feedback": {
-        "correct": "That's the key idea — more rectangles hug the curve tighter, and the estimate closes in on the true area, 8/3 ≈ 2.67.",
-        "incorrect": "A couple of rectangles leave big gaps over the curve. Add more so they fit snugly and the estimate sharpens.",
-        "hint": "Slide right to add rectangles; the midpoint estimate settles near 2.67."
+        "correct": "Exactly — as the rectangles get thinner and more numerous, the gaps vanish and their total area closes in on the exact area. That limit is the definite integral.",
+        "incorrect": "Think about what you just watched: more rectangles hugged the curve more tightly and the estimate settled down rather than blowing up or vanishing.",
+        "hint": "More, thinner rectangles → the gaps over the curve disappear → the sum converges to the true area (the integral)."
       }
     },
     {
@@ -181,7 +212,11 @@
       "content": [
         {
           "type": "text",
-          "body": "So the area under a flat line is a rectangle, and the area under a tilted line is a triangle. For any function, the integral from a to b is just the area trapped between the curve and the x-axis over that interval."
+          "body": "So a flat line gives a rectangle and a tilted line gives a triangle — shapes with tidy area formulas. A genuine curve has no such formula, but you just saw the workaround: slice the region into many thin rectangles and add them up, and the more rectangles you use, the closer that running total creeps to the true area."
+        },
+        {
+          "type": "text",
+          "body": "Rectangle, triangle, or a stack of thin slices — either way the integral from a to b means the same thing: the area trapped between the curve and the x-axis over that interval."
         },
         {
           "type": "math",
@@ -198,7 +233,7 @@
       "content": [
         {
           "type": "text",
-          "body": "Your turn. The shaded region is the area under f(x) = x from 0 up to t. Find the value of t for which this integral equals 2, then drag the slider there."
+          "body": "Your turn. The shaded region is the area under f(x) = x from 0 up to t, and the readout below the graph shows the integral building as you drag. Find the value of t that makes this integral equal 2, then drag the slider there."
         },
         {
           "type": "math",
@@ -219,6 +254,8 @@
           "showArea": true,
           "areaStart": 0,
           "showAreaValue": false,
+          "areaReadoutMath": true,
+          "integrand": "x",
           "sliderMin": 0,
           "sliderMax": 5,
           "sliderStep": 0.1,
@@ -283,11 +320,11 @@
       "content": [
         {
           "type": "text",
-          "body": "To recap: an integral accumulates a function, and that accumulation is the area between the curve and the x-axis. Flat lines give rectangles, tilted lines give triangles, and soon you'll handle genuine curves."
+          "body": "To recap: an integral accumulates a function, and that accumulation is the area between the curve and the x-axis. Flat lines give rectangles, tilted lines give triangles, and for a genuine curve you slice the region into many thin rectangles and add them up — the more slices, the sharper the estimate."
         },
         {
           "type": "text",
-          "body": "Next up: how do we find the area under a curve like f(x) = x², where there's no neat triangle to measure?"
+          "body": "Next up: we'll let those slices get infinitely thin so the estimate becomes exact, then find a shortcut that hands you the area without summing rectangles by hand."
         }
       ],
       "feedback": { "correct": "", "incorrect": "", "hint": "" }
@@ -317,6 +354,8 @@
           "showArea": true,
           "areaStart": 0,
           "showAreaValue": false,
+          "areaReadoutMath": true,
+          "integrand": "x",
           "sliderMin": 0,
           "sliderMax": 5,
           "sliderStep": 0.1,
@@ -357,6 +396,8 @@
           "showArea": true,
           "areaStart": 0,
           "showAreaValue": false,
+          "areaReadoutMath": true,
+          "integrand": "2",
           "sliderMin": 0,
           "sliderMax": 5,
           "sliderStep": 0.1,
@@ -402,6 +443,8 @@
           "showArea": true,
           "areaStart": 1,
           "showAreaValue": false,
+          "areaReadoutMath": true,
+          "integrand": "x",
           "sliderMin": 1,
           "sliderMax": 5,
           "sliderStep": 0.1,
@@ -470,6 +513,8 @@
           "showArea": true,
           "areaStart": 0,
           "showAreaValue": false,
+          "areaReadoutMath": true,
+          "integrand": "x",
           "sliderMin": 0,
           "sliderMax": 5,
           "sliderStep": 0.1,
@@ -543,6 +588,8 @@
           "showArea": true,
           "areaStart": 1,
           "showAreaValue": false,
+          "areaReadoutMath": true,
+          "integrand": "2",
           "sliderMin": 1,
           "sliderMax": 6,
           "sliderStep": 0.1,
@@ -634,7 +681,9 @@
           "showValue": false,
           "showArea": true,
           "areaStart": 0,
-          "showAreaValue": true,
+          "showAreaValue": false,
+          "areaReadoutMath": true,
+          "integrand": "(x - 2)",
           "sliderMin": 0,
           "sliderMax": 4,
           "sliderStep": 0.1,

@@ -3,8 +3,11 @@ import { Link } from "react-router-dom";
 import type { PracticeResult } from "../../types/content";
 import { XP_PER_PRACTICE_CORRECT } from "../../types/content";
 import { useProgress } from "../../contexts/ProgressContext";
+import { useCountUp } from "../../hooks/useCountUp";
 import { AppHeader } from "../layout/AppHeader";
 import { SafeArea } from "../layout/SafeArea";
+import { Sparkles } from "../habit/Sparkles";
+import { Icon, type IconName } from "../common/Icon";
 
 interface PracticeResultsProps {
   result: PracticeResult;
@@ -15,6 +18,8 @@ interface PracticeResultsProps {
   retryLabel?: string;
   /** When set, shows a "Review the lesson" link to this lesson. */
   reviewLessonId?: string;
+  /** When set, shows a secondary outline button (e.g. "Change topics"). */
+  secondaryAction?: { label: string; onClick: () => void };
 }
 
 export function PracticeResults({
@@ -23,23 +28,37 @@ export function PracticeResults({
   onRetry,
   retryLabel = "Practice again",
   reviewLessonId,
+  secondaryAction,
 }: PracticeResultsProps) {
   const { correct, total } = result;
   const allCorrect = total > 0 && correct === total;
   const passed = correct >= Math.ceil(total / 2);
 
-  // XP for the questions cleared on the first try. Awarded once per results
-  // screen (the ref guards against React's double-invoked effects in dev).
+  // Bank XP and count progress toward the practice-question achievements for
+  // questions cleared on the first try only. Recorded once per results screen
+  // (the ref guards against React's double-invoked effects in dev); the session
+  // itself still registers as activity even on a zero-first-try round.
   const { addXp } = useProgress();
   const xpGained = correct * XP_PER_PRACTICE_CORRECT;
-  const awardedRef = useRef(false);
+  const recordedRef = useRef(false);
   useEffect(() => {
-    if (awardedRef.current || xpGained <= 0) return;
-    awardedRef.current = true;
-    void addXp(xpGained);
-  }, [addXp, xpGained]);
+    if (recordedRef.current || total <= 0) return;
+    recordedRef.current = true;
+    void addXp(xpGained, correct);
+  }, [addXp, xpGained, correct, total]);
 
-  const emoji = allCorrect ? "🎉" : passed ? "👏" : "💪";
+  const animatedGain = useCountUp(xpGained, { initial: 0 });
+
+  const resultIcon: IconName = allCorrect
+    ? "celebrate"
+    : passed
+      ? "thumbsUp"
+      : "dumbbell";
+  const resultIconColor = allCorrect
+    ? "text-amber-500"
+    : passed
+      ? "text-indigo-500"
+      : "text-indigo-400";
   const heading = allCorrect
     ? "Perfect score!"
     : passed
@@ -56,8 +75,8 @@ export function PracticeResults({
       <AppHeader />
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-8 max-w-md mx-auto w-full text-center">
         <p className="text-sm font-semibold text-indigo-600">{title}</p>
-        <div className="text-6xl mt-3 mb-4" aria-hidden>
-          {emoji}
+        <div className="mt-3 mb-4 flex justify-center xp-bounce-in">
+          <Icon name={resultIcon} className={`h-16 w-16 ${resultIconColor}`} />
         </div>
         <h1 className="text-2xl font-bold text-slate-900">{heading}</h1>
         <p className="text-slate-500 mt-2">{message}</p>
@@ -70,10 +89,34 @@ export function PracticeResults({
             {correct}
             <span className="text-2xl text-slate-400"> / {total}</span>
           </p>
-          <p className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-amber-100 text-amber-800 px-3 py-1.5 text-sm font-semibold">
-            <span aria-hidden>⚡</span>
-            {xpGained > 0 ? `+${xpGained} XP earned` : "No XP this round"}
-          </p>
+          <span className="relative mt-4 inline-flex">
+            <span
+              className={`xp-bounce-in inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold ${
+                xpGained > 0
+                  ? "bg-gradient-to-r from-amber-300 to-yellow-200 text-amber-900 shadow-sm ring-1 ring-amber-300/60"
+                  : "bg-slate-100 text-slate-500"
+              }`}
+              aria-label={
+                xpGained > 0 ? `Plus ${xpGained} XP earned` : "No XP this round"
+              }
+            >
+              <Icon
+                name="zap"
+                fill="currentColor"
+                className={`h-4 w-4 ${
+                  xpGained > 0
+                    ? "xp-bolt-wiggle text-amber-600"
+                    : "text-slate-400"
+                }`}
+              />
+              <span aria-hidden>
+                {xpGained > 0
+                  ? `+${animatedGain} XP earned`
+                  : "No XP this round"}
+              </span>
+            </span>
+            {xpGained > 0 && <Sparkles trigger={1} />}
+          </span>
         </div>
 
         <div className="w-full space-y-3">
@@ -84,6 +127,15 @@ export function PracticeResults({
           >
             {retryLabel}
           </button>
+          {secondaryAction && (
+            <button
+              type="button"
+              onClick={secondaryAction.onClick}
+              className="block w-full min-h-[48px] rounded-xl border border-slate-300 text-slate-700 font-semibold hover:bg-slate-50 active:scale-[0.98] transition"
+            >
+              {secondaryAction.label}
+            </button>
+          )}
           {reviewLessonId && (
             <Link
               to={`/lesson/${reviewLessonId}`}

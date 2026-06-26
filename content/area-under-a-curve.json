@@ -1,7 +1,7 @@
 {
   "id": "area-under-a-curve",
   "title": "Area Under a Curve",
-  "order": 9,
+  "order": 8,
   "estimatedMinutes": 7,
   "conceptTags": ["area_under_curve", "definite_integral"],
   "published": true,
@@ -48,6 +48,9 @@
           "showValue": false,
           "showArea": true,
           "areaStart": 0,
+          "showAreaValue": false,
+          "areaReadoutMath": true,
+          "integrand": "x^2",
           "sliderMin": 0,
           "sliderMax": 5,
           "sliderStep": 0.5,
@@ -86,9 +89,9 @@
         }
       ],
       "interaction": {
-        "hintAfterAttempts": 1,
         "answer": {
           "type": "riemann",
+          "demo": true,
           "fn": "x^2",
           "a": 0,
           "b": 2,
@@ -98,10 +101,35 @@
           "domain": [0, 2]
         }
       },
+      "feedback": { "correct": "", "incorrect": "", "hint": "" }
+    },
+    {
+      "id": "auc-step-riemann-q",
+      "type": "multiple_choice",
+      "conceptTag": "area_under_curve",
+      "content": [
+        {
+          "type": "text",
+          "body": "In the slicing demo, a few wide rectangles gave a rough estimate. What happens to the estimate as you use more — and therefore thinner — rectangles?"
+        }
+      ],
+      "interaction": {
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "It gets worse — each extra rectangle piles on more error",
+            "It improves — thinner rectangles leave smaller gaps, so the estimate closes in on the true area",
+            "It stays exactly the same no matter how many you use",
+            "It only improves when the curve happens to be a straight line"
+          ],
+          "correctIndex": 1
+        }
+      },
       "feedback": {
-        "correct": "Exactly — adding rectangles tightens the fit, and the estimate converges on $\\frac{8}{3} \\approx 2.67$, the true area.",
-        "incorrect": "Too few rectangles leave gaps between the steps and the curve. Add more to sharpen the estimate.",
-        "hint": "Drag right to add rectangles; the midpoint estimate settles near 2.67."
+        "correct": "Right — thinner rectangles hug the curve with smaller gaps, so the error shrinks toward zero and the estimate converges to the exact area.",
+        "incorrect": "Picture the demo: the wide rectangles left big gaps over the curve, while many thin ones traced it closely.",
+        "hint": "More, thinner rectangles → smaller gaps → a sharper estimate approaching the true area."
       }
     },
     {
@@ -196,6 +224,8 @@
           "showArea": true,
           "areaStart": 0,
           "showAreaValue": false,
+          "areaReadoutMath": true,
+          "integrand": "x^2",
           "sliderMin": 0,
           "sliderMax": 5,
           "sliderStep": 0.1,
@@ -280,7 +310,9 @@
           "showValue": false,
           "showArea": true,
           "areaStart": 0,
-          "showAreaValue": true,
+          "showAreaValue": false,
+          "areaReadoutMath": true,
+          "integrand": "(x - 2)",
           "sliderMin": 0,
           "sliderMax": 4,
           "sliderStep": 0.1,
@@ -345,6 +377,8 @@
           "showArea": true,
           "areaStart": 1,
           "showAreaValue": false,
+          "areaReadoutMath": true,
+          "integrand": "x^2",
           "sliderMin": 1,
           "sliderMax": 4,
           "sliderStep": 0.1,
@@ -390,6 +424,8 @@
           "showArea": true,
           "areaStart": 2,
           "showAreaValue": false,
+          "areaReadoutMath": true,
+          "integrand": "x",
           "sliderMin": 2,
           "sliderMax": 5,
           "sliderStep": 0.1,
@@ -429,7 +465,9 @@
           "showValue": false,
           "showArea": true,
           "areaStart": 0,
-          "showAreaValue": true,
+          "showAreaValue": false,
+          "areaReadoutMath": true,
+          "integrand": "(x^2 - 4)",
           "sliderMin": 0,
           "sliderMax": 3,
           "sliderStep": 0.1,
@@ -579,6 +617,8 @@
           "showArea": true,
           "areaStart": 0,
           "showAreaValue": false,
+          "areaReadoutMath": true,
+          "integrand": "x^2",
           "sliderMin": 0,
           "sliderMax": 4,
           "sliderStep": 0.1,
@@ -686,6 +726,8 @@
           "showArea": true,
           "areaStart": 0,
           "showAreaValue": false,
+          "areaReadoutMath": true,
+          "integrand": "x",
           "sliderMin": 0,
           "sliderMax": 5,
           "sliderStep": 0.1,

@@ -1,7 +1,7 @@
 {
   "id": "integrating-polynomials",
   "title": "Integrating Polynomials",
-  "order": 11,
+  "order": 10,
   "estimatedMinutes": 8,
   "conceptTags": ["antiderivative", "definite_integral"],
   "published": true,
@@ -217,6 +217,8 @@
           "showArea": true,
           "areaStart": 1,
           "showAreaValue": false,
+          "areaReadoutMath": true,
+          "integrand": "(2x + 1)",
           "sliderMin": 1,
           "sliderMax": 3.5,
           "sliderStep": 0.1,
@@ -259,6 +261,8 @@
           "showArea": true,
           "areaStart": 0,
           "showAreaValue": false,
+          "areaReadoutMath": true,
+          "integrand": "(x + 1)",
           "sliderMin": 0,
           "sliderMax": 4,
           "sliderStep": 0.5,
@@ -600,7 +604,7 @@
       "content": [
         {
           "type": "text",
-          "body": "Drag $t$ until $\\int_1^t x^2\\,dx \\approx 8.67$ (which is $\\frac{26}{3}$). Note the lower limit is 1, not 0."
+          "body": "Drag $t$ until $\\int_1^t x^2\\,dx \\approx 8.67$ (which is $\\frac{26}{3}$)."
         }
       ],
       "interaction": {
@@ -616,6 +620,8 @@
           "showArea": true,
           "areaStart": 1,
           "showAreaValue": false,
+          "areaReadoutMath": true,
+          "integrand": "x^2",
           "sliderMin": 1,
           "sliderMax": 4,
           "sliderStep": 0.1,

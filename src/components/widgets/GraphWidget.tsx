@@ -8,6 +8,7 @@ import {
 } from "react";
 import type { GraphConfig } from "../../types/content";
 import { evalFunction, secantSlope, derivativeAt } from "../../lib/feedbackEngine";
+import { MathBlock } from "./MathBlock";
 
 interface GraphWidgetProps {
   config: GraphConfig;
@@ -718,13 +719,27 @@ export function GraphWidget({
 
       {showSlider &&
         config.showArea &&
-        config.showAreaValue !== false &&
-        Number.isFinite(areaValue) && (
+        Number.isFinite(areaValue) &&
+        (config.areaReadoutMath && config.integrand ? (
+          // Live definite-integral readout: the upper limit tracks the slider so
+          // the integral notation updates under the learner's thumb. The running
+          // area is appended as the right-hand side only when `showAreaValue`
+          // isn't false — on "find t" questions we show the live integral but
+          // withhold its value so the readout never gives away the answer.
+          <div className="text-center text-base text-slate-800">
+            <MathBlock
+              latex={
+                `\\int_{${fmtNum(areaStart)}}^{${fmtNum(x1)}} ${config.integrand}\\,dx` +
+                (config.showAreaValue !== false ? ` = ${fmtNum(areaValue)}` : "")
+              }
+            />
+          </div>
+        ) : config.showAreaValue !== false ? (
           <p className="text-sm text-slate-600">
             {config.areaLabel ?? "Shaded area"} ≈{" "}
             <strong>{fmtNum(areaValue)}</strong>
           </p>
-        )}
+        ) : null)}
     </div>
   );
 }

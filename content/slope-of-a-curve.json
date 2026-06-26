@@ -224,11 +224,33 @@
       "content": [
         {
           "type": "text",
-          "body": "Here's the big picture from the last few steps: a curve doesn't have one fixed slope the way a line does. Its slope at a point is the slope of the tangent there — and you reach that tangent by shrinking a secant until its two points merge into one."
+          "body": "Here's the big picture: a curve doesn't have one fixed slope the way a straight line does. Its slope at a point is the slope of the tangent there — and you reach that tangent by shrinking a secant until its two points merge into one. Let's turn that picture into a formula."
         },
         {
           "type": "text",
-          "body": "That limiting process gives the curve a definite slope at every point. Now let's put it to work and pin down some specific slopes on f(x) = x²."
+          "body": "Remember how slope works on a straight line: pick two points and take the rise over the run. Do the exact same thing on the curve. Put one point at x and a second a distance h away, at x + h. The rise is the change in the function's value between them, f(x + h) − f(x), and the run is the distance h between their inputs:"
+        },
+        {
+          "type": "math",
+          "latex": "\\text{secant slope} = \\frac{f(x+h) - f(x)}{h}",
+          "display": true
+        },
+        {
+          "type": "text",
+          "body": "That ratio is the average rate of change over the step from x to x + h — the slope of the secant line you just explored."
+        },
+        {
+          "type": "text",
+          "body": "The derivative does the very same thing, but at a single point. Shrink the distance h toward 0 so the second point slides into the first: the secant becomes the tangent, and the average rate closes in on the slope at that one point. That limit is the derivative:"
+        },
+        {
+          "type": "math",
+          "latex": "f'(x) = \\lim_{h \\to 0} \\frac{f(x+h) - f(x)}{h}",
+          "display": true
+        },
+        {
+          "type": "text",
+          "body": "This is the limit definition of the derivative. Now let's put it to work and pin down some specific slopes on f(x) = x²."
         }
       ],
       "feedback": { "correct": "", "incorrect": "", "hint": "" }
@@ -308,12 +330,16 @@
       "content": [
         {
           "type": "text",
-          "body": "The derivative f'(x) is the slope of the tangent line at x — the limit of secant slopes as h → 0. For x² that slope is 2x. Next, we'll make this limit precise with the difference quotient."
+          "body": "To recap: the derivative f'(x) is the slope of the tangent line at x — the value the secant slope closes in on as the distance h shrinks to 0. For f(x) = x², that slope works out to 2x."
         },
         {
           "type": "math",
           "latex": "f'(x) = \\lim_{h \\to 0} \\frac{f(x+h) - f(x)}{h}",
           "display": true
+        },
+        {
+          "type": "text",
+          "body": "Working out this limit by hand for every function would be slow, though. Next, the power rule turns the derivative of a power of x into something you can write down instantly."
         }
       ],
       "feedback": { "correct": "", "incorrect": "", "hint": "" }
@@ -327,7 +353,7 @@
       "content": [
         {
           "type": "text",
-          "body": "Here is f(x) = x², whose tangent slope is 2x. The slope readout is hidden — drag the point until the tangent slope equals 6."
+          "body": "Here is f(x) = x², whose tangent slope is 2x. Drag the point until the tangent slope equals 6."
         }
       ],
       "interaction": {
@@ -362,7 +388,7 @@
       "content": [
         {
           "type": "text",
-          "body": "The secant line from x = 0 to x = 2 on f(x) = x² has slope 2. Tap the point where the TANGENT has that same slope."
+          "body": "The average rate of change of f(x) = x² from x = 0 to x = 2 is 2. Tap the point where the tangent slope equals that average."
         }
       ],
       "interaction": {
@@ -378,36 +404,43 @@
       },
       "feedback": {
         "correct": "Exactly — the average rate over [0, 2] is 2, and the tangent slope 2x equals 2 at x = 1.",
-        "incorrect": "Set the tangent slope 2x equal to the secant slope 2 and solve for x, then tap that point.",
+        "incorrect": "Set the tangent slope 2x equal to the average rate 2 and solve for x, then tap that point.",
         "hint": "Solve 2x = 2 → x = 1, the midpoint of 0 and 2."
       }
     },
     {
       "id": "soc-practice-3",
-      "type": "match",
+      "type": "slider_graph",
       "conceptTag": "secant_tangent",
       "content": [
         {
           "type": "text",
-          "body": "For f(x) = x² the tangent slope is 2x. Match each x-value to its slope."
+          "body": "The fixed point sits at x = 3 on f(x) = x². Drag h to slide the second point toward it: watch the dashed secant swing onto the green tangent and the secant-slope readout settle down. As h → 0, what single value is the secant slope closing in on?"
         }
       ],
       "interaction": {
-        "answer": {
-          "type": "match",
-          "pairs": [
-            { "prompt": "$x = -3$", "match": "-6" },
-            { "prompt": "$x = -1$", "match": "-2" },
-            { "prompt": "$x = 2$", "match": "4" },
-            { "prompt": "$x = 4$", "match": "8" }
-          ],
-          "distractors": ["6"]
-        }
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 5],
+          "fixedPoint": 3,
+          "sliderLabel": "h",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": true,
+          "tangentAtFixedPoint": true,
+          "slopeLabel": "Secant slope",
+          "sliderMin": 0.05,
+          "sliderMax": 2,
+          "sliderStep": 0.05,
+          "initialSlider": 1.5
+        },
+        "hintAfterAttempts": 1,
+        "answer": { "type": "numeric", "value": 6, "tolerance": 0.1 }
       },
       "feedback": {
-        "correct": "Perfect — doubling each x gives the slope: −6, −2, 4, and 8.",
-        "incorrect": "Multiply each x by 2 to find its tangent slope.",
-        "hint": "Slope = 2x, so x = −3 gives −6 and x = 4 gives 8."
+        "correct": "Right — as the two points merge, the secant slope closes in on the tangent slope at x = 3, which is f'(3) = 6.",
+        "incorrect": "Shrink h further and read where the secant slope is heading — it never quite lands, but it's homing in on one value.",
+        "hint": "The slope of x² is 2x, so at x = 3 the tangent slope is 2(3) = 6."
       }
     },
     {
@@ -440,32 +473,41 @@
       "content": [
         {
           "type": "text",
-          "body": "Here is f(x) = x² − 2x, slope 2x − 2. Drag the point until the tangent slope equals 4."
+          "body": "The green line is the tangent at the fixed point x = 2 on f(x) = x². Drag h toward 0 and watch the dashed secant rotate. As the two points merge into one, the dashed secant settles right on top of the green line — so the secant is turning into…"
         }
       ],
       "interaction": {
         "graph": {
-          "fn": "x^2 - 2*x",
-          "domain": [-2, 4],
-          "yDomain": [-2, 8],
-          "sliderLabel": "x",
+          "fn": "x^2",
+          "domain": [0, 4],
+          "fixedPoint": 2,
+          "sliderLabel": "h",
           "xLabel": "x",
           "yLabel": "f",
-          "showSecant": false,
-          "showTangent": true,
-          "showSlopeValue": false,
-          "showValue": false,
-          "sliderMin": -2,
-          "sliderMax": 4,
-          "sliderStep": 0.1,
-          "initialSlider": 0
+          "showSecant": true,
+          "tangentAtFixedPoint": true,
+          "slopeLabel": "Secant slope",
+          "sliderMin": 0.05,
+          "sliderMax": 2,
+          "sliderStep": 0.05,
+          "initialSlider": 1.8
         },
-        "answer": { "type": "slider", "value": 3, "tolerance": 0.2 }
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "The tangent line to the curve at x = 2",
+            "A horizontal line through the point",
+            "A vertical line through the point",
+            "Another secant through two separate points"
+          ],
+          "correctIndex": 0
+        }
       },
       "feedback": {
-        "correct": "Nailed it — 2x − 2 = 4 gives 2x = 6, so x = 3.",
-        "incorrect": "The slope here is 2x − 2. Set 2x − 2 = 4 and solve, then drag there.",
-        "hint": "Solve 2x − 2 = 4 → x = 3."
+        "correct": "Exactly — as h → 0 the two points become one and the secant lands on the tangent line at x = 2. Its slope is that tangent's slope, the derivative.",
+        "incorrect": "Slide h all the way down and see which line the dashed secant comes to rest on.",
+        "hint": "The dashed secant rotates until it overlaps the green line that just grazes the curve at x = 2 — the tangent."
       }
     },
     {
@@ -479,6 +521,20 @@
         }
       ],
       "interaction": {
+        "graph": {
+          "fn": "x^2 - 2x",
+          "domain": [-1, 3],
+          "sliderLabel": "x",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showTangent": true,
+          "slopeLabel": "Tangent slope",
+          "sliderMin": -2,
+          "sliderMax": 3,
+          "sliderStep": 0.1,
+          "initialSlider": 1
+        },
         "answer": {
           "type": "sign_chart",
           "variableLabel": "Behavior of f(x) = x² − 2x",
@@ -500,32 +556,40 @@
       "content": [
         {
           "type": "text",
-          "body": "Here is f(x) = x², whose tangent slope is 2x. The slope readout is hidden — drag the point until the tangent slope equals −4."
+          "body": "The secant slope shown here is the average rate of change of f(x) = x² from x = 1 to x = 1 + h. Drag h down from large to small and watch the readout. What happens to this average rate as the interval shrinks?"
         }
       ],
       "interaction": {
         "graph": {
           "fn": "x^2",
-          "domain": [-4, 4],
-          "yDomain": [0, 16],
-          "sliderLabel": "x",
+          "domain": [0, 4],
+          "fixedPoint": 1,
+          "sliderLabel": "h",
           "xLabel": "x",
           "yLabel": "f",
-          "showSecant": false,
-          "showTangent": true,
-          "showSlopeValue": false,
-          "showValue": false,
-          "sliderMin": -4,
-          "sliderMax": 4,
-          "sliderStep": 0.1,
-          "initialSlider": 0
+          "showSecant": true,
+          "slopeLabel": "Average rate",
+          "sliderMin": 0.05,
+          "sliderMax": 2,
+          "sliderStep": 0.05,
+          "initialSlider": 2
         },
-        "answer": { "type": "slider", "value": -2, "tolerance": 0.2 }
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "It closes in on the instantaneous rate — the tangent slope at x = 1",
+            "It grows larger and larger without limit",
+            "It stays exactly the same for every value of h",
+            "It drops straight to 0"
+          ],
+          "correctIndex": 0
+        }
       },
       "feedback": {
-        "correct": "Nailed it — the slope of x² is 2x, and 2x = −4 at x = −2.",
-        "incorrect": "The readout is hidden, so compute it: the slope of x² is 2x. Set 2x = −4 and drag there.",
-        "hint": "Solve 2x = −4 → x = −2."
+        "correct": "Right — as the interval shrinks, the average rate of change closes in on the instantaneous rate at x = 1, the tangent slope f'(1) = 2.",
+        "incorrect": "Watch the readout as h gets small. Is it blowing up, holding steady, or settling toward one value?",
+        "hint": "At h = 2 the average rate is 4; by h = 0.05 it is about 2.05 — heading for 2, the tangent slope at x = 1."
       }
     },
     {
@@ -557,52 +621,77 @@
     },
     {
       "id": "soc-practice-9",
-      "type": "order_list",
+      "type": "multiple_choice",
       "conceptTag": "secant_tangent",
       "content": [
         {
           "type": "text",
-          "body": "On y = x² − 2x the slope is 2x − 2. Order these points from the most negative slope to the most positive."
+          "body": "The slope of the secant line between the points at x and x + h is the difference quotient below."
+        },
+        {
+          "type": "math",
+          "latex": "\\frac{f(x+h) - f(x)}{h}",
+          "display": true
+        },
+        {
+          "type": "text",
+          "body": "Reading this as rise over run, what does the denominator h stand for?"
         }
       ],
       "interaction": {
+        "hintAfterAttempts": 1,
         "answer": {
-          "type": "order_list",
-          "orderLabel": "Most negative slope → most positive (y = x² − 2x)",
-          "items": ["$x = -1$", "$x = 0$", "$x = 2$", "$x = 3$"]
+          "type": "multiple_choice",
+          "options": [
+            "The run — the horizontal gap between the two inputs x and x + h",
+            "The rise — the change in the function's output",
+            "The slope of the tangent line at x",
+            "The area under the curve from x to x + h"
+          ],
+          "correctIndex": 0
         }
       },
       "feedback": {
-        "correct": "Right — 2x − 2 gives −4, −2, 2, 4, from most negative to most positive.",
-        "incorrect": "Plug each x into 2x − 2, keep the sign, and order low to high.",
-        "hint": "2x − 2 gives −4, −2, 2, and 4."
+        "correct": "Right — h is the run, the horizontal step from x to x + h. The numerator f(x + h) − f(x) is the rise, and rise over run is the secant's slope.",
+        "incorrect": "Rise is the vertical change (the numerator). The denominator is the other half of rise over run.",
+        "hint": "h sits in the denominator, so it is the run — the horizontal distance between the two x-values."
       }
     },
     {
       "id": "soc-practice-10",
-      "type": "slider_graph",
+      "type": "multiple_choice",
       "conceptTag": "secant_tangent",
       "content": [
         {
           "type": "text",
-          "body": "For f(x) = −x² + 4, the slope is −2x. Tap where the tangent slope equals −2."
+          "body": "The graph shows f(x) = x² together with its slope f'(x) = 2x (the second line). A straight line has one fixed slope — but what does this picture tell you about the slope of the curve?"
         }
       ],
       "interaction": {
         "graph": {
-          "fn": "-x^2 + 4",
+          "fn": "x^2",
           "domain": [-3, 3],
-          "yDomain": [-6, 5],
           "xLabel": "x",
           "yLabel": "f",
-          "pointChoices": [-3, -2, -1, 0, 1, 2, 3]
+          "static": true,
+          "showDerivative": true
         },
-        "answer": { "type": "graph_point", "x": 1, "tolerance": 0.25 }
+        "hintAfterAttempts": 1,
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "The slope changes from point to point — negative on the left, 0 at the bottom, positive on the right — so we read it off the tangent line at each point",
+            "The slope is the same everywhere, just like a straight line",
+            "The slope is 0 everywhere on the curve",
+            "The slope is positive everywhere, whatever the x-value"
+          ],
+          "correctIndex": 0
+        }
       },
       "feedback": {
-        "correct": "Exactly — the slope is −2x, and −2x = −2 gives x = 1.",
-        "incorrect": "Set the slope −2x equal to −2 and solve for x, then tap that point.",
-        "hint": "Solve −2x = −2 → x = 1."
+        "correct": "Right — the f'(x) line climbs through zero, so the curve's slope is negative on the left, flat at the bottom, and positive on the right. A curve's slope varies, and the tangent pins it down at each point.",
+        "incorrect": "Look at the f'(x) line: it isn't flat. Where it sits below 0 the curve falls; where it rises above 0 the curve climbs.",
+        "hint": "f'(x) = 2x passes through 0 at x = 0, so the slope goes negative, then zero, then positive — it keeps changing."
       }
     }
   ]

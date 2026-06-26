@@ -13,6 +13,7 @@ import {
   saveUserProfile,
   recordActivity,
   checkMilestones,
+  buildMilestoneStats,
   clearAllProgress,
   nextStepProgress,
 } from "../lib/progressService";
@@ -101,9 +102,17 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     void saveLessonProgress(user.uid, lessonId, updated);
 
     // Each answered question counts as a day's activity, advancing the streak
-    // and feeding the profile heatmap.
+    // and feeding the profile heatmap. Re-check milestones here too so
+    // question- and concept-based achievements unlock the moment the stat is
+    // reached, not only when a lesson is finished.
     if (profile) {
-      const newProfile = recordActivity(profile);
+      const active = recordActivity(profile);
+      const mergedProgress = { ...progress, [lessonId]: updated };
+      const milestones = checkMilestones(
+        active.milestones,
+        buildMilestoneStats(active, mergedProgress),
+      );
+      const newProfile = { ...active, milestones };
       await saveUserProfile(user.uid, newProfile);
       setProfile(newProfile);
     }
@@ -121,39 +130,48 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     setProgress((prev) => ({ ...prev, [lessonId]: updated }));
     await saveLessonProgress(user.uid, lessonId, updated);
 
-    const published = getPublishedLessons();
-    const completedCount = published.filter((l) => {
-      const s = l.id === lessonId ? updated.status : progress[l.id]?.status;
-      return isLessonDone(s);
-    }).length;
-
     const active = recordActivity(profile);
-    const milestones = checkMilestones(
-      profile.milestones,
-      completedCount,
-      active.streak.count,
-      published.length,
-    );
     // Award XP only the first time a lesson is finished, so replaying or
     // reviewing an already-completed lesson can't farm points.
     const xpGain = isLessonDone(current.status) ? 0 : XP_PER_LESSON;
-    const newProfile = {
-      ...active,
-      milestones,
-      xp: (profile.xp ?? 0) + xpGain,
-    };
+    // Apply this completion and the freshly-earned XP before evaluating
+    // milestones so lesson-, XP-, and concept-based achievements all reflect
+    // the just-finished lesson.
+    const withXp = { ...active, xp: (profile.xp ?? 0) + xpGain };
+    const mergedProgress = { ...progress, [lessonId]: updated };
+    const milestones = checkMilestones(
+      withXp.milestones,
+      buildMilestoneStats(withXp, mergedProgress),
+    );
+    const newProfile = { ...withXp, milestones };
     await saveUserProfile(user.uid, newProfile);
     setProfile(newProfile);
     return xpGain;
   };
 
-  // Award XP for activities outside fresh lesson completion (e.g. practice and
-  // review sessions). Persisted immediately so the header badge stays in sync.
-  const addXp = async (amount: number) => {
-    if (!user || !profile || amount <= 0) return;
-    // Practice and review answers skip updateStepProgress, so record the
-    // session here too — it keeps the streak and heatmap in sync.
-    const newProfile = { ...recordActivity(profile), xp: (profile.xp ?? 0) + amount };
+  // Record a finished practice/review session: bank XP, tally the practice
+  // questions answered (lesson questions are counted elsewhere and excluded
+  // from this metric), and keep the streak/heatmap in sync. Persisted
+  // immediately so the header badge stays current.
+  const addXp = async (amount: number, practiceQuestions = 0) => {
+    if (!user || !profile) return;
+    // A finished practice/review session always registers as activity (streak +
+    // heatmap). XP and the practice-question achievements only move for
+    // questions cleared on the first try, so a zero-first-try round records the
+    // session without adding either.
+    const withXp = {
+      ...recordActivity(profile),
+      xp: (profile.xp ?? 0) + Math.max(0, amount),
+      practiceQuestionsAnswered:
+        (profile.practiceQuestionsAnswered ?? 0) + Math.max(0, practiceQuestions),
+    };
+    // Practice can push XP or first-try counts past a threshold, so re-check
+    // milestones even though no lesson was completed.
+    const milestones = checkMilestones(
+      withXp.milestones,
+      buildMilestoneStats(withXp, progress),
+    );
+    const newProfile = { ...withXp, milestones };
     setProfile(newProfile);
     await saveUserProfile(user.uid, newProfile);
   };
@@ -194,17 +212,15 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       const newlyCompleted = published.filter(
         (meta) => !isLessonDone(progress[meta.id]?.status),
       ).length;
-      const milestones = checkMilestones(
-        profile.milestones,
-        published.length,
-        profile.streak.count,
-        published.length,
-      );
-      const newProfile = {
+      const withXp = {
         ...profile,
-        milestones,
         xp: (profile.xp ?? 0) + newlyCompleted * XP_PER_LESSON,
       };
+      const milestones = checkMilestones(
+        withXp.milestones,
+        buildMilestoneStats(withXp, next),
+      );
+      const newProfile = { ...withXp, milestones };
       await saveUserProfile(user.uid, newProfile);
       setProfile(newProfile);
     }
@@ -220,6 +236,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
         streak: { count: 0, lastActiveDate: "" },
         milestones: [],
         xp: 0,
+        practiceQuestionsAnswered: 0,
         activityLog: {},
       };
       await saveUserProfile(user.uid, newProfile);

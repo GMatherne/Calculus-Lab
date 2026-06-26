@@ -9,6 +9,8 @@ import type { Lesson, PracticeResult } from "../types/content";
 import { useProgress } from "../contexts/ProgressContext";
 import { LessonPlayer } from "../components/lesson/LessonPlayer";
 import { PracticeResults } from "../components/lesson/PracticeResults";
+import { ConfirmDialog } from "../components/common/ConfirmDialog";
+import { useSessionExitGuard } from "../hooks/useSessionExitGuard";
 import { AppHeader } from "../components/layout/AppHeader";
 import { SafeArea } from "../components/layout/SafeArea";
 
@@ -45,6 +47,16 @@ export function LevelReviewPage() {
         : undefined,
     [level, sessionSteps],
   );
+
+  // True only when the player is on screen — every guard below has passed and
+  // the session hasn't reached its results screen. Warn before navigating away.
+  const sessionActive =
+    !!level &&
+    !!reviewLesson &&
+    !progressLoading &&
+    getLevelStatus(level, progress) === "complete" &&
+    result === null;
+  const exitGuard = useSessionExitGuard(sessionActive);
 
   if (!level || !reviewLesson) {
     return (
@@ -108,6 +120,15 @@ export function LevelReviewPage() {
           }
         />
       </main>
+      <ConfirmDialog
+        open={exitGuard.open}
+        title="Leave review?"
+        message="You'll lose your progress in this session and won't earn any XP. Are you sure you want to leave?"
+        confirmLabel="Leave"
+        cancelLabel="Keep reviewing"
+        onConfirm={exitGuard.confirmLeave}
+        onCancel={exitGuard.cancelLeave}
+      />
     </SafeArea>
   );
 }

@@ -1,9 +1,12 @@
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useProgress } from "../contexts/ProgressContext";
 import { course } from "../lib/contentLoader";
 import { AppHeader } from "../components/layout/AppHeader";
 import { SafeArea } from "../components/layout/SafeArea";
 import { StatsStrip } from "../components/profile/StatsStrip";
+import { AchievementsSection } from "../components/profile/AchievementsSection";
 import { ActivityHeatmap } from "../components/profile/ActivityHeatmap";
 import { WeakAreas } from "../components/profile/WeakAreas";
 import { ConceptMasteryList } from "../components/profile/ConceptMasteryList";
@@ -11,8 +14,17 @@ import { ConceptMasteryList } from "../components/profile/ConceptMasteryList";
 export function ProfilePage() {
   const { user, isDemo } = useAuth();
   const { profile, loading } = useProgress();
+  const { hash } = useLocation();
 
   const displayName = profile?.displayName ?? user?.displayName ?? user?.email ?? "Student";
+
+  // Bring the targeted section into view once content has rendered, e.g. when
+  // arriving from a roadmap achievement badge via /profile#achievements.
+  useEffect(() => {
+    if (loading || !hash) return;
+    const el = document.getElementById(hash.slice(1));
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [loading, hash]);
 
   return (
     <SafeArea>
@@ -35,6 +47,7 @@ export function ProfilePage() {
         ) : (
           <div className="space-y-8">
             <StatsStrip />
+            <AchievementsSection />
             <ActivityHeatmap />
             <WeakAreas />
             <ConceptMasteryList />

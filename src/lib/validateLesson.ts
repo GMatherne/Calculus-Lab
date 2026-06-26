@@ -6,6 +6,7 @@ import {
   PRACTICE_BANK_MIN,
   MIN_MC_OPTIONS,
   MIN_MATCH_PAIRS,
+  isRiemannDemo,
 } from "../types/content";
 
 export function validateLesson(lesson: Lesson): string[] {
@@ -298,7 +299,9 @@ function validateStep(step: Step, lessonId: string): string[] {
     }
   }
 
-  if (step.type === "read") {
+  // Read steps and ungraded Riemann demos show no feedback, so they're exempt
+  // from the feedback-fields requirement below.
+  if (step.type === "read" || isRiemannDemo(step)) {
     return errors;
   }
 

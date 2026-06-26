@@ -1,10 +1,12 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import type { Lesson, Step, PracticeResult } from "../../types/content";
+import { isInstructionStep } from "../../types/content";
 import { checkAnswer } from "../../lib/feedbackEngine";
 import { ContentBlocks } from "../widgets/MathBlock";
 import { GraphWidget } from "../widgets/GraphWidget";
 import { AnswerInput } from "../widgets/AnswerInput";
 import { FeedbackPanel } from "./FeedbackPanel";
+import { TutorPanel } from "./TutorPanel";
 import { StepNavBar, type StepState } from "./StepNavBar";
 import { useProgress, isLessonDone } from "../../contexts/ProgressContext";
 
@@ -90,6 +92,9 @@ export function LessonPlayer({
 
   const step: Step = lesson.steps[stepIndex];
   const isRead = step.type === "read";
+  // Read steps and Riemann demos both advance ungraded with a "Continue" button.
+  // `isRead` still gates the answer widget so a demo's interactive widget renders.
+  const isInstruction = isInstructionStep(step);
   const total = lesson.steps.length;
 
   const answerType = step.interaction?.answer?.type;
@@ -109,7 +114,7 @@ export function LessonPlayer({
   }, [stepIndex, lesson]);
 
   const handleSubmit = useCallback(async () => {
-    if (isRead) return;
+    if (isInstruction) return;
 
     const effectiveAnswer =
       answerType === "slider"
@@ -161,7 +166,7 @@ export function LessonPlayer({
     answerType,
     graphValue,
     clickedX,
-    isRead,
+    isInstruction,
     lesson,
     step,
     stepIndex,
@@ -233,7 +238,7 @@ export function LessonPlayer({
   const savedIndex = lessonProgress?.currentStepIndex ?? 0;
   const lessonComplete = isLessonDone(lessonProgress?.status);
   const stepStates: StepState[] = lesson.steps.map((s, i) => {
-    if (s.type === "read") return "info";
+    if (isInstructionStep(s)) return "info";
     if (lessonComplete || i < savedIndex || completedStepIds.has(s.id))
       return "done";
     return "todo";
@@ -326,6 +331,15 @@ export function LessonPlayer({
     />
   ) : null;
 
+  // The exact value the learner submitted, mirroring handleSubmit's logic, so
+  // the tutor can ground its explanation in the actual answer.
+  const submittedAnswer =
+    answerType === "slider"
+      ? graphValue
+      : answerType === "graph_point"
+        ? clickedX
+        : answer;
+
   const contentSection = (
     <div className="space-y-4">
       {!isRead && step.interaction?.answer && !usesWidgetAnswer && (
@@ -349,6 +363,15 @@ export function LessonPlayer({
         onRevealHint={() => setHintRevealed(true)}
         prominentHint={submitted && feedback.isCorrect === false}
       />
+      {submitted && feedback.isCorrect !== null && !isRead && (
+        <TutorPanel
+          key={`${step.id}-${feedback.isCorrect}`}
+          step={step}
+          answer={submittedAnswer}
+          attempts={lessonProgress?.stepAttempts[step.id] ?? 1}
+          isCorrect={feedback.isCorrect === true}
+        />
+      )}
     </div>
   );
 
@@ -388,10 +411,10 @@ export function LessonPlayer({
               Back
             </button>
           )}
-          {isRead || isCorrectAnswered ? (
+          {isInstruction || isCorrectAnswered ? (
             <button
               type="button"
-              onClick={isRead ? handleContinueRead : goToNextStep}
+              onClick={isInstruction ? handleContinueRead : goToNextStep}
               className={`flex-1 min-h-[48px] rounded-xl font-semibold text-base text-white active:scale-[0.98] transition ${
                 isCorrectAnswered
                   ? "bg-emerald-600 hover:bg-emerald-700"

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useProgress } from "../../contexts/ProgressContext";
 import { getWeakConcepts } from "../../lib/masteryService";
+import { Icon } from "../common/Icon";
 
 /** "Recommended review" — the learner's shakiest concepts, linked to practice. */
 export function WeakAreas() {
@@ -20,10 +21,10 @@ export function WeakAreas() {
           >
             <div className="flex items-center gap-3">
               <span
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100 text-xl"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100"
                 aria-hidden
               >
-                🎯
+                <Icon name="target" className="h-5 w-5 text-amber-600" />
               </span>
               <div className="min-w-0">
                 <p className="font-semibold text-slate-900">{concept.label}</p>

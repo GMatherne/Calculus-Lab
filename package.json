@@ -11,11 +11,13 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "validate:lessons": "tsx scripts/validate-lessons.ts"
+    "validate:lessons": "tsx scripts/validate-lessons.ts",
+    "kill-ports": "node scripts/kill-ports.mjs"
   },
   "dependencies": {
     "firebase": "^11.6.0",
     "katex": "^0.16.22",
+    "lucide-react": "^1.21.0",
     "mathjs": "^14.4.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

@@ -10,6 +10,8 @@ import type { Lesson, PracticeResult } from "../types/content";
 import { useProgress } from "../contexts/ProgressContext";
 import { LessonPlayer } from "../components/lesson/LessonPlayer";
 import { PracticeResults } from "../components/lesson/PracticeResults";
+import { ConfirmDialog } from "../components/common/ConfirmDialog";
+import { useSessionExitGuard } from "../hooks/useSessionExitGuard";
 import { AppHeader } from "../components/layout/AppHeader";
 import { SafeArea } from "../components/layout/SafeArea";
 
@@ -40,6 +42,19 @@ export function PracticePage() {
         : undefined,
     [lesson, sessionSteps],
   );
+
+  // True only when the player itself is on screen — i.e. every guard below has
+  // passed and the session hasn't reached its results screen yet. Warn before
+  // an in-app navigation or tab close abandons that unfinished session.
+  const sessionActive =
+    !!lessonId &&
+    !!lesson &&
+    hasPractice(lessonId) &&
+    !!practiceLesson &&
+    !progressLoading &&
+    canAccessLesson(lessonId, progress) &&
+    result === null;
+  const exitGuard = useSessionExitGuard(sessionActive);
 
   if (!lesson || !lessonId || !hasPractice(lessonId) || !practiceLesson) {
     return (
@@ -99,6 +114,15 @@ export function PracticePage() {
           }
         />
       </main>
+      <ConfirmDialog
+        open={exitGuard.open}
+        title="Leave practice?"
+        message="You'll lose your progress in this session and won't earn any XP. Are you sure you want to leave?"
+        confirmLabel="Leave"
+        cancelLabel="Keep practicing"
+        onConfirm={exitGuard.confirmLeave}
+        onCancel={exitGuard.cancelLeave}
+      />
     </SafeArea>
   );
 }
