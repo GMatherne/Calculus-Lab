@@ -455,7 +455,9 @@ flowchart LR
 
 Grading is fully synchronous, so feedback is effectively instant. The progress
 write happens in the background; the UI updates optimistically and never blocks
-on the network.
+on the network. Once a step is graded, an optional **AI tutor** (`TutorPanel`) can
+be summoned to *explain* the result — it reads the engine's verdict and never
+changes grading or progress (see §8).
 
 ### Lesson completion
 
@@ -475,13 +477,21 @@ Practice and review reuse the same `LessonPlayer` in **practice mode** against a
 
 - **Per-lesson practice** (`/lesson/:id/practice`) samples `getPracticeSession()`
   from that lesson's bank.
-- **Mixed review** (`/review`) samples `getReviewSession()` across every lesson
-  the learner has started or completed.
-- **Level review** (`/level/:id/review`) samples across all lessons in a level.
+- **Targeted mixed review** (`/review`) samples `getTargetedReviewSession()`
+  (`reviewPlanner.ts`) across every lesson the learner has started or completed,
+  weighted toward weak and stale concepts and backfilled from the wider pool.
+- **Custom practice** (`/practice/custom`) lets the learner choose concepts and a
+  question count via `getCustomPracticeTopics()` / `getCustomPracticeSession()`,
+  surfacing the weakest/stalest topics as "recommended".
+- **Level review** (`/level/:id/review`) samples across all lessons in a level via
+  `getLevelReviewSession()`.
 
 In practice mode, progress is **not** persisted (so it can't disturb real lesson
 state), only first-try-correct answers count toward the score, and results award
-practice XP. Each retry re-samples the bank, so repeated practice stays varied.
+practice XP. Each retry re-samples the pool, so repeated practice stays varied.
+Leaving an unfinished session is guarded by `useSessionExitGuard` — an in-app
+`ConfirmDialog` plus a native `beforeunload` prompt warn before progress (and XP)
+is lost; the guard releases automatically once the results screen is reached.
 
 ### Resume mid-lesson
 
@@ -540,7 +550,7 @@ function that returns a `FeedbackResult`. Grading per answer type:
 | `multiple_choice` | Exact index match against `correctIndex` |
 | `multi_choice` | Every row's chosen option must match its `correctIndex` |
 | `numeric` / `slider` | `abs(answer − value) ≤ tolerance` (default 0.01) via math.js |
-| `graph_point` | `abs(tappedX − x) ≤ tolerance` (default 0.25) |
+| `graph_point` | `abs(tappedX − x) ≤ tolerance` (default 0.25), or within tolerance of any `acceptX` alternate |
 | `power_term` | Coefficient **and** exponent must match; a 0 coefficient passes regardless of exponent (a constant's derivative) |
 | `drag_drop` | Multiset of **signed** placed terms must equal the target (order-free for sums; a `-` slot negates its term) |
 | `match` | Every prompt must hold its own `match` (graded by position) |
@@ -559,6 +569,27 @@ Feedback is rendered by `FeedbackPanel`:
   can try again.
 
 All messages support inline LaTeX (`$...$`) via the `RichText` renderer.
+
+### Optional AI concept tutor
+
+The tutor is layered on **after** grading and never participates in it. Its pure,
+unit-tested core (`aiTutor.ts`) builds a compact, PII-free `TutorContext` from the
+graded step — the flattened question, the engine's verdict, the correct answer, and
+the learner's literal answer — which grounds every model call so explanations stay
+honest. `TutorPanel` then streams a walkthrough from **Firebase AI Logic** (the
+Gemini Developer API) and allows a capped number of follow-up questions per step
+(`MAX_FOLLOWUPS`).
+
+- **Explain, never grade** — the model is handed the verdict and correct answer and
+  asked only to explain; the deterministic engine stays the sole judge.
+- **Grounded & scoped** — a system instruction keeps it to AP Calculus BC, forbids
+  Markdown, and requires inline `$…$` math; `inlineMarkup.ts` normalizes stray
+  delimiters (`\(…\)`, `$$…$$`) and emphasis so streamed output typesets cleanly.
+- **Resilient** — transient `500/503` errors retry with backoff, while quota/billing
+  limits (HTTP 429) skip retries and surface a tailored "out of free responses" note.
+- **Optional** — the client (`ai`) is created only when Firebase is configured, so
+  `isAiAvailable` is false in the zero-config demo and `TutorPanel` renders nothing.
+  The model id (`TUTOR_MODEL`) lives in one place for easy swapping.
 
 ---
 
@@ -641,7 +672,20 @@ and `MILESTONE_ORDER` is derived from that grouping:
   best place to practice it.
 
 The **Profile** page (`/profile`) surfaces this as a `StatsStrip`, an `ActivityHeatmap` (driven
-by the profile's `activityLog`), a `WeakAreas` list, and a full `ConceptMasteryList`.
+by the profile's `activityLog`), a `WeakAreas` list, a full `ConceptMasteryList`, and an
+`AchievementsSection` (every badge with live progress toward the next).
+
+### Targeted review & custom practice (`reviewPlanner.ts`)
+
+Mixed review is **targeted**, not random. `getReviewPriorities()` scores every *seen* concept
+by blending two signals computed on the fly from progress — **weakness** (share of questions
+missed on the first try, from `masteryService`) and **recency** (days since the concept's
+lessons were last touched, saturating at a two-week horizon) — weighted 0.65 / 0.35.
+`getTargetedReviewSession()` then interleaves questions across the top few concepts (favoring
+hands-on graph questions) and backfills from the wider random pool when those can't fill the
+session. `getReviewTargets()` exposes the focus concepts for UI copy ("Focus on Power Rule &
+Integrals"), and custom practice reuses the same ranking to flag "recommended" topics. Nothing
+here is persisted — there is no scheduler and no extra stored state.
 
 ### Unlock & recommendation logic (`contentLoader.ts`)
 
