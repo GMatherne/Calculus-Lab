@@ -766,7 +766,8 @@ import time (`assertValidLesson`) and via a CLI script.
 - `order_list` questions need ≥ 2 unique items.
 - `riemann` questions need `b > a`, a finite `trueArea`, a positive
   `targetWithin`, and no separate graph config (the widget draws its own).
-- Non-read steps must have all three feedback fields (correct/incorrect/hint).
+- Non-read steps must have all three feedback fields (correct/incorrect/hint) —
+  **except ungraded Riemann demos** (`answer.demo`), which show no feedback.
 - Practice banks must hold ≥ 3 interactive questions with unique IDs.
 
 Run validation anytime:
@@ -775,9 +776,12 @@ Run validation anytime:
 npm run validate:lessons
 ```
 
-A practice **bank** is combined with the lesson's own interactive questions to
-form the practice pool, so practice offers the same hands-on graph problems as the
-lesson, deduplicated by ID.
+The practice **pool** is the lesson's authored `practiceBank` (or the legacy
+`practice` set); the lesson's own steps are deliberately left out so practice
+doesn't just rerun problems already worked through in the lesson. Only when the
+authored bank is too small to fill a session are just enough of the lesson's
+interactive questions backfilled to reach the minimum. Everything is deduplicated
+by ID.
 
 Here is a representative step (a `power_term` "derivative builder") from
 `content/power-rule.json`:
@@ -814,12 +818,13 @@ Here is a representative step (a `power_term` "derivative builder") from
 | `/` | `LandingPage` — hero, course outline | No |
 | `/login` | `LoginPage` | No |
 | `/signup` | `SignupPage` | No |
-| `/lessons` | `RoadmapPage` — levels, progress, streak, mixed review | Yes |
+| `/lessons` | `RoadmapPage` — levels, progress, targeted review + custom practice, achievements | Yes |
 | `/lesson/:lessonId` | `LessonPage` — the lesson player | Yes |
 | `/lesson/:lessonId/practice` | `PracticePage` | Yes |
-| `/review` | `ReviewPage` — cross-lesson mixed review | Yes |
+| `/review` | `ReviewPage` — cross-lesson **targeted** review | Yes |
+| `/practice/custom` | `CustomPracticePage` — pick topics + question count | Yes |
 | `/level/:levelId/review` | `LevelReviewPage` | Yes |
-| `/profile` | `ProfilePage` — stats, activity heatmap, concept mastery | Yes |
+| `/profile` | `ProfilePage` — stats, activity heatmap, concept mastery, achievements | Yes |
 | `/settings` | `SettingsPage` — account management | Yes |
 
 ---
@@ -847,6 +852,7 @@ VITE_FIREBASE_PROJECT_ID
 VITE_FIREBASE_STORAGE_BUCKET
 VITE_FIREBASE_MESSAGING_SENDER_ID
 VITE_FIREBASE_APP_ID
+VITE_FIREBASE_APPCHECK_SITE_KEY   # optional — App Check key for the AI concept tutor
 ```
 
 Available scripts:
@@ -861,6 +867,7 @@ Available scripts:
 | `npm run test:watch` | Watch-mode tests |
 | `npm run test:coverage` | Tests with V8 coverage (`src/lib/**`) |
 | `npm run validate:lessons` | Validate every lesson JSON file |
+| `npm run kill-ports` | Stop stray Vite dev servers (protects port 5173 by default) |
 
 ---
 
@@ -895,10 +902,13 @@ coverage scoped to `src/lib/**`:
 | Test file | Covers |
 |-----------|--------|
 | `feedbackEngine.test.ts` | Answer grading + function/slope math |
-| `progressService.test.ts` | Streaks, milestones, step progression, persistence |
-| `contentLoader.test.ts` | Loading, levels, sessions, unlock/completion logic |
+| `progressService.test.ts` | Streaks, activity, milestones, step progression, persistence |
+| `contentLoader.test.ts` | Loading, levels, sessions, custom practice, unlock/completion logic |
 | `masteryService.test.ts` | Concept catalog + mastery/weak-area scoring |
+| `reviewPlanner.test.ts` | Targeted-review weakness/recency ranking + session draws |
 | `validateLesson.test.ts` | Lesson-schema validation rules |
+| `inlineMarkup.test.ts` | Math-delimiter normalization + inline tokenization |
+| `aiTutor.test.ts` | Tutor context building, answer formatting, error classification |
 
 ```bash
 npm run test            # run all
@@ -929,11 +939,21 @@ mode.
 user, one profile, one progress map — so Context with optimistic updates is
 enough.
 
-**Scope note — no AI.** The app is intentionally AI-free: every problem, hint,
-and explanation is hand-authored, and the app teaches fully on its own. math.js
-is used for deterministic answer-checking, not generation. The learning-science
-layer (practice, spaced/interleaved review, sequential mastery, XP/streaks) is
-implemented; AI-assisted hints or problem generation are not part of this build.
+**Scope note — AI explains, never grades.** Every problem, hint, and answer key is
+hand-authored, and all grading is deterministic (math.js answer-checking, not
+generation), so the app teaches fully on its own. The one AI feature — an **optional**
+concept tutor — runs only *after* grading to explain a step, is handed the engine's
+verdict and correct answer as ground truth, and generates no problems or hints. It
+stays hidden whenever Firebase isn't configured. The learning-science layer
+(practice, targeted/interleaved review, custom practice, sequential mastery,
+XP/streaks, achievements) is fully implemented.
+
+**Why an explain-only AI tutor?** Generation is where models go wrong on math, so the
+deterministic engine keeps full authority over correctness and the model is confined
+to *explaining* an already-graded step from supplied ground truth. That removes the
+risk of an AI inventing a wrong answer while still offering on-demand, personalized
+help — and it's strictly additive, so the app behaves identically with the tutor
+disabled.
 
 **Mastery model.** Per-concept mastery (`learning` / `proficient` / `mastered`) is computed
 from saved progress and shown on the profile. Lesson *status* itself still only reaches
