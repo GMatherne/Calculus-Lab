@@ -176,7 +176,9 @@ slider-graph interaction. Lessons that are finished expose **Practice** and
 | Routing | react-router-dom 7 |
 | Math display | KaTeX (`react-katex`) |
 | Math evaluation | math.js |
+| Icons | Lucide (`lucide-react`) |
 | Auth & database | Firebase 11 (Auth + Firestore) |
+| AI tutor (optional) | Firebase AI Logic — Gemini (`firebase/ai`) |
 | Hosting | Firebase Hosting (SPA rewrite) |
 | Testing | Vitest + V8 coverage |
 
