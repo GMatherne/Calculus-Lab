@@ -356,7 +356,7 @@ type AnswerSpec =
   | { type: "multi_choice"; options?: string[]; parts: MultiChoicePart[] }
   | { type: "numeric"; value: number; tolerance?: number }
   | { type: "slider"; value: number; tolerance?: number }
-  | { type: "graph_point"; x: number; tolerance?: number }
+  | { type: "graph_point"; x: number; acceptX?: number[]; tolerance?: number }
   | { type: "power_term"; coefficient: number; exponent: number;
       startCoefficient?: number; startExponent?: number; previewPrefix?: string }
   | { type: "drag_drop"; prefix?: string; blanks: DragDropBlank[]; bank: string[] }
@@ -364,10 +364,16 @@ type AnswerSpec =
   | { type: "sign_chart"; points: number[]; options: string[];
       regions: SignChartRegion[]; variableLabel?: string }
   | { type: "order_list"; items: string[]; orderLabel?: string }
-  | { type: "riemann"; fn: string; a: number; b: number; trueArea: number;
-      targetWithin: number; maxRects?: number;
+  | { type: "riemann"; demo?: boolean; fn: string; a: number; b: number;
+      trueArea: number; targetWithin: number; maxRects?: number;
       domain?: [number, number]; yMax?: number };
 ```
+
+A `graph_point` may list extra `acceptX` values that also count as correct (e.g. both
+x = ±2 have a tangent slope of 12). A `riemann` step marked `demo: true` renders the
+interactive widget as an *ungraded* exploration: the learner still piles on rectangles to
+watch the estimate converge, but it advances with **Continue** and never counts toward
+mastery (see `isRiemannDemo` / `isInstructionStep`).
 
 Per-user state:
 
@@ -376,9 +382,10 @@ interface UserProfile {
   displayName: string;
   email: string;
   streak: { count: number; lastActiveDate: string };
-  milestones: string[];
+  milestones: string[];                   // earned achievement ids
   xp: number;
-  activityLog?: Record<string, number>; // questions answered per ISO day → heatmap
+  practiceQuestionsAnswered: number;       // first-try practice/review questions → achievements
+  activityLog?: Record<string, number>;    // questions answered per ISO day → heatmap
   createdAt: string;
   updatedAt: string;
 }
@@ -403,7 +410,9 @@ Tuning constants (also in `content.ts`):
 | `XP_PER_LESSON` | 50 | XP for first completion of a lesson |
 | `XP_PER_PRACTICE_CORRECT` | 10 | XP per first-try-correct practice answer |
 | `PRACTICE_SESSION_SIZE` | 3 | Questions per practice session |
-| `REVIEW_SESSION_SIZE` | 5 | Questions per mixed-review session |
+| `REVIEW_SESSION_SIZE` | 5 | Questions per mixed-/targeted-review session |
+| `CUSTOM_PRACTICE_DEFAULT_SIZE` | 5 | Questions pre-filled when opening custom practice |
+| `CUSTOM_PRACTICE_MAX_SIZE` | 20 | Upper bound on a single custom practice set |
 | `PRACTICE_BANK_MIN` | 3 | Minimum questions in a practice bank |
 | `PRACTICE_STEPS` | 3 | Size of the legacy fixed practice set (deprecated) |
 | `MASTERY_PROFICIENT` / `MASTERY_MASTERED` | 0.6 / 0.9 | First-try accuracy for concept tiers |
