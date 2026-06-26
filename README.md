@@ -47,6 +47,7 @@ back to demo mode, so it runs with zero configuration.
 | `npm run test:watch` | Watch-mode tests |
 | `npm run test:coverage` | Tests with V8 coverage (`src/lib/**`) |
 | `npm run validate:lessons` | Validate every lesson JSON (6–10 steps, ≥1 slider graph, etc.) |
+| `npm run kill-ports` | Stop stray Vite servers (protects port **5173** unless overridden) |
 
 ## Question types
 
@@ -90,15 +91,16 @@ A layered, server-free design — version-controlled JSON content, browser logic
 and Firebase only for identity + per-user storage.
 
 ```text
-content/                 # course.json + 11 lesson JSON files (the entire course)
-scripts/                 # validate-lessons.ts (CLI lesson validator)
+content/                 # course.json + 10 lesson JSON files (the entire course)
+scripts/                 # validate-lessons.ts (CLI lesson validator) + kill-ports.mjs
 src/
-  lib/                   # contentLoader · feedbackEngine · progressService ·
-                         #   masteryService · validateLesson · firebase  (+ *.test.ts)
+  lib/                   # contentLoader · feedbackEngine · progressService · masteryService ·
+                         #   reviewPlanner · validateLesson · inlineMarkup · aiTutor · firebase  (+ *.test.ts)
+  hooks/                 # useSessionExitGuard · useCountUp
   contexts/              # AuthContext/AuthProvider · ProgressContext/ProgressProvider
   components/
-    auth/ layout/ lesson/ widgets/ roadmap/ habit/ profile/ dev/
-  pages/                 # Landing, Login, Signup, Roadmap, Lesson, Practice,
+    auth/ common/ layout/ lesson/ widgets/ roadmap/ habit/ profile/ dev/
+  pages/                 # Landing, Login, Signup, Roadmap, Lesson, Practice, CustomPractice,
                          #   Review, LevelReview, Profile, Settings
   types/content.ts       # domain types + tuning constants
 firebase.json            # Hosting (SPA rewrite) + Firestore + Auth config
@@ -107,9 +109,10 @@ vite.config.ts           # Vite + Tailwind + Vitest
 ```
 
 Key features: instant client-side grading (math.js), interactive SVG graphs (secant/tangent,
-area shading), sequential unlock, per-lesson practice + mixed/level review, XP, streaks,
-milestones, **per-concept mastery** with a profile dashboard (stats, activity heatmap, weak
-areas), and account management. All **grading is deterministic and AI-free** — every problem,
+area shading), sequential unlock, per-lesson practice, **targeted mixed review** + **custom
+practice** + level review, XP, streaks, **achievements**, **per-concept mastery** with a
+profile dashboard (stats, activity heatmap, weak areas), and account management. All
+**grading is deterministic and AI-free** — every problem,
 hint, and answer key is hand-authored and checked in the browser. An **optional AI concept
 tutor** (Firebase AI Logic + Gemini) can layer on top to _explain_ a graded step; it never
 grades, and the app runs unchanged when it is disabled (see **AI concept tutor** below).
@@ -181,10 +184,13 @@ Unit tests (Vitest) live next to the code they cover under `src/lib/`, with cove
 | Test file | Covers |
 |-----------|--------|
 | `feedbackEngine.test.ts` | Answer grading + function/slope math |
-| `progressService.test.ts` | Streaks, milestones, step progression, persistence |
+| `progressService.test.ts` | Streaks, milestones, activity, step progression, persistence |
 | `contentLoader.test.ts` | Loading, levels, sessions, unlock/completion logic |
 | `masteryService.test.ts` | Concept catalog + mastery/weak-area scoring |
+| `reviewPlanner.test.ts` | Targeted-review weakness/recency ranking + session draws |
 | `validateLesson.test.ts` | Lesson-schema validation rules |
+| `inlineMarkup.test.ts` | Math-delimiter normalization + inline tokenization |
+| `aiTutor.test.ts` | Tutor context building + answer formatting + error classification |
 
 ```bash
 npm run test            # run all
