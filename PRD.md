@@ -135,9 +135,16 @@ Source of truth: [`OVERVIEW.md`](./OVERVIEW.md).
 ### Shipped — core experience
 - **Course:** "Introduction to Calculus" — **10 lessons across 5 levels**, all
   hand-authored JSON, sequential unlock (lesson *N* opens after *N−1*).
-- **8 step/answer types:** `read`, `multiple_choice`, `multi_choice`, `numeric`,
-  `slider_graph`, `power_term`, `drag_drop`, `match` (plus `slider` and
+- **12 step/answer types:** `read`, `multiple_choice`, `multi_choice`, `numeric`,
+  `slider_graph`, `power_term`, `drag_drop`, `match`, `sign_chart`, `order_list`,
+  `riemann`, and the `predict` drag-to-reveal step (plus `slider` and
   `graph_point` graph answers).
+- **Live (continuous) feedback:** distance-based steps can set `liveCheck` to be
+  graded as the learner manipulates — the target zone shades green with a
+  warmer/colder proximity meter, and the step confirms the instant it's right
+  (no Check Answer press). The flagship `predict` step adds direct-manipulation
+  predict-then-reveal: drag a marker to a feature, lock it in, and the true
+  point/tangent animates in.
 - **Interactive SVG graph engine** (`GraphWidget`): function plotting,
   secant→tangent (`h→0`), area shading (integral visual) with live trapezoidal
   estimate, touch slider, tap-the-point, responsive via `ResizeObserver`.
@@ -183,7 +190,11 @@ Source of truth: [`OVERVIEW.md`](./OVERVIEW.md).
 > - **Offline-first & instant:** client-side grading keeps working with zero AI;
 >   every AI call is async and **never blocks** the synchronous grade; degrade to
 >   authored content when offline/over budget.
-> - **Delivery:** Firebase AI Logic (Gemini) from the browser — **no new backend**.
+> - **Delivery:** OpenAI behind a **Cloud Functions proxy** (`functions/`) that
+>   holds the API key server-side and enforces App Check, auth, and per-user rate
+>   limiting. (The concept tutor shipped first and drove this: an OpenAI key
+>   can't live in the browser, so the original "no new backend" plan was
+>   deliberately replaced.)
 > - **LS-first:** prefer features that create desirable difficulty, retrieval, and
 >   self-explanation over ones that hand out answers.
 
@@ -194,8 +205,8 @@ multimodal).
 
 | ID | Requirement | Priority | Notes |
 |---|---|:--:|---|
-| **AI-1** | **Schema-constrained generation + verifier loop.** Gemini structured output emits a `Step` conforming to the existing `AnswerSpec`; before display, run `assertValidLesson` + `checkAnswer` and confirm math against the deterministic engine (e.g. `derivativeAt` must match a `power_term`; `trueArea` must match `riemannSum`). Reject & regenerate on mismatch. | **P0** | Backbone that makes "AI questions" safe. Solves the "might be wrong" + "widget compatibility" risks by construction. |
-| **AI-2** | **Misconception diagnosis from the actual wrong answer.** Feed the literal wrong value (e.g. `power_term {coef:3, exp:3}`) to Gemini to name the specific slip ("you brought the 3 down but didn't reduce the exponent"). Authored `incorrect` text is the offline fallback. | **P0** | Highest perceived-quality runtime win; grounded because the engine already knows what's wrong. |
+| **AI-1** | **Schema-constrained generation + verifier loop.** The model's structured output emits a `Step` conforming to the existing `AnswerSpec`; before display, run `assertValidLesson` + `checkAnswer` and confirm math against the deterministic engine (e.g. `derivativeAt` must match a `power_term`; `trueArea` must match `riemannSum`). Reject & regenerate on mismatch. | **P0** | Backbone that makes "AI questions" safe. Solves the "might be wrong" + "widget compatibility" risks by construction. |
+| **AI-2** | **Misconception diagnosis from the actual wrong answer.** Feed the literal wrong value (e.g. `power_term {coef:3, exp:3}`) to the model to name the specific slip ("you brought the 3 down but didn't reduce the exponent"). Authored `incorrect` text is the offline fallback. | **P0** | Highest perceived-quality runtime win; grounded because the engine already knows what's wrong. |
 | **AI-3** | **Lesson-authoring copilot (author-time only, in DevTools).** From a `conceptTag` + objective, draft a full 6–10 step lesson, then auto-run `validate:lessons` + AI-1 verifier; human reviews before publish. | **P1** | Lowest-risk place to start — no live-learner exposure; preserves the hand-authored quality bar. |
 | **AI-4** | **Progressive hint ladder calibrated to mastery.** Generate a sequence (nudge → strategy → worked partial) scaled to the learner's tier for the `conceptTag`; never reveal the final answer. | **P1** | Pairs with LS-4 (faded hints); respects the existing "hint never gives the answer" rule. |
 | **AI-5** | **AI study plan / weekly coach.** Read `getConceptMastery` + `getWeakConcepts` + streak + `activityLog` → a personalized plan ("weakest: chain rule & area-under-curve; here's a 3-day set"). | **P1** | Builds on the existing mastery layer; "practice my weak topics" from `IDEAS.md`. |
@@ -206,10 +217,11 @@ multimodal).
 | **AI-10** | **Multimodal: snap-a-problem / show-your-work.** Photograph a problem → parsed into a verified interactive Step; or check an intermediate line for the *first* wrong step (anchored by math.js). | **P3** | Last, per the suggested rollout order. |
 
 **Cross-cutting (P0 for any AI surface):** deterministic gate on everything
-generative; graceful degradation to authored content; Firebase App Check + rate
-limits; prompt-injection hardening and calculus-only scoping for free-text
-surfaces; send anonymized mastery vectors (no PII) with a per-user opt-out;
-log AI outputs for human review.
+generative; graceful degradation to authored content; App Check + per-user rate
+limits enforced server-side by the Cloud Functions proxy (with OpenAI + GCP
+budget caps as a financial backstop); prompt-injection hardening and calculus-only
+scoping for free-text surfaces; send anonymized mastery vectors (no PII) with a
+per-user opt-out; log AI outputs for human review.
 
 ---
 
@@ -255,8 +267,10 @@ and passes `validate:lessons`.
   portrait + landscape.
 - **Accessibility:** 44px+ touch targets, safe-area insets, legible math (KaTeX),
   keyboard-operable inputs (target WCAG AA where feasible).
-- **Security & privacy:** per-user Firestore rules; Firebase App Check + rate
-  limits on any AI endpoint; no PII sent to the model; per-user AI opt-out.
+- **Security & privacy:** per-user Firestore rules; App Check + per-user rate
+  limits enforced by the Cloud Functions proxy on the AI endpoint, with the
+  OpenAI key held in Secret Manager (never client-side); no PII sent to the
+  model; per-user AI opt-out.
 - **Cost:** AI features must stay within a per-user budget and degrade gracefully
   when exceeded.
 - **Maintainability:** content stays version-controlled JSON validated at build
@@ -307,12 +321,13 @@ make it stick** — with these gates:
 
 - **Assumptions:** the deterministic engine is correct enough to serve as the
   truth oracle for AI; learners study primarily on mobile in short sessions.
-- **Dependencies:** Firebase (Auth, Firestore, Hosting, App Check) and **Firebase
-  AI Logic / Gemini** for Phase 2; math.js for ground-truth checks; KaTeX for
-  display.
-- **Constraints:** server-free architecture (browser + BaaS only); content is
-  JSON, so publishing a lesson is a code deploy; answer keys ship client-side
-  (acceptable for a teaching tool, not assessment).
+- **Dependencies:** Firebase (Auth, Firestore, Hosting, App Check, **Cloud
+  Functions**) and **OpenAI** (called only via the functions proxy) for Phase 2;
+  math.js for ground-truth checks; KaTeX for display.
+- **Constraints:** mostly server-free architecture (browser + BaaS), with a single
+  Cloud Functions proxy required for AI so the OpenAI key stays off the client;
+  content is JSON, so publishing a lesson is a code deploy; answer keys ship
+  client-side (acceptable for a teaching tool, not assessment).
 
 ---
 
@@ -322,7 +337,7 @@ make it stick** — with these gates:
 |---|---|
 | AI emits an incorrect math problem or hint | **AI-1 verifier loop** + deterministic gate on everything generative; reject & regenerate on mismatch. |
 | AI latency/outage degrades the experience | AI is async and never blocks the grade; always fall back to authored content. |
-| AI cost / abuse | App Check + rate limits + per-user budget + opt-out. |
+| AI cost / abuse | App Check + per-user rate limits (Firestore `aiUsage`, enforced by the proxy) + OpenAI/GCP budget caps + a `config/ai` kill switch + opt-out. |
 | Prompt injection via free-text surfaces | Calculus-only scoping, input hardening, log + review outputs. |
 | Gamification backfires (streak anxiety, overjustification) | Humane streaks (LS-8), informational rewards, mastery-framed progress. |
 | Scope creep beyond calculus | Enforce NG1 (depth over breadth); content roadmap stays within the subject. |

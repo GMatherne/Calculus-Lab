@@ -5,8 +5,10 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  // Build output isn't source we author, so skip it.
-  { ignores: ["dist"] },
+  // Build output isn't source we author, so skip it. The Cloud Functions proxy
+  // and the Cloudflare Worker proxy are separate codebases with their own
+  // tsconfig/build (and runtime globals), so skip them here.
+  { ignores: ["dist", "functions", "tutor-proxy"] },
 
   // Application + script source.
   {

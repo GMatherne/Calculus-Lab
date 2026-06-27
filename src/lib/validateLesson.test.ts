@@ -325,6 +325,64 @@ describe("validateLesson", () => {
     });
   });
 
+  describe("predict_point", () => {
+    function predictStep(id: string): Step {
+      return {
+        id,
+        type: "predict",
+        content: [],
+        interaction: {
+          graph: { fn: "x^2 - 2*x", domain: [-1, 3] },
+          answer: {
+            type: "predict_point",
+            x: 1,
+            tolerance: 0.3,
+            reveal: { tangent: true },
+          },
+        },
+        feedback: { correct: "c", incorrect: "i", hint: "h" },
+      };
+    }
+
+    it("accepts a valid predict step", () => {
+      const lesson = validLesson();
+      lesson.steps[1] = predictStep("s2");
+      expect(validateLesson(lesson)).toEqual([]);
+    });
+
+    it("requires a graph config", () => {
+      const lesson = validLesson();
+      lesson.steps[1] = {
+        ...predictStep("s2"),
+        interaction: {
+          answer: { type: "predict_point", x: 1, reveal: { tangent: true } },
+        },
+      };
+      expect(
+        hasError(validateLesson(lesson), /predict_point answer but has no graph/),
+      ).toBe(true);
+    });
+
+    it("flags a non-positive tolerance", () => {
+      const lesson = validLesson();
+      lesson.steps[1] = {
+        ...predictStep("s2"),
+        interaction: {
+          graph: { fn: "x^2", domain: [-1, 3] },
+          answer: {
+            type: "predict_point",
+            x: 1,
+            tolerance: 0,
+            reveal: { tangent: true },
+          },
+        },
+      };
+      expect(hasError(validateLesson(lesson), /tolerance must be positive/)).toBe(
+        true,
+      );
+    });
+  });
+
   describe("practiceBank", () => {
     it("requires a minimum number of questions", () => {
       const lesson = validLesson();

@@ -81,7 +81,8 @@ function validateStep(step: Step, lessonId: string): string[] {
   const needsGraph =
     step.type === "slider_graph" ||
     answer?.type === "slider" ||
-    answer?.type === "graph_point";
+    answer?.type === "graph_point" ||
+    answer?.type === "predict_point";
   if (needsGraph && !step.interaction?.graph) {
     const kind = answer ? `${answer.type} answer` : `${step.type} step`;
     errors.push(
@@ -230,6 +231,30 @@ function validateStep(step: Step, lessonId: string): string[] {
     if (new Set(answer.items).size !== answer.items.length) {
       errors.push(
         `Step "${step.id}" in "${lessonId}" order_list items must be unique.`,
+      );
+    }
+  }
+
+  if (answer?.type === "predict_point") {
+    if (!Number.isFinite(answer.x)) {
+      errors.push(
+        `Step "${step.id}" in "${lessonId}" predict_point needs a finite x.`,
+      );
+    }
+    if (answer.tolerance !== undefined && !(answer.tolerance > 0)) {
+      errors.push(
+        `Step "${step.id}" in "${lessonId}" predict_point tolerance must be positive.`,
+      );
+    }
+    if (answer.acceptX && answer.acceptX.some((x) => !Number.isFinite(x))) {
+      errors.push(
+        `Step "${step.id}" in "${lessonId}" predict_point acceptX values must all be finite.`,
+      );
+    }
+    // The reveal is the payoff of a predict step, so it must be authored.
+    if (!answer.reveal) {
+      errors.push(
+        `Step "${step.id}" in "${lessonId}" predict_point needs a reveal spec.`,
       );
     }
   }

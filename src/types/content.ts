@@ -11,7 +11,8 @@ type StepType =
   | "match"
   | "sign_chart"
   | "order_list"
-  | "riemann";
+  | "riemann"
+  | "predict";
 
 type LessonStatus =
   | "not_started"
@@ -193,6 +194,42 @@ interface GraphPointAnswer {
    */
   acceptX?: number[];
   tolerance?: number;
+}
+
+/**
+ * What a {@link PredictPointAnswer} draws once the learner commits a guess. The
+ * truth is rendered at the correct x, so a committed prediction — right or wrong
+ * — is followed by seeing the actual feature. At minimum the point is shown.
+ */
+export interface PredictReveal {
+  /** Draw a dot at the true point (x, f(x)). Defaults to true. */
+  point?: boolean;
+  /** Draw the tangent line at the true x (e.g. the flat tangent at a peak/valley). */
+  tangent?: boolean;
+  /** Draw a dashed vertical guide at the true x down to the axis. */
+  vertical?: boolean;
+}
+
+/**
+ * "Predict, then reveal" question: the learner DRAGS a marker along the curve to
+ * predict where a feature occurs (a maximum, a minimum, an inflection, or where
+ * the slope hits a target), then commits. On a correct commit the true location
+ * is drawn with a short reveal animation, confirming the guess. The submitted
+ * answer is the marker's x-coordinate, graded exactly like {@link GraphPointAnswer}:
+ * any listed x within tolerance counts. Unlike `graph_point` (a single discrete
+ * tap), the marker is dragged continuously and the answer is genuinely predicted
+ * before the reveal. A `predict` step needs a graph config.
+ */
+export interface PredictPointAnswer {
+  type: "predict_point";
+  /** Correct x-coordinate of the predicted feature. */
+  x: number;
+  /** Extra x-values that also count as correct, judged with the same tolerance. */
+  acceptX?: number[];
+  /** Half-width of the accepted window around each target (default 0.3). */
+  tolerance?: number;
+  /** What to draw when a correct prediction is revealed. */
+  reveal: PredictReveal;
 }
 
 /**
@@ -387,6 +424,7 @@ export type AnswerSpec =
   | NumericAnswer
   | SliderAnswer
   | GraphPointAnswer
+  | PredictPointAnswer
   | PowerTermAnswer
   | DragDropAnswer
   | MatchAnswer
@@ -399,6 +437,20 @@ interface Interaction {
   answer?: AnswerSpec;
   /** Hints shown after this many wrong attempts (default 2; lesson 1 uses 1) */
   hintAfterAttempts?: number;
+  /**
+   * Opt into continuous ("live") grading: the step is judged by the same
+   * {@link checkAnswer} on every manipulation and confirms the instant the
+   * answer is satisfied — no separate "Check Answer" press. Supported for the
+   * distance-based answers (`slider`, `numeric`, `graph_point`); other types
+   * fall back to the classic submit flow. Off by default, so existing content is
+   * unchanged.
+   */
+  liveCheck?: boolean;
+  /**
+   * Short instruction shown for a live or predict step, e.g. "Drag x until the
+   * tangent is flat" or "Drag the dot to the maximum". Purely presentational.
+   */
+  goalLabel?: string;
 }
 
 export interface StepFeedback {
@@ -486,6 +538,42 @@ export interface Course {
   /** Ordered learning stages. When omitted, all lessons fall under one level. */
   levels?: CourseLevel[];
   lessons: LessonMeta[];
+}
+
+/**
+ * One must-know fact in the Reference cheat sheet — a foundational rule or
+ * definition the learner is expected to know (e.g. the power rule), not an
+ * application to work through. Facts are hand-authored in
+ * `content/reference.json`, grouped for display by the level that contains their
+ * teaching {@link lessonId}, and unlock once that lesson is complete. At least
+ * one of {@link formula} or {@link summary} must be present so the card always
+ * has something to show.
+ */
+export interface ReferenceFact {
+  /** Stable, unique slug, e.g. "power-rule". */
+  id: string;
+  /** Short plain-text heading, e.g. "Power Rule". */
+  title: string;
+  /**
+   * Published lesson that teaches this fact: completing it unlocks the fact, and
+   * it is the "Learn more" target.
+   */
+  lessonId: string;
+  /** Concept tag, matching the teaching lesson's tags. For future linking. */
+  conceptTag?: string;
+  /** The headline formula in LaTeX, rendered centered. Omit for purely verbal facts. */
+  formula?: string;
+  /**
+   * One-line plain-language statement, rendered with inline math (`$…$`) support.
+   * Required when there is no {@link formula}; otherwise an optional caption
+   * shown beneath the formula.
+   */
+  summary?: string;
+  /**
+   * Expanded explanation revealed on demand, reusing the lesson content renderer
+   * so it supports prose and display math.
+   */
+  detail?: ContentBlock[];
 }
 
 export interface LessonProgress {

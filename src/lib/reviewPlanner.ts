@@ -62,8 +62,10 @@ function isInteractive(step: Step): boolean {
  * Days since the most recent progress write across a concept's teaching
  * lessons. Returns null when none of them carry a usable timestamp, which the
  * caller treats as fully stale (the concept hasn't been refreshed recently).
+ * Exported so the AI tutor's learner-history insights can reuse the same
+ * recency math rather than duplicating it.
  */
-function daysSinceLastSeen(
+export function daysSinceLastSeen(
   lessonIds: string[],
   progress: ReviewProgressInput,
   now: number,

@@ -282,6 +282,8 @@
           "initialSlider": 0
         },
         "hintAfterAttempts": 1,
+        "liveCheck": true,
+        "goalLabel": "Drag x until the tangent slope is 4",
         "answer": {
           "type": "slider",
           "value": 2,
@@ -373,6 +375,8 @@
           "sliderStep": 0.1,
           "initialSlider": 0
         },
+        "liveCheck": true,
+        "goalLabel": "Drag the point until the tangent slope is 6",
         "answer": { "type": "slider", "value": 3, "tolerance": 0.2 }
       },
       "feedback": {

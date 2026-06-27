@@ -1,6 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthProvider";
 import { ProgressProvider } from "./contexts/ProgressProvider";
+import { SessionInsightsProvider } from "./contexts/SessionInsightsProvider";
 import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
 import { SignupPage } from "./pages/SignupPage";
@@ -93,7 +94,9 @@ function App() {
   return (
     <AuthProvider>
       <ProgressProvider>
-        <RouterProvider router={router} />
+        <SessionInsightsProvider>
+          <RouterProvider router={router} />
+        </SessionInsightsProvider>
       </ProgressProvider>
     </AuthProvider>
   );

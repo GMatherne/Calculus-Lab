@@ -79,6 +79,12 @@ interface AnswerInputProps {
   reveal?: boolean;
   /** Whether the submitted answer was correct (only meaningful when reveal is true). */
   isCorrect?: boolean;
+  /**
+   * Live (continuous) grading is active: tint the field green the moment its
+   * value matches, before any commit. Used by `liveCheck` steps; only the
+   * scalar inputs (numeric, power_term) act on it.
+   */
+  live?: boolean;
 }
 
 export function AnswerInput({
@@ -88,6 +94,7 @@ export function AnswerInput({
   disabled,
   reveal,
   isCorrect,
+  live,
 }: AnswerInputProps) {
   if (spec.type === "multiple_choice") {
     return (
@@ -126,11 +133,18 @@ export function AnswerInput({
   }
 
   if (spec.type === "numeric") {
+    const liveMatch =
+      live === true &&
+      value !== "" &&
+      value != null &&
+      Math.abs(Number(value) - spec.value) <= (spec.tolerance ?? 0.01);
     const revealClasses = reveal
       ? isCorrect
         ? "border-emerald-500 bg-emerald-50 focus:border-emerald-500 focus:ring-emerald-200"
         : "border-rose-500 bg-rose-50 focus:border-rose-500 focus:ring-rose-200"
-      : "border-slate-300 focus:border-indigo-500 focus:ring-indigo-200";
+      : liveMatch
+        ? "border-emerald-400 bg-emerald-50/60 focus:border-emerald-500 focus:ring-emerald-200"
+        : "border-slate-300 focus:border-indigo-500 focus:ring-indigo-200";
 
     return (
       <input
@@ -169,11 +183,18 @@ export function AnswerInput({
         exponent: clampInt(e, EXP_MIN, EXP_MAX),
       });
 
+    const liveMatch =
+      live === true &&
+      (spec.coefficient === 0
+        ? coefficient === 0
+        : coefficient === spec.coefficient && exponent === spec.exponent);
     const previewClasses = reveal
       ? isCorrect
         ? "border-emerald-500 bg-emerald-50"
         : "border-rose-500 bg-rose-50"
-      : "border-slate-200 bg-slate-50";
+      : liveMatch
+        ? "border-emerald-400 bg-emerald-50/60"
+        : "border-slate-200 bg-slate-50";
 
     return (
       <div className="space-y-3">

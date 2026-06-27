@@ -5,10 +5,22 @@ import {
   useRef,
   useState,
   type MouseEvent,
+  type PointerEvent as ReactPointerEvent,
 } from "react";
 import type { GraphConfig } from "../../types/content";
 import { evalFunction, secantSlope, derivativeAt } from "../../lib/feedbackEngine";
 import { MathBlock } from "./MathBlock";
+
+/** A reveal overlay for a committed prediction: the true feature at `x`. */
+export interface GraphReveal {
+  x: number;
+  /** Draw a dot at (x, f(x)). Defaults to true. */
+  point?: boolean;
+  /** Draw the tangent line at x. */
+  tangent?: boolean;
+  /** Draw a dashed vertical guide at x. */
+  vertical?: boolean;
+}
 
 interface GraphWidgetProps {
   config: GraphConfig;
@@ -20,6 +32,21 @@ interface GraphWidgetProps {
   onPointClick?: (x: number) => void;
   /** x-coordinate of the learner's current tap selection, drawn as a marker. */
   selectedX?: number | null;
+  /**
+   * Shade a target window [lo, hi] in x as a goal zone; the moving point turns
+   * green while it sits inside. Used by live ("drag until …") steps.
+   */
+  targetBand?: { lo: number; hi: number } | null;
+  /** Force the satisfied (green) styling on the moving point, e.g. on live-confirm. */
+  satisfied?: boolean;
+  /** Allow dragging a marker along the curve (predict_point steps). */
+  draggablePoint?: boolean;
+  /** Current x of the draggable predict marker. */
+  predictX?: number | null;
+  /** Called with the x as the learner drags the predict marker. */
+  onPredictDrag?: (x: number) => void;
+  /** After a committed prediction, draw the true feature here (animated). */
+  reveal?: GraphReveal | null;
 }
 
 const PAD = 44;
@@ -73,9 +100,16 @@ export function GraphWidget({
   showSlider = true,
   onPointClick,
   selectedX,
+  targetBand,
+  satisfied,
+  draggablePoint,
+  predictX,
+  onPredictDrag,
+  reveal,
 }: GraphWidgetProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
+  const [dragging, setDragging] = useState(false);
   // Unique id for the plot-area clip path (sanitized: useId() contains colons,
   // which aren't valid in a url(#…) reference).
   const clipId = `plot-clip-${useId().replace(/:/g, "")}`;
@@ -158,12 +192,20 @@ export function GraphWidget({
     return { sx, sy };
   };
 
+  // Map a pointer's screen x to a clamped data x, shared by tap-the-point clicks
+  // and the draggable predict marker.
+  const dataXFromClient = (clientX: number): number => {
+    if (!svgRef.current) return x1;
+    const rect = svgRef.current.getBoundingClientRect();
+    const ratio = (clientX - rect.left) / rect.width;
+    const svgX = ratio * size.w;
+    const x = d0 + ((svgX - PAD) / (size.w - 2 * PAD)) * (d1 - d0);
+    return clamp(x, d0, d1);
+  };
+
   const handlePlotClick = (e: MouseEvent<SVGSVGElement>) => {
     if (!onPointClick || !svgRef.current) return;
-    const rect = svgRef.current.getBoundingClientRect();
-    const ratio = (e.clientX - rect.left) / rect.width;
-    const svgX = ratio * size.w;
-    let x = d0 + ((svgX - PAD) / (size.w - 2 * PAD)) * (d1 - d0);
+    let x = dataXFromClient(e.clientX);
     const choices = config.pointChoices;
     if (choices && choices.length > 0) {
       // Snap to the nearest discrete candidate so the answer is always exact.
@@ -176,7 +218,26 @@ export function GraphWidget({
     if (config.pointSnap && config.pointSnap > 0) {
       x = parseFloat((Math.round(x / config.pointSnap) * config.pointSnap).toFixed(6));
     }
-    onPointClick(clamp(x, d0, d1));
+    onPointClick(x);
+  };
+
+  // Drag handlers for the predict marker. Pointer capture keeps the drag tracking
+  // even if the finger/cursor slips off the plot; `touch-action: none` on the svg
+  // stops the page from scrolling mid-drag.
+  const handlePredictDown = (e: ReactPointerEvent<SVGSVGElement>) => {
+    if (!draggablePoint || !onPredictDrag) return;
+    e.preventDefault();
+    e.currentTarget.setPointerCapture?.(e.pointerId);
+    setDragging(true);
+    onPredictDrag(dataXFromClient(e.clientX));
+  };
+  const handlePredictMove = (e: ReactPointerEvent<SVGSVGElement>) => {
+    if (!dragging || !draggablePoint || !onPredictDrag) return;
+    e.preventDefault();
+    onPredictDrag(dataXFromClient(e.clientX));
+  };
+  const handlePredictUp = () => {
+    if (dragging) setDragging(false);
   };
 
   const pathD = points
@@ -348,6 +409,52 @@ export function GraphWidget({
       return [{ x: cx, sx, sy, isSel }];
     }) ?? [];
 
+  // Goal zone for live "drag until …" steps: a shaded x-window the moving point
+  // must land in. The point goes green while it's inside (or when forced via
+  // `satisfied`), giving feedback during the drag instead of only on submit.
+  const inBand =
+    targetBand != null && x1 >= targetBand.lo && x1 <= targetBand.hi;
+  const pointSatisfied = satisfied === true || inBand;
+  let bandRect: { x: number; w: number } | null = null;
+  if (targetBand) {
+    const sxLo = toSvg(clamp(targetBand.lo, d0, d1), 0).sx;
+    const sxHi = toSvg(clamp(targetBand.hi, d0, d1), 0).sx;
+    bandRect = { x: Math.min(sxLo, sxHi), w: Math.max(Math.abs(sxHi - sxLo), 2) };
+  }
+
+  // The predict marker, drawn on the curve at the learner's current guess. Shown
+  // whenever a guess exists (so it stays visible next to the reveal after a
+  // commit); dragging is gated separately by `draggablePoint`.
+  let predictMarker: { sx: number; sy: number } | null = null;
+  if (predictX != null) {
+    try {
+      predictMarker = toSvg(predictX, evalFunction(config.fn, predictX));
+    } catch {
+      predictMarker = null;
+    }
+  }
+
+  // Reveal overlay for a committed prediction: the true point, and optionally its
+  // tangent and a vertical guide, drawn at the correct x.
+  let revealPt: { sx: number; sy: number } | null = null;
+  let revealTanA: { sx: number; sy: number } | null = null;
+  let revealTanB: { sx: number; sy: number } | null = null;
+  if (reveal) {
+    try {
+      const ry = evalFunction(config.fn, reveal.x);
+      revealPt = toSvg(reveal.x, ry);
+      if (reveal.tangent) {
+        const m = derivativeAt(config.fn, reveal.x);
+        if (Number.isFinite(m)) {
+          revealTanA = toSvg(reveal.x - tdx, ry - m * tdx);
+          revealTanB = toSvg(reveal.x + tdx, ry + m * tdx);
+        }
+      }
+    } catch {
+      revealPt = null;
+    }
+  }
+
   const min = config.sliderMin ?? d0 + 0.1;
   const max = config.sliderMax ?? d1 - 0.1;
   const step = config.sliderStep ?? 0.05;
@@ -397,12 +504,21 @@ export function GraphWidget({
         height={size.h}
         viewBox={`0 0 ${size.w} ${size.h}`}
         onClick={onPointClick ? handlePlotClick : undefined}
+        onPointerDown={draggablePoint ? handlePredictDown : undefined}
+        onPointerMove={draggablePoint ? handlePredictMove : undefined}
+        onPointerUp={draggablePoint ? handlePredictUp : undefined}
+        onPointerCancel={draggablePoint ? handlePredictUp : undefined}
+        style={draggablePoint ? { touchAction: "none" } : undefined}
         className={`rounded-xl bg-slate-50 border border-slate-200 overflow-hidden${
-          onPointClick
-            ? config.pointChoices && config.pointChoices.length > 0
-              ? " cursor-pointer"
-              : " cursor-crosshair"
-            : ""
+          draggablePoint
+            ? dragging
+              ? " cursor-grabbing"
+              : " cursor-grab"
+            : onPointClick
+              ? config.pointChoices && config.pointChoices.length > 0
+                ? " cursor-pointer"
+                : " cursor-crosshair"
+              : ""
         }`}
         role="img"
         aria-label={`Graph of the function with ${xLabel} and ${yLabel} axes`}
@@ -447,6 +563,18 @@ export function GraphWidget({
             />
           );
         })}
+
+        {/* target goal zone for live "drag until …" steps */}
+        {bandRect && (
+          <rect
+            x={bandRect.x}
+            y={PAD}
+            width={bandRect.w}
+            height={Math.max(size.h - 2 * PAD, 0)}
+            fill="#10b981"
+            fillOpacity={0.12}
+          />
+        )}
 
         {/* x-axis */}
         <line
@@ -680,6 +808,115 @@ export function GraphWidget({
               strokeWidth={2}
             />
           </>
+        )}
+
+        {/* live-satisfied confirmation on the moving point (in the goal zone) */}
+        {showSlider && pointSatisfied && (
+          <>
+            <circle cx={p1.sx} cy={p1.sy} r={7} fill="#10b981" />
+            <circle
+              cx={p1.sx}
+              cy={p1.sy}
+              r={11}
+              fill="none"
+              stroke="#10b981"
+              strokeWidth={2}
+              opacity={0.45}
+            />
+          </>
+        )}
+
+        {/* predict marker (predict_point steps); draggable before commit */}
+        {predictMarker && (
+          <>
+            <line
+              x1={predictMarker.sx}
+              y1={predictMarker.sy}
+              x2={predictMarker.sx}
+              y2={originY}
+              stroke="#6366f1"
+              strokeWidth={1}
+              strokeDasharray="3 3"
+              opacity={0.5}
+            />
+            <circle
+              cx={predictMarker.sx}
+              cy={predictMarker.sy}
+              r={13}
+              fill="#6366f1"
+              fillOpacity={0.15}
+            />
+            <circle
+              cx={predictMarker.sx}
+              cy={predictMarker.sy}
+              r={8}
+              fill="#6366f1"
+              stroke="#fff"
+              strokeWidth={2.5}
+            />
+          </>
+        )}
+
+        {/* reveal of the true feature after a committed prediction */}
+        {reveal && (
+          <g>
+            {reveal.vertical && revealPt && (
+              <line
+                x1={revealPt.sx}
+                y1={revealPt.sy}
+                x2={revealPt.sx}
+                y2={originY}
+                stroke="#10b981"
+                strokeWidth={1.5}
+                strokeDasharray="4 3"
+                opacity={0.85}
+              >
+                <animate
+                  attributeName="opacity"
+                  from="0"
+                  to="0.85"
+                  dur="0.35s"
+                  fill="freeze"
+                />
+              </line>
+            )}
+            {revealTanA && revealTanB && (
+              <line
+                x1={revealTanA.sx}
+                y1={revealTanA.sy}
+                x2={revealTanB.sx}
+                y2={revealTanB.sy}
+                stroke="#10b981"
+                strokeWidth={3}
+              >
+                <animate
+                  attributeName="opacity"
+                  from="0"
+                  to="1"
+                  dur="0.45s"
+                  fill="freeze"
+                />
+              </line>
+            )}
+            {reveal.point !== false && revealPt && (
+              <circle
+                cx={revealPt.sx}
+                cy={revealPt.sy}
+                r={7}
+                fill="#10b981"
+                stroke="#fff"
+                strokeWidth={2}
+              >
+                <animate
+                  attributeName="r"
+                  from="0"
+                  to="7"
+                  dur="0.35s"
+                  fill="freeze"
+                />
+              </circle>
+            )}
+          </g>
         )}
       </svg>
 

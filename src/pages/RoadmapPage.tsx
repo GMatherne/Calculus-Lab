@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   course,
@@ -10,17 +11,20 @@ import {
   canReview,
 } from "../lib/contentLoader";
 import { getReviewTargets } from "../lib/reviewPlanner";
+import { getReferenceUnlockedCount } from "../lib/referenceService";
 import { isLessonComplete } from "../lib/progressService";
 import { useProgress } from "../contexts/ProgressContext";
 import { AppHeader } from "../components/layout/AppHeader";
 import { SafeArea } from "../components/layout/SafeArea";
 import { LevelSection } from "../components/roadmap/LevelSection";
+import { ReferenceModal } from "../components/reference/ReferenceModal";
 import { DevTools } from "../components/dev/DevTools";
 import { Icon } from "../components/common/Icon";
 import { MILESTONE_DEFS, MILESTONE_ORDER } from "../types/content";
 
 export function RoadmapPage() {
   const { progress, loading, profile } = useProgress();
+  const [referenceOpen, setReferenceOpen] = useState(false);
   const levels = getLevels();
   const continueId = getContinueLessonId(progress);
   const percent = getCompletionPercent(progress);
@@ -47,6 +51,9 @@ export function RoadmapPage() {
     reviewTargets.length > 0
       ? `Focus on ${reviewTargets.join(" & ")}`
       : "Sharpens the topics you're shakiest on";
+
+  // Key facts the learner has unlocked so far, for the Reference card.
+  const reference = getReferenceUnlockedCount(progress);
 
   return (
     <SafeArea>
@@ -136,6 +143,30 @@ export function RoadmapPage() {
                 </div>
               )}
 
+              <button
+                type="button"
+                onClick={() => setReferenceOpen(true)}
+                className="flex w-full items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-4 text-left hover:border-indigo-300 hover:bg-indigo-50/40 active:scale-[0.99] transition"
+              >
+                <div className="flex min-w-0 items-center gap-3">
+                  <span
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-100"
+                    aria-hidden
+                  >
+                    <Icon name="brain" className="h-5 w-5 text-indigo-600" />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="font-semibold text-slate-900">Reference</p>
+                    <p className="text-sm text-slate-500">
+                      {reference.unlocked} of {reference.total} facts unlocked
+                    </p>
+                  </div>
+                </div>
+                <span className="shrink-0 font-semibold text-indigo-600" aria-hidden>
+                  →
+                </span>
+              </button>
+
               {earnedMilestones.length > 0 && (
                 <Link
                   to="/profile#achievements"
@@ -190,6 +221,7 @@ export function RoadmapPage() {
           </div>
         </div>
       </main>
+      <ReferenceModal open={referenceOpen} onClose={() => setReferenceOpen(false)} />
     </SafeArea>
   );
 }

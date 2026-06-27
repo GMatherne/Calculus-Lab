@@ -5,7 +5,6 @@ import {
   initializeAppCheck,
   ReCaptchaEnterpriseProvider,
 } from "firebase/app-check";
-import { getAI, GoogleAIBackend, type AI } from "firebase/ai";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -36,17 +35,17 @@ export const useLocalPersistence = isDevBypass || !isFirebaseConfigured;
 let app: FirebaseApp | null = null;
 let auth: Auth | null = null;
 let db: Firestore | null = null;
-let ai: AI | null = null;
 
 if (isFirebaseConfigured) {
   app = initializeApp(firebaseConfig);
   auth = getAuth(app);
   db = getFirestore(app);
 
-  // App Check protects the Gemini quota from abuse. It is optional locally (the
-  // tutor still works without it unless enforcement is enabled in the console)
-  // but required for safe production use. When no site key is provided we skip
-  // it entirely and the AI tutor simply stays available without App Check.
+  // App Check (reCAPTCHA Enterprise) attests app integrity to Firebase backend
+  // services (e.g. Firestore) when you enforce it in the console. It's optional:
+  // the AI tutor proxy lives on Cloudflare and verifies the Firebase ID token
+  // itself, so the tutor doesn't depend on this. When no site key is provided we
+  // skip App Check init here entirely.
   // App Check relies on reCAPTCHA Enterprise, which needs a browser DOM, so it
   // only runs in the browser. This guard also keeps it out of Node test/SSR
   // contexts where `window` is undefined.
@@ -63,14 +62,6 @@ if (isFirebaseConfigured) {
       isTokenAutoRefreshEnabled: true,
     });
   }
-
-  // Firebase AI Logic (Gemini Developer API) powers the optional concept tutor.
-  // It is only ever created when Firebase is configured, so demo/offline runs
-  // (where `app` is null) leave the tutor disabled and the app fully usable.
-  ai = getAI(app, { backend: new GoogleAIBackend() });
 }
 
-/** True when the Firebase AI Logic client is initialized and usable. */
-export const isAiAvailable = ai !== null;
-
-export { auth, db, ai };
+export { auth, db };

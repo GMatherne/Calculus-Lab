@@ -16,6 +16,9 @@ Human Ideas:
         - Something that easily allows users to practice what is classified as a weak topic for them (in lessons they've already seen)
             - Next to continue lesson button?
 
+        - Optional guided walkthroughs in lessons (expertise reversal / guidance fading)
+            - Complete the question for the user when they get introduced to the concept before you let them answer any questions themselves
+
 
     AI Incorporation:
 
@@ -63,14 +66,14 @@ AI Ideas (assistant suggestions):
     Guiding constraints (apply to every idea):
         - Truth oracle: AI never grades math on its own. Anything it produces or checks is gated by the existing engine (checkAnswer / verifyNumericWithMathJs / derivativeAt / assertValidLesson). This directly fixes your "might not always be correct" worry.
         - Offline-first & instant: client-side grading must keep working with zero AI. Every AI feature degrades to the hand-authored content when offline/over budget, and never blocks the synchronous grade.
-        - Delivery: Firebase AI Logic (Gemini) from the browser — no new backend, so the "server-free" architecture stays intact.
+        - Delivery: OpenAI behind a Cloud Functions proxy (functions/) that holds the API key server-side and enforces App Check, auth, and per-user rate limiting. (An OpenAI key can't live in the browser, so the first AI feature — the concept tutor — added this one small backend; everything else stays server-free.)
         - LS-first: prefer features that create desirable difficulty, retrieval, and self-explanation over ones that just hand out answers.
 
 
     1. Generation & authoring  (turns "AI questions" from risky -> reliable)
 
         - Schema-constrained generation + verifier loop
-            - Use Gemini structured output to emit a Step that conforms exactly to the existing AnswerSpec JSON schema (multiple_choice, power_term, drag_drop, riemann, sign_chart, match, ...). Solves your "widget compatibility" risk by construction — it can only emit shapes the widgets already render.
+            - Use the model's structured output to emit a Step that conforms exactly to the existing AnswerSpec JSON schema (multiple_choice, power_term, drag_drop, riemann, sign_chart, match, ...). Solves your "widget compatibility" risk by construction — it can only emit shapes the widgets already render.
             - Then verify before it's ever shown: run assertValidLesson + checkAnswer, and for math, confirm the claimed answer with the deterministic engine (e.g. derivativeAt() must match the stated power_term; trueArea must match riemannSum()). Reject & regenerate on mismatch. Solves "might not be correct."
             - Net: same idea you listed, but the deterministic layer is the judge, so a bad item can't reach a learner.
 
@@ -87,7 +90,7 @@ AI Ideas (assistant suggestions):
     2. Adaptive feedback & hints at runtime  (beyond a single chat window)
 
         - Misconception diagnosis from the *actual* wrong answer
-            - You already persist stepAnswers + stepAttempts. Feed the literal wrong value (e.g. power_term {coef:3, exp:3}) to Gemini to name the specific slip ("you brought the 3 down but didn't reduce the exponent"). Far more targeted than a generic "incorrect" string, and grounded because the engine already knows exactly what's wrong. Authored `incorrect` text is the offline fallback.
+            - You already persist stepAnswers + stepAttempts. Feed the literal wrong value (e.g. power_term {coef:3, exp:3}) to the model to name the specific slip ("you brought the 3 down but didn't reduce the exponent"). Far more targeted than a generic "incorrect" string, and grounded because the engine already knows exactly what's wrong. Authored `incorrect` text is the offline fallback.
 
         - Progressive hint ladder calibrated to mastery
             - Today there's one authored hint after N attempts. Generate a *sequence* (nudge -> strategy -> worked partial) scaled to the learner's tier for that conceptTag (learning vs proficient), still never revealing the final answer (keeps your existing hint rule).
@@ -123,10 +126,10 @@ AI Ideas (assistant suggestions):
             - Reinforces your spaced-repetition goal: pick *when* a concept resurfaces in mixed review; AI supplies the human-readable "why now."
 
 
-    5. New input modalities  (multimodal Gemini)
+    5. New input modalities  (multimodal model)
 
         - Snap-a-problem
-            - Photograph a textbook/handwritten problem -> Gemini parses it into an interactive Step (verified by section 1 before it's playable). Great for "bring your homework" practice.
+            - Photograph a textbook/handwritten problem -> the model parses it into an interactive Step (verified by section 1 before it's playable). Great for "bring your homework" practice.
 
         - Show-your-work / scratchpad checker
             - Let learners enter an intermediate line (not just the boxed answer); AI finds the *first* wrong step, anchored by math.js where the step is checkable. Pairs well with the limit-definition and FTC lessons where process matters.
@@ -138,6 +141,6 @@ AI Ideas (assistant suggestions):
     Cross-cutting guardrails & rollout
         - Deterministic gate on everything generative (the section-1 verifier is the backbone — it's why "AI questions" become safe).
         - Graceful degradation: offline / over-budget -> fall back to authored content; AI calls are async and never block the instant grade.
-        - Safety/cost: Firebase App Check + rate limits, prompt-injection hardening and calculus-only scoping for any free-text surface, log AI outputs for human review.
+        - Safety/cost: App Check + per-user rate limits enforced by the Cloud Functions proxy (plus OpenAI/GCP budget caps and a config/ai kill switch), prompt-injection hardening and calculus-only scoping for any free-text surface, log AI outputs for human review.
         - Privacy: send anonymized mastery vectors, not PII; per-user opt-out toggle.
         - Suggested order: start author-time (copilot + verified generation, no learner risk) -> then runtime misconception feedback -> then personalization -> then multimodal.

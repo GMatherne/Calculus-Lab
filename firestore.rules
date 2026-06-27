@@ -8,5 +8,18 @@ service cloud.firestore {
         allow read, write: if request.auth != null && request.auth.uid == userId;
       }
     }
+
+    // Server-only per-user rate-limit counters for the AI tutor proxy
+    // (functions/src/rateLimit.ts). The Admin SDK bypasses these rules; clients
+    // must never read or reset their own counters to dodge the limit.
+    match /aiUsage/{uid} {
+      allow read, write: if false;
+    }
+
+    // Server-only AI tutor configuration, e.g. the `config/ai { enabled }`
+    // global kill switch. Written from the console / Admin SDK only.
+    match /config/{docId} {
+      allow read, write: if false;
+    }
   }
 }

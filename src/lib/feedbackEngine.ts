@@ -141,6 +141,32 @@ export function checkAnswer(
             hint: step.feedback.hint,
           };
     }
+    case "predict_point": {
+      const num = Number(answer);
+      if (!Number.isFinite(num)) {
+        return {
+          correct: false,
+          message: "Drag the marker onto the curve.",
+          showHint: false,
+          hint: step.feedback.hint,
+        };
+      }
+      // Predicting a feature is graded like a tapped point, just with a wider
+      // default window since the marker is dragged freely rather than snapped.
+      const tolerance = spec.tolerance ?? 0.3;
+      const targets = [spec.x, ...(spec.acceptX ?? [])];
+      const verified = targets.some(
+        (t) => math.abs(math.subtract(num, t)) <= tolerance,
+      );
+      return verified
+        ? { correct: true, message: step.feedback.correct }
+        : {
+            correct: false,
+            message: step.feedback.incorrect,
+            showHint: false,
+            hint: step.feedback.hint,
+          };
+    }
     case "power_term": {
       const v = (answer ?? {}) as { coefficient?: number; exponent?: number };
       const coeff = Number(v.coefficient);
@@ -268,6 +294,47 @@ export function checkAnswer(
         message: "Unknown answer type.",
         showHint: false,
       };
+  }
+}
+
+/**
+ * Signed distance from the learner's current value to the nearest acceptable
+ * target, for the distance-based answer types (`numeric`, `slider`,
+ * `graph_point`, `predict_point`, `riemann`). Positive means the value sits
+ * above the target (so it should come down), negative means below (it should go
+ * up), and 0 means dead on. Returns null for answer types with no meaningful
+ * scalar distance (e.g. `multiple_choice`, `drag_drop`) and when the value isn't
+ * a finite number yet.
+ *
+ * Magnitudes are in the answer's own units — divide by the tolerance for a
+ * normalized "how many tolerances away" measure. This never grades; it only
+ * powers live "warmer/colder" feedback while {@link checkAnswer} stays the
+ * single source of truth for the verdict.
+ */
+export function answerProximity(step: Step, answer: unknown): number | null {
+  const spec = step.interaction?.answer;
+  if (!spec) return null;
+  const nearest = (targets: number[], v: number): number =>
+    targets.reduce((best, t) => (Math.abs(v - t) < Math.abs(v - best) ? t : best));
+  switch (spec.type) {
+    case "numeric":
+    case "slider": {
+      const num = Number(answer);
+      return Number.isFinite(num) ? num - spec.value : null;
+    }
+    case "graph_point":
+    case "predict_point": {
+      const num = Number(answer);
+      if (!Number.isFinite(num)) return null;
+      return num - nearest([spec.x, ...(spec.acceptX ?? [])], num);
+    }
+    case "riemann": {
+      const n = Number(answer);
+      if (!Number.isFinite(n) || n <= 0) return null;
+      return riemannSum(spec.fn, spec.a, spec.b, n) - spec.trueArea;
+    }
+    default:
+      return null;
   }
 }
 

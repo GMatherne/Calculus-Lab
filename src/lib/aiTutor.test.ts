@@ -3,7 +3,9 @@ import {
   describeAnswer,
   describeCorrectAnswer,
   buildStepContext,
+  buildHistorySummary,
   isQuotaError,
+  type LearnerHistory,
 } from "./aiTutor";
 import type {
   AnswerSpec,
@@ -232,6 +234,16 @@ describe("isQuotaError", () => {
     expect(isQuotaError("please check your plan and billing details")).toBe(true);
   });
 
+  it("flags the callable proxy's resource-exhausted rate-limit rejection", () => {
+    const err = Object.assign(new Error("Daily tutor limit reached."), {
+      code: "functions/resource-exhausted",
+    });
+    expect(isQuotaError(err)).toBe(true);
+    expect(isQuotaError(new Error("You're sending requests too quickly."))).toBe(
+      true,
+    );
+  });
+
   it("does not flag transient overload or unrelated errors", () => {
     expect(isQuotaError(new Error("[503] The model is overloaded"))).toBe(false);
     expect(isQuotaError(new Error("network timeout"))).toBe(false);
@@ -273,5 +285,66 @@ describe("buildStepContext", () => {
     expect(buildStepContext(step, 4, 0, true).attempts).toBe(1);
     expect(buildStepContext(step, 4, Number.NaN, true).attempts).toBe(1);
     expect(buildStepContext(step, 4, 1, true).conceptTag).toBe("calculus");
+  });
+
+  it("attaches learner history only when provided (back-compat otherwise)", () => {
+    const step = stepWith(
+      { type: "numeric", value: 4 },
+      [{ type: "text", body: "2+2" }],
+    );
+    // No history arg → the key is absent, preserving the prior context shape.
+    expect("history" in buildStepContext(step, 4, 1, true)).toBe(false);
+
+    const history: LearnerHistory = {
+      conceptTier: "learning",
+      conceptPercent: 40,
+      daysSinceConceptSeen: 14,
+      conceptLessonTitle: "Power Rule",
+      currentConceptSessionMisses: 1,
+      sessionMissedConcepts: [{ label: "Sum Rule", count: 2 }],
+    };
+    expect(buildStepContext(step, 4, 1, true, history).history).toEqual(history);
+  });
+});
+
+describe("buildHistorySummary", () => {
+  it("renders only the signals that are present", () => {
+    const summary = buildHistorySummary({
+      conceptTier: "learning",
+      conceptPercent: 40,
+      daysSinceConceptSeen: 14,
+      conceptLessonTitle: "Power Rule",
+      currentConceptSessionMisses: 1,
+      sessionMissedConcepts: [{ label: "Sum Rule", count: 2 }],
+    });
+    expect(summary).toContain(
+      "Mastery of this concept: learning (40% first-try accuracy)",
+    );
+    expect(summary).toContain(
+      "Last practiced this concept: about 14 days ago (Power Rule lesson)",
+    );
+    expect(summary).toContain(
+      "Also missed this concept earlier this session: 1 time",
+    );
+    expect(summary).toContain("Other concepts missed this session: Sum Rule (x2)");
+  });
+
+  it("is empty when no signals are worth telling the model", () => {
+    expect(buildHistorySummary({})).toBe("");
+    expect(
+      buildHistorySummary({
+        currentConceptSessionMisses: 0,
+        sessionMissedConcepts: [],
+      }),
+    ).toBe("");
+  });
+
+  it("phrases same-day and single-day recency distinctly", () => {
+    expect(buildHistorySummary({ daysSinceConceptSeen: 0 })).toContain(
+      "earlier today",
+    );
+    expect(buildHistorySummary({ daysSinceConceptSeen: 1 })).toContain(
+      "about 1 day ago",
+    );
   });
 });

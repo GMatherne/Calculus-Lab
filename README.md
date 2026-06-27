@@ -3,13 +3,14 @@
 **Live:** https://calculus-lab.web.app
 **Subject:** AP Calculus BC — derivatives **and** integrals
 **Audience:** High-school AP Calculus BC students
-**Stack:** React 19 · TypeScript 5.8 · Vite 6 · Tailwind CSS 4 · Firebase 11 · KaTeX · math.js
+**Stack:** React 19 · TypeScript 5.8 · Vite 6 · Tailwind CSS 4 · Firebase 11 · Cloudflare Workers · KaTeX · math.js
 
 A Brilliant-style, **learn-by-doing** web app for the foundations of calculus. Instead of
 watching videos, you work through short interactive steps — drag a slider on a live graph,
 tap a point on a curve, build a derivative term-by-term, drag tiles to assemble an answer —
 and get **instant, hand-written feedback** on every attempt. All grading happens in the
-browser; there is no custom backend.
+browser; the only server-side code is a small Cloudflare Worker that powers the optional
+AI tutor (keeping the OpenAI key off the client).
 
 > For a full tour of how everything works internally, see **[OVERVIEW.md](./OVERVIEW.md)**.
 
@@ -50,7 +51,7 @@ back to demo mode, so it runs with zero configuration.
 
 ## Question types
 
-Eleven step types fit the concept being taught:
+Twelve step types fit the concept being taught:
 
 | Type | Learner action | Graded |
 |------|----------------|:------:|
@@ -65,9 +66,15 @@ Eleven step types fit the concept being taught:
 | `sign_chart` | Label each interval of a number line (e.g. increasing vs. decreasing) | Yes |
 | `order_list` | Drag shuffled items into their correct order | Yes |
 | `riemann` | Drag a slider to pile up rectangles until a Riemann sum converges | Yes |
+| `predict` | Drag a marker along the curve to predict a feature, then lock it in to reveal the truth | Yes |
 
 Graph-backed steps can also carry a **slider** answer (drag to a target) or a **graph_point**
 answer (tap the correct point on the curve).
+
+Any distance-based step (`slider`, `numeric`, `power_term`) can opt into **live feedback** with
+`"liveCheck": true`: it is graded continuously as the learner manipulates and locks in the
+instant it's right — no separate **Check Answer** press, with a warmer/colder proximity meter
+along the way.
 
 ## The course
 
@@ -87,8 +94,9 @@ cross-lesson **Targeted review** (weakest/stalest concepts first) and **Custom p
 
 ## Architecture
 
-A layered, server-free design — version-controlled JSON content, browser logic, React state,
-and Firebase only for identity + per-user storage.
+A layered, mostly server-free design — version-controlled JSON content, browser logic, React
+state, Firebase for identity + per-user storage, and a small Cloudflare Worker proxy for the
+optional AI tutor.
 
 ```text
 content/                 # course.json + 10 lesson JSON files (the entire course)
@@ -104,8 +112,10 @@ src/
   pages/                 # Landing, Login, Signup, Roadmap, Lesson, Practice,
                          #   CustomPractice, Review, LevelReview, Profile, Settings
   types/content.ts       # domain types + tuning constants
-firebase.json            # Hosting (SPA rewrite) + Firestore + Auth config
-firestore.rules          # per-user access rules
+tutor-proxy/             # Cloudflare Worker proxy for the AI tutor — holds the
+                         #   OpenAI key server-side + verifies the Firebase ID token
+firebase.json            # Hosting (SPA rewrite) + Firestore + Functions + Auth
+firestore.rules          # per-user access rules + server-only aiUsage/config
 vite.config.ts           # Vite + Tailwind + Vitest
 ```
 
@@ -115,8 +125,9 @@ and custom practice plus level review, XP, streaks, **12 achievement milestones*
 mastery** with a profile dashboard (stats, activity heatmap, weak areas), and account management.
 All **grading is deterministic and AI-free** — every problem,
 hint, and answer key is hand-authored and checked in the browser. An **optional AI concept
-tutor** (Firebase AI Logic + Gemini) can layer on top to _explain_ a graded step; it never
-grades, and the app runs unchanged when it is disabled (see **AI concept tutor** below).
+tutor** (OpenAI, behind a secure Cloudflare Worker proxy) can layer on top to _explain_ a graded
+step; it never grades, and the app runs unchanged when it is disabled (see **AI concept tutor**
+below).
 
 ## Firebase setup
 
@@ -132,8 +143,9 @@ VITE_FIREBASE_PROJECT_ID=...
 VITE_FIREBASE_STORAGE_BUCKET=...
 VITE_FIREBASE_MESSAGING_SENDER_ID=...
 VITE_FIREBASE_APP_ID=...
-# Optional — only needed for the AI concept tutor (see below):
+# Optional — App Check (Firestore hardening) + the AI tutor proxy URL (see below):
 VITE_FIREBASE_APPCHECK_SITE_KEY=...
+VITE_TUTOR_PROXY_URL=...
 ```
 
 ## AI concept tutor (optional)
@@ -141,34 +153,58 @@ VITE_FIREBASE_APPCHECK_SITE_KEY=...
 After a step is graded, learners can optionally ask an AI tutor to _explain_ why their answer
 was right or wrong and walk through the concept. The deterministic engine stays the only judge:
 the model is handed the verdict and the correct answer and is asked only to explain. When the
-service below isn't provisioned (including the zero-config demo and offline use), the tutor
+tutor proxy URL isn't configured (including the zero-config demo and offline use), the tutor
 simply stays hidden and nothing else changes.
 
-To enable it:
+The tutor talks to **OpenAI through a Cloudflare Worker proxy** (`tutor-proxy/`), never directly.
+The OpenAI key lives only as a Worker secret, and every call is gated by CORS, a verified
+Firebase ID token (only your signed-in users), and an optional per-user rate limit — so the key
+can't leak and the public endpoint can't be used by strangers. The Worker runs on Cloudflare's
+**free** plan, so the app can deploy publicly while staying on Firebase's free **Spark** plan (no
+Cloud Functions / Blaze required).
 
-1. Provision **Firebase AI Logic** (enables the Gemini Developer API on your project):
+To enable it, deploy the Worker and point the app at it (full walkthrough in
+[`tutor-proxy/README.md`](./tutor-proxy/README.md)):
 
 ```bash
-npx -y firebase-tools@latest init ailogic
+cd tutor-proxy
+npm install
+npx wrangler login
+npx wrangler secret put OPENAI_API_KEY     # paste your key — stored only on Cloudflare
+npx wrangler deploy                        # prints the Worker URL
 ```
 
-2. Set up **App Check** with **reCAPTCHA Enterprise** in the Firebase Console (it protects the
-   Gemini quota from abuse), then add the site key to `.env.local` as
-   `VITE_FIREBASE_APPCHECK_SITE_KEY`. In dev, a debug token is registered automatically.
-3. Run with a real Firebase config — the tutor needs an initialized Firebase app, so it is
-   automatically unavailable in the zero-config demo.
+Then put the Worker URL in the app's `.env.local` and rebuild + redeploy hosting:
 
-The Gemini model id is a single constant (`TUTOR_MODEL` in `src/lib/aiTutor.ts`), and follow-up
-questions are capped per step (`MAX_FOLLOWUPS`).
+```bash
+# repo root .env.local
+VITE_TUTOR_PROXY_URL=https://calculus-lab-tutor.<your-subdomain>.workers.dev
+```
+
+**Defense-in-depth.** OpenAI key as a Worker secret (off the client) → CORS locked to your
+origins → a verified Firebase ID token (only your signed-in users) → an optional per-user daily +
+burst cap in Workers KV → server-enforced follow-up/input caps. The hard financial backstop is a
+monthly **usage limit set on the OpenAI key** in the OpenAI dashboard.
+
+The OpenAI model id and limits live **server-side** in `tutor-proxy/`: `TUTOR_MODEL` and the
+per-user caps (`TUTOR_DAILY_LIMIT` / `TUTOR_BURST_LIMIT`) in `wrangler.toml`, and the grounded
+prompt in `src/prompt.ts`. Follow-up questions are capped per step (`MAX_FOLLOWUPS`, enforced on
+both the client and the Worker).
+
+For local end-to-end testing, run the Worker locally (`npm run dev` in `tutor-proxy/`, which
+serves it at `http://localhost:8787`) with the `ALLOW_UNAUTHENTICATED` dev toggle so demo mode
+can reach it, then set `VITE_TUTOR_PROXY_URL=http://localhost:8787` in `.env.local`. See
+[`tutor-proxy/README.md`](./tutor-proxy/README.md) for details.
 
 ## Deploy
 
 This project deploys to **Firebase Hosting** (project `calculus-lab`, see `.firebaserc`) as a
-static SPA, with Firestore rules deployed alongside.
+static SPA, with Firestore rules. The AI tutor proxy deploys separately to Cloudflare (see
+[`tutor-proxy/README.md`](./tutor-proxy/README.md)).
 
 ```bash
 npm run build
-npx -y firebase-tools@latest deploy                      # hosting + firestore rules
+npx -y firebase-tools@latest deploy --only hosting,firestore:rules
 # or scope it:
 npx -y firebase-tools@latest deploy --only hosting
 npx -y firebase-tools@latest deploy --only firestore:rules
