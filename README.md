@@ -81,8 +81,9 @@ next):
 5. **The Big Picture** — The Fundamental Theorem of Calculus · Integrating Polynomials
 
 Each lesson is ~6–8 minutes, has 6–10 steps, and includes at least one slider-graph
-interaction. Finished lessons unlock **Practice** and **Review**; completed levels unlock a
-**Level review**.
+interaction. Finished lessons unlock per-lesson **Practice**; the roadmap also offers a
+cross-lesson **Targeted review** (weakest/stalest concepts first) and **Custom practice**
+(pick your own concepts), and completed levels unlock a **Level review**.
 
 ## Architecture
 
@@ -90,16 +91,18 @@ A layered, server-free design — version-controlled JSON content, browser logic
 and Firebase only for identity + per-user storage.
 
 ```text
-content/                 # course.json + 11 lesson JSON files (the entire course)
+content/                 # course.json + 10 lesson JSON files (the entire course)
 scripts/                 # validate-lessons.ts (CLI lesson validator)
 src/
   lib/                   # contentLoader · feedbackEngine · progressService ·
-                         #   masteryService · validateLesson · firebase  (+ *.test.ts)
+                         #   masteryService · reviewPlanner · validateLesson ·
+                         #   aiTutor · inlineMarkup · firebase  (+ *.test.ts)
   contexts/              # AuthContext/AuthProvider · ProgressContext/ProgressProvider
+  hooks/                 # useSessionExitGuard · useCountUp
   components/
-    auth/ layout/ lesson/ widgets/ roadmap/ habit/ profile/ dev/
+    auth/ common/ layout/ lesson/ widgets/ roadmap/ habit/ profile/ dev/
   pages/                 # Landing, Login, Signup, Roadmap, Lesson, Practice,
-                         #   Review, LevelReview, Profile, Settings
+                         #   CustomPractice, Review, LevelReview, Profile, Settings
   types/content.ts       # domain types + tuning constants
 firebase.json            # Hosting (SPA rewrite) + Firestore + Auth config
 firestore.rules          # per-user access rules
@@ -107,9 +110,10 @@ vite.config.ts           # Vite + Tailwind + Vitest
 ```
 
 Key features: instant client-side grading (math.js), interactive SVG graphs (secant/tangent,
-area shading), sequential unlock, per-lesson practice + mixed/level review, XP, streaks,
-milestones, **per-concept mastery** with a profile dashboard (stats, activity heatmap, weak
-areas), and account management. All **grading is deterministic and AI-free** — every problem,
+area shading), sequential unlock, per-lesson practice, **targeted review** (weakness + recency)
+and custom practice plus level review, XP, streaks, **12 achievement milestones**, **per-concept
+mastery** with a profile dashboard (stats, activity heatmap, weak areas), and account management.
+All **grading is deterministic and AI-free** — every problem,
 hint, and answer key is hand-authored and checked in the browser. An **optional AI concept
 tutor** (Firebase AI Logic + Gemini) can layer on top to _explain_ a graded step; it never
 grades, and the app runs unchanged when it is disabled (see **AI concept tutor** below).
@@ -184,6 +188,9 @@ Unit tests (Vitest) live next to the code they cover under `src/lib/`, with cove
 | `progressService.test.ts` | Streaks, milestones, step progression, persistence |
 | `contentLoader.test.ts` | Loading, levels, sessions, unlock/completion logic |
 | `masteryService.test.ts` | Concept catalog + mastery/weak-area scoring |
+| `reviewPlanner.test.ts` | Targeted-review ranking (weakness + recency) |
+| `aiTutor.test.ts` | Tutor context building + answer descriptions |
+| `inlineMarkup.test.ts` | Inline math/markdown normalization + tokenizing |
 | `validateLesson.test.ts` | Lesson-schema validation rules |
 
 ```bash
