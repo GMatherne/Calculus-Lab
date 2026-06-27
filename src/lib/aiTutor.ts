@@ -21,6 +21,12 @@ import type {
  * (handled by the UI) whenever the proxy is unconfigured or unavailable.
  */
 
+// Gemini model id, in one place so it can be swapped trivially. A pinned model
+// (rather than the floating `gemini-flash-latest` alias) gives steadier capacity
+// and more predictable behavior; swap to `gemini-2.5-flash-lite` for lower
+// latency/cost or `gemini-flash-latest` to always track the newest flash.
+const TUTOR_MODEL = "gemini-2.5-flash";
+
 /** Maximum follow-up questions allowed per step, to cap cost and keep focus. */
 export const MAX_FOLLOWUPS = 5;
 

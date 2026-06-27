@@ -116,10 +116,10 @@ is a gate that is already passed; Phase 2 (AI) is the next deadline.
 
 ## 5. Target users
 
-**Primary persona — "AP BC Student" (Maya, 17).** Taking AP Calculus BC, studies
-on her phone in short bursts, wants to *practice* rather than re-watch lectures,
-and is anxious about the exam. Needs: quick wins, clear feedback when she's
-wrong, and a path that tells her what to do next.
+**Primary persona — "AP BC Student".** Taking AP Calculus BC, studies
+on her phone in short bursts, wants to *practice* rather than re-watch lectures.
+Needs: quick wins, clear feedback when she's wrong, and a path that tells her what
+to do next.
 
 **Secondary — "Returning self-learner" (adult brushing up on calculus).** Values
 depth and being able to skip what they already know (see scaffolding/expert
@@ -133,7 +133,7 @@ Phase 1 is **complete and deployed**; a meaningful slice of Phase 3 exists.
 Source of truth: [`OVERVIEW.md`](./OVERVIEW.md).
 
 ### Shipped — core experience
-- **Course:** "Introduction to Calculus" — **11 lessons across 5 levels**, all
+- **Course:** "Introduction to Calculus" — **10 lessons across 5 levels**, all
   hand-authored JSON, sequential unlock (lesson *N* opens after *N−1*).
 - **12 step/answer types:** `read`, `multiple_choice`, `multi_choice`, `numeric`,
   `slider_graph`, `power_term`, `drag_drop`, `match`, `sign_chart`, `order_list`,
