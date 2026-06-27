@@ -6,7 +6,7 @@ problems, and instant feedback. Built for AP Calculus BC students.
 
 - **Subject:** AP Calculus BC (derivatives → integrals)
 - **Stack:** React 19 · TypeScript · Vite 6 · Tailwind CSS 4 · Firebase 11 · KaTeX · math.js
-- **Content:** 11 lessons grouped into 5 levels, all hand-authored as JSON
+- **Content:** 10 lessons grouped into 5 levels, all hand-authored as JSON
 - **Backend:** Firebase (Auth + Firestore), with a zero-config localStorage demo mode
 
 > This document describes what the app can do and how it works internally. For a
@@ -57,8 +57,10 @@ Key principles baked into the build:
   nothing waits on the network.
 - **Learn by manipulation** — every lesson is required to contain at least one
   hands-on graph interaction.
-- **Works before any AI** — all feedback is hand-written. The app contains no AI
-  features and teaches fully on its own.
+- **Works before any AI** — every problem, hint, and answer key is hand-written
+  and graded deterministically in the browser, so the app teaches fully on its
+  own. An **optional** AI concept tutor can *explain* a step after it's graded,
+  but it never grades or generates problems and is absent unless configured.
 
 ---
 
@@ -93,6 +95,11 @@ Key principles baked into the build:
   give the answer away.
 - **Math typesetting** via KaTeX, including inline `$...$` LaTeX inside any
   feedback or prose.
+- **Optional AI concept tutor** — after a step is graded, the learner can ask an
+  AI tutor (Firebase AI Logic + Gemini) to *explain* the concept. It's handed the
+  verdict and the correct answer and asked only to explain — it never grades or
+  generates problems — and it stays hidden unless a real Firebase project with
+  App Check is configured, so the zero-config demo is unaffected.
 
 ### Course & progression
 - **Guided path**: lessons are grouped into **levels** and unlock sequentially —
@@ -105,16 +112,20 @@ Key principles baked into the build:
 ### Reinforcement (learning-science layer)
 - **Per-lesson practice** — each lesson has a *practice bank*; a session samples
   a fresh random subset, favoring hands-on graph questions (retrieval practice).
-- **Mixed review** — a cross-lesson session that pulls random questions from
-  everything the learner has touched (spaced repetition + interleaving).
+- **Targeted review** — a cross-lesson session that ranks the concepts a learner
+  has seen by **weakness** (shaky first-try accuracy) and **recency** (time since
+  last seen), then interleaves questions from the top concepts (spaced repetition
+  + interleaving), backfilling from the broader random pool when needed.
+- **Custom practice** — the learner chooses which concepts to drill and how many
+  questions (up to 20) to pull into a single session.
 - **Level review** — a mixed quiz spanning all lessons in a completed level.
 
 ### Habit & motivation
 - **XP** for completing lessons (+50) and for first-try-correct practice/review
   answers (+10 each), shown in the header and on the roadmap.
 - **Streaks** — consecutive-day activity tracking with a flame badge.
-- **Milestones** — achievement badges (first lesson, three lessons, 5-day
-  streak, course complete).
+- **Milestones** — 12 achievement badges grouped into Lessons, Practice, Concept
+  mastery, Streaks, and Experience (see §9), surfaced on the profile.
 - **Celebration screens** on lesson completion and practice results.
 
 ### Platform
@@ -139,8 +150,9 @@ organized into 5 levels and 10 lessons:
 | 5 | **The Big Picture** | The Fundamental Theorem of Calculus · Integrating Polynomials |
 
 Each lesson is ~6–8 minutes, contains 6–10 steps, and includes at least one
-slider-graph interaction. Lessons that are finished expose **Practice** and
-**Review** actions; completed levels expose a **Level review**.
+slider-graph interaction. Finished lessons expose per-lesson **Practice**; the
+roadmap also offers a cross-lesson **Targeted review** and **Custom practice**,
+and completed levels expose a **Level review**.
 
 ---
 
@@ -165,7 +177,7 @@ slider-graph interaction. Lessons that are finished expose **Practice** and
 ```mermaid
 flowchart TD
     subgraph Content["Content layer (version-controlled JSON)"]
-        C1["course.json + 11 lesson files"]
+        C1["course.json + 10 lesson files"]
     end
     subgraph Logic["Browser logic (no server)"]
         L1["contentLoader.ts<br/>load · validate · levels · sessions · unlock"]
@@ -209,7 +221,7 @@ The app is built in four conceptual layers:
 ### Directory structure
 
 ```text
-content/                     # Course manifest + 11 lesson JSON files
+content/                     # Course manifest + 10 lesson JSON files
   course.json                #   levels, lesson metadata, ordering
   what-is-a-derivative.json  #   one file per lesson (steps + practiceBank)
   ...
@@ -228,6 +240,9 @@ src/
     feedbackEngine.ts        # math.js grading + secant/tangent/derivative math
     progressService.ts       # Firestore/localStorage; streaks, milestones, activity
     masteryService.ts        # Per-concept mastery tiers + weak-area recommendations
+    reviewPlanner.ts         # Targeted review: rank concepts by weakness + recency
+    aiTutor.ts               # Optional Gemini concept tutor (explains graded steps)
+    inlineMarkup.ts          # Normalize/tokenize inline text + math for rendering
     validateLesson.ts        # Lesson-schema validation
     *.test.ts                # Unit tests for the above
 
@@ -237,23 +252,29 @@ src/
     ProgressContext.tsx      # Progress hook/types (provided by ProgressProvider.tsx)
     ProgressProvider.tsx     # Profile + progress + XP + activity + completion
 
+  hooks/
+    useSessionExitGuard.ts   # Confirm before leaving an unfinished session
+    useCountUp.ts            # Animated number roll-up (honors reduced motion)
+
   components/
     auth/        ProtectedRoute, PasswordInput
+    common/      Icon, icons (lucide registry), ConfirmDialog
     layout/      AppHeader, UserMenu, SafeArea
     lesson/      LessonPlayer, FeedbackPanel, StepNavBar,
-                 LessonComplete, PracticeResults
+                 LessonComplete, PracticeResults, TutorPanel
     widgets/     GraphWidget, MathBlock, AnswerInput, MultiChoiceInput,
                  DragDropInput, MatchInput, SignChartInput, OrderListInput,
                  RiemannInput
     roadmap/     LevelSection, LessonCard
-    habit/       StreakBadge, XpBadge
-    profile/     StatsStrip, ActivityHeatmap, WeakAreas, ConceptMasteryList
+    habit/       StreakBadge, XpBadge, Sparkles, FireFX, ElectricityFX
+    profile/     StatsStrip, ActivityHeatmap, WeakAreas, ConceptMasteryList,
+                 AchievementsSection
     dev/         DevTools
 
   pages/
     LandingPage, LoginPage, SignupPage, RoadmapPage,
-    LessonPage, PracticePage, ReviewPage, LevelReviewPage,
-    ProfilePage, SettingsPage
+    LessonPage, PracticePage, ReviewPage, CustomPracticePage,
+    LevelReviewPage, ProfilePage, SettingsPage
 
 firebase.json                # Hosting + Firestore + Auth config
 firestore.rules              # Per-user access rules
@@ -340,6 +361,7 @@ interface UserProfile {
   streak: { count: number; lastActiveDate: string };
   milestones: string[];
   xp: number;
+  practiceQuestionsAnswered: number;    // first-try practice/review answers → achievements
   activityLog?: Record<string, number>; // questions answered per ISO day → heatmap
   createdAt: string;
   updatedAt: string;
@@ -365,7 +387,8 @@ Tuning constants (also in `content.ts`):
 | `XP_PER_LESSON` | 50 | XP for first completion of a lesson |
 | `XP_PER_PRACTICE_CORRECT` | 10 | XP per first-try-correct practice answer |
 | `PRACTICE_SESSION_SIZE` | 3 | Questions per practice session |
-| `REVIEW_SESSION_SIZE` | 5 | Questions per mixed-review session |
+| `REVIEW_SESSION_SIZE` | 5 | Questions per targeted-review session |
+| `CUSTOM_PRACTICE_DEFAULT_SIZE` / `CUSTOM_PRACTICE_MAX_SIZE` | 5 / 20 | Default & max questions in a custom practice set |
 | `PRACTICE_BANK_MIN` | 3 | Minimum questions in a practice bank |
 | `MASTERY_PROFICIENT` / `MASTERY_MASTERED` | 0.6 / 0.9 | First-try accuracy for concept tiers |
 
@@ -427,8 +450,13 @@ Practice and review reuse the same `LessonPlayer` in **practice mode** against a
 
 - **Per-lesson practice** (`/lesson/:id/practice`) samples `getPracticeSession()`
   from that lesson's bank.
-- **Mixed review** (`/review`) samples `getReviewSession()` across every lesson
-  the learner has started or completed.
+- **Targeted review** (`/review`) calls `getTargetedReviewSession()`
+  (`reviewPlanner.ts`), which ranks every concept the learner has seen by
+  **weakness** (shaky first-try accuracy) and **recency** (time since last seen),
+  then interleaves questions from the top concepts — backfilling from the broader
+  random pool when targeted material runs short.
+- **Custom practice** (`/practice/custom`) lets the learner pick the concepts and
+  question count, then samples `getCustomPracticeSession()`.
 - **Level review** (`/level/:id/review`) samples across all lessons in a level.
 
 In practice mode, progress is **not** persisted (so it can't disturb real lesson
@@ -511,6 +539,18 @@ Feedback is rendered by `FeedbackPanel`:
   can try again.
 
 All messages support inline LaTeX (`$...$`) via the `RichText` renderer.
+
+### Optional AI concept tutor
+
+Once a step is graded, a `TutorPanel` can offer an **optional** AI explanation
+(`src/lib/aiTutor.ts`, Firebase AI Logic + Gemini). The deterministic engine
+stays the only judge: the model is handed the verdict and the correct answer and
+asked purely to *explain* the concept — it never grades or generates problems.
+Its loosely-formatted output is normalized for the KaTeX renderer by
+`inlineMarkup.ts` (folding `\(…\)`/`$$…$$` into `$…$`, handling Markdown
+emphasis). Follow-ups are capped per step (`MAX_FOLLOWUPS`), and the panel is
+hidden entirely (`isAiAvailable`) unless a real Firebase project with App Check
+is configured — so the zero-config demo and offline use are unchanged.
 
 ---
 
@@ -722,10 +762,11 @@ Here is a representative step (a `power_term` "derivative builder") from
 | `/` | `LandingPage` — hero, course outline | No |
 | `/login` | `LoginPage` | No |
 | `/signup` | `SignupPage` | No |
-| `/lessons` | `RoadmapPage` — levels, progress, streak, mixed review | Yes |
+| `/lessons` | `RoadmapPage` — levels, progress, streak, targeted review & custom practice | Yes |
 | `/lesson/:lessonId` | `LessonPage` — the lesson player | Yes |
 | `/lesson/:lessonId/practice` | `PracticePage` | Yes |
-| `/review` | `ReviewPage` — cross-lesson mixed review | Yes |
+| `/review` | `ReviewPage` — cross-lesson **targeted** review | Yes |
+| `/practice/custom` | `CustomPracticePage` — pick concepts + session size | Yes |
 | `/level/:levelId/review` | `LevelReviewPage` | Yes |
 | `/profile` | `ProfilePage` — stats, activity heatmap, concept mastery | Yes |
 | `/settings` | `SettingsPage` — account management | Yes |
@@ -806,6 +847,9 @@ coverage scoped to `src/lib/**`:
 | `progressService.test.ts` | Streaks, milestones, step progression, persistence |
 | `contentLoader.test.ts` | Loading, levels, sessions, unlock/completion logic |
 | `masteryService.test.ts` | Concept catalog + mastery/weak-area scoring |
+| `reviewPlanner.test.ts` | Targeted-review ranking (weakness + recency) |
+| `aiTutor.test.ts` | Tutor context building + answer descriptions |
+| `inlineMarkup.test.ts` | Inline math/markdown normalization + tokenizing |
 | `validateLesson.test.ts` | Lesson-schema validation rules |
 
 ```bash
@@ -837,11 +881,15 @@ mode.
 user, one profile, one progress map — so Context with optimistic updates is
 enough.
 
-**Scope note — no AI.** The app is intentionally AI-free: every problem, hint,
-and explanation is hand-authored, and the app teaches fully on its own. math.js
-is used for deterministic answer-checking, not generation. The learning-science
-layer (practice, spaced/interleaved review, sequential mastery, XP/streaks) is
-implemented; AI-assisted hints or problem generation are not part of this build.
+**Scope note — AI is optional and never grades.** Every problem, hint, and
+answer key is hand-authored, and all grading is deterministic (math.js, used for
+answer-checking, not generation), so the app teaches fully on its own with no AI.
+An **optional** AI concept tutor (Firebase AI Logic + Gemini) can layer on top to
+*explain* a step *after* it's graded — it's given the verdict and the correct
+answer and only explains; it never grades or generates problems, and it stays
+hidden unless a real Firebase project with App Check is configured. The
+learning-science layer (practice, targeted/interleaved review, custom practice,
+sequential mastery, XP/streaks) is implemented.
 
 **Mastery model.** Per-concept mastery (`learning` / `proficient` / `mastered`) is computed
 from saved progress and shown on the profile. Lesson *status* itself still only reaches
