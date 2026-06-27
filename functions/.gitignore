@@ -1,0 +1,11 @@
+# Compiled output
+lib/
+
+# Dependencies
+node_modules/
+
+# Local secrets / runtime config
+.env
+.env.local
+.runtimeconfig.json
+*.local

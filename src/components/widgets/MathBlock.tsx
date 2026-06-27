@@ -66,9 +66,26 @@ export function RichText({ text }: { text: string }) {
   return <>{renderTokens(tokenizeInline(normalizeMathDelimiters(text)))}</>;
 }
 
-export function ContentBlocks({ blocks }: { blocks: ContentBlock[] }) {
+/**
+ * Renders authored content blocks (prose + math). `compact` shrinks the type to
+ * match dense surfaces like the Reference cards; the default keeps the larger
+ * lesson-reading size.
+ */
+export function ContentBlocks({
+  blocks,
+  compact = false,
+}: {
+  blocks: ContentBlock[];
+  compact?: boolean;
+}) {
   return (
-    <div className="space-y-3 text-base leading-relaxed text-slate-800">
+    <div
+      className={
+        compact
+          ? "space-y-2 text-xs leading-relaxed text-slate-600"
+          : "space-y-3 text-base leading-relaxed text-slate-800"
+      }
+    >
       {blocks.map((block, i) => {
         if (block.type === "text") {
           return (

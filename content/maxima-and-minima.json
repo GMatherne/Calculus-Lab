@@ -164,33 +164,35 @@
     },
     {
       "id": "mm-step-6",
-      "type": "slider_graph",
+      "type": "predict",
       "conceptTag": "extrema",
       "content": [
         {
           "type": "text",
-          "body": "On f(x) = x³ − 3x, tap the local maximum — the peak where the curve stops climbing and starts falling."
+          "body": "On f(x) = x³ − 3x, predict the local maximum: drag the dot to the peak where the curve stops climbing and starts falling, then lock it in to reveal the true tangent there."
         }
       ],
       "interaction": {
         "graph": {
           "fn": "x^3 - 3*x",
           "domain": [-2.2, 2.2],
+          "yDomain": [-3, 3],
           "xLabel": "x",
-          "yLabel": "f",
-          "pointChoices": [-2, -1, 0, 1, 2]
+          "yLabel": "f"
         },
         "hintAfterAttempts": 1,
+        "goalLabel": "Drag the dot to the local maximum",
         "answer": {
-          "type": "graph_point",
+          "type": "predict_point",
           "x": -1,
-          "tolerance": 0.1
+          "tolerance": 0.3,
+          "reveal": { "point": true, "tangent": true, "vertical": true }
         }
       },
       "feedback": {
-        "correct": "Yes — at x = −1 the curve turns from rising to falling, so f'(−1) = 0 and it's a local maximum (the peak).",
-        "incorrect": "Look for the hilltop, where the curve switches from going up to going down.",
-        "hint": "f'(x) = 3x² − 3 = 0 gives x = ±1; the peak (rising → falling) is the one on the left, x = −1."
+        "correct": "Nailed it — at x = −1 the curve turns from rising to falling, so the tangent is flat (f'(−1) = 0): a local maximum.",
+        "incorrect": "Aim for the hilltop, where the curve switches from going up to going down, then lock it in.",
+        "hint": "f'(x) = 3x² − 3 = 0 at x = ±1; the peak (rising → falling) is the one on the left, x = −1."
       }
     },
     {
@@ -565,6 +567,38 @@
         "correct": "Exactly — a sign flip in f' marks a turning point; no flip means no extremum.",
         "incorrect": "A max is rising then falling; a min is falling then rising; a steady sign means no turn.",
         "hint": "+ → − tops out (max), − → + bottoms out (min), and a constant sign just keeps going."
+      }
+    },
+    {
+      "id": "mm-practice-11",
+      "type": "predict",
+      "conceptTag": "extrema",
+      "content": [
+        {
+          "type": "text",
+          "body": "Predict the maximum of f(x) = −x² + 4x: drag the dot to the peak, then lock it in to reveal the flat tangent."
+        }
+      ],
+      "interaction": {
+        "goalLabel": "Drag the dot to the maximum",
+        "graph": {
+          "fn": "-x^2 + 4*x",
+          "domain": [0, 4],
+          "yDomain": [0, 5],
+          "xLabel": "x",
+          "yLabel": "f"
+        },
+        "answer": {
+          "type": "predict_point",
+          "x": 2,
+          "tolerance": 0.3,
+          "reveal": { "point": true, "tangent": true, "vertical": true }
+        }
+      },
+      "feedback": {
+        "correct": "Yes — the peak of −x² + 4x is at x = 2, where the tangent is flat (f'(2) = 0).",
+        "incorrect": "The vertex sits halfway between the roots x = 0 and x = 4. Drag there and lock it in.",
+        "hint": "f'(x) = −2x + 4 = 0 gives x = 2."
       }
     }
   ]

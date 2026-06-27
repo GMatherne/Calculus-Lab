@@ -1,22 +1,26 @@
 import { useCallback, useRef, useState } from "react";
 import type { Step } from "../../types/content";
-import { isAiAvailable } from "../../lib/firebase";
 import {
   buildStepContext,
   createTutorChat,
   explainStep,
+  isAiAvailable,
   isQuotaError,
   MAX_FOLLOWUPS,
+  type LearnerHistory,
   type TutorChat,
   type TutorContext,
 } from "../../lib/aiTutor";
+import { getConceptInsight } from "../../lib/learnerInsights";
+import { useProgress } from "../../contexts/ProgressContext";
+import { useSessionInsights } from "../../contexts/SessionInsightsContext";
 import { RichText } from "../widgets/MathBlock";
 import { Icon } from "../common/Icon";
 import { stripListMarker } from "../../lib/inlineMarkup";
 
-/** Shown when Gemini's free-tier quota (or billing limit) is exhausted. */
+/** Shown when the per-user tutor rate limit (or an upstream provider limit) is hit. */
 const QUOTA_MESSAGE =
-  "You're out of free AI tutor responses for now. The free-tier limit resets around midnight Pacific — or enable billing on the Firebase project to remove the cap.";
+  "You've reached the AI tutor limit for now — it resets within a day. Your lessons and instant grading keep working in the meantime.";
 
 interface TutorPanelProps {
   step: Step;
@@ -53,6 +57,8 @@ function TutorText({ text }: { text: string }) {
 }
 
 export function TutorPanel({ step, answer, attempts, isCorrect }: TutorPanelProps) {
+  const { progress } = useProgress();
+  const { getSessionMisses } = useSessionInsights();
   const [phase, setPhase] = useState<Phase>("idle");
   const [explanation, setExplanation] = useState("");
   const [turns, setTurns] = useState<Turn[]>([]);
@@ -67,6 +73,33 @@ export function TutorPanel({ step, answer, attempts, isCorrect }: TutorPanelProp
   // Monotonic id so a stream that outlives its relevance can't update state.
   const runIdRef = useRef(0);
 
+  // Assemble the learner-history signals that personalize the tutor: concept
+  // mastery + recency from saved progress, plus what's been missed this session.
+  const buildHistory = useCallback((): LearnerHistory => {
+    const insight = getConceptInsight(progress, step.conceptTag);
+    const misses = getSessionMisses();
+    const concept = step.conceptTag;
+    const thisConceptTotal = concept
+      ? misses.find((m) => m.concept === concept)?.count ?? 0
+      : 0;
+    // The just-submitted answer was already recorded, so subtract it to count
+    // only *prior* slips on this concept earlier in the session.
+    const priorConceptMisses = Math.max(
+      0,
+      thisConceptTotal - (isCorrect ? 0 : 1),
+    );
+    return {
+      conceptTier: insight?.tier,
+      conceptPercent: insight?.percent,
+      daysSinceConceptSeen: insight?.daysSinceSeen,
+      conceptLessonTitle: insight?.lessonTitle ?? undefined,
+      currentConceptSessionMisses: priorConceptMisses,
+      sessionMissedConcepts: misses
+        .filter((m) => m.concept !== concept)
+        .map((m) => ({ label: m.label, count: m.count })),
+    };
+  }, [progress, getSessionMisses, step.conceptTag, isCorrect]);
+
   const start = useCallback(async () => {
     const runId = ++runIdRef.current;
     setPhase("streaming");
@@ -77,7 +110,13 @@ export function TutorPanel({ step, answer, attempts, isCorrect }: TutorPanelProp
     setErrorMsg("");
     setQuotaHit(false);
     chatRef.current = null;
-    const ctx = buildStepContext(step, answer, attempts, isCorrect);
+    const ctx = buildStepContext(
+      step,
+      answer,
+      attempts,
+      isCorrect,
+      buildHistory(),
+    );
     ctxRef.current = ctx;
     try {
       let acc = "";
@@ -95,7 +134,7 @@ export function TutorPanel({ step, answer, attempts, isCorrect }: TutorPanelProp
       setErrorMsg(err instanceof Error ? err.message : String(err));
       setPhase("error");
     }
-  }, [step, answer, attempts, isCorrect]);
+  }, [step, answer, attempts, isCorrect, buildHistory]);
 
   const send = useCallback(async () => {
     const text = input.trim();
@@ -136,8 +175,8 @@ export function TutorPanel({ step, answer, attempts, isCorrect }: TutorPanelProp
     }
   }, [input, busy, followups, explanation]);
 
-  // The tutor only exists when Firebase AI Logic is configured; otherwise the
-  // authored feedback stands on its own and this renders nothing.
+  // The tutor only exists when Firebase (and the callable proxy) is configured;
+  // otherwise the authored feedback stands on its own and this renders nothing.
   if (!isAiAvailable) return null;
 
   const triggerLabel = isCorrect ? "Why does this work?" : "Walk me through it";

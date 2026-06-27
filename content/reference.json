@@ -1,0 +1,157 @@
+{
+  "facts": [
+    {
+      "id": "derivative-definition",
+      "title": "The Derivative",
+      "lessonId": "what-is-a-derivative",
+      "conceptTag": "rate_of_change",
+      "summary": "The derivative $f'(x)$ is the instantaneous rate of change of $f$ — the slope of the tangent line to the curve at $x$.",
+      "detail": [
+        {
+          "type": "text",
+          "body": "Average rate of change is the slope of a secant line between two points. The derivative is the slope you get as those two points squeeze together into one."
+        }
+      ]
+    },
+    {
+      "id": "derivative-of-constant",
+      "title": "Derivative of a Constant",
+      "lessonId": "what-is-a-derivative",
+      "conceptTag": "rate_of_change",
+      "formula": "\\frac{d}{dx}(c) = 0",
+      "summary": "A constant never changes, so its rate of change is zero.",
+      "detail": [
+        {
+          "type": "text",
+          "body": "A constant function $f(x) = c$ graphs as a flat horizontal line, and a flat line has slope $0$ everywhere — so its derivative is $0$."
+        }
+      ]
+    },
+    {
+      "id": "limit-definition",
+      "title": "Limit Definition of the Derivative",
+      "lessonId": "slope-of-a-curve",
+      "conceptTag": "secant_tangent",
+      "formula": "f'(x) = \\lim_{h \\to 0} \\frac{f(x+h) - f(x)}{h}",
+      "summary": "The derivative is the limit of the secant slope as the two points come together.",
+      "detail": [
+        {
+          "type": "text",
+          "body": "The fraction $\\frac{f(x+h) - f(x)}{h}$ is the slope of the secant line through $x$ and $x+h$. As $h \\to 0$ that secant rotates into the tangent, and its slope becomes the derivative."
+        }
+      ]
+    },
+    {
+      "id": "power-rule",
+      "title": "Power Rule",
+      "lessonId": "power-rule",
+      "conceptTag": "power_rule",
+      "formula": "\\frac{d}{dx}(a x^n) = a\\,n\\,x^{n-1}",
+      "summary": "Bring the exponent down in front, then reduce the exponent by 1.",
+      "detail": [
+        {
+          "type": "text",
+          "body": "Any coefficient $a$ rides along, multiplied by the exponent. This shortcut differentiates any power of $x$ instantly — no limit required."
+        }
+      ]
+    },
+    {
+      "id": "sum-rule",
+      "title": "Constant Multiple & Sum Rules",
+      "lessonId": "differentiating-polynomials",
+      "conceptTag": "sum_rule",
+      "formula": "\\frac{d}{dx}\\left[a\\,f(x) \\pm b\\,g(x)\\right] = a\\,f'(x) \\pm b\\,g'(x)",
+      "summary": "Differentiate a polynomial one term at a time; constant multipliers factor out.",
+      "detail": [
+        {
+          "type": "text",
+          "body": "Derivatives split across addition and subtraction, and constant multipliers come along for the ride. So you can differentiate each term of a polynomial separately and add the results."
+        }
+      ]
+    },
+    {
+      "id": "sign-of-derivative",
+      "title": "Sign of the Derivative",
+      "lessonId": "graph-shape",
+      "conceptTag": "graph_shape",
+      "formula": "f'(x) > 0 \\Rightarrow \\text{increasing} \\qquad f'(x) < 0 \\Rightarrow \\text{decreasing}",
+      "summary": "The sign of $f'$ tells you whether $f$ is rising or falling.",
+      "detail": [
+        {
+          "type": "text",
+          "body": "Where $f'(x) > 0$ the curve slopes up; where $f'(x) < 0$ it slopes down; and where $f'(x) = 0$ the tangent is momentarily flat."
+        }
+      ]
+    },
+    {
+      "id": "critical-points",
+      "title": "Critical Points & the First-Derivative Test",
+      "lessonId": "maxima-and-minima",
+      "conceptTag": "extrema",
+      "formula": "f'(x) = 0",
+      "summary": "Local maxima and minima occur at critical points, where $f'(x) = 0$.",
+      "detail": [
+        {
+          "type": "text",
+          "body": "At a critical point the tangent is flat. If $f'$ changes from $+$ to $-$ there, it's a local maximum; from $-$ to $+$, a local minimum."
+        }
+      ]
+    },
+    {
+      "id": "integral-as-area",
+      "title": "The Integral as Area",
+      "lessonId": "what-is-an-integral",
+      "conceptTag": "integral",
+      "formula": "\\int_a^b f(x)\\,dx",
+      "summary": "A definite integral measures the accumulated (signed) area between a curve and the x-axis from $a$ to $b$.",
+      "detail": [
+        {
+          "type": "text",
+          "body": "Just as the derivative is about slope, the integral is about area. Area above the x-axis counts as positive and area below as negative."
+        }
+      ]
+    },
+    {
+      "id": "definite-integral-riemann",
+      "title": "Definite Integral as a Limit of Riemann Sums",
+      "lessonId": "area-under-a-curve",
+      "conceptTag": "definite_integral",
+      "formula": "\\int_a^b f(x)\\,dx = \\lim_{n \\to \\infty} \\sum_{i=1}^{n} f(x_i)\\,\\Delta x",
+      "summary": "Slice the region into $n$ rectangles; as $n \\to \\infty$ the total area becomes exact.",
+      "detail": [
+        {
+          "type": "text",
+          "body": "Each rectangle has area $f(x_i)\\,\\Delta x$. Adding more, thinner rectangles drives the approximation toward the true area — that limit is the definite integral."
+        }
+      ]
+    },
+    {
+      "id": "fundamental-theorem",
+      "title": "Fundamental Theorem of Calculus",
+      "lessonId": "fundamental-theorem",
+      "conceptTag": "ftc",
+      "formula": "\\int_a^b f(x)\\,dx = F(b) - F(a)",
+      "summary": "To integrate, find an antiderivative $F$ (so $F' = f$) and subtract its values at the endpoints.",
+      "detail": [
+        {
+          "type": "text",
+          "body": "The theorem links the two halves of calculus: differentiation and integration undo each other. Evaluate any antiderivative $F$ at $b$ and at $a$, then subtract."
+        }
+      ]
+    },
+    {
+      "id": "reverse-power-rule",
+      "title": "Reverse Power Rule (Antiderivative)",
+      "lessonId": "integrating-polynomials",
+      "conceptTag": "antiderivative",
+      "formula": "\\int x^n\\,dx = \\frac{x^{n+1}}{n+1} + C \\quad (n \\neq -1)",
+      "summary": "Add 1 to the exponent, then divide by the new exponent.",
+      "detail": [
+        {
+          "type": "text",
+          "body": "This reverses the power rule: where differentiating drops the exponent by 1, integrating raises it by 1 and divides. Don't forget the constant of integration $+C$."
+        }
+      ]
+    }
+  ]
+}

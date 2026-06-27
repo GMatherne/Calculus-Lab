@@ -1,39 +1,54 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { StreakBadge } from "../habit/StreakBadge";
 import { XpBadge } from "../habit/XpBadge";
 import { UserMenu } from "./UserMenu";
+import { ReferenceModal } from "../reference/ReferenceModal";
 
 export function AppHeader() {
   const { user } = useAuth();
+  // Reference opens as a popup so it never pulls a learner out of a lesson or
+  // practice session — the sticky header keeps it one tap away from anywhere.
+  const [referenceOpen, setReferenceOpen] = useState(false);
 
   return (
-    <header className="flex items-center justify-between gap-2 px-4 py-3 border-b border-slate-200 bg-white/90 backdrop-blur sticky top-0 z-10 safe-top">
-      <Link
-        to="/"
-        className="shrink-0 whitespace-nowrap font-bold text-indigo-700 text-lg"
-      >
-        Calculus Lab
-      </Link>
-      <nav className="flex items-center gap-1.5 text-sm sm:gap-3">
+    <>
+      <header className="flex items-center justify-between gap-2 px-4 py-3 border-b border-slate-200 bg-white/90 backdrop-blur sticky top-0 z-10 safe-top">
         <Link
-          to="/lessons"
-          className="flex min-h-[44px] items-center text-slate-600 hover:text-indigo-600"
+          to="/"
+          className="shrink-0 whitespace-nowrap font-bold text-indigo-700 text-lg"
         >
-          Lessons
+          Calculus Lab
         </Link>
-        {user ? (
-          <>
-            <StreakBadge />
-            <XpBadge />
-            <UserMenu />
-          </>
-        ) : (
-          <Link to="/login" className="text-indigo-600 font-medium min-h-[44px] flex items-center">
-            Log in
+        <nav className="flex items-center gap-1.5 text-sm sm:gap-3">
+          <Link
+            to="/lessons"
+            className="flex min-h-[44px] items-center text-slate-600 hover:text-indigo-600"
+          >
+            Lessons
           </Link>
-        )}
-      </nav>
-    </header>
+          <button
+            type="button"
+            onClick={() => setReferenceOpen(true)}
+            className="flex min-h-[44px] items-center text-slate-600 hover:text-indigo-600"
+          >
+            Reference
+          </button>
+          {user ? (
+            <>
+              <StreakBadge />
+              <XpBadge />
+              <UserMenu />
+            </>
+          ) : (
+            <Link to="/login" className="text-indigo-600 font-medium min-h-[44px] flex items-center">
+              Log in
+            </Link>
+          )}
+        </nav>
+      </header>
+      <ReferenceModal open={referenceOpen} onClose={() => setReferenceOpen(false)} />
+    </>
   );
 }

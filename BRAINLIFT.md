@@ -61,6 +61,7 @@ than the primary full text.
    - [Khan Academy — Mastery system](#khan-academy--mastery-system--efficacy)
    - [Brilliant — Learn-by-doing](#brilliant--learn-by-doing-pedagogy)
 - [Master fact sheet](#master-fact-sheet)
+- [Contradictions & tensions across papers](#contradictions--tensions-across-papers)
 - [Access & limitations](#access--limitations)
 
 ---
@@ -83,7 +84,7 @@ than the primary full text.
 - Practitioner-article numbers (read from the full AFT PDF):
   - **84%** of students at an elite university reported rereading notes/text as a primary strategy (Karpicke et al., 2009) — heavy reliance on a *low*-utility method.
   - Self-explanation transfer experiment (Berry, 1983): self-explainers ≈ **90% vs <30%** on a logical-reasoning final test (~3×).
-  - Interleaving in geometry (Rohrer & Taylor, 2007): interleavers ≈ **3×** the delayed-test accuracy of massers.
+  - Interleaving (volume-of-solids problems; Rohrer & Taylor, 2007): interleavers ≈ **3×** the delayed-test accuracy of **blocked** practice.
 - **Caveats.** Moderate techniques were downgraded for *insufficient* classroom evidence, not failure. Interleaving benefits **do not extend to all content** (e.g., no benefit for some vocabulary/grammar categories). Summarization needs substantial training. Even the best techniques only help if students are motivated to use them correctly.
 - *Access:* AFT practitioner PDF read in full; Sage monograph abstract was 403-blocked, so its utility ratings were confirmed via secondary sources.
 
@@ -160,13 +161,13 @@ than the primary full text.
 **Summary.** An overview of the authors' research program on instructionally relevant "choices": spacing, feedback timing, retrieval practice, and guessing. Its flagship message is that for a given retention interval, memory is optimized when the inter-study gap is a modest fraction (**~10–20%**) of the final retention interval — and that too little spacing hurts more than too much. (This is the source of the "10–20%" rule cited in `LEARNING_SCIENCE.md`.)
 
 **Key facts.**
-- **Optimal-gap rule:** ISI ≈ **10–20% of the RI**. Examples: 10-day RI → optimal ISI ≈ 1 day (≈0.1); 6-month RI → optimal ISI ≈ 28 days (≈0.2).
+- **Optimal-gap rule:** ISI ≈ **10–20% of the RI** (a rough band, *not* a fixed ratio — see caveat). Examples: 10-day RI → optimal ISI ≈ 1 day (≈0.1); 6-month RI → optimal ISI ≈ 28 days (≈0.15).
 - **Web study (~1,800 subjects):** ISIs 20 min–15 weeks, RIs 1–50 weeks; 1-week RI → optimal ISI ≈ 1 day; 50-week RI → optimal ISI ≈ 3 weeks.
 - **Asymmetry:** "too little spacing is worse than too much" — the curve falls off gently for over-long gaps, steeply for too-short gaps.
 - **Feedback:** giving the correct answer after an *error* produced a **~5× increase** in 1-week recall; feedback after correct answers was largely unnecessary; **delayed feedback ≥ immediate** on a 2-week test.
 - **Overlearning:** extra massed practice helped at 1 week but the benefit **vanished by 4 weeks** (inefficient).
 - **Boundary:** **no spacing benefit** for perceptual categorization tasks — a limit on generality.
-- **Design/caveats.** Narrative overview of the authors' own lab + web studies; the 10–20% figure is approximate and rests on a small number of long-RI experiments (several described as preliminary).
+- **Design/caveats.** Narrative overview of the authors' own lab + web studies; the 10–20% figure is approximate and rests on a small number of long-RI experiments (several described as preliminary). The optimal ISI/RI ratio is **not constant** — Pashler's own web study (≈0.14 at a 1-week RI → ≈0.06 at a 50-week RI) and Cepeda 2006 both show it **declines as RI grows**, so the two example sets above should not be read as the ratio rising with RI.
 - *Access:* full text read.
 
 ---
@@ -181,7 +182,7 @@ than the primary full text.
 **Summary.** Two lab experiments with college students. Experiment 1 isolated *spacing* and *overlearning*; Experiment 2 isolated *interleaving* by having students compute the volumes of four obscure solids with practice that was either blocked by type or randomly mixed. On a one-week-later test, spaced practice strongly beat massed, overlearning showed no benefit, and interleaved practice vastly outperformed blocked — despite blocked practice looking better *during* practice (a classic "desirable difficulty" dissociation).
 
 **Key facts.**
-- **Experiment 2 (interleaving), 1-week delayed test:** mixed/interleaved **63%** (SE 12) vs blocked **20%** (SE 9); t(14) = 2.64, p < .05, **d = 1.34** (~**250% improvement**). N = **18** undergraduates.
+- **Experiment 2 (interleaving), 1-week delayed test:** mixed/interleaved **63%** (SE 12) vs blocked **20%** (SE 9); t(14) = 2.64, p < .05, **d = 1.34** (≈**3.1×** the blocked accuracy, +**215%**). N = **18** undergraduates.
 - During practice the pattern reversed: blocked **89%** vs mixed **60%** (interleaving is harder in the moment). Nearly every test error was choosing the *wrong formula* → interleaving teaches *which* procedure to use (discrimination), not just *how*.
 - **Experiment 1 (spacing/overlearning), 1-week test:** spacers **74%** (SE 8) > massers **49%** (SE 10) ≈ light massers **46%** (SE 7); F(2,57) = 3.59, p < .05. Overlearning (heavy vs light massing) showed **no** difference (p = .8). N = 66 (60 retained).
 - **Design/caveats.** Laboratory, randomized, 1-week delay. Authors caution: college students only; the test mirrored practiced problems (no transfer measure); procedural (not conceptual) tasks; **very small N (18)** in Exp 2 (though effects were large).
@@ -532,7 +533,7 @@ with the short source tag; see the matching section for full context and caveats
 **Spacing**
 - Spaced practice beats massed: **47.3% vs 36.7%** (~**10.6 pp**) across 254 studies / **14,811** participants; only 12 of 271 comparisons failed. *(Cepeda 2006)*
 - Optimal study gap ≈ **10–20% of the retention interval** (e.g., 1-week RI → ~1-day gap; 6-month RI → ~1-month gap); too little spacing is worse than too much. *(Pashler 2007)* — note the optimal *ratio* actually shrinks as RI grows. *(Cepeda 2006)*
-- Overlearning (extra massed practice) helps at 1 week but the benefit **vanishes by 4 weeks**. *(Pashler 2007; Rohrer & Taylor 2007)*
+- Overlearning (extra massed practice) is inefficient — Pashler found a 1-week benefit that **vanishes by 4 weeks**, while Rohrer & Taylor found **no benefit even at 1 week** (heavy vs. light massing, p = .8). *(Pashler 2007; Rohrer & Taylor 2007)*
 
 **Interleaving (math)**
 - Lab: interleaved **63% vs 20%** blocked on a 1-week test (**d = 1.34**), despite blocked looking better during practice (89% vs 60%); N = 18. *(Rohrer & Taylor 2007)*
@@ -571,6 +572,46 @@ with the short source tag; see the matching section for full context and caveats
 - Anki FSRS (**D**ifficulty/**S**tability/**R**etrievability): stability = days for recall to fall to **90%**; targets a user-set desired retention; fewer reviews for the same retention. *(Anki)*
 - Khan Academy ladder: **Familiar → Proficient → Mastered** (50/80/100 pts); mastery can be **demoted two levels** if a later score < 70%; "skills to proficient+" correlates with MAP Growth (correlational). *(Khan Academy)*
 - Brilliant: **action before theory** — drop into interactive problems, name the technique afterward. *(Brilliant)*
+
+---
+
+## Contradictions & tensions across papers
+
+This section catalogs places where the sources above **genuinely disagree** (or are
+routinely read as disagreeing) — as distinct from the within-source data-integrity
+corrections in [Access & limitations](#access--limitations). Most resolve once you
+separate **short-term performance from long-term learning**, or account for
+**different populations, tasks, and conditions** — but each should be applied with
+the conflict in view.
+
+- **Extrinsic rewards — undermining vs. effective.**
+  - *Disagreement:* Lepper et al. (1973) and Ryan & Deci (2000, via Deci, Koestner & Ryan 1999) find **expected tangible rewards reliably undermine intrinsic motivation**, yet Sailer & Homner (2019) find **gamification improves outcomes** (cognitive g = 0.49), and the §8 apps (Khan Mastery Points; Brilliant's "great mobile game" framing) are built on those very reward structures.
+  - *Reconciliation:* overjustification is specific to **expected, controlling, performance-contingent** rewards on **already-interesting** tasks. **Informational** rewards (signaling competence/progress) and rewards that bootstrap a **low-initial-interest** activity are consistent with SDT. → Keep reward systems informational, not controlling.
+
+- **Flow (challenge ≈ skill) vs. desirable difficulties.**
+  - *Disagreement:* Csikszentmihalyi (1990) locates the optimum where **challenge matches skill** (challenge > skill → anxiety); Bjork & Bjork (2020) deliberately **add difficulty that depresses current performance** to boost retention.
+  - *Reconciliation:* they optimize different axes — flow targets **momentary engagement**, desirable difficulties target **durable learning** ("performance ≠ learning"). Both require the difficulty to be **surmountable**: Bjork's "*desirable*" sits at the upper edge of the flow channel (cf. Guadagnoli & Lee's Challenge Point).
+
+- **Feedback timing — immediate vs. delayed.**
+  - *Disagreement:* Flow (immediate feedback as a condition) and Brilliant favor **immediate** feedback, and Shute (2008) recommends it for hard tasks / low achievers; but Pashler (2007) finds **delayed ≥ immediate** at 2 weeks, Shute finds **delayed aids transfer** / high achievers, and Bjork lists **reducing/spacing feedback** as a desirable difficulty — in tension with Hattie & Timperley's "feedback is among the most powerful influences."
+  - *Reconciliation:* timing interacts with **task difficulty, learner level, and outcome measured** — immediate aids engagement and acquisition; delayed/spaced can aid transfer and long-term retention. Not a true contradiction once the moderators are specified.
+
+- **Overlearning at a 1-week delay — benefit vs. none.**
+  - *Disagreement:* Pashler (2007) reports overlearning **helps at 1 week** (gone by 4 weeks); Rohrer & Taylor (2007, Exp 1) find **no benefit even at 1 week** (heavy vs. light massing, p = .8).
+  - *Reconciliation:* both conclude overlearning is **inefficient** long-term; the short-term discrepancy likely reflects materials/dose. → Treat overlearning as low-value regardless.
+
+- **The spacing ratio — fixed "10–20%" vs. shrinking with RI.**
+  - *Disagreement:* Pashler (2007) popularizes a **~10–20% ISI/RI rule of thumb**; Cepeda (2006) — and Pashler's *own* web study — show the optimal ratio **declines as the retention interval grows** (≈0.14 at a 1-week RI → ≈0.06 at 50 weeks).
+  - *Reconciliation:* "10–20%" is a coarse band centered on short-to-medium RIs; for long RIs the optimal *fraction* is smaller (though the absolute gap keeps growing). → Use the rule as a starting heuristic, not a constant.
+
+- **Interleaving — "moderate" rating vs. large effects.**
+  - *Disagreement:* Dunlosky et al. (2013) rate interleaving **moderate** utility; Rohrer & Taylor (2007, d = 1.34) and Rohrer et al. (2020, d = 0.83) report **large** benefits.
+  - *Reconciliation:* mostly chronology and scope — the 2013 rating reflected **thin classroom evidence at the time** (and interleaving doesn't help all content types); the 2020 classroom RCT later supplied that evidence. → Not a real dispute about magnitude where interleaving applies.
+
+> **Note.** These are cross-source *tensions*, not errors in any single paper. Famous
+> single-source corrections (Bloom's unreplicated 2σ; the Chi 1989 "82% vs 46%"
+> misattribution; feedback's d = 0.79 vs 0.48; Duolingo's 12.9M traces) are tracked
+> separately under [Access & limitations](#access--limitations).
 
 ---
 

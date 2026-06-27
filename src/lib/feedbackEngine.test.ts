@@ -4,6 +4,7 @@ import {
   derivativeAt,
   riemannSum,
   checkAnswer,
+  answerProximity,
   verifyNumericWithMathJs,
 } from "./feedbackEngine";
 import type { AnswerSpec, Step, StepFeedback } from "../types/content";
@@ -158,6 +159,34 @@ describe("checkAnswer", () => {
       // Points that satisfy neither root are still wrong.
       expect(checkAnswer(multi, 0).correct).toBe(false);
       expect(checkAnswer(multi, 1).correct).toBe(false);
+    });
+  });
+
+  describe("predict_point", () => {
+    it("uses a default tolerance of 0.3", () => {
+      const step = stepWith({
+        type: "predict_point",
+        x: -1,
+        reveal: { tangent: true },
+      });
+      expect(checkAnswer(step, -1.2).correct).toBe(true);
+      expect(checkAnswer(step, -0.5).correct).toBe(false);
+    });
+
+    it("accepts any acceptX target and rejects a missing marker", () => {
+      const step = stepWith({
+        type: "predict_point",
+        x: 2,
+        acceptX: [-2],
+        tolerance: 0.3,
+        reveal: { point: true },
+      });
+      expect(checkAnswer(step, 2).correct).toBe(true);
+      expect(checkAnswer(step, -2).correct).toBe(true);
+      expect(checkAnswer(step, 0).correct).toBe(false);
+      const res = checkAnswer(step, undefined);
+      expect(res.correct).toBe(false);
+      if (!res.correct) expect(res.message).toMatch(/drag the marker/i);
     });
   });
 
@@ -410,5 +439,36 @@ describe("verifyNumericWithMathJs", () => {
     expect(verifyNumericWithMathJs(6, 6.005)).toBe(true);
     expect(verifyNumericWithMathJs(6, 6.5)).toBe(false);
     expect(verifyNumericWithMathJs(6, 6.5, 0.6)).toBe(true);
+  });
+});
+
+describe("answerProximity", () => {
+  it("returns the signed distance to a numeric target", () => {
+    const step = stepWith({ type: "numeric", value: 6 });
+    expect(answerProximity(step, 8)).toBe(2);
+    expect(answerProximity(step, 5)).toBe(-1);
+    expect(answerProximity(step, 6)).toBe(0);
+    // A value that isn't a finite number yet has no distance.
+    expect(answerProximity(step, "x")).toBeNull();
+  });
+
+  it("measures distance to the nearest accepted point for predict answers", () => {
+    const step = stepWith({
+      type: "predict_point",
+      x: 2,
+      acceptX: [-2],
+      reveal: {},
+    });
+    expect(answerProximity(step, 1.5)).toBeCloseTo(-0.5, 5);
+    expect(answerProximity(step, -1.5)).toBeCloseTo(0.5, 5);
+  });
+
+  it("is null for answer types without a scalar distance", () => {
+    const step = stepWith({
+      type: "multiple_choice",
+      options: ["a", "b", "c", "d"],
+      correctIndex: 0,
+    });
+    expect(answerProximity(step, 1)).toBeNull();
   });
 });

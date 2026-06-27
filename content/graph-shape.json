@@ -139,6 +139,8 @@
           "initialSlider": 0
         },
         "hintAfterAttempts": 1,
+        "liveCheck": true,
+        "goalLabel": "Drag x until the tangent slope is 2",
         "answer": {
           "type": "slider",
           "value": 3,

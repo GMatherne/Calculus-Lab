@@ -1,0 +1,41 @@
+# Cloudflare Worker that proxies the Calculus Lab AI tutor to OpenAI.
+# The OpenAI key lives ONLY here, as a Worker secret — never in the browser
+# bundle — so the app can ship publicly while staying on Firebase's free Spark
+# plan (no Cloud Functions / Blaze required).
+#
+# Quick start (see README.md for the full walkthrough):
+#   npm install
+#   npx wrangler login
+#   npx wrangler secret put OPENAI_API_KEY
+#   npx wrangler deploy
+
+name = "calculus-lab-tutor"
+main = "src/index.ts"
+compatibility_date = "2024-11-01"
+
+[vars]
+# The Firebase project whose signed-in users are allowed to use the tutor.
+# Used to verify the Firebase ID token the browser sends.
+FIREBASE_PROJECT_ID = "calculus-lab"
+
+# Comma-separated list of origins allowed to call this proxy (CORS). Add your
+# real deployed origin(s) and any local dev ports.
+ALLOWED_ORIGINS = "https://calculus-lab.web.app,https://calculus-lab.firebaseapp.com,http://localhost:5173,http://localhost:5174"
+
+# Per-user limits. Enforced ONLY when a RATE_LIMIT KV namespace is bound below;
+# without KV the tutor still works, just without per-user counters (rely on the
+# OpenAI dashboard spend cap as the hard backstop).
+TUTOR_DAILY_LIMIT = "500"
+TUTOR_BURST_LIMIT = "15"
+
+# Local dev escape hatch: set to "true" only when running `wrangler dev` against
+# the app's demo mode (which has no real Firebase user, hence no ID token).
+# MUST stay "false" (or be removed) for any public deployment.
+ALLOW_UNAUTHENTICATED = "false"
+
+# OPTIONAL HARDENING — per-user daily + burst rate limiting.
+# 1) Create a namespace:  npx wrangler kv namespace create RATE_LIMIT
+# 2) Paste the printed id below and uncomment the three lines.
+# [[kv_namespaces]]
+# binding = "RATE_LIMIT"
+# id = "paste-your-kv-namespace-id-here"

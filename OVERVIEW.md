@@ -44,10 +44,13 @@ the learner *do* something with it — drag a slider on a live graph, tap a poin
 on a curve, build a derivative term-by-term, or answer a question — and gives
 **instant, specific feedback** on every attempt.
 
-There is **no custom backend server**. The browser does all the rendering,
-answer-checking, and lesson logic. Firebase provides only identity (Auth) and
-per-user storage (Firestore). When Firebase isn't configured, the app falls back
-to `localStorage` so it runs entirely offline for development and demos.
+There is **almost no custom backend**: the browser does all the rendering,
+answer-checking, and lesson logic, and Firebase provides identity (Auth) and
+per-user storage (Firestore). The one exception is a small **Cloud Functions
+proxy** for the optional AI tutor, which keeps the OpenAI key server-side and
+enforces App Check + per-user rate limits. When Firebase isn't configured, the
+app falls back to `localStorage` so it runs entirely offline for development and
+demos (with the tutor simply hidden).
 
 Key principles baked into the build:
 
@@ -66,7 +69,7 @@ Key principles baked into the build:
 
 ### Learning experience
 - **Interactive lessons** made of 6–10 bite-sized steps each.
-- **Eleven step/answer types** so problems fit the concept:
+- **Twelve step/answer types** so problems fit the concept:
   | Type | Learner action | Graded |
   |------|----------------|--------|
   | `read` | Tap **Continue** | No |
@@ -80,9 +83,17 @@ Key principles baked into the build:
   | `sign_chart` | Label each interval of a number line (e.g. increasing vs. decreasing) | Yes |
   | `order_list` | Drag shuffled items into their correct order | Yes |
   | `riemann` | Drag a slider to pile up rectangles until a Riemann sum converges | Yes |
+  | `predict` | Drag a marker along the curve to predict a feature, then lock it in to reveal the truth | Yes |
 
   Graph-backed steps can also carry a **slider** answer (drag to a target value)
   or a **graph_point** answer (tap the correct point on the curve).
+- **Live (continuous) feedback**: any distance-based step (`slider`, `numeric`,
+  `power_term`) can set `"liveCheck": true` to be graded as the learner
+  manipulates — the same `checkAnswer` runs on every change, the target zone
+  shades green, a warmer/colder meter nudges, and the step confirms the instant
+  it's satisfied (confirm, don't teleport) with no **Check Answer** press. The
+  flagship `predict` step fuses this with direct manipulation: drag a marker to
+  predict a feature, commit, and the true point/tangent animates in.
 - **Live, manipulable graphs** rendered as SVG: plot any function, overlay the
   derivative `f'`, show secant/tangent lines, shade the area under a curve
   (integrals), and display live readouts for value, slope, and area. A dedicated
@@ -305,20 +316,23 @@ interface Step {
   id: string;
   type: "read" | "multiple_choice" | "multi_choice" | "numeric"
       | "slider_graph" | "power_term" | "drag_drop" | "match"
-      | "sign_chart" | "order_list" | "riemann";
+      | "sign_chart" | "order_list" | "riemann" | "predict";
   conceptTag?: string;
   content: ContentBlock[];          // text or math (LaTeX) blocks
   interaction?: Interaction;        // graph config + answer spec + hint timing
+                                    //   + optional liveCheck / goalLabel
   feedback: { correct: string; incorrect: string; hint: string };
 }
 
-// Eleven answer shapes, each graded by the feedback engine.
+// Twelve answer shapes, each graded by the feedback engine.
 type AnswerSpec =
   | { type: "multiple_choice"; options: string[]; correctIndex: number }
   | { type: "multi_choice"; options?: string[]; parts: MultiChoicePart[] }
   | { type: "numeric"; value: number; tolerance?: number }
   | { type: "slider"; value: number; tolerance?: number }
   | { type: "graph_point"; x: number; tolerance?: number }
+  | { type: "predict_point"; x: number; acceptX?: number[]; tolerance?: number;
+      reveal: { point?: boolean; tangent?: boolean; vertical?: boolean } }
   | { type: "power_term"; coefficient: number; exponent: number;
       startCoefficient?: number; startExponent?: number; previewPrefix?: string }
   | { type: "drag_drop"; prefix?: string; blanks: DragDropBlank[]; bank: string[] }
@@ -494,6 +508,7 @@ function that returns a `FeedbackResult`. Grading per answer type:
 | `multi_choice` | Every row's chosen option must match its `correctIndex` |
 | `numeric` / `slider` | `abs(answer − value) ≤ tolerance` (default 0.01) via math.js |
 | `graph_point` | `abs(tappedX − x) ≤ tolerance` (default 0.25) |
+| `predict_point` | `abs(draggedX − x) ≤ tolerance` (default 0.3) against `x` or any `acceptX`; same distance check as `graph_point` |
 | `power_term` | Coefficient **and** exponent must match; a 0 coefficient passes regardless of exponent (a constant's derivative) |
 | `drag_drop` | Multiset of **signed** placed terms must equal the target (order-free for sums; a `-` slot negates its term) |
 | `match` | Every prompt must hold its own `match` (graded by position) |
@@ -510,6 +525,10 @@ Feedback is rendered by `FeedbackPanel`:
   when the learner explicitly asks — it never reveals the answer outright. The
   wrong choice is flagged but the correct one is never highlighted, so the learner
   can try again.
+- **Live (`liveCheck`) steps** skip the Check Answer press entirely: `checkAnswer`
+  runs on every manipulation and the step confirms the moment it's satisfied,
+  while a proximity meter gives warmer/colder nudges. A `predict` step commits on
+  **Lock In** and then animates the true point/tangent in.
 
 All messages support inline LaTeX (`$...$`) via the `RichText` renderer.
 
@@ -660,8 +679,8 @@ import time (`assertValidLesson`) and via a CLI script.
 
 - 6–10 steps per lesson.
 - At least one `slider_graph` step.
-- Interactive steps must have an answer spec; slider/graph_point/slider_graph
-  steps must include a graph config.
+- Interactive steps must have an answer spec; slider/graph_point/predict_point/
+  slider_graph steps must include a graph config.
 - Multiple-choice steps need ≥ 4 options.
 - `power_term` answers need a numeric coefficient and integer exponent.
 - `multi_choice` questions need ≥ 2 rows, each with ≥ 2 options and an in-range
@@ -675,6 +694,8 @@ import time (`assertValidLesson`) and via a CLI script.
 - `order_list` questions need ≥ 2 unique items.
 - `riemann` questions need `b > a`, a finite `trueArea`, a positive
   `targetWithin`, and no separate graph config (the widget draws its own).
+- `predict_point` questions need a graph config, a finite `x` (and finite
+  `acceptX`), a positive `tolerance` when set, and a `reveal` spec.
 - Non-read steps must have all three feedback fields (correct/incorrect/hint).
 - Practice banks must hold ≥ 3 interactive questions with unique IDs.
 
