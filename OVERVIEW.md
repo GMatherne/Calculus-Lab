@@ -5,9 +5,9 @@ calculus — derivatives and integrals — through interactive graphs, hands-on
 problems, and instant feedback. Built for AP Calculus BC students.
 
 - **Subject:** AP Calculus BC (derivatives → integrals)
-- **Stack:** React 19 · TypeScript · Vite 6 · Tailwind CSS 4 · Firebase 11 · KaTeX · math.js
-- **Content:** 10 lessons grouped into 5 levels, all hand-authored as JSON
-- **Backend:** Firebase (Auth + Firestore), with a zero-config localStorage demo mode
+- **Stack:** React 19 · TypeScript · Vite 6 · Tailwind CSS 4 · Firebase 11 · Cloudflare Workers · KaTeX · math.js
+- **Content:** 10 lessons grouped into 5 levels, plus a reference cheat sheet — all hand-authored as JSON
+- **Backend:** Firebase (Auth + Firestore) plus a small Cloudflare Worker proxy for the optional AI tutor, with a zero-config localStorage demo mode
 
 > This document describes what the app can do and how it works internally. For a
 > quickstart and setup, see [`README.md`](./README.md).
@@ -46,11 +46,12 @@ on a curve, build a derivative term-by-term, or answer a question — and gives
 
 There is **almost no custom backend**: the browser does all the rendering,
 answer-checking, and lesson logic, and Firebase provides identity (Auth) and
-per-user storage (Firestore). The one exception is a small **Cloud Functions
+per-user storage (Firestore). The one exception is a small **Cloudflare Worker
 proxy** for the optional AI tutor, which keeps the OpenAI key server-side and
-enforces App Check + per-user rate limits. When Firebase isn't configured, the
-app falls back to `localStorage` so it runs entirely offline for development and
-demos (with the tutor simply hidden).
+verifies the caller's Firebase ID token (plus an optional per-user rate limit).
+When the tutor proxy isn't configured the tutor simply stays hidden, and when
+Firebase isn't configured the app falls back to `localStorage` so it runs
+entirely offline for development and demos.
 
 Key principles baked into the build:
 
@@ -107,10 +108,13 @@ Key principles baked into the build:
 - **Math typesetting** via KaTeX, including inline `$...$` LaTeX inside any
   feedback or prose.
 - **Optional AI concept tutor** — after a step is graded, the learner can ask an
-  AI tutor (Firebase AI Logic + Gemini) to *explain* the concept. It's handed the
-  verdict and the correct answer and asked only to explain — it never grades or
-  generates problems — and it stays hidden unless a real Firebase project with
-  App Check is configured, so the zero-config demo is unaffected.
+  AI tutor (OpenAI, behind a Cloudflare Worker proxy) to *explain* the concept.
+  It's handed the verdict and the correct answer and asked only to explain — it
+  never grades or generates problems. The explanation is personalized with
+  PII-free *learner history* (this concept's mastery and how long since it was
+  last practiced, plus what's been missed earlier this session). It stays hidden
+  unless the tutor proxy URL (`VITE_TUTOR_PROXY_URL`) is configured, so the
+  zero-config demo is unaffected.
 
 ### Course & progression
 - **Guided path**: lessons are grouped into **levels** and unlock sequentially —
@@ -119,6 +123,11 @@ Key principles baked into the build:
   returns the learner to exactly where they left off.
 - **Per-step navigation bar** that doubles as a progress indicator and lets
   learners revisit earlier steps (but not skip ahead to the end).
+- **Reference cheat sheet** — a hand-authored sheet of must-know formulas and
+  definitions, one tap from the header (or the roadmap) on any page. It opens as
+  a popup over the current page, groups facts by level, and **unlocks level by
+  level as the course is completed**, so the sheet grows with progress; each card
+  links back to the lesson that teaches it.
 
 ### Reinforcement (learning-science layer)
 - **Per-lesson practice** — each lesson has a *practice bank*; a session samples
@@ -163,7 +172,10 @@ organized into 5 levels and 10 lessons:
 Each lesson is ~6–8 minutes, contains 6–10 steps, and includes at least one
 slider-graph interaction. Finished lessons expose per-lesson **Practice**; the
 roadmap also offers a cross-lesson **Targeted review** and **Custom practice**,
-and completed levels expose a **Level review**.
+and completed levels expose a **Level review**. A hand-authored **Reference**
+cheat sheet (`content/reference.json`) of the course's key formulas and
+definitions is one tap from the header on any page, unlocking level by level as
+the course is completed.
 
 ---
 
@@ -181,6 +193,7 @@ and completed levels expose a **Level review**.
 | Math evaluation | math.js |
 | Auth & database | Firebase 11 (Auth + Firestore) |
 | Hosting | Firebase Hosting (SPA rewrite) |
+| AI tutor proxy | Cloudflare Worker → OpenAI (optional) |
 | Testing | Vitest + V8 coverage |
 
 ### The layered design
@@ -207,6 +220,9 @@ flowchart TD
         F1["Auth"]
         F2["Firestore"]
     end
+    subgraph Tutor["Optional AI tutor (server-side)"]
+        T1["Cloudflare Worker proxy → OpenAI<br/>holds the key · verifies the ID token"]
+    end
 
     C1 --> L1 --> U1
     U2 --> L2
@@ -214,6 +230,7 @@ flowchart TD
     S1 --> F1
     U1 --> S2
     U2 --> S2
+    U2 -.optional, after grading.-> T1
     S3["localStorage (demo / dev fallback)"]
     L3 -.fallback.-> S3
 ```
@@ -232,13 +249,14 @@ The app is built in four conceptual layers:
 ### Directory structure
 
 ```text
-content/                     # Course manifest + 10 lesson JSON files
+content/                     # Course manifest + 10 lesson JSON files + reference deck
   course.json                #   levels, lesson metadata, ordering
   what-is-a-derivative.json  #   one file per lesson (steps + practiceBank)
   ...
+  reference.json             #   the Reference cheat-sheet facts
 
 scripts/
-  validate-lessons.ts        # CLI: validate every lesson file
+  validate-lessons.ts        # CLI: validate every lesson file + the reference deck
 
 src/
   main.tsx                   # React entry point
@@ -252,9 +270,12 @@ src/
     progressService.ts       # Firestore/localStorage; streaks, milestones, activity
     masteryService.ts        # Per-concept mastery tiers + weak-area recommendations
     reviewPlanner.ts         # Targeted review: rank concepts by weakness + recency
-    aiTutor.ts               # Optional Gemini concept tutor (explains graded steps)
+    learnerInsights.ts       # Per-concept insight + session miss tally for the tutor
+    aiTutor.ts               # Optional OpenAI concept tutor; POSTs to the Worker proxy
     inlineMarkup.ts          # Normalize/tokenize inline text + math for rendering
+    referenceService.ts      # Load/validate + level-gate the reference cheat sheet
     validateLesson.ts        # Lesson-schema validation
+    validateReference.ts     # Reference cheat-sheet validation
     *.test.ts                # Unit tests for the above
 
   contexts/
@@ -262,6 +283,8 @@ src/
     AuthProvider.tsx         # login/signup/google/demo + account management
     ProgressContext.tsx      # Progress hook/types (provided by ProgressProvider.tsx)
     ProgressProvider.tsx     # Profile + progress + XP + activity + completion
+    SessionInsightsContext.ts   # Session-insights hook (provided by the Provider)
+    SessionInsightsProvider.tsx # Tracks per-concept misses this session (tutor)
 
   hooks/
     useSessionExitGuard.ts   # Confirm before leaving an unfinished session
@@ -270,12 +293,13 @@ src/
   components/
     auth/        ProtectedRoute, PasswordInput
     common/      Icon, icons (lucide registry), ConfirmDialog
-    layout/      AppHeader, UserMenu, SafeArea
+    layout/      AppHeader (incl. Reference button), UserMenu, SafeArea
     lesson/      LessonPlayer, FeedbackPanel, StepNavBar,
                  LessonComplete, PracticeResults, TutorPanel
     widgets/     GraphWidget, MathBlock, AnswerInput, MultiChoiceInput,
                  DragDropInput, MatchInput, SignChartInput, OrderListInput,
                  RiemannInput
+    reference/   ReferenceModal (popup cheat sheet), ReferenceCard
     roadmap/     LevelSection, LessonCard
     habit/       StreakBadge, XpBadge, Sparkles, FireFX, ElectricityFX
     profile/     StatsStrip, ActivityHeatmap, WeakAreas, ConceptMasteryList,
@@ -287,8 +311,12 @@ src/
     LessonPage, PracticePage, ReviewPage, CustomPracticePage,
     LevelReviewPage, ProfilePage, SettingsPage
 
-firebase.json                # Hosting + Firestore + Auth config
-firestore.rules              # Per-user access rules
+tutor-proxy/                 # Cloudflare Worker proxy for the AI tutor (active):
+                             #   holds the OpenAI key, verifies the Firebase ID token
+functions/                   # Equivalent Firebase Cloud Functions tutor proxy
+                             #   (alternative for teams already on the Blaze plan)
+firebase.json                # Hosting + Firestore + Functions + Auth config
+firestore.rules              # Per-user access rules + server-only AI tutor counters/config
 firestore.indexes.json
 vite.config.ts               # Vite + Tailwind + Vitest config
 ```
@@ -296,18 +324,23 @@ vite.config.ts               # Vite + Tailwind + Vitest config
 ### Provider nesting
 
 ```text
-AuthProvider → ProgressProvider → BrowserRouter → Routes
+AuthProvider → ProgressProvider → SessionInsightsProvider → RouterProvider → Routes
 ```
 
 `AuthContext` resolves *who* the user is; `ProgressContext` then loads that
 user's profile and all lesson progress before the router renders pages.
+`SessionInsightsContext` tracks the concepts missed in the current study session
+(used to personalize the tutor). A data router (`createBrowserRouter` +
+`RouterProvider`) is used so route components can guard navigation away from an
+unfinished session.
 
 ---
 
 ## 5. Data model
 
 All domain types live in `src/types/content.ts`. The core hierarchy is
-**Course → Level → Lesson → Step → Interaction (graph + answer + feedback)**.
+**Course → Level → Lesson → Step → Interaction (graph + answer + feedback)**,
+alongside a separate hand-authored **Reference** deck (`ReferenceFact[]`).
 
 ```ts
 // A course groups lessons into ordered levels.
@@ -364,6 +397,22 @@ type AnswerSpec =
   | { type: "riemann"; fn: string; a: number; b: number; trueArea: number;
       targetWithin: number; maxRects?: number;
       domain?: [number, number]; yMax?: number };
+```
+
+The **Reference** cheat sheet is a separate hand-authored deck, grouped for
+display by the level that teaches each fact and unlocked as those levels are
+completed:
+
+```ts
+interface ReferenceFact {
+  id: string;
+  title: string;
+  lessonId: string;        // teaching lesson: completing it unlocks the fact
+  conceptTag?: string;
+  formula?: string;        // headline LaTeX; at least one of formula/summary
+  summary?: string;        // one-line plain-language statement (inline $…$)
+  detail?: ContentBlock[]; // expanded explanation revealed on demand
+}
 ```
 
 Per-user state:
@@ -500,7 +549,9 @@ centerpiece. It renders a function as an SVG plot and supports:
   it as `h → 0`, with a live secant-slope readout.
 - **Area shading** — fills the region between the curve and the x-axis from
   `areaStart` to the slider position (the integral visual), with a live numeric
-  area estimate computed by the trapezoidal rule.
+  area estimate computed by the trapezoidal rule. The readout can instead render
+  as a **live definite integral** (`areaReadoutMath`): the ∫ notation typesets
+  with a moving upper limit as the learner drags.
 - **Slider control** — large, touch-friendly range input driving the moving
   point; live readouts for `f(x)`, slope, and area (each individually toggleable).
 - **Tap-the-point** — clicking the plot maps the pixel to an x-value; it can snap
@@ -561,15 +612,26 @@ All messages support inline LaTeX (`$...$`) via the `RichText` renderer.
 
 ### Optional AI concept tutor
 
-Once a step is graded, a `TutorPanel` can offer an **optional** AI explanation
-(`src/lib/aiTutor.ts`, Firebase AI Logic + Gemini). The deterministic engine
-stays the only judge: the model is handed the verdict and the correct answer and
-asked purely to *explain* the concept — it never grades or generates problems.
-Its loosely-formatted output is normalized for the KaTeX renderer by
-`inlineMarkup.ts` (folding `\(…\)`/`$$…$$` into `$…$`, handling Markdown
-emphasis). Follow-ups are capped per step (`MAX_FOLLOWUPS`), and the panel is
-hidden entirely (`isAiAvailable`) unless a real Firebase project with App Check
-is configured — so the zero-config demo and offline use are unchanged.
+Once a step is graded, a `TutorPanel` can offer an **optional** AI explanation.
+The client (`src/lib/aiTutor.ts`) builds a grounded, PII-free context for the
+step and POSTs it to a **Cloudflare Worker proxy** (`tutor-proxy/`) that holds
+the OpenAI key server-side, verifies the caller's Firebase ID token, and relays
+OpenAI's reply. The deterministic engine stays the only judge: the model is
+handed the verdict and the correct answer and asked purely to *explain* the
+concept — it never grades or generates problems. Explanations are personalized
+with **learner-history** signals (`src/lib/learnerInsights.ts`): the concept's
+mastery tier and first-try accuracy, how long since it was last practiced, and
+the concepts missed earlier in this session (tracked by `SessionInsightsContext`
+and recorded as each answer is graded). The model's loosely-formatted output is
+normalized for the KaTeX renderer by `inlineMarkup.ts` (folding `\(…\)`/`$$…$$`
+into `$…$`, handling Markdown emphasis). Follow-ups are capped per step
+(`MAX_FOLLOWUPS`), and the panel is hidden entirely (`isAiAvailable`) unless the
+tutor proxy URL (`VITE_TUTOR_PROXY_URL`) is configured — so the zero-config demo
+and offline use are unchanged.
+
+> The repo also ships an equivalent **Firebase Cloud Functions** implementation
+> of the same proxy in `functions/` (an alternative for teams already on the
+> Blaze plan); the deployed app talks to the Cloudflare Worker.
 
 ---
 
@@ -696,6 +758,10 @@ match /users/{userId} {
     allow read, write: if request.auth != null && request.auth.uid == userId;
   }
 }
+// Server-only: the AI tutor's per-user rate-limit counters and global config
+// (e.g. an `enabled` kill switch) are written by the Admin SDK only.
+match /aiUsage/{uid}   { allow read, write: if false; }
+match /config/{docId}  { allow read, write: if false; }
 ```
 
 A **Settings** page (`/settings`) lets signed-in users manage their account: change the
@@ -712,7 +778,9 @@ reset all progress for quick testing of locks and milestones.
 
 Lessons are **version-controlled JSON**, imported and frozen at build time in
 `contentLoader.ts` (no content API, no CMS). Every lesson is validated both at
-import time (`assertValidLesson`) and via a CLI script.
+import time (`assertValidLesson`) and via a CLI script. The **Reference** cheat
+sheet (`content/reference.json`) is validated the same way (`validateReference.ts`
+/ `assertValidReferenceFacts`).
 
 `validateLesson.ts` enforces:
 
@@ -737,6 +805,11 @@ import time (`assertValidLesson`) and via a CLI script.
   `acceptX`), a positive `tolerance` when set, and a `reveal` spec.
 - Non-read steps must have all three feedback fields (correct/incorrect/hint).
 - Practice banks must hold ≥ 3 interactive questions with unique IDs.
+
+The reference deck has its own checks (`validateReference.ts`): every fact needs
+a unique id, a title, at least one of `formula`/`summary`, and a `lessonId` that
+resolves to a real published lesson. The `validate:lessons` CLI runs the lesson
+checks **and** the reference checks in one pass.
 
 Run validation anytime:
 
@@ -792,6 +865,10 @@ Here is a representative step (a `power_term` "derivative builder") from
 | `/profile` | `ProfilePage` — stats, activity heatmap, concept mastery | Yes |
 | `/settings` | `SettingsPage` — account management | Yes |
 
+The **Reference** cheat sheet isn't a route — it opens as a popup over the
+current page from the header (and the roadmap), so it never pulls the learner out
+of a lesson or session.
+
 ---
 
 ## 13. Project setup & scripts
@@ -817,6 +894,10 @@ VITE_FIREBASE_PROJECT_ID
 VITE_FIREBASE_STORAGE_BUCKET
 VITE_FIREBASE_MESSAGING_SENDER_ID
 VITE_FIREBASE_APP_ID
+
+# Optional
+VITE_FIREBASE_APPCHECK_SITE_KEY   # App Check (reCAPTCHA Enterprise) for Firestore hardening
+VITE_TUTOR_PROXY_URL              # deployed Cloudflare Worker URL → enables the AI tutor
 ```
 
 Available scripts:
@@ -830,7 +911,8 @@ Available scripts:
 | `npm run test` | Run unit tests once |
 | `npm run test:watch` | Watch-mode tests |
 | `npm run test:coverage` | Tests with V8 coverage (`src/lib/**`) |
-| `npm run validate:lessons` | Validate every lesson JSON file |
+| `npm run validate:lessons` | Validate every lesson JSON file + the reference deck |
+| `npm run kill-ports` | Free the dev/preview ports (5173 / 5174) |
 
 ---
 
@@ -840,13 +922,14 @@ The app deploys as static files to **Firebase Hosting** with an SPA rewrite
 (everything routes to `index.html`). Firestore rules are deployed alongside it.
 Configuration lives in `firebase.json` (site `calculus-lab`, public dir `dist`); the
 active project is set in `.firebaserc`. The app is live at
-**https://calculus-lab.web.app**.
+**https://calculus-lab.web.app**. The optional AI tutor proxy deploys separately
+to Cloudflare (see [`tutor-proxy/README.md`](./tutor-proxy/README.md)).
 
 ```bash
 npm run build
 npx -y firebase-tools@latest login
-npx -y firebase-tools@latest deploy                  # hosting + firestore rules
-# or scope it:
+npx -y firebase-tools@latest deploy --only hosting,firestore:rules
+# or scope it further:
 npx -y firebase-tools@latest deploy --only hosting
 npx -y firebase-tools@latest deploy --only firestore:rules
 ```
@@ -869,8 +952,10 @@ coverage scoped to `src/lib/**`:
 | `contentLoader.test.ts` | Loading, levels, sessions, unlock/completion logic |
 | `masteryService.test.ts` | Concept catalog + mastery/weak-area scoring |
 | `reviewPlanner.test.ts` | Targeted-review ranking (weakness + recency) |
+| `learnerInsights.test.ts` | Concept insight + session miss tally for the tutor |
 | `aiTutor.test.ts` | Tutor context building + answer descriptions |
 | `inlineMarkup.test.ts` | Inline math/markdown normalization + tokenizing |
+| `referenceService.test.ts` | Reference grouping + level-gated unlocking |
 | `validateLesson.test.ts` | Lesson-schema validation rules |
 
 ```bash
@@ -905,12 +990,14 @@ enough.
 **Scope note — AI is optional and never grades.** Every problem, hint, and
 answer key is hand-authored, and all grading is deterministic (math.js, used for
 answer-checking, not generation), so the app teaches fully on its own with no AI.
-An **optional** AI concept tutor (Firebase AI Logic + Gemini) can layer on top to
-*explain* a step *after* it's graded — it's given the verdict and the correct
-answer and only explains; it never grades or generates problems, and it stays
-hidden unless a real Firebase project with App Check is configured. The
-learning-science layer (practice, targeted/interleaved review, custom practice,
-sequential mastery, XP/streaks) is implemented.
+An **optional** AI concept tutor (OpenAI, behind a Cloudflare Worker proxy) can
+layer on top to *explain* a step *after* it's graded — it's given the verdict and
+the correct answer and only explains; it never grades or generates problems, and
+it stays hidden unless the tutor proxy URL (`VITE_TUTOR_PROXY_URL`) is configured.
+Keeping the OpenAI key on the Worker lets the app deploy publicly on Firebase's
+free Spark plan (no Cloud Functions / Blaze required). The learning-science layer
+(practice, targeted/interleaved review, custom practice, sequential mastery,
+XP/streaks) is implemented.
 
 **Mastery model.** Per-concept mastery (`learning` / `proficient` / `mastered`) is computed
 from saved progress and shown on the profile. Lesson *status* itself still only reaches
