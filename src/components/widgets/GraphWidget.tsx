@@ -703,13 +703,12 @@ export function GraphWidget({
           />
         )}
 
-        {/* Rise/run triangle for the "rate of change" walkthrough: the run (Δx)
-            along the fixed point's height and the rise (Δy) up to the moving
-            point, so slope reads visibly as Δy / Δx. */}
-        {showSlider &&
-          config.showSecant !== false &&
-          config.showSecantRiseRun &&
-          x1 !== x0 && (
+        {/* Rise/run triangle for the "rate of change" walkthrough and the
+            rate_explorer sandbox: the run (Δx) along the fixed point's height and
+            the rise (Δy) up to the moving point, so slope reads visibly as
+            Δy / Δx. Independent of the full-width secant line, so the sandbox can
+            draw the triangle on a line without a redundant chord on top of it. */}
+        {showSlider && config.showSecantRiseRun && x1 !== x0 && (
             <g className="secant-reveal">
               <line
                 x1={p0.sx}
@@ -764,8 +763,9 @@ export function GraphWidget({
           />
         )}
 
-        {/* guide lines from the moving point to each axis */}
-        {showSlider && (
+        {/* guide lines from the moving point to each axis; hidden in rise/run
+            mode so the Δy / Δx triangle stays the clean focus. */}
+        {showSlider && !config.showSecantRiseRun && (
           <>
             <line
               x1={p1.sx}
@@ -800,7 +800,7 @@ export function GraphWidget({
             </>
           ) : config.showTangent ? (
             <circle cx={p1.sx} cy={p1.sy} r={6} fill="#10b981" />
-          ) : config.showSecant !== false ? (
+          ) : config.showSecant !== false || config.showSecantRiseRun ? (
             <>
               <circle cx={p0.sx} cy={p0.sy} r={6} fill="#4f46e5" />
               <circle cx={p1.sx} cy={p1.sy} r={6} fill="#f59e0b" />
@@ -990,11 +990,9 @@ export function GraphWidget({
           </p>
         )}
 
-      {/* Rate-of-change readout for the rise/run walkthrough: slope as Δy / Δx. */}
-      {showSlider &&
-        config.showSecant !== false &&
-        config.showSecantRiseRun &&
-        x1 !== x0 && (
+      {/* Rate-of-change readout for the rise/run walkthrough and rate_explorer
+          sandbox: slope as Δy / Δx, independent of the full-width secant line. */}
+      {showSlider && config.showSecantRiseRun && x1 !== x0 && (
           <div className="secant-reveal text-center text-base text-slate-800">
             <MathBlock
               latex={`\\text{${rawSlopeLabel}} = \\dfrac{\\Delta y}{\\Delta x} = \\dfrac{${fmtNum(y1 - y0)}}{${fmtNum(x1 - x0)}} = ${fmtNum((y1 - y0) / (x1 - x0))}`}

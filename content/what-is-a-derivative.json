@@ -68,10 +68,10 @@
         "hintAfterAttempts": 1,
         "answer": { "type": "numeric", "value": 0, "tolerance": 0.01 },
         "sandbox": {
-          "preset": "slope_explorer",
-          "fn": "x^2 - 2",
-          "domain": [-3, 3],
-          "caption": "Drag the point and watch the tangent tilt — the slope you read off is the derivative at that x."
+          "preset": "rate_explorer",
+          "fn": "0.5*x + 1",
+          "domain": [-1, 5],
+          "caption": "Drag the point and watch the rise (Δy) over the run (Δx): on a line that rate stays the same all along. A flat line is the special case where the height never rises — Δy = 0 — so its derivative is 0."
         }
       },
       "solution": [
@@ -91,7 +91,7 @@
       "feedback": {
         "correct": "Exactly! Each time x increases by 1, f(x) stays at 2 — it changes by 0. So the rate of change is 0, and that's the derivative everywhere.",
         "incorrect": "Look at the height of the line as you drag x. Does it ever move up or down?",
-        "hint": "Plug in a few values: f(0) = 2, f(1) = 2, f(2) = 2. The output never moves, so each step changes f by 0."
+        "hint": "Compare the output at a few x-values like f(0), f(1), f(2) — how much does f move for each step in x?"
       }
     },
     {
@@ -126,10 +126,10 @@
         "hintAfterAttempts": 1,
         "answer": { "type": "numeric", "value": 2, "tolerance": 0.01 },
         "sandbox": {
-          "preset": "slope_explorer",
-          "fn": "3 - x",
+          "preset": "rate_explorer",
+          "fn": "x + 2",
           "domain": [-1, 5],
-          "caption": "Drag the point along this line — its slope (the rate of change) is the same everywhere. A straight line has one constant derivative."
+          "caption": "Drag the point and read the rise (Δy) over the run (Δx) — on a straight line that ratio is the same everywhere you go. That constant rise-over-run is the derivative."
         }
       },
       "solution": [
@@ -149,7 +149,7 @@
       "feedback": {
         "correct": "Right! Each time x increases by 1, f(x) goes up by 2, so the rate of change is 2 — and that constant rate is the derivative.",
         "incorrect": "Compare two neighbors: at x = 1, f = 2; at x = 2, f = 4. How much did the output rise?",
-        "hint": "Plug in values: f(1) = 2, f(2) = 4, f(3) = 6. Each step of 1 in x raises f by 2."
+        "hint": "Compare the output at consecutive x-values — the constant amount f rises per step in x is the derivative."
       }
     },
     {
@@ -184,10 +184,10 @@
         "hintAfterAttempts": 1,
         "answer": { "type": "numeric", "value": 2, "tolerance": 0.01 },
         "sandbox": {
-          "preset": "slope_explorer",
-          "fn": "0.5*x^2",
-          "domain": [-3, 3],
-          "caption": "Drag the point along this curve — the tangent's steepness is the derivative at that x. Read the slope right off the tangent."
+          "preset": "rate_explorer",
+          "fn": "0.5*x + 2",
+          "domain": [-1, 5],
+          "caption": "Drag the point: the rise over run (Δy/Δx) is the same all along the line, and where the line crosses the axis never changes it. The constant term doesn't affect the rate."
         }
       },
       "solution": [
@@ -207,7 +207,7 @@
       "feedback": {
         "correct": "Exactly 2 — the same as f(x) = 2x! Each time x increases by 1, f(x) rises by 2; the + 3 only shifts the line up. So the rate of change is 2, and a constant term has no effect on the derivative.",
         "incorrect": "The + 3 just shifts the line up. The steepness — how much f changes per step — is still the same as 2x.",
-        "hint": "Plug in values: f(1) = 5, f(2) = 7, f(3) = 9. Each step raises f by 2 — the + 3 just shifts everything up."
+        "hint": "The + 3 only shifts the line up without tilting it, so check how much f rises for each step in x."
       }
     },
     {
@@ -258,10 +258,10 @@
         "hintAfterAttempts": 1,
         "answer": { "type": "numeric", "value": -1, "tolerance": 0.01 },
         "sandbox": {
-          "preset": "slope_explorer",
-          "fn": "-x^2 + 4",
-          "domain": [-3, 3],
-          "caption": "Drag the point — where the tangent points downhill the slope is negative, so the derivative is negative there."
+          "preset": "rate_explorer",
+          "fn": "3 - 2*x",
+          "domain": [-1, 5],
+          "caption": "Drag the point along this downhill line — the run (Δx) is positive but the rise (Δy) is negative, so Δy/Δx stays negative the whole way. A line heading down has a negative rate of change."
         }
       },
       "solution": [
@@ -281,7 +281,7 @@
       "feedback": {
         "correct": "Yes — each time x increases by 1, f(x) drops by 1, so the rate of change is −1. That rate of change is the derivative, f'(x) = −1, and a negative derivative means the function is decreasing.",
         "incorrect": "The line falls as x grows, so the rate of change is negative. By how much does f drop for each step in x?",
-        "hint": "Plug in values: f(1) = 3, f(2) = 2, f(3) = 1. Each step lowers f by 1, so the change per step is −1."
+        "hint": "The line heads downhill, so the change per step is negative — compare consecutive outputs to see how much f drops each step."
       }
     },
     {
@@ -316,10 +316,10 @@
         "hintAfterAttempts": 1,
         "answer": { "type": "numeric", "value": 5, "tolerance": 0.01 },
         "sandbox": {
-          "preset": "slope_explorer",
-          "fn": "x^2 + 1",
-          "domain": [-3, 3],
-          "caption": "Drag the point — the steeper the tangent, the larger the derivative at that x."
+          "preset": "rate_explorer",
+          "fn": "3*x - 1",
+          "domain": [-1, 5],
+          "caption": "Drag the point: each step right (Δx) brings a big rise (Δy) here, so Δy/Δx is large — and the same everywhere. A bigger rise per step means a bigger rate of change."
         }
       },
       "solution": [
@@ -339,7 +339,7 @@
       "feedback": {
         "correct": "Right — each time x increases by 1, f(x) climbs by 5, so the rate of change is 5 — that's the derivative, f'(x) = 5. The steeper the line, the bigger the derivative.",
         "incorrect": "Each step in x raises f by the same fixed amount. How much does f climb for each unit increase in x?",
-        "hint": "Plug in values: f(1) = 5, f(2) = 10, f(3) = 15. Each step raises f by 5."
+        "hint": "A steeper line climbs more per step — compare the output at consecutive x-values to read how much f rises each step."
       }
     },
     {
@@ -383,10 +383,10 @@
           "correctIndex": 0
         },
         "sandbox": {
-          "preset": "slope_explorer",
-          "fn": "3 - 0.5*x^2",
-          "domain": [-3, 3],
-          "caption": "Drag the point and compare how gentle or steep the tangent is — a smaller tilt means a smaller derivative."
+          "preset": "rate_explorer",
+          "fn": "1 + 0.25*x",
+          "domain": [-1, 5],
+          "caption": "Drag the point: on this gentle line each step right (Δx) brings only a small rise (Δy), so Δy/Δx is small — but still the same everywhere. A gentler line has a smaller rate of change."
         }
       },
       "solution": [
@@ -406,7 +406,7 @@
       "feedback": {
         "correct": "Correct — each time x increases by 1, f(x) rises by only 0.5, so the rate of change — the derivative — is 0.5. That's smaller than 2, so this line is gentler and changes more slowly.",
         "incorrect": "Compare the change per step. Each step here adds 0.5; for f(x) = 2x each step adds 2. Is 0.5 more or less?",
-        "hint": "Plug in values: f(1) = 0.5, f(2) = 1, f(3) = 1.5. Each step adds just 0.5 — less than the 2 from f(x) = 2x."
+        "hint": "Compare how much f rises for each step in x here with the 2 that f(x) = 2x gains per step."
       }
     },
     {
@@ -480,16 +480,16 @@
         "hintAfterAttempts": 1,
         "answer": { "type": "numeric", "value": 3, "tolerance": 0.01 },
         "sandbox": {
-          "preset": "slope_explorer",
-          "fn": "x^2 - 2",
-          "domain": [-3, 3],
-          "caption": "Drag the point and read the tangent's slope — that slope is the derivative at that x."
+          "preset": "rate_explorer",
+          "fn": "x + 3",
+          "domain": [-1, 5],
+          "caption": "Drag the point and read the rise (Δy) over the run (Δx) — that ratio is the same everywhere on a line, so the derivative of a line is just its constant rise-over-run."
         }
       },
       "feedback": {
         "correct": "Right — each step in x raises f by 3, so the rate of change is 3. The −4 only shifts the line down, so the derivative of a line is just its slope: f'(x) = 3.",
         "incorrect": "Compare neighbors: f(0) = −4, f(1) = −1, f(2) = 2. How much does f climb per step? The −4 doesn't affect that.",
-        "hint": "Each step of 1 in x adds 3 to f, so the derivative is that slope, 3."
+        "hint": "The −4 only shifts the line down; read how much f climbs for each step in x to get the slope."
       }
     },
     {
@@ -524,16 +524,16 @@
         "hintAfterAttempts": 1,
         "answer": { "type": "numeric", "value": -2, "tolerance": 0.01 },
         "sandbox": {
-          "preset": "slope_explorer",
-          "fn": "-x^2 + 2*x",
-          "domain": [-2, 4],
-          "caption": "Drag the point — when the tangent tips downhill the slope is negative, so the derivative is negative there."
+          "preset": "rate_explorer",
+          "fn": "2 - 0.5*x",
+          "domain": [-1, 5],
+          "caption": "Drag the point along this downhill line — the rise (Δy) is negative while the run (Δx) is positive, so Δy/Δx stays negative. A line that falls has a negative rate of change everywhere."
         }
       },
       "feedback": {
         "correct": "Yes — each step in x drops f by 2, so the rate of change is −2. A line heading downhill has a negative derivative: f'(x) = −2.",
         "incorrect": "The line falls as x grows, so the derivative is negative. By how much does f drop for each step in x?",
-        "hint": "f(0) = 6, f(1) = 4, f(2) = 2 — down 2 each step, so f'(x) = −2."
+        "hint": "This line falls as x grows, so track how much f drops for each step in x — that constant change is the derivative."
       }
     },
     {
@@ -578,7 +578,7 @@
       "feedback": {
         "correct": "Right — f falls to the left of 0 and rises to the right, so it's decreasing then increasing.",
         "incorrect": "Picture the parabola: which way does it head before the bottom, and which way after?",
-        "hint": "Left of the vertex (x < 0) the curve drops; right of it (x > 0) it climbs."
+        "hint": "On each side of the vertex, check whether f is rising or falling as x increases — that's its behavior there."
       }
     },
     {
@@ -623,16 +623,16 @@
           "correctIndex": 0
         },
         "sandbox": {
-          "preset": "slope_explorer",
-          "fn": "0.5*x^2",
-          "domain": [-3, 3],
-          "caption": "Drag the point — the derivative is the slope of the tangent, which is generally different from the height of the curve."
+          "preset": "rate_explorer",
+          "fn": "5 - 0.5*x",
+          "domain": [-1, 5],
+          "caption": "Drag the point: each step right (Δx) changes the height by Δy, and Δy/Δx is the rate of change. A flat line never changes height — Δy = 0 — so its derivative is 0."
         }
       },
       "feedback": {
         "correct": "Right — a horizontal line has the same output everywhere, so it changes by 0 per step. Its derivative is 0; don't confuse the value 8 with the rate of change.",
         "incorrect": "Watch the output as you drag x — does the height ever move up or down?",
-        "hint": "The value stays 8 no matter what x is, so f changes by 0. The derivative is 0, not 8."
+        "hint": "The value stays 8 no matter what x is — so ask how much the output changes per step, not what the output equals."
       }
     },
     {
@@ -657,16 +657,16 @@
           ]
         },
         "sandbox": {
-          "preset": "slope_explorer",
-          "fn": "x^2 - 2",
-          "domain": [-3, 3],
-          "caption": "Drag from left to right — the slope climbs from negative through 0 to positive. Ordering by derivative means ordering these slopes."
+          "preset": "rate_explorer",
+          "fn": "2 - x",
+          "domain": [-1, 5],
+          "caption": "Drag the point — the rise over run (Δy/Δx) is the same everywhere on a line, and that ratio is its slope. Ordering these lines by derivative just means ordering their rise-over-run."
         }
       },
       "feedback": {
         "correct": "Right — the derivative of a line is its slope: −2, −1, 0.5, and 3. The constant terms don't change the slope.",
         "incorrect": "Read the slope — the number multiplying x — off each line, keep its sign, and order them low to high.",
-        "hint": "The slopes are −2, −1, 0.5, and 3 (the +4, +5, and +1 don't matter)."
+        "hint": "Only the coefficient of x sets each slope; ignore the added constants and compare those coefficients, sign included."
       }
     },
     {
@@ -691,16 +691,16 @@
           "distractors": ["4", "-2"]
         },
         "sandbox": {
-          "preset": "slope_explorer",
-          "fn": "x^2 + 1",
-          "domain": [-3, 3],
-          "caption": "Drag the point and read the tangent's slope — matching a function to its derivative is just reading off this slope."
+          "preset": "rate_explorer",
+          "fn": "1.5*x - 1",
+          "domain": [-1, 5],
+          "caption": "Drag the point and read Δy/Δx — on a line it's constant, and it equals the number multiplying x. Matching a line to its derivative is just reading off that rate."
         }
       },
       "feedback": {
         "correct": "Perfect — a line's derivative is the number multiplying x: 2, −3, and 1. A constant like 5 is a flat line, so its derivative is 0.",
         "incorrect": "The derivative is the slope — the coefficient of x. A constant function (just a number) is flat, so its derivative is 0.",
-        "hint": "f(x) = x + 4 has slope 1 (the +4 doesn't matter), and f(x) = 5 has slope 0."
+        "hint": "Read each line's derivative as the number multiplying x (added constants don't matter) — and think about the slope of a flat, constant function."
       }
     },
     {
@@ -744,16 +744,16 @@
           "correctIndex": 0
         },
         "sandbox": {
-          "preset": "slope_explorer",
+          "preset": "rate_explorer",
           "fn": "4 - 0.5*x",
           "domain": [-1, 5],
-          "caption": "Drag the point along this line — the slope readout never changes, because a straight line has one constant derivative."
+          "caption": "Drag the point all along this line — Δy and Δx both change as you move, but their ratio Δy/Δx never does. A straight line has one constant rate of change."
         }
       },
       "feedback": {
         "correct": "Exactly — unlike a curve, a straight line has the same slope at every point, so its derivative is constant: f'(x) = 2 everywhere.",
         "incorrect": "Watch the slope readout as you drag. Does the number change at all, or hold steady?",
-        "hint": "The slope readout stays at 2 no matter where x is — a line's rate of change never varies."
+        "hint": "Compare the line's steepness at a low x and a high x — is it any steeper in one place than the other?"
       }
     },
     {
@@ -821,7 +821,7 @@
       "feedback": {
         "correct": "Exactly — the slope 3x² − 3 is smallest at x = 0, where it dips to −3, the steepest descent.",
         "incorrect": "The slope is 3x² − 3. Where does that reach its most negative value?",
-        "hint": "3x² − 3 hits its lowest value, −3, at x = 0."
+        "hint": "The slope 3x² − 3 is smallest where 3x² is smallest — and 3x² (a square) is never negative."
       }
     },
     {
@@ -847,16 +847,16 @@
           "correctIndex": 0
         },
         "sandbox": {
-          "preset": "slope_explorer",
-          "fn": "2 - x",
+          "preset": "rate_explorer",
+          "fn": "3 - x",
           "domain": [-1, 5],
-          "caption": "Drag the point along this line — its slope depends only on the tilt, not on how high the line sits, so sliding it up or down never changes the derivative."
+          "caption": "Drag the point — the rise over run (Δy/Δx) depends only on the tilt of the line, not on how high it sits. Sliding a line up or down never changes its rate of change."
         }
       },
       "feedback": {
         "correct": "Right — shifting a line up or down changes where it sits, not how steep it is. Adding a constant leaves the slope, and therefore the derivative, unchanged at 4.",
         "incorrect": "Shifting a graph vertically doesn't tilt it. Does moving the whole line up by 9 make it any steeper?",
-        "hint": "A constant term only slides the line up or down; the slope (and the derivative) stays 4."
+        "hint": "A constant term only slides the line up or down; it doesn't change the slope — so compare the two slopes."
       }
     },
     {

@@ -76,7 +76,7 @@
       "feedback": {
         "correct": "Right — $\\frac{d}{dx}(x^3) = 3x^2$ and $\\frac{d}{dx}(x^2) = 2x$, so the derivative is $3x^2 + 2x$.",
         "incorrect": "Differentiate each term separately with the power rule, then add. You need both $3x^2$ and $2x$ (in either order).",
-        "hint": "$\\frac{d}{dx}(x^3) = 3x^2$ and $\\frac{d}{dx}(x^2) = 2x$. Drag those two tiles in."
+        "hint": "Apply the power rule to each term on its own — bring the exponent down and drop it by one — then drag in the two results."
       }
     },
     {
@@ -126,7 +126,7 @@
       "feedback": {
         "correct": "Exactly — $f'(x) = 3x^2 - 2$, so $f'(2) = 3 \\cdot 4 - 2 = 10$.",
         "incorrect": "First differentiate: $f'(x) = 3x^2 - 2$. Then substitute $x = 2$.",
-        "hint": "$f'(x) = 3x^2 - 2$, so $f'(2) = 12 - 2 = 10$."
+        "hint": "You have $f'(x) = 3x^2 - 2$ — now evaluate it at $x = 2$."
       }
     },
     {
@@ -196,7 +196,7 @@
       "feedback": {
         "correct": "Yes — each term differentiates on its own, and the constant 7 becomes 0.",
         "incorrect": "Apply the power rule to each term, and remember the derivative of 7 is 0.",
-        "hint": "$2x^3 \\to 6x^2$, $4x^2 \\to 8x$, $-x \\to -1$, $7 \\to 0$. So $6x^2 + 8x - 1$."
+        "hint": "Hit each term with the power rule, carrying its coefficient, and let the constant $7$ fall away."
       }
     },
     {
@@ -231,8 +231,6 @@
           "initialSlider": 0
         },
         "hintAfterAttempts": 1,
-        "liveCheck": true,
-        "goalLabel": "Drag x until the tangent slope is 5",
         "answer": {
           "type": "slider",
           "value": 2,
@@ -260,7 +258,7 @@
       "feedback": {
         "correct": "Nice — $2x + 1 = 5$ gives $x = 2$, and the tangent there has slope 5.",
         "incorrect": "Set the slope formula equal to 5: $2x + 1 = 5$. Solve for $x$, then drag the slider there.",
-        "hint": "$2x + 1 = 5 \\to 2x = 4 \\to x = 2$."
+        "hint": "You have the slope formula $2x + 1$ — set it equal to 5 and solve that for $x$."
       }
     },
     {
@@ -306,7 +304,7 @@
       "feedback": {
         "correct": "Exactly — $x^3 \\to 3x^2$ and $x^2 \\to 2x$, so $f'(x) = 3x^2 + 2x$.",
         "incorrect": "Differentiate each term on its own with the power rule, then drag both pieces in.",
-        "hint": "$\\frac{d}{dx}(x^3) = 3x^2$ and $\\frac{d}{dx}(x^2) = 2x$."
+        "hint": "Differentiate each term with the power rule — bring the exponent down and lower it by one."
       }
     },
     {
@@ -334,7 +332,7 @@
       "feedback": {
         "correct": "Right — $2x^3 \\to 6x^2$ and $5x \\to 5$, so $f'(x) = 6x^2 + 5$.",
         "incorrect": "Bring down each exponent as a coefficient, and remember $5x$ differentiates to a constant.",
-        "hint": "$2x^3 \\to 6x^2$ and $5x \\to 5$."
+        "hint": "Use the power rule on $2x^3$, and note that a linear term like $5x$ differentiates to a constant."
       }
     },
     {
@@ -362,7 +360,7 @@
       "feedback": {
         "correct": "Nice — $x^4 \\to 4x^3$ and $3x^2 \\to 6x$, so $f'(x) = 4x^3 - 6x$.",
         "incorrect": "Differentiate each term, then keep the subtraction so the second term stays negative.",
-        "hint": "$x^4 \\to 4x^3$ and $-3x^2 \\to -6x$."
+        "hint": "Apply the power rule to each term, and carry the minus sign so the second term stays negative."
       }
     },
     {
@@ -394,7 +392,7 @@
       "feedback": {
         "correct": "Great — differentiating each function term by term lines them up perfectly.",
         "incorrect": "Apply the power rule to each term of every function, then find its match.",
-        "hint": "For $x^2 + x$, the derivative is $2x + 1$; use the same method for the rest."
+        "hint": "Differentiate each function one term at a time, then pair it with that derivative."
       }
     },
     {
@@ -422,7 +420,7 @@
       "feedback": {
         "correct": "Yes — $x^3 \\to 3x^2$ and the constant $7$ becomes $0$, so $f'(x) = 3x^2$.",
         "incorrect": "A constant term has slope $0$, so it drops away. What's left from $x^3$?",
-        "hint": "$\\frac{d}{dx}(x^3) = 3x^2$ and $\\frac{d}{dx}(7) = 0$."
+        "hint": "Use the power rule on $x^3$, and remember the constant $7$ just drops away."
       }
     },
     {
@@ -451,7 +449,7 @@
       "feedback": {
         "correct": "Exactly — multiply by the exponent ($4 \\cdot 5 = 20$) and drop it by one to get $20x^4$.",
         "incorrect": "Power rule: multiply the coefficient by the exponent, then lower the exponent by one.",
-        "hint": "$4 \\cdot 5 = 20$ and $5 - 1 = 4$, giving $20x^4$."
+        "hint": "Bring the exponent down as a factor on the coefficient, then lower the power by one."
       }
     },
     {
@@ -482,7 +480,7 @@
       "feedback": {
         "correct": "That's the routine — split the polynomial into terms, differentiate each with the power rule, then add the results back together.",
         "incorrect": "Split the whole polynomial into separate terms first, differentiate each one, and combine them only at the end.",
-        "hint": "Start by breaking the polynomial into its separate terms."
+        "hint": "The power rule works on one term at a time — so what has to happen to the polynomial before you can use it, and what's left after?"
       }
     },
     {
@@ -510,7 +508,7 @@
       "feedback": {
         "correct": "Right — $f' < 0$ left of $x = 2$ (decreasing) and $f' > 0$ to the right (increasing).",
         "incorrect": "Plug a test value from each side of $x = 2$ into $f'(x) = 2x - 4$ and check its sign.",
-        "hint": "At $x = 0$, $f' = -4$ (decreasing); at $x = 3$, $f' = 2$ (increasing)."
+        "hint": "On each side of $x = 2$, test whether $f'(x) = 2x - 4$ comes out negative or positive."
       }
     },
     {
@@ -542,7 +540,7 @@
       "feedback": {
         "correct": "Nice — differentiate each function, then plug in $x = 1$.",
         "incorrect": "First find $f'(x)$ for each function, then substitute $x = 1$.",
-        "hint": "For $x^2 + 2x$, $f'(x) = 2x + 2$, so $f'(1) = 4$."
+        "hint": "Find $f'(x)$ for each function, then evaluate it at $x = 1$ before matching."
       }
     },
     {
@@ -570,7 +568,7 @@
       "feedback": {
         "correct": "Exactly — $x^3 \\to 3x^2$, $2x^2 \\to 4x$, and $x \\to 1$, so $f'(x) = 3x^2 + 4x + 1$.",
         "incorrect": "Differentiate all three terms; don't forget that $x$ on its own becomes $1$.",
-        "hint": "$x^3 \\to 3x^2$, $2x^2 \\to 4x$, $x \\to 1$."
+        "hint": "Apply the power rule to all three terms — and don't forget the lone $x$ contributes a term of its own."
       }
     }
   ]

@@ -82,7 +82,7 @@
       "feedback": {
         "correct": "Right — left of the peak the slope is positive (f rising), and right of it the slope is negative (f falling). Increasing then decreasing makes x = 2 a maximum.",
         "incorrect": "Watch the sign of the tangent slope just before and just after x = 2.",
-        "hint": "f'(x) = −2x + 4: positive for x < 2, negative for x > 2 — it flips from + to −."
+        "hint": "f'(x) = −2x + 4 — check its sign just before x = 2 and just after to see which way it flips."
       }
     },
     {
@@ -145,7 +145,7 @@
       "feedback": {
         "correct": "Exactly — the slope is negative as the curve falls toward the bottom, then positive as it rises away. Decreasing then increasing makes x = 1 a minimum.",
         "incorrect": "Check the tangent slope just left and just right of x = 1.",
-        "hint": "f'(x) = 2x − 2: negative for x < 1, positive for x > 1 — it flips from − to +."
+        "hint": "f'(x) = 2x − 2 — check its sign just before x = 1 and just after to see which way it flips."
       }
     },
     {
@@ -221,12 +221,12 @@
     },
     {
       "id": "mm-step-6",
-      "type": "predict",
+      "type": "slider_graph",
       "conceptTag": "extrema",
       "content": [
         {
           "type": "text",
-          "body": "On f(x) = x³ − 3x, predict the local maximum: drag the dot to the peak where the curve stops climbing and starts falling, then lock it in to reveal the true tangent there."
+          "body": "Back to f(x) = x³ − 3x. Drag x through the local maximum — the peak on the left — and watch the tangent. Which best describes the slope f'(x) right at that peak and as x moves through it?"
         }
       ],
       "interaction": {
@@ -234,40 +234,55 @@
           "fn": "x^3 - 3*x",
           "domain": [-2.2, 2.2],
           "yDomain": [-3, 3],
+          "sliderLabel": "x",
           "xLabel": "x",
-          "yLabel": "f"
+          "yLabel": "f",
+          "showSecant": false,
+          "showTangent": true,
+          "showSlopeValue": false,
+          "slopeLabel": "Tangent slope",
+          "sliderMin": -2.2,
+          "sliderMax": 2.2,
+          "sliderStep": 0.1,
+          "initialSlider": -2
         },
         "hintAfterAttempts": 1,
-        "goalLabel": "Drag the dot to the local maximum",
         "answer": {
-          "type": "predict_point",
-          "x": -1,
-          "tolerance": 0.3,
-          "reveal": { "point": true, "tangent": true, "vertical": true }
+          "type": "multiple_choice",
+          "options": [
+            "It's 0 at the peak, switching from positive to negative",
+            "It's 0 at the peak, switching from negative to positive",
+            "It stays positive — the curve keeps rising through the peak",
+            "It's 0 at the peak, then returns to positive on both sides",
+            "It's negative at the peak, since the curve falls just after"
+          ],
+          "correctIndex": 0
         },
         "sandbox": {
           "preset": "slope_explorer",
           "fn": "-0.5*x^2 + 2*x",
           "domain": [-1, 5],
-          "caption": "Drag the point up this gentle hill — the tangent slope fades to 0 exactly at the crest, then runs negative on the way down."
+          "caption": "Drag the point up this gentle hill — the tangent slope reads positive on the way up, hits 0 at the crest, then turns negative beyond it."
         }
       },
       "solution": [
-        { "type": "text", "body": "Critical points solve $f'(x) = 0$. With $f'(x) = 3x^2 - 3$:" },
-        { "type": "math", "latex": "3x^2 - 3 = 0 \\;\\Rightarrow\\; x = \\pm 1", "display": true },
-        { "type": "text", "body": "The slope runs $+ \\to -$ at $x = -1$ (rising then falling), so the local maximum is at $x = -1$. Drag the dot there." }
+        { "type": "text", "body": "The slope is $f'(x) = 3x^2 - 3$. At the peak ($x = -1$) it is zero, so the tangent lies flat:" },
+        { "type": "math", "latex": "f'(-1) = 3(-1)^2 - 3 = 0", "display": true },
+        { "type": "text", "body": "Sample the sign just on each side: $f'(-2) = 9 > 0$ (rising) and $f'(0) = -3 < 0$ (falling). The slope is 0 at the peak and flips from positive to negative — the signature of a maximum." }
       ],
       "solveAnimation": {
         "kind": "narrated",
+        "showSlopeValue": true,
         "phases": [
-          { "text": "Critical points solve $f'(x) = 0$. With $f'(x) = 3x^2 - 3$, that's $x = \\pm 1$." },
-          { "text": "The slope runs $+ \\to -$ at $x = -1$ (rising then falling) — the local maximum." }
+          { "text": "Approaching from the left, the tangent slopes uphill: $f'(x) > 0$.", "to": -1.7, "ms": 1500 },
+          { "text": "At the peak $x = -1$ the tangent goes flat: $f'(-1) = 0$.", "to": -1, "ms": 1600 },
+          { "text": "Past the peak the tangent slopes downhill: $f'(x) < 0$ — the slope flips from positive to negative.", "to": 0, "ms": 1700 }
         ]
       },
       "feedback": {
-        "correct": "Nailed it — at x = −1 the curve turns from rising to falling, so the tangent is flat (f'(−1) = 0): a local maximum.",
-        "incorrect": "Aim for the hilltop, where the curve switches from going up to going down, then lock it in.",
-        "hint": "f'(x) = 3x² − 3 = 0 at x = ±1; the peak (rising → falling) is the one on the left, x = −1."
+        "correct": "Right — at the peak the tangent is flat (f'(−1) = 0), and the slope is positive just before and negative just after. Zero, flipping + → −, is exactly what the derivative does at a maximum.",
+        "incorrect": "Watch the tangent as you cross the peak: it tilts uphill (slope > 0), goes flat at the very top (slope = 0), then tilts downhill (slope < 0) — so f' runs from + through 0 to −.",
+        "hint": "At any peak the tangent is flat, so f'(x) = 0 there. A maximum rises then falls, so the slope runs from positive to negative."
       }
     },
     {
@@ -316,7 +331,7 @@
       "feedback": {
         "correct": "Right — at x = 1 the curve turns from falling to rising, so f'(1) = 0 and it's a local minimum (the valley).",
         "incorrect": "Look for the low point, where the curve switches from going down to going up.",
-        "hint": "Of the two turning points x = ±1, the valley (falling → rising) is the one on the right, x = 1."
+        "hint": "The turning points are x = ±1; the valley is where the slope runs − → + (falling then rising). Which of the two is it?"
       }
     },
     {
@@ -341,10 +356,10 @@
           ]
         },
         "sandbox": {
-          "preset": "slope_explorer",
+          "preset": "shape_explorer",
           "fn": "x^3 - 6*x",
-          "domain": [-3, 3],
-          "caption": "Drag the point along this practice curve — the tangent goes flat (slope 0) at each turning point: over the hump and again down in the dip."
+          "domain": [-2.5, 2.5],
+          "caption": "Drag along this hill-and-valley curve: the orange f' runs + → − through the peak (a maximum) and − → + through the valley (a minimum), and stays nonzero everywhere else — so only the turning points qualify."
         }
       },
       "solution": [
@@ -363,7 +378,7 @@
       "feedback": {
         "correct": "Right — f'(x) = 3x(x − 2) is zero only at x = 0 and x = 2. At x = 0 the slope runs + → − (rising then falling), a maximum; at x = 2 it runs − → + (falling then rising), a minimum. At x = 1, f'(1) = −3 ≠ 0, so the curve is just falling there — neither.",
         "incorrect": "First find where f'(x) = 3x(x − 2) equals 0 — only those x are candidates. Then check the sign of f' just left and right of each. A point where f' isn't 0 (like x = 1) can't be a max or min.",
-        "hint": "3x(x − 2) = 0 only at x = 0 and x = 2. + → − is a max, − → + is a min; since f'(1) = −3 ≠ 0, x = 1 is neither."
+        "hint": "Only where f'(x) = 3x(x − 2) is zero can there be a max or min — so check each of 0, 1, 2. At a zero, + → − is a max and − → + is a min."
       }
     },
     {
@@ -423,7 +438,7 @@
       "feedback": {
         "correct": "Yes — $f'$ is positive for $x < -1$ and negative just after, so it crosses zero downward at $x = -1$. A $+ \\to -$ crossing means $f$ rises then falls: a local maximum.",
         "incorrect": "This curve is $f'$, not $f$. A maximum of $f$ sits where $f'$ crosses zero from positive (f rising) to negative (f falling). Find that downward crossing.",
-        "hint": "$f'(x) = 3x^2 - 3 = 0$ at $x = \\pm 1$. At $x = -1$, $f'$ goes $+ \\to -$ (a max); at $x = 1$ it goes $- \\to +$ (a min)."
+        "hint": "$f'(x) = 3x^2 - 3 = 0$ at $x = \\pm 1$. A max of $f$ is where $f'$ crosses zero $+ \\to -$ — find which of the two does that."
       }
     },
     {
@@ -460,7 +475,7 @@
       "feedback": {
         "correct": "Right — at $x = 1$, $f'$ rises through zero from negative to positive. A $- \\to +$ crossing means $f$ falls then rises: a local minimum.",
         "incorrect": "Read $f'$: a minimum of $f$ is where $f'$ crosses zero from negative (f falling) to positive (f rising). The downward crossing at $x = -1$ is the maximum instead.",
-        "hint": "$f'(x) = 3x^2 - 3 = 0$ at $x = \\pm 1$. The $- \\to +$ crossing is at $x = 1$ (a min); the $+ \\to -$ crossing at $x = -1$ is the max."
+        "hint": "$f'(x) = 3x^2 - 3 = 0$ at $x = \\pm 1$. A min of $f$ is where $f'$ crosses zero $- \\to +$ — find which of the two does that."
       }
     },
     {
@@ -528,7 +543,7 @@
       "feedback": {
         "correct": "Right — f' = 3x² − 3 is zero at x = ±1: x = −1 runs + → − (a maximum) and x = 1 runs − → + (a minimum). At x = 0, f' = −3 ≠ 0, so it's neither.",
         "incorrect": "Only x = ±1 are critical (f' = 0). Check the sign change of f' at each; x = 0 isn't a critical point at all.",
-        "hint": "+ → − is a max, − → + is a min. f'(0) = −3 ≠ 0, so x = 0 is neither."
+        "hint": "+ → − is a max, − → + is a min, and any point where f' isn't zero is neither — so test f'(x) = 3x² − 3 at each x."
       }
     },
     {
@@ -562,7 +577,7 @@
       "feedback": {
         "correct": "Nice — setting f' = 0 gives x = −b/2a each time: 2, −3, 1, and 4.",
         "incorrect": "For ax² + bx, the critical point sits at x = −b/2a. Read off a and b for each.",
-        "hint": "x = −b/2a. For x² − 4x: −(−4)/2 = 2."
+        "hint": "The vertex of ax² + bx sits at x = −b/2a — read off a and b for each."
       }
     },
     {
@@ -599,7 +614,7 @@
       "feedback": {
         "correct": "Right — $f'(x) = 2x - 6$ is negative before $x = 3$ and positive after, crossing zero upward there. A $- \\to +$ crossing makes $x = 3$ the minimum of $f$.",
         "incorrect": "This line is $f'$. The minimum of $f$ is where $f'$ passes through zero going from negative (f falling) to positive (f rising) — find where the line crosses the $x$-axis.",
-        "hint": "Set $f'(x) = 2x - 6 = 0$, so $x = 3$. Left of it $f' < 0$ (f falling); right of it $f' > 0$ (f rising) — a minimum."
+        "hint": "The minimum sits where $f'(x) = 2x - 6$ crosses zero — set it equal to $0$ and solve for that $x$."
       }
     },
     {
@@ -636,7 +651,7 @@
       "feedback": {
         "correct": "Yes — $f'(x) = -2x + 6$ is positive before $x = 3$ and negative after, crossing zero downward there. A $+ \\to -$ crossing makes $x = 3$ the maximum of $f$.",
         "incorrect": "This line is $f'$. The maximum of $f$ is where $f'$ drops through zero from positive (f rising) to negative (f falling) — find where the falling line crosses the $x$-axis.",
-        "hint": "Set $f'(x) = -2x + 6 = 0$, so $x = 3$. Left of it $f' > 0$ (f rising); right of it $f' < 0$ (f falling) — a maximum."
+        "hint": "The maximum sits where $f'(x) = -2x + 6$ crosses zero — set it equal to $0$ and solve for that $x$."
       }
     },
     {
@@ -670,7 +685,7 @@
       "feedback": {
         "correct": "Exactly — differentiate, solve f' = 0, test the sign on each side, then classify.",
         "incorrect": "You can't classify a point before you've found it. Start by differentiating.",
-        "hint": "First get f', then where it's zero, then how its sign changes, then label each point."
+        "hint": "Each step uses the result of the one before — you need f' before you can find where it's zero, and a critical point before you can test the sign around it."
       }
     },
     {
@@ -705,7 +720,7 @@
       "feedback": {
         "correct": "Right — 3x(x − 4) is positive for x < 0, negative on (0, 4), and positive for x > 4.",
         "incorrect": "Test a point in each interval in f'(x) = 3x(x − 4) and read its sign.",
-        "hint": "At x = −1: +; at x = 2: −; at x = 5: +. So increasing, decreasing, increasing."
+        "hint": "Pick a test x in each interval — say x = −1, x = 2, x = 5 — and check the sign of f'(x) = 3x(x − 4) there."
       }
     },
     {
@@ -738,7 +753,7 @@
       "feedback": {
         "correct": "Exactly — a sign flip in f' marks a turning point; no flip means no extremum.",
         "incorrect": "A max is rising then falling; a min is falling then rising; a steady sign means no turn.",
-        "hint": "+ → − tops out (max), − → + bottoms out (min), and a constant sign just keeps going."
+        "hint": "A + slope means rising and a − slope means falling, so a flip in slope is a turning point — which flip tops out, and which bottoms out?"
       }
     },
     {
@@ -776,7 +791,7 @@
       "feedback": {
         "correct": "Yes — the peak of −x² + 4x is at x = 2, where the tangent is flat (f'(2) = 0).",
         "incorrect": "The vertex sits halfway between the roots x = 0 and x = 4. Drag there and lock it in.",
-        "hint": "f'(x) = −2x + 4 = 0 gives x = 2."
+        "hint": "Set the slope f'(x) = −2x + 4 to zero and solve for the turning point."
       }
     }
   ]

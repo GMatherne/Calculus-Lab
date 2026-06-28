@@ -728,7 +728,14 @@ export interface Sandbox {
    * Ready-made explorer, each expanding to a self-contained widget with the
    * relevant readout switched on:
    * - `slope_explorer` — a draggable point + tangent + live slope; needs
-   *   {@link Sandbox.fn} (and optional {@link Sandbox.domain}).
+   *   {@link Sandbox.fn} (and optional {@link Sandbox.domain}). Best for curves,
+   *   where the slope varies and the tangent is meaningful.
+   * - `rate_explorer` — a draggable point on a STRAIGHT line that draws the
+   *   rise/run (Δy over Δx) triangle with a live "rate of change = Δy / Δx"
+   *   readout, no tangent. Best for line questions, where the rate is constant
+   *   and Δy/Δx is the honest picture of a derivative; needs {@link Sandbox.fn}
+   *   (and optional {@link Sandbox.domain}). The line MUST NOT be flat (it needs
+   *   a visible Δy) and MUST differ from the graded line.
    * - `shape_explorer` — a draggable point on a curve with its derivative f′
    *   overlaid and the tangent slope shown live, so the learner feels how the
    *   sign of f′ (and the bend of the curve) tracks where f rises, falls, and
@@ -750,6 +757,7 @@ export interface Sandbox {
    */
   preset?:
     | "slope_explorer"
+    | "rate_explorer"
     | "shape_explorer"
     | "power_rule"
     | "reverse_power_rule"
@@ -757,10 +765,10 @@ export interface Sandbox {
     | "area_explorer"
     | "ftc_explorer";
   /**
-   * Curve for the curve-based presets (`slope_explorer`, `shape_explorer`,
-   * `riemann`, `area_explorer`, `ftc_explorer`) — a math.js expression in x. MUST
-   * differ from the graded graph's `fn`, so nothing read off the sandbox
-   * transfers as the answer.
+   * Curve for the curve-based presets (`slope_explorer`, `rate_explorer`,
+   * `shape_explorer`, `riemann`, `area_explorer`, `ftc_explorer`) — a math.js
+   * expression in x. MUST differ from the graded graph's `fn`, so nothing read
+   * off the sandbox transfers as the answer.
    */
   fn?: string;
   /** Plot domain for the curve-based presets; a sensible default window is used when omitted. */

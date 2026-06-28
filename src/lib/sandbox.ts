@@ -37,6 +37,7 @@ export function sandboxKind(sandbox: Sandbox): SandboxKind | null {
   if (sandbox.graph) return "graph";
   switch (sandbox.preset) {
     case "slope_explorer":
+    case "rate_explorer":
       return sandbox.fn ? "graph" : null;
     case "shape_explorer":
       return sandbox.fn ? "shape" : null;
@@ -60,9 +61,11 @@ export function sandboxKind(sandbox: Sandbox): SandboxKind | null {
 /**
  * Expand a graph-style {@link Sandbox} (the `slope_explorer` preset or a `graph`
  * escape hatch) into the {@link GraphConfig} its explorer renders. The slope
- * preset builds a draggable point with its tangent and the slope readout on — the
- * readout slope questions hide — over a DIFFERENT curve; the value readout is
- * suppressed to keep attention on the slope. Returns null when neither applies.
+ * preset builds a draggable point with ONLY its tangent and the slope readout on
+ * — the readout slope questions hide — over a DIFFERENT curve; the secant
+ * (`showSecant: false`) and the value readout are suppressed so the lone tangent
+ * is the focus and no stray chord clutters the plot. Returns null when neither
+ * applies.
  */
 export function buildSandboxGraph(sandbox: Sandbox): GraphConfig | null {
   if (sandbox.graph) return sandbox.graph;
@@ -73,12 +76,52 @@ export function buildSandboxGraph(sandbox: Sandbox): GraphConfig | null {
       xLabel: sandbox.xLabel ?? "x",
       yLabel: sandbox.yLabel ?? "y",
       showTangent: true,
+      showSecant: false,
       showSlopeValue: true,
       showValue: false,
       explore: true,
     };
   }
+  if (sandbox.preset === "rate_explorer" && sandbox.fn) {
+    return buildRateExplorerGraph(sandbox);
+  }
   return null;
+}
+
+/**
+ * Build the {@link GraphConfig} for the `rate_explorer` preset: a draggable point
+ * on a STRAIGHT line that shows the rise/run triangle (the Δy and Δx legs) and a
+ * live "rate of change = Δy / Δx" readout, with no tangent and no full-width
+ * secant. The fixed corner sits at the domain's left edge so the run is always
+ * positive, and dragging the moving point sweeps the triangle while the ratio
+ * holds steady — the honest picture of a line's (constant) derivative. Runs on a
+ * DIFFERENT line than the question, so nothing read off it is the answer.
+ */
+function buildRateExplorerGraph(sandbox: Sandbox): GraphConfig {
+  const domain = sandbox.domain ?? DEFAULT_SANDBOX_DOMAIN;
+  const [d0, d1] = domain;
+  const span = d1 - d0;
+  return {
+    fn: sandbox.fn as string,
+    domain,
+    xLabel: sandbox.xLabel ?? "x",
+    yLabel: sandbox.yLabel ?? "y",
+    // The left edge anchors the triangle's right angle, so the run (x1 − x0)
+    // never goes negative as the learner drags the moving point.
+    fixedPoint: d0,
+    showSecant: false,
+    showTangent: false,
+    showSecantRiseRun: true,
+    slopeLabel: "Rate of change",
+    showValue: false,
+    sliderLabel: "x",
+    sliderMin: d0,
+    sliderMax: d1,
+    sliderStep: 1,
+    // Start a couple of steps in so a triangle is visible before any drag.
+    initialSlider: d0 + Math.min(Math.max(Math.round(span * 0.4), 1), span - 0.5),
+    explore: true,
+  };
 }
 
 /**
@@ -97,6 +140,7 @@ export function buildSandboxShape(sandbox: Sandbox): GraphConfig | null {
     yLabel: sandbox.yLabel ?? "y",
     showDerivative: true,
     showTangent: true,
+    showSecant: false,
     showSlopeValue: true,
     showValue: false,
     explore: true,

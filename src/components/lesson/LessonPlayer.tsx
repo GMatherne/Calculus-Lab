@@ -1083,6 +1083,7 @@ export function LessonPlayer({
           terms={solveAntideriv.terms}
           direction="integrate"
           beat={solvePhaseIdx}
+          plusC
         />
       )}
       {solveRiemann && (

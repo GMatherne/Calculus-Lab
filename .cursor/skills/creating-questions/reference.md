@@ -61,7 +61,8 @@ example without revealing this answer. Pick one `preset` (or a `graph` escape ha
 
 | preset | Renders | Required fields | Different-instance rule |
 |---|---|---|---|
-| `slope_explorer` | draggable point + tangent + live slope on a curve | `fn` (opt. `domain`, `xLabel`/`yLabel`) | `fn` != the graded `fn` |
+| `slope_explorer` | draggable point + tangent + live slope; best for **curves**, where the slope varies | `fn` (opt. `domain`, `xLabel`/`yLabel`) | `fn` != the graded `fn` |
+| `rate_explorer` | draggable point on a **straight line** drawing the rise/run (Δy over Δx) triangle + a live "rate of change = Δy / Δx" readout, no tangent; best for line questions | `fn` (a non-flat line; opt. `domain`, `xLabel`/`yLabel`) | `fn` != the graded `fn` |
 | `power_rule` | the power rule in general form, a·xⁿ → n(a·xⁿ⁻¹) → a·n·xⁿ⁻¹ | (none) | n/a — purely symbolic, no concrete term |
 | `riemann` | drag rectangles under a curve; the estimate converges | `fn`, `a`, `b` (`b > a`) | `fn` != the graded `fn` |
 

@@ -90,7 +90,7 @@
       "feedback": {
         "correct": "Right — $x^3 \\to \\frac{x^4}{4}$, $x^2 \\to \\frac{x^3}{3}$, $x \\to \\frac{x^2}{2}$, plus the $+ C$, so $\\int (x^3 + x^2 + x)\\,dx = \\frac{x^4}{4} + \\frac{x^3}{3} + \\frac{x^2}{2} + C$.",
         "incorrect": "Add 1 to each exponent, then divide by that new exponent — and don't forget the $+ C$ for an indefinite integral.",
-        "hint": "$x^n \\to \\frac{x^{n+1}}{n+1}$, so $x^2 \\to \\frac{x^3}{3}$; then finish with $+ C$."
+        "hint": "Use $x^n \\to \\frac{x^{n+1}}{n+1}$ on each term — raise its exponent by one and divide by that new exponent — then finish with $+ C$."
       }
     },
     {
@@ -153,7 +153,7 @@
       "feedback": {
         "correct": "Right — $\\frac{d}{dx}(x^3) = 3x^2$, and the $+ C$ captures every antiderivative at once.",
         "incorrect": "Reverse the power rule to find one antiderivative, then add $C$ to include all of them.",
-        "hint": "$3x^2 \\to x^3$ (raise the exponent, divide the coefficient by it), then write $+ C$: $x^3 + C$."
+        "hint": "Raise the exponent by one and divide the coefficient $3$ by that new exponent, then add $+ C$ for every antiderivative."
       }
     },
     {
@@ -232,7 +232,7 @@
       "feedback": {
         "correct": "Exactly — $F(3) - F(0) = (9 + 3) - 0 = 12$.",
         "incorrect": "Evaluate $x^2 + x$ at 3 and at 0, then subtract.",
-        "hint": "$F(3) - F(0) = (9 + 3) - 0 = 12$."
+        "hint": "Evaluate $F(x) = x^2 + x$ at $3$ and at $0$, then subtract $F(0)$ from $F(3)$."
       }
     },
     {
@@ -298,7 +298,7 @@
       "feedback": {
         "correct": "Nice — $(t^2 + t) - 2 = 10$ gives $t^2 + t - 12 = 0$, so $(t - 3)(t + 4) = 0$ and $t = 3$.",
         "incorrect": "Set $(t^2 + t) - 2 = 10$ and solve for $t$, then drag the slider there.",
-        "hint": "$t^2 + t - 12 = 0 \\to (t - 3)(t + 4) = 0 \\to t = 3$."
+        "hint": "Set $(t^2 + t) - 2 = 10$ and solve the resulting quadratic for the positive $t$."
       }
     },
     {
@@ -368,7 +368,7 @@
       "feedback": {
         "correct": "Nice — $\\frac{1}{2}t^2 + t = 4$ gives $t^2 + 2t - 8 = 0$, so $(t - 2)(t + 4) = 0$ and $t = 2$.",
         "incorrect": "Set $\\frac{1}{2}t^2 + t = 4$ and solve for $t$, then drag the slider there.",
-        "hint": "$\\frac{1}{2}t^2 + t = 4 \\to t^2 + 2t - 8 = 0 \\to (t - 2)(t + 4) = 0 \\to t = 2$."
+        "hint": "Set $\\frac{1}{2}t^2 + t = 4$ and solve the resulting quadratic for the positive $t$."
       }
     },
     {
@@ -421,7 +421,7 @@
       "feedback": {
         "correct": "Right — raise the exponent to 3, then divide the coefficient by it: $6x^2 \\to 6 \\cdot \\frac{x^3}{3} = 2x^3$, so $\\int 6x^2\\,dx = 2x^3 + C$. Differentiate $2x^3$ to check: back to $6x^2$.",
         "incorrect": "Add 1 to the exponent, then divide the coefficient by that new exponent: $6x^2 \\to \\frac{6}{3}x^3$.",
-        "hint": "Exponent $2 \\to 3$, then $6 \\div 3 = 2$, giving $2x^3$."
+        "hint": "Raise the exponent by one, then divide the coefficient $6$ by that new exponent."
       }
     },
     {
@@ -485,7 +485,7 @@
       "feedback": {
         "correct": "Right — $x^n \\to \\frac{x^{n+1}}{n+1} + C$: raise the power, divide by the new one, then add the constant of integration.",
         "incorrect": "Add 1 to the exponent, divide by that new exponent, then add $+ C$.",
-        "hint": "$x^2 \\to \\frac{x^3}{3} + C$, $x^3 \\to \\frac{x^4}{4} + C$, and so on."
+        "hint": "Reverse the power rule on each: raise the exponent by one, divide by that new exponent, then add $+ C$."
       }
     },
     {
@@ -524,7 +524,7 @@
       "feedback": {
         "correct": "Right — $x^2 \\to \\frac{x^3}{3}$ and $x \\to \\frac{x^2}{2}$, so the integral is $\\frac{x^3}{3} + \\frac{x^2}{2} + C$.",
         "incorrect": "Reverse the power rule on each term on its own.",
-        "hint": "$x^2 \\to \\frac{x^3}{3}$ and $x \\to \\frac{x^2}{2}$."
+        "hint": "Reverse the power rule on each term — raise its exponent by one and divide by the new exponent — then add $+ C$."
       }
     },
     {
@@ -561,7 +561,7 @@
       "feedback": {
         "correct": "Right — $3x^2 \\to 3 \\cdot \\frac{x^3}{3} = x^3$, and an indefinite integral carries a constant, so $\\int 3x^2\\,dx = x^3 + C$.",
         "incorrect": "Raise the exponent, divide the coefficient by the new exponent, then add the $+ C$.",
-        "hint": "$3x^2 \\to \\frac{3}{3}x^3 = x^3$, then $+ C$."
+        "hint": "Raise the exponent by one and divide the coefficient $3$ by that new exponent, then add $+ C$."
       }
     },
     {
@@ -607,7 +607,7 @@
       "feedback": {
         "correct": "Right — each coefficient divides by the new exponent to land on a clean power, plus $+ C$ for the whole family.",
         "incorrect": "Raise the exponent by 1, divide the coefficient by that new exponent, then add $+ C$.",
-        "hint": "$2x \\to x^2 + C$ and $3x^2 \\to x^3 + C$."
+        "hint": "Raise each exponent by one and divide the coefficient by that new exponent, then add $+ C$."
       }
     },
     {
@@ -638,7 +638,7 @@
       "feedback": {
         "correct": "Exactly — raise each exponent, divide by the new exponent, then finish with $+ C$.",
         "incorrect": "You must raise the exponent before you can divide by the new one, and $C$ comes last.",
-        "hint": "Raise the power, divide by the new power, then add $C$."
+        "hint": "You can't divide a term by its new exponent until you've raised that exponent first."
       }
     },
     {
@@ -677,7 +677,7 @@
       "feedback": {
         "correct": "Right — $2x \\to x^2$ and $1 \\to x$, so the integral is $x^2 + x + C$.",
         "incorrect": "Reverse the power rule on each term; a constant $c$ becomes $cx$.",
-        "hint": "$2x \\to x^2$ and $1 \\to x$."
+        "hint": "Reverse the power rule on the $2x$, and remember a constant integrates to a multiple of $x$; then add $+ C$."
       }
     },
     {
@@ -723,7 +723,7 @@
       "feedback": {
         "correct": "Right — divide each coefficient by the new exponent, then add $+ C$: $6x^2 \\to 2x^3 + C$ and $4x \\to 2x^2 + C$.",
         "incorrect": "Raise the exponent by 1, divide the coefficient by that new exponent, then add $+ C$.",
-        "hint": "$6x^2 \\to \\frac{6}{3}x^3 + C = 2x^3 + C$ and $x \\to \\frac{x^2}{2} + C$."
+        "hint": "Divide each coefficient by the new exponent after raising it by one, then add $+ C$."
       }
     },
     {
@@ -765,7 +765,7 @@
       "feedback": {
         "correct": "Right — raise the exponent to 4, then divide the coefficient by it: 12x³ → 12/4 · x⁴ = 3x⁴, so the indefinite integral is 3x⁴ + C. Differentiate 3x⁴ to check: back to 12x³.",
         "incorrect": "Add 1 to the exponent, then divide the coefficient by that new exponent: 12x³ → 12/4 · x⁴.",
-        "hint": "Exponent 3 → 4, then 12 ÷ 4 = 3, giving 3x⁴."
+        "hint": "Raise the exponent by one, then divide the coefficient 12 by that new exponent."
       }
     },
     {
@@ -804,7 +804,7 @@
       "feedback": {
         "correct": "Right — $x^3 \\to \\frac{x^4}{4}$ and the constant $2 \\to 2x$, so the integral is $\\frac{x^4}{4} + 2x + C$.",
         "incorrect": "Integrate each term; a constant $c$ integrates to $cx$.",
-        "hint": "$x^3 \\to \\frac{x^4}{4}$ and $2 \\to 2x$."
+        "hint": "Reverse the power rule on the $x^3$, and remember a constant integrates to a multiple of $x$; then add $+ C$."
       }
     },
     {
@@ -836,7 +836,7 @@
       "feedback": {
         "correct": "Right — the antiderivatives are $\\frac{x^2}{2}, \\frac{x^3}{3}, \\frac{x^4}{4}, \\frac{x^5}{5}$ — powers 2 through 5.",
         "incorrect": "Integrate each one: $\\int x^n\\,dx$ produces an $x^{n+1}$ term.",
-        "hint": "$\\int x\\,dx \\to x^2$ (lowest), up to $\\int x^4\\,dx \\to x^5$ (highest)."
+        "hint": "Integrating $x^n$ produces an $x^{n+1}$ term, so a bigger power going in stays bigger after integrating."
       }
     },
     {
@@ -880,7 +880,7 @@
       "feedback": {
         "correct": "Right — raise the exponent to 3, then the old coefficient rides on top over that new exponent: $5x^2 \\to \\frac{5}{3}x^3$. Notice the denominator and the new exponent are both 3.",
         "incorrect": "Keep the coefficient as the numerator, add 1 to the exponent, and put that new exponent underneath as the denominator.",
-        "hint": "Exponent $2 \\to 3$. The numerator stays 5 and the denominator is the new exponent 3, giving $\\frac{5}{3}x^3$."
+        "hint": "Raise the exponent by one, keep $5$ as the numerator, and put that new exponent underneath as the denominator."
       }
     },
     {
@@ -924,7 +924,7 @@
       "feedback": {
         "correct": "Right — $5x^3 \\to \\frac{5}{4}x^4$: numerator 5, and the denominator matches the new exponent, 4.",
         "incorrect": "Add 1 to the exponent, keep the coefficient on top, and divide by that new exponent (put it in the denominator).",
-        "hint": "Exponent $3 \\to 4$. Numerator 5 over denominator 4, giving $\\frac{5}{4}x^4$."
+        "hint": "Raise the exponent by one; $5$ stays on top as the numerator and that new exponent goes underneath."
       }
     },
     {
@@ -968,7 +968,7 @@
       "feedback": {
         "correct": "Right — $3x^4 \\to \\frac{3}{5}x^5$: the numerator is the old coefficient 3, and both the denominator and the new exponent are 5.",
         "incorrect": "Keep the coefficient as the numerator, raise the exponent by 1, and use that new exponent as the denominator.",
-        "hint": "Exponent $4 \\to 5$. Numerator 3 over denominator 5, so $\\frac{3}{5}x^5$."
+        "hint": "Raise the exponent by one; $3$ stays on top as the numerator and that new exponent goes underneath."
       }
     }
   ]

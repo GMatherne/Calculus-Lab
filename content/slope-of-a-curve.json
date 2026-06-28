@@ -105,7 +105,7 @@
       "feedback": {
         "correct": "Right — on a curve the slope is not constant. For x² the tangent gets steeper as x grows.",
         "incorrect": "Watch the tangent-slope readout as you drag x to the right. Is it growing or shrinking?",
-        "hint": "At x = 1 the tangent slope is small; at x = 3 it is much larger."
+        "hint": "Compare the tangent-slope readout at x = 1 with its value at x = 3 — which is bigger?"
       }
     },
     {
@@ -154,7 +154,7 @@
       "feedback": {
         "correct": "Exactly — at x = 0 the curve bottoms out, switching from decreasing (negative slope) to increasing (positive slope), so the slope passes through 0.",
         "incorrect": "The slope is zero where the curve is neither rising nor falling — where it stops falling and starts climbing.",
-        "hint": "The lowest point of f(x) = x² is at x = 0."
+        "hint": "The tangent is flat at the very bottom of the parabola — find that lowest point."
       }
     },
     {
@@ -231,7 +231,7 @@
       "feedback": {
         "correct": "As the distance between the points → 0, the secant slope approaches the tangent slope at x = 2, which is 4.",
         "incorrect": "Watch the slope value as the two points get closer together.",
-        "hint": "For f(x) = x², the slope at x = 2 is 2(2) = 4."
+        "hint": "The secant slope is closing in on the tangent slope at x = 2; the slope of x² is 2x, so evaluate that there."
       }
     },
     {
@@ -308,7 +308,7 @@
       "feedback": {
         "correct": "Correct — as the points merge, the secant settles right onto the green tangent line.",
         "incorrect": "Slide h toward 0 and watch which line the dashed secant lands on.",
-        "hint": "The dashed secant rotates until it overlaps the green line that just grazes the curve at x = 2 — the tangent."
+        "hint": "The dashed secant rotates until it overlaps the green line that just grazes the curve at x = 2 — what is that line called?"
       }
     },
     {
@@ -370,14 +370,13 @@
           "showTangent": true,
           "slopeLabel": "Tangent slope",
           "showSlopeValue": false,
+          "showValue": false,
           "sliderMin": 0,
           "sliderMax": 4,
           "sliderStep": 1,
           "initialSlider": 0
         },
         "hintAfterAttempts": 1,
-        "liveCheck": true,
-        "goalLabel": "Drag x until the tangent slope is 4",
         "answer": {
           "type": "slider",
           "value": 2,
@@ -407,7 +406,7 @@
       "feedback": {
         "correct": "Nailed it — at x = 2 the tangent slope is 4. Notice the pattern: the slope of x² is 2x.",
         "incorrect": "The slope of x² is 2x. Set 2x = 4 and solve for x, then drag the slider there.",
-        "hint": "Solve 2x = 4 → x = 2."
+        "hint": "Set the slope 2x equal to 4 and solve that for x."
       }
     },
     {
@@ -434,15 +433,14 @@
         "answer": { "type": "numeric", "value": 6, "tolerance": 0.01 },
         "sandbox": {
           "preset": "slope_explorer",
-          "fn": "-x^2 + 4",
+          "fn": "0.5*x^2 + x",
           "domain": [-3, 3],
-          "caption": "Drag the point along this different curve and watch how the tangent's slope changes from one spot to the next."
+          "caption": "On this curve the tangent slope follows the equation $f'(x) = x + 1$. Drag the point and watch the live slope readout equal $x + 1$ at every spot. Finding a tangent slope is just this: evaluate the curve's slope equation at your x."
         }
       },
       "solution": [
         { "type": "text", "body": "The slope of $f(x) = x^2$ follows the pattern $f'(x) = 2x$. Evaluate it at $x = 3$:" },
-        { "type": "math", "latex": "f'(3) = 2(3) = 6", "display": true },
-        { "type": "text", "body": "In general the power rule gives $f'(x) = 2x$ — the single value $f'(3) = 6$ is just this rule at $x = 3$." }
+        { "type": "math", "latex": "f'(3) = 2(3) = 6", "display": true }
       ],
       "solveAnimation": {
         "kind": "narrated",
@@ -454,39 +452,8 @@
       "feedback": {
         "correct": "Yes — f'(3) = 2(3) = 6.",
         "incorrect": "Plug x = 3 into the slope formula 2x.",
-        "hint": "2 × 3 = 6."
-      },
-      "parts": [
-        {
-          "id": "soc-step-7b",
-          "conceptTag": "secant_tangent",
-          "content": [
-            {
-              "type": "text",
-              "body": "You just found one slope, f'(3) = 6. Now generalize to the whole curve: build the derivative f'(x) of f(x) = x² with the power rule."
-            }
-          ],
-          "interaction": {
-            "answer": {
-              "type": "power_term",
-              "coefficient": 2,
-              "exponent": 1,
-              "startCoefficient": 1,
-              "startExponent": 2,
-              "previewPrefix": "f'(x) ="
-            },
-            "sandbox": {
-              "preset": "power_rule",
-              "caption": "Step through the power rule in general form: bring the exponent down as a factor, then drop the power by one. Apply the same moves to this term."
-            }
-          },
-          "feedback": {
-            "correct": "Exactly — f'(x) = 2x. The single value f'(3) = 6 is just this rule evaluated at x = 3.",
-            "incorrect": "Apply the power rule to x²: bring the exponent down as the coefficient and drop the power by one.",
-            "hint": "d/dx[x²] = 2·x^(2−1) = 2x."
-          }
-        }
-      ]
+        "hint": "The slope follows 2x, so evaluate that at x = 3."
+      }
     },
     {
       "id": "soc-step-8",
@@ -550,7 +517,7 @@
       "feedback": {
         "correct": "Nailed it — the slope of x² is 2x, and 2x = 6 at x = 3.",
         "incorrect": "The readout is hidden, so compute it: the slope of x² is 2x. Set 2x = 6 and drag there.",
-        "hint": "Solve 2x = 6 → x = 3."
+        "hint": "Set the slope 2x equal to 6 and solve that for x."
       }
     },
     {
@@ -583,7 +550,7 @@
       "feedback": {
         "correct": "Exactly — the average rate over [0, 2] is 2, and the tangent slope 2x equals 2 at x = 1.",
         "incorrect": "Set the tangent slope 2x equal to the average rate 2 and solve for x, then tap that point.",
-        "hint": "Solve 2x = 2 → x = 1, the midpoint of 0 and 2."
+        "hint": "The average rate over [0, 2] is 2 — set the tangent slope 2x equal to that and solve for x."
       }
     },
     {
@@ -635,7 +602,7 @@
       "feedback": {
         "correct": "Right — as the two points merge, the secant slope closes in on the tangent slope at x = 3, which is f'(3) = 6.",
         "incorrect": "Shrink h further and read where the secant slope is heading — it never quite lands, but it's homing in on one value.",
-        "hint": "The slope of x² is 2x, so at x = 3 the tangent slope is 2(3) = 6."
+        "hint": "The secant slope is heading for the tangent slope at x = 3; the slope of x² is 2x, so evaluate that there."
       }
     },
     {
@@ -664,7 +631,7 @@
       "feedback": {
         "correct": "Right — 3x² gives 0, 0.75, 3, and 6.75, so steepness climbs in that order.",
         "incorrect": "The slope of x³ is 3x². Compare that value at each x.",
-        "hint": "3x² gives 0, 0.75, 3, and 6.75."
+        "hint": "Evaluate the slope 3x² at each x, then order them from smallest to largest."
       }
     },
     {
@@ -725,7 +692,7 @@
       "feedback": {
         "correct": "Exactly — as h → 0 the two points become one and the secant lands on the tangent line at x = 2. Its slope is that tangent's slope, the derivative.",
         "incorrect": "Slide h all the way down and see which line the dashed secant comes to rest on.",
-        "hint": "The dashed secant rotates until it overlaps the green line that just grazes the curve at x = 2 — the tangent."
+        "hint": "The dashed secant rotates until it overlaps the green line that just grazes the curve at x = 2 — what is that line called?"
       }
     },
     {
@@ -770,7 +737,7 @@
       "feedback": {
         "correct": "Right — f' = 2x − 2 is negative before x = 1 and positive after, so f decreases then increases.",
         "incorrect": "Check the sign of f' = 2x − 2 on each side of x = 1.",
-        "hint": "At x = 0, f' = −2 (falling); at x = 2, f' = +2 (rising)."
+        "hint": "Pick a test x on each side of x = 1, plug it into f' = 2x − 2, and read off the sign."
       }
     },
     {
@@ -830,7 +797,7 @@
       "feedback": {
         "correct": "Right — as the interval shrinks, the average rate of change closes in on the instantaneous rate at x = 1, the tangent slope f'(1) = 2.",
         "incorrect": "Watch the readout as h gets small. Is it blowing up, holding steady, or settling toward one value?",
-        "hint": "At h = 2 the average rate is 4; by h = 0.05 it is about 2.05 — heading for 2, the tangent slope at x = 1."
+        "hint": "This is the same secant-shrinking move as before — drag h → 0 and watch what the average-rate readout does."
       }
     },
     {
@@ -863,7 +830,7 @@
       "feedback": {
         "correct": "Exactly — the slope is 2x − 4, and 2x − 4 = 2 gives x = 3.",
         "incorrect": "Set the slope 2x − 4 equal to 2 and solve for x, then tap that point.",
-        "hint": "Solve 2x − 4 = 2 → x = 3."
+        "hint": "The slope here is 2x − 4 — set it equal to 2 and solve that for x."
       }
     },
     {
@@ -918,7 +885,7 @@
       "feedback": {
         "correct": "Right — h is the run, the horizontal step from x to x + h. The numerator f(x + h) − f(x) is the rise, and rise over run is the secant's slope.",
         "incorrect": "Rise is the vertical change (the numerator). The denominator is the other half of rise over run.",
-        "hint": "h sits in the denominator, so it is the run — the horizontal distance between the two x-values."
+        "hint": "In rise over run, h sits in the denominator — so which of the two does it stand for?"
       }
     },
     {
@@ -961,7 +928,7 @@
       "feedback": {
         "correct": "Right — the f'(x) line climbs through zero, so the curve's slope is negative on the left, flat at the bottom, and positive on the right. A curve's slope varies, and the tangent pins it down at each point.",
         "incorrect": "Look at the f'(x) line: it isn't flat. Where it sits below 0 the curve falls; where it rises above 0 the curve climbs.",
-        "hint": "f'(x) = 2x passes through 0 at x = 0, so the slope goes negative, then zero, then positive — it keeps changing."
+        "hint": "Trace the f'(x) = 2x line — does it stay at one height, or cross through zero and change sign?"
       }
     },
     {
@@ -1004,7 +971,7 @@
       "feedback": {
         "correct": "Exactly — the slope of x² is 2x, so the dots fall on the straight line through (−2, −4), (0, 0), and (2, 4).",
         "incorrect": "At each x the slope is 2x: that's −4 at x = −2, 0 at x = 0, and 4 at x = 2. Drag each dot to that height.",
-        "hint": "Plot y = 2x: a straight line through the origin with slope 2."
+        "hint": "Each dot's height is the slope 2x at that x — evaluate 2x at each node and drag the dot there."
       }
     },
     {
@@ -1039,7 +1006,7 @@
       "feedback": {
         "correct": "Right — the slope of x² is 2x, so at x = 1 the tangent slope is 2.",
         "incorrect": "Rotate the line until it just grazes the curve at x = 1. The slope of x² is 2x.",
-        "hint": "At x = 1, f'(x) = 2(1) = 2."
+        "hint": "The slope of x² is 2x — evaluate that at x = 1 to get the tilt to match."
       },
       "parts": [
         {
@@ -1068,7 +1035,7 @@
           "feedback": {
             "correct": "Right — f'(x) = 2x, and at x = 1 that gives the slope 2 you just matched.",
             "incorrect": "Use the power rule on x²: bring the exponent down as the coefficient and reduce the power by one.",
-            "hint": "d/dx[x²] = 2x."
+            "hint": "Apply the power rule to x²: bring the exponent down as a factor, then reduce the power by one."
           }
         }
       ]
@@ -1120,7 +1087,7 @@
       "feedback": {
         "correct": "Right — the velocity is h'(t) = −10t, so at t = 0.3 it is −10(0.3) = −3 m/s. The tangent's slope is the instantaneous velocity.",
         "incorrect": "Drag the point to t = 0.3 and read the tangent-slope readout — that slope is the velocity.",
-        "hint": "At t = 0.3 the tangent-slope readout is about −3."
+        "hint": "Drag the point to t = 0.3 and read the tangent-slope value — that slope is the velocity to pick."
       }
     },
     {
@@ -1163,7 +1130,7 @@
       "feedback": {
         "correct": "Right — velocity is h'(t) = −10t, smallest in size near t = 0. The curve is flattest there, so the phone moves slowest just after release.",
         "incorrect": "The slowest velocity is where the curve is flattest — where the tangent slope is smallest in size.",
-        "hint": "h'(t) = −10t grows in size as t increases, so the slope is flattest at the very start."
+        "hint": "The velocity h'(t) = −10t gets bigger in size as t grows — so in which band is its size smallest?"
       }
     },
     {
@@ -1202,7 +1169,7 @@
       "feedback": {
         "correct": "Right — speed is the slope of the distance curve, d'(t) = t. The curve starts flat (speed near 0) and steepens, so the speed climbs steadily.",
         "incorrect": "Speed is the slope of the distance curve: near 0 where the curve is flat, and larger where it climbs steeply.",
-        "hint": "The distance curve starts flat — speed ≈ 0 — and gets steeper, so the speed rises steadily from there."
+        "hint": "Your speed should match how steep the distance curve is at each moment — read its steepness as it plays and drive to match."
       }
     }
   ]

@@ -598,6 +598,7 @@ function validateSandbox(
   // must not match the question's own curve.
   const curvePresets = new Set([
     "slope_explorer",
+    "rate_explorer",
     "shape_explorer",
     "area_explorer",
     "ftc_explorer",

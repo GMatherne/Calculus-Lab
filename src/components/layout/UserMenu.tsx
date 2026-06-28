@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { useProgress } from "../../contexts/ProgressContext";
+import { Icon } from "../common/Icon";
 
 function ChevronIcon({ open }: { open: boolean }) {
   return (
@@ -83,8 +84,16 @@ const itemClass =
 /**
  * Account dropdown shown in the header for signed-in users. Replaces the old
  * inline name + "Log out" link. Profile, Settings, and Log out are all wired up.
+ *
+ * On phones the header's primary nav (Lessons / Reference) collapses in here so
+ * the row stays narrow enough to keep the avatar on screen; `onOpenReference`
+ * lets the relocated "Reference" item open the modal owned by the header.
  */
-export function UserMenu() {
+export function UserMenu({
+  onOpenReference,
+}: {
+  onOpenReference?: () => void;
+}) {
   const { user, logout, isDemo } = useAuth();
   const { profile } = useProgress();
   const [open, setOpen] = useState(false);
@@ -156,6 +165,34 @@ export function UserMenu() {
             {user.email && (
               <p className="text-xs text-slate-500 truncate">{user.email}</p>
             )}
+          </div>
+
+          {/* Primary nav lives in the header on larger screens; on phones it
+              collapses here so the header row stays narrow enough to fit the
+              avatar (hidden from sm: up, where the links sit in the header). */}
+          <div className="sm:hidden">
+            <Link
+              to="/lessons"
+              role="menuitem"
+              onClick={() => setOpen(false)}
+              className={`${itemClass} text-slate-700 hover:bg-slate-50 focus:bg-slate-50`}
+            >
+              <Icon name="graduationCap" className="h-4 w-4 text-slate-400" />
+              Lessons
+            </Link>
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                setOpen(false);
+                onOpenReference?.();
+              }}
+              className={`${itemClass} text-slate-700 hover:bg-slate-50 focus:bg-slate-50`}
+            >
+              <Icon name="bookOpen" className="h-4 w-4 text-slate-400" />
+              Reference
+            </button>
+            <div className="my-1 border-t border-slate-100" />
           </div>
 
           <Link

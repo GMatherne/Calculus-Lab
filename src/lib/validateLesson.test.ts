@@ -644,6 +644,25 @@ describe("validateLesson", () => {
       expect(hasError(validateLesson(lesson), /sandbox fn must differ/)).toBe(true);
     });
 
+    it("accepts a rate_explorer sandbox on a different line", () => {
+      const lesson = withSandbox({
+        preset: "rate_explorer",
+        fn: "2*x + 1",
+        domain: [-1, 5],
+      });
+      expect(validateLesson(lesson)).toEqual([]);
+    });
+
+    it("rejects a rate_explorer sandbox that reuses the graded fn", () => {
+      const lesson = withSandbox({ preset: "rate_explorer", fn: "x^2" });
+      expect(hasError(validateLesson(lesson), /sandbox fn must differ/)).toBe(true);
+    });
+
+    it("requires an fn for the rate_explorer preset", () => {
+      const lesson = withSandbox({ preset: "rate_explorer" });
+      expect(hasError(validateLesson(lesson), /needs an fn/)).toBe(true);
+    });
+
     it("requires exactly one of preset or graph", () => {
       const lesson = withSandbox({
         preset: "slope_explorer",

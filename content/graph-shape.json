@@ -98,7 +98,7 @@
       "feedback": {
         "correct": "Right — left of x = 2 the slope is negative, so f is decreasing and the curve falls; right of it the slope is positive, so f is increasing and the curve rises.",
         "incorrect": "Watch the sign of the tangent slope as you cross x = 2.",
-        "hint": "f'(x) = 2x − 4, which is negative for x < 2 and positive for x > 2."
+        "hint": "f'(x) = 2x − 4 — a negative slope means f is falling and a positive one means it's rising, so check the sign on each side of x = 2."
       }
     },
     {
@@ -148,7 +148,7 @@
       "feedback": {
         "correct": "Exactly — at x = 2 the tangent is flat, so f'(2) = 0. This is the minimum of the parabola.",
         "incorrect": "The slope is zero where the curve stops falling and starts rising.",
-        "hint": "f'(x) = 2x − 4 = 0 gives x = 2."
+        "hint": "Set f'(x) = 2x − 4 equal to 0 and solve for the x where the tangent goes flat."
       }
     },
     {
@@ -178,8 +178,6 @@
           "initialSlider": 0
         },
         "hintAfterAttempts": 1,
-        "liveCheck": true,
-        "goalLabel": "Drag x until the tangent slope is 2",
         "answer": {
           "type": "slider",
           "value": 3,
@@ -209,7 +207,7 @@
       "feedback": {
         "correct": "Right — f'(x) = 2x − 4 = 2 gives x = 3, where the curve rises with slope 2.",
         "incorrect": "Set the slope formula equal to 2: 2x − 4 = 2. Solve for x, then drag the slider there.",
-        "hint": "2x − 4 = 2 → x = 3."
+        "hint": "Set the slope formula 2x − 4 equal to the target 2, then solve for x."
       }
     },
     {
@@ -259,7 +257,7 @@
       "feedback": {
         "correct": "Positive derivative → f is increasing, so the graph goes uphill (rises).",
         "incorrect": "A positive slope means the tangent points uphill.",
-        "hint": "f' > 0 means f is increasing, so the graph rises."
+        "hint": "f'(x) is the slope of the tangent — picture which way the curve heads when that slope is positive."
       }
     },
     {
@@ -325,7 +323,7 @@
       "feedback": {
         "correct": "Exactly — at x = 2 the curve peaks and f'(2) = 0. A maximum has a flat tangent, just like a minimum.",
         "incorrect": "The slope is zero where the curve stops rising and starts falling.",
-        "hint": "f'(x) = −2x + 4 = 0 gives x = 2."
+        "hint": "Set f'(x) = −2x + 4 equal to 0 and solve for the x where the tangent is flat."
       }
     },
     {
@@ -372,7 +370,7 @@
       "feedback": {
         "correct": "f'(3) = −2(3) + 4 = −2 — negative, so f is decreasing and past the peak the curve is falling.",
         "incorrect": "Substitute x = 3 into −2x + 4.",
-        "hint": "−2 × 3 + 4 = −6 + 4."
+        "hint": "Substitute x = 3 into −2x + 4 and simplify — mind the sign when you work out −2 × 3."
       }
     },
     {
@@ -426,7 +424,7 @@
       "feedback": {
         "correct": "Right — $f' < 0$ before $x = 2$ so $f$ falls, and $f' > 0$ after so it rises.",
         "incorrect": "Test the sign of $f'(x) = 2x - 4$ on each side of $x = 2$.",
-        "hint": "At $x = 0$, $f' = -4$ (decreasing); at $x = 3$, $f' = 2$ (increasing)."
+        "hint": "Test a value on each side of $x = 2$ — say $x = 0$ and $x = 3$ — in $f'(x) = 2x - 4$ and read off each sign."
       }
     },
     {
@@ -457,7 +455,7 @@
       "feedback": {
         "correct": "Exactly — $f$ rises, dips, then rises again: increasing, decreasing, increasing.",
         "incorrect": "Plug a test value from each of the three intervals into $f'(x) = 3x^2 - 3$.",
-        "hint": "At $x = -2$, $f' = 9 > 0$; at $x = 0$, $f' = -3 < 0$; at $x = 2$, $f' = 9 > 0$."
+        "hint": "Pick a test $x$ in each of the three intervals — like $x = -2$, $x = 0$, $x = 2$ — and check the sign of $f'(x) = 3x^2 - 3$ there."
       }
     },
     {
@@ -494,7 +492,7 @@
       "feedback": {
         "correct": "Yes — $f'$ runs positive then negative through $x = -1$, crossing zero downward. A $+ \\to -$ crossing means $f$ rises then falls: a local maximum.",
         "incorrect": "Remember this curve is $f'$, not $f$. A maximum of $f$ is where $f'$ crosses zero from positive (f rising) to negative (f falling). Look for the downward crossing.",
-        "hint": "$f'(x) = 3x^2 - 3 = 0$ at $x = \\pm 1$. The $+ \\to -$ crossing is at $x = -1$ (a max); $x = 1$ is the $- \\to +$ crossing (a min)."
+        "hint": "$f'(x) = 3x^2 - 3 = 0$ at $x = \\pm 1$. A max of $f$ is the $+ \\to -$ crossing — work out which of the two that is."
       }
     },
     {
@@ -525,7 +523,7 @@
       "feedback": {
         "correct": "Right — $2x$ is negative for $x < 0$ and positive for $x > 0$.",
         "incorrect": "Substitute a negative and then a positive $x$ into $f'(x) = 2x$ and read off the sign.",
-        "hint": "At $x = -1$, $2x = -2 < 0$; at $x = 1$, $2x = 2 > 0$."
+        "hint": "Try $x = -1$ and then $x = 1$ in $f'(x) = 2x$ — what sign does each give?"
       }
     },
     {
@@ -562,7 +560,7 @@
       "feedback": {
         "correct": "Right — $f'(x) = 2x - 4$ is negative before $x = 2$ (so $f$ falls) and positive after (so $f$ rises), crossing zero upward at $x = 2$: a minimum.",
         "incorrect": "This line is $f'$. Where $f$ turns from decreasing to increasing, $f'$ goes from negative to positive — find where the rising line crosses the $x$-axis.",
-        "hint": "Set $f'(x) = 2x - 4 = 0$, so $x = 2$. $f' < 0$ to the left (f falling) and $f' > 0$ to the right (f rising) — a minimum."
+        "hint": "Where $f$ turns from falling to rising, $f'$ crosses zero — set $f'(x) = 2x - 4 = 0$ and solve for that $x$."
       }
     },
     {
@@ -599,7 +597,7 @@
       "feedback": {
         "correct": "Yes — at $x = 1$, $f'$ rises through zero from negative to positive. A $- \\to +$ crossing means $f$ falls then rises: a local minimum.",
         "incorrect": "This curve is $f'$, not $f$. A minimum of $f$ is where $f'$ crosses zero from negative (f falling) to positive (f rising). The downward crossing at $x = -1$ is the maximum.",
-        "hint": "$f'(x) = 3x^2 - 3 = 0$ at $x = \\pm 1$. The $- \\to +$ crossing is at $x = 1$ (a min); $x = -1$ is the $+ \\to -$ crossing (a max)."
+        "hint": "$f'(x) = 3x^2 - 3 = 0$ at $x = \\pm 1$. A min of $f$ is the $- \\to +$ crossing — work out which of the two that is."
       }
     },
     {
@@ -628,7 +626,7 @@
       "feedback": {
         "correct": "Right — $2x$ grows steadily, so the slope climbs from $-4$ up to $4$.",
         "incorrect": "Evaluate $2x$ at each point and sort from the smallest (most negative) upward.",
-        "hint": "$f'(-2) = -4$, $f'(-1) = -2$, $f'(1) = 2$, $f'(2) = 4$."
+        "hint": "Since $f'(x) = 2x$ rises as $x$ rises, the slope is most negative at the smallest $x$ and climbs from there."
       }
     },
     {
@@ -665,7 +663,7 @@
       "feedback": {
         "correct": "Right — $f'(x) = -2x + 4$ is positive before $x = 2$ (so $f$ rises) and negative after (so $f$ falls), crossing zero downward at $x = 2$: a maximum.",
         "incorrect": "This line is $f'$. The maximum of $f$ is where $f'$ drops through zero from positive (f rising) to negative (f falling) — find where the falling line crosses the $x$-axis.",
-        "hint": "Set $f'(x) = -2x + 4 = 0$, so $x = 2$. $f' > 0$ to the left (f rising) and $f' < 0$ to the right (f falling) — a maximum."
+        "hint": "The maximum sits where $f'$ crosses zero — set $f'(x) = -2x + 4 = 0$ and solve for that $x$."
       }
     },
     {
@@ -698,7 +696,7 @@
       "feedback": {
         "correct": "Right — positive slope rises, negative slope falls, and zero slope is a flat, horizontal tangent.",
         "incorrect": "Recall how the sign of the slope translates into the curve's direction.",
-        "hint": "$f' > 0$ rises, $f' < 0$ falls, $f' = 0$ is flat."
+        "hint": "$f'(x)$ is the slope of the tangent — picture the curve where that slope is positive, where it's negative, and where it's zero."
       }
     },
     {
@@ -735,7 +733,7 @@
       "feedback": {
         "correct": "Yes — $f'(x) = 3x^2 - 3$ bottoms out at $x = 0$, where the slope is $-3$.",
         "incorrect": "The slope $f'(x) = 3x^2 - 3$ is smallest where $3x^2$ is smallest.",
-        "hint": "$3x^2 - 3$ is most negative at $x = 0$, giving $f' = -3$."
+        "hint": "The slope $3x^2 - 3$ is smallest where $3x^2$ is smallest — and $3x^2$ is never negative. Where does it bottom out?"
       }
     },
     {
@@ -770,7 +768,7 @@
       "feedback": {
         "correct": "Right — f'(x) = 3x² − 3 is positive for x < −1 and x > 1, so f rises on the outer two intervals and falls in the middle.",
         "incorrect": "f is increasing where its slope f'(x) = 3x² − 3 is positive. Solve 3x² − 3 > 0.",
-        "hint": "3x² − 3 > 0 when |x| > 1, i.e. on (−2.2, −1) and (1, 2.2)."
+        "hint": "f is increasing where f'(x) = 3x² − 3 > 0 — solve 3x² > 3 for x, then shade the stretches where that holds."
       }
     }
   ]

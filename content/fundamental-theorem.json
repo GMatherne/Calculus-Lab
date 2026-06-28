@@ -62,10 +62,11 @@
         },
         "sandbox": {
           "preset": "area_explorer",
-          "fn": "x + 1",
+          "fn": "3",
           "a": 0,
-          "b": 3,
-          "caption": "Drag the upper limit and watch the area accumulate as a running total on this different curve."
+          "b": 4,
+          "integrand": "3",
+          "caption": "Drag the upper limit under this different flat line and watch the area accumulate as a running total."
         }
       },
       "solution": [
@@ -84,7 +85,7 @@
       "feedback": {
         "correct": "Exactly — height 2 times width x gives A(x) = 2x. And since A'(x) = 2 = f(x), the area function is an antiderivative of f.",
         "incorrect": "The area of the rectangle is height × width = 2 · x. That whole product is A(x) — not the height or the width on its own.",
-        "hint": "Height 2 times width x gives A(x) = 2x."
+        "hint": "The region is a rectangle — its area is height times width, so multiply the two here."
       }
     },
     {
@@ -170,11 +171,12 @@
         "hintAfterAttempts": 1,
         "answer": { "type": "numeric", "value": 4, "tolerance": 0.1 },
         "sandbox": {
-          "preset": "riemann",
-          "fn": "x^2",
+          "preset": "area_explorer",
+          "fn": "x + 1",
           "a": 0,
-          "b": 3,
-          "caption": "The area under a curve is built from thin rectangles. Drag to add more on this different curve and watch the estimate settle on the true area."
+          "b": 5,
+          "integrand": "x + 1",
+          "caption": "Drag the upper limit and watch the area grow faster where this different line is taller — the area's rate of growth is the height."
         }
       },
       "solution": [
@@ -194,7 +196,7 @@
       "feedback": {
         "correct": "Right — f(4) = 4, so at x = 4 the area is growing at a rate of 4 units of area per unit of x. The taller the curve, the faster the area accumulates.",
         "incorrect": "The growth rate equals the height f(x) = x. Evaluate that height at x = 4.",
-        "hint": "f(x) = x means f(4) = 4 — and that's how fast the area is growing there."
+        "hint": "The area's growth rate is just the height f(x) = x, so read that height off at x = 4."
       }
     },
     {
@@ -267,7 +269,7 @@
       "feedback": {
         "correct": "Exactly — F(3) − F(0) = 3² − 0² = 9.",
         "incorrect": "Use the antiderivative F(x) = x²: evaluate F(3) − F(0).",
-        "hint": "3² − 0² = 9 − 0 = 9."
+        "hint": "Evaluate the antiderivative x² at both limits, then subtract F(0) from F(3)."
       }
     },
     {
@@ -308,12 +310,12 @@
         "hintAfterAttempts": 1,
         "answer": { "type": "slider", "value": 3, "tolerance": 0.15 },
         "sandbox": {
-          "preset": "ftc_explorer",
-          "fn": "0.5*x^2 + 1",
-          "a": 0,
-          "b": 2,
-          "domain": [0, 4],
-          "caption": "Drag the upper and lower limits and see how the signed area between them tracks F(b) − F(a)."
+          "preset": "area_explorer",
+          "fn": "x + 1",
+          "a": 1,
+          "b": 4,
+          "integrand": "x + 1",
+          "caption": "Drag the upper limit and watch the accumulated area climb under this different line."
         }
       },
       "solution": [
@@ -333,7 +335,7 @@
       "feedback": {
         "correct": "Yes — $t^2 - 1 = 8$ gives $t^2 = 9$, so $t = 3$. The lower limit is 1, not 0, and the Fundamental Theorem handles it just the same.",
         "incorrect": "Set $t^2 - 1 = 8$ and solve for $t$, then drag the slider there.",
-        "hint": "$t^2 - 1 = 8 \\to t^2 = 9 \\to t = 3$."
+        "hint": "With $F(x) = x^2$, set $t^2 - 1 = 8$ and solve for the positive $t$."
       }
     },
     {
@@ -385,7 +387,7 @@
       "feedback": {
         "correct": "Right — $\\frac{d}{dx}\\left(\\frac{x^3}{3}\\right) = x^2$, and the $+\\,C$ captures every antiderivative at once, so $\\int x^2\\,dx = \\frac{x^3}{3} + C$.",
         "incorrect": "Reverse the power rule to get $\\frac{x^3}{3}$, then add $+\\,C$ — an indefinite integral stands for every antiderivative, not just one.",
-        "hint": "$x^2 \\to \\frac{x^3}{3}$ (raise the exponent, divide by 3), then write $+\\,C$."
+        "hint": "Raise the exponent by one and divide by the new exponent, then add $+\\,C$."
       }
     },
     {
@@ -449,7 +451,7 @@
       "feedback": {
         "correct": "Right — reverse the power rule: $x^n \\to \\frac{x^{n+1}}{n+1} + C$. Every antiderivative carries the constant of integration.",
         "incorrect": "Differentiate each candidate; the one landing back on the prompt is its antiderivative — and an indefinite antiderivative carries $+ C$.",
-        "hint": "$x^2 \\to \\frac{x^3}{3} + C$ and the constant $1 \\to x + C$."
+        "hint": "Reverse the power rule: raise each exponent by one and divide by the new exponent, then add $+ C$."
       }
     },
     {
@@ -484,7 +486,7 @@
       "feedback": {
         "correct": "Exactly — find an antiderivative $F$, plug both limits in, then subtract $F(b) - F(a)$.",
         "incorrect": "You need an antiderivative before you can plug in the limits, and you subtract only after both are in.",
-        "hint": "Antiderivative first, then plug in both limits, then subtract: $F(b) - F(a)$."
+        "hint": "You need an antiderivative $F$ in hand before you can plug either limit into it."
       }
     },
     {
@@ -521,7 +523,7 @@
       "feedback": {
         "correct": "Right — $\\frac{d}{dx}(x^2) = 2x$, and with no limits the integral carries a constant, so $\\int 2x\\,dx = x^2 + C$.",
         "incorrect": "Find the tile that differentiates back to $2x$, then add the $+ C$.",
-        "hint": "Reverse the power rule: $2x \\to x^2$, then $+ C$."
+        "hint": "Reverse the power rule on $2x$: raise the exponent by one and divide the coefficient by that new exponent, then add $+ C$."
       }
     },
     {
@@ -571,7 +573,7 @@
       "feedback": {
         "correct": "Nice — using $\\int 2x\\,dx = x^2$ and $\\int 3x^2\\,dx = x^3$, every value checks out.",
         "incorrect": "Find the antiderivative, then subtract its values at the two limits.",
-        "hint": "$\\int_0^2 2x\\,dx = [x^2]_0^2 = 4$."
+        "hint": "Find each antiderivative ($x^2$ for $2x$, $x^3$ for $3x^2$), then evaluate it at the upper limit minus the lower."
       }
     },
     {
@@ -612,7 +614,7 @@
       "feedback": {
         "correct": "Exactly — $\\frac{d}{dx}\\int_a^x t^2\\,dt = x^2$. Differentiation undoes the integral.",
         "incorrect": "The derivative of $\\int_a^x f(t)\\,dt$ is just $f$ evaluated at $x$.",
-        "hint": "Replace $t$ with $x$ in the integrand $t^2$."
+        "hint": "Differentiating an accumulation function undoes the integral, handing the integrand back — just mind the variable."
       }
     },
     {
@@ -638,17 +640,17 @@
         },
         "sandbox": {
           "preset": "ftc_explorer",
-          "fn": "2*x + 1",
-          "a": 1,
+          "fn": "x - 1",
+          "a": 0,
           "b": 3,
-          "domain": [0, 4],
-          "caption": "Slide the two limits to feel how the signed area between them grows and shrinks — that area is F(b) − F(a)."
+          "domain": [-1, 4],
+          "caption": "Slide the two limits on this different line and watch the signed area — the part below the axis counts as negative."
         }
       },
       "feedback": {
         "correct": "Right — the values are $-2$, $1.5$, $6$, and $8$. The first dips below the axis, so its signed area is negative.",
         "incorrect": "Evaluate each integral first — watch the one that dips below the axis — then compare the numbers.",
-        "hint": "$\\int_0^2 (x-2)\\,dx = -2$ is smallest (area below the axis); $\\int_1^3 2x\\,dx = 8$ is largest."
+        "hint": "Evaluate each with an antiderivative; the one dipping below the axis has negative signed area, so it lands smallest — then compare the rest."
       }
     },
     {
@@ -687,16 +689,17 @@
         },
         "sandbox": {
           "preset": "area_explorer",
-          "fn": "2*x + 1",
+          "fn": "3",
           "a": 0,
-          "b": 3,
-          "caption": "Drag the upper limit and watch the accumulated area grow as a running total on a different curve."
+          "b": 4,
+          "integrand": "3",
+          "caption": "Drag the upper limit under this different flat line and watch the area function grow as a running total."
         }
       },
       "feedback": {
         "correct": "Exactly — each unit step adds a 2-by-1 strip, so A(x) = 2x: a straight line through (0, 0), (1, 2), (2, 4), and (3, 6). Its slope is f(x) = 2, just as the theorem promises.",
         "incorrect": "By x the area is a rectangle of height 2 and width x, so A(x) = 2x. Plot the heights 0, 2, 4, 6.",
-        "hint": "A(x) = 2x grows by 2 each step: (0, 0), (1, 2), (2, 4), (3, 6)."
+        "hint": "Each step to the right adds one more strip of height 2 and width 1, so the running total climbs by the same amount each time."
       }
     },
     {
@@ -748,7 +751,7 @@
       "feedback": {
         "correct": "Right — with F(x) = x²/2 − 2x, F(3) − F(0) = (4.5 − 6) − 0 = −1.5. The −2 of area below the axis outweighs the +0.5 above it.",
         "incorrect": "Use F(x) = x²/2 − 2x and compute F(3) − F(0). Area below the axis counts as negative, so the two pieces don't fully cancel.",
-        "hint": "F(3) − F(0) = (9/2 − 6) − 0 = −3/2. The below-axis part (−2) beats the above-axis part (+0.5)."
+        "hint": "With F(x) = x²/2 − 2x, compute F at each limit and subtract F(0) from F(3) — and count area below the axis as negative."
       }
     },
     {
@@ -785,7 +788,7 @@
       "feedback": {
         "correct": "Right — $\\frac{d}{dx}\\!\\left(\\frac{x^2}{2}\\right) = x$, and with no limits the integral carries a constant, so $\\int x\\,dx = \\frac{x^2}{2} + C$.",
         "incorrect": "Find the tile that differentiates back to $x$, then add the $+ C$.",
-        "hint": "Reverse the power rule: $x \\to \\frac{x^2}{2}$, then $+ C$."
+        "hint": "Reverse the power rule on $x$: raise the exponent by one and divide by the new exponent, then add $+ C$."
       }
     },
     {
@@ -830,7 +833,7 @@
       "feedback": {
         "correct": "Exactly — $F(3) - F(1) = 9 - 1 = 8$, so $\\int_1^3 2x\\,dx = 8$.",
         "incorrect": "With $F(x) = x^2$, compute $F(3)$ and $F(1)$, then subtract in that order.",
-        "hint": "$F(3) = 3^2 = 9$ and $F(1) = 1^2 = 1$, so $9 - 1 = 8$."
+        "hint": "With $F(x) = x^2$, square each limit to find $F(3)$ and $F(1)$, then place them into $F(3) - F(1)$."
       }
     }
   ]

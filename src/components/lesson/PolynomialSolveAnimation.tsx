@@ -183,6 +183,13 @@ interface PolynomialSolveAnimationProps {
    * ignored).
    */
   beat?: number;
+  /**
+   * Append a static "+ C" to the assembled result row once it settles — the
+   * constant of integration that every indefinite integral carries. Only
+   * meaningful with `direction: "integrate"`; the definite-integral (FTC) build
+   * leaves it off because the constant cancels in F(b) − F(a).
+   */
+  plusC?: boolean;
 }
 
 /**
@@ -201,6 +208,7 @@ export function PolynomialSolveAnimation({
   compact = false,
   onCaption,
   captionsOverride,
+  plusC = false,
 }: PolynomialSolveAnimationProps) {
   const termsKey = terms.map((t) => `${t.coefficient}^${t.exponent}`).join("|");
   const captionsKey = (captionsOverride ?? []).join("|");
@@ -258,6 +266,9 @@ export function PolynomialSolveAnimation({
     .map((t, i) => ({ t, i }))
     .filter(({ t }) => !isDropped(t, direction));
   const resultPrefix = direction === "integrate" ? "F(x) =" : `f${"\u2032"}(x) =`;
+  // The constant of integration is part of an indefinite integral's answer, so
+  // reveal a trailing "+ C" once the assembled F(x) settles (integrate only).
+  const showPlusC = plusC && direction === "integrate" && frame.done;
 
   return (
     <div className={`pr-anim${compact ? " pr-anim--compact" : ""}`} aria-hidden="true">
@@ -292,19 +303,29 @@ export function PolynomialSolveAnimation({
           {frame.revealed === 0 ? (
             <span className="pr-poly-pending">{"\u2026"}</span>
           ) : (
-            resultTerms.slice(0, frame.revealed).map(({ t, i }, idx) => {
-              const lead = idx === 0;
-              return (
-                <span key={`res-${i}`} className="pr-poly-cell pr-pop">
-                  {!lead && (
-                    <span className="pr-poly-op">{opFor(resultCoeff(t, direction))}</span>
-                  )}
+            <>
+              {resultTerms.slice(0, frame.revealed).map(({ t, i }, idx) => {
+                const lead = idx === 0;
+                return (
+                  <span key={`res-${i}`} className="pr-poly-cell pr-pop">
+                    {!lead && (
+                      <span className="pr-poly-op">{opFor(resultCoeff(t, direction))}</span>
+                    )}
+                    <span className="pr-poly-term pr-poly-term--result">
+                      <MathBlock latex={resultTermLatex(t, lead, direction)} />
+                    </span>
+                  </span>
+                );
+              })}
+              {showPlusC && (
+                <span key="res-plus-c" className="pr-poly-cell pr-pop">
+                  <span className="pr-poly-op">+</span>
                   <span className="pr-poly-term pr-poly-term--result">
-                    <MathBlock latex={resultTermLatex(t, lead, direction)} />
+                    <MathBlock latex="C" />
                   </span>
                 </span>
-              );
-            })
+              )}
+            </>
           )}
         </div>
       </div>

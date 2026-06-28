@@ -69,11 +69,11 @@
         },
         "sandbox": {
           "preset": "area_explorer",
-          "fn": "x + 1",
+          "fn": "0.5*x^2 + 1",
           "a": 0,
           "b": 4,
-          "integrand": "x + 1",
-          "caption": "Drag the upper limit on this different curve and watch the shaded area accumulate as the region widens."
+          "integrand": "0.5x^2 + 1",
+          "caption": "Drag the upper limit on this different curve and watch the shaded area pile up faster as the curve rises."
         }
       },
       "solution": [
@@ -92,7 +92,7 @@
       "feedback": {
         "correct": "Right — because the curve gets taller as $x$ grows, each new strip is taller than the last, so the area piles up faster and faster.",
         "incorrect": "Watch how much area each step adds. As the curve rises, the new strips get taller.",
-        "hint": "Taller strips add more area. Since $x^2$ keeps rising, the area grows faster and faster."
+        "hint": "Each new strip's height is the curve's value there — and on $x^2$ that height keeps rising as $x$ grows."
       }
     },
     {
@@ -187,7 +187,7 @@
       "feedback": {
         "correct": "Right — a finite stack of rectangles is always a touch off; the estimate becomes exact only in the limit as n → ∞, and that limit is the integral.",
         "incorrect": "No finite number of rectangles is exact — there's always a small gap. Exactness arrives only in the limit n → ∞.",
-        "hint": "Finite n gives an approximation with a small gap; only the limit n → ∞ gives the exact area."
+        "hint": "Picture the flat rectangle tops against the curving edge — with a finite count, is there always a sliver of gap, or can the tops ever match the curve exactly?"
       }
     },
     {
@@ -261,11 +261,12 @@
         },
         "answer": { "type": "numeric", "value": 2.667, "tolerance": 0.05 },
         "sandbox": {
-          "preset": "riemann",
-          "fn": "x",
+          "preset": "area_explorer",
+          "fn": "0.5*x^2 + 1",
           "a": 0,
           "b": 4,
-          "caption": "On a different curve, drag to add rectangles and watch their total close in on the true area. Area is the limit of these rectangle sums."
+          "integrand": "0.5x^2 + 1",
+          "caption": "Drag the upper limit and watch the area accumulate under this different curve."
         }
       },
       "solution": [
@@ -281,7 +282,7 @@
       "feedback": {
         "correct": "Exactly — $F(2) - F(0) = \\frac{2^3}{3} - 0 = \\frac{8}{3} \\approx 2.67$.",
         "incorrect": "Evaluate the antiderivative at the endpoints: $F(2) - F(0) = \\frac{2^3}{3} - 0$.",
-        "hint": "$2^3 = 8$, and $\\frac{8}{3} \\approx 2.67$."
+        "hint": "Only the upper limit contributes since $F(0) = 0$ — evaluate $\\frac{x^3}{3}$ at $x = 2$ and simplify."
       }
     },
     {
@@ -327,11 +328,11 @@
         },
         "sandbox": {
           "preset": "area_explorer",
-          "fn": "2*x + 1",
+          "fn": "0.5*x^2 + 1",
           "a": 0,
           "b": 4,
-          "integrand": "2x + 1",
-          "caption": "Drag the upper limit on a different curve and watch the accumulated area climb toward a value you pick."
+          "integrand": "0.5x^2 + 1",
+          "caption": "Drag the upper limit on this different curve and watch the accumulated area climb toward a value you pick."
         }
       },
       "solution": [
@@ -351,7 +352,7 @@
       "feedback": {
         "correct": "Nice — the area from 0 to $t$ is $\\frac{t^3}{3}$, and $\\frac{3^3}{3} = 9$, so $t = 3$. You located exactly where 9 units of area have accumulated.",
         "incorrect": "The area from 0 to $t$ is $\\frac{t^3}{3}$. Set $\\frac{t^3}{3} = 9$, so $t^3 = 27$. Solve for $t$, then drag the slider there.",
-        "hint": "$\\frac{t^3}{3} = 9 \\to t^3 = 27 \\to t = 3$."
+        "hint": "The accumulated area from 0 to $t$ is $\\frac{t^3}{3}$ — set that equal to 9 and solve for $t$."
       }
     },
     {
@@ -388,11 +389,11 @@
         },
         "sandbox": {
           "preset": "area_explorer",
-          "fn": "0.5*x + 1",
+          "fn": "0.5*x^2 + 1",
           "a": 0,
           "b": 4,
-          "integrand": "0.5x + 1",
-          "caption": "Drag the upper limit on a different curve and watch the shaded area accumulate as the interval stretches."
+          "integrand": "0.5x^2 + 1",
+          "caption": "Drag the upper limit on this different curve and watch the shaded area accumulate as the interval stretches."
         }
       },
       "solution": [
@@ -410,7 +411,7 @@
       "feedback": {
         "correct": "Right — the area is $\\frac{b^3}{3}$, so doubling $b$ gives $\\frac{(2b)^3}{3} = 8 \\cdot \\frac{b^3}{3}$. The area grows eightfold, far more than double.",
         "incorrect": "The area depends on $b^3$, not $b$. What happens to $b^3$ when you double $b$?",
-        "hint": "$(2b)^3 = 8b^3$, so the area becomes 8 times as big — more than double."
+        "hint": "The area depends on $b^3$, so doubling $b$ scales it by $2^3$ — compare $2^3$ with a plain doubling."
       }
     },
     {
@@ -479,7 +480,7 @@
       "feedback": {
         "correct": "Yes — from 0 to 2 the area below the axis is $-2$, and from 2 to 4 the area above is $+2$. They cancel, so by $x = 4$ the running total is back to 0.",
         "incorrect": "The negative chunk on $[0, 2]$ is $-2$. You need an equal amount of positive area above the axis to cancel it. Where does the running total reach 0 again?",
-        "hint": "The area below on $[0, 2]$ is $-2$; it is cancelled by $+2$ of area on $[2, 4]$, so the total returns to 0 at $x = 4$."
+        "hint": "The triangle of negative area below the axis on $[0, 2]$ must be matched by an equal triangle of positive area past $x = 2$ — drag until they balance."
       }
     },
     {
@@ -552,7 +553,7 @@
       "feedback": {
         "correct": "Nice — $\\frac{t^3 - 1}{3} = \\frac{26}{3}$ gives $t^3 = 27$, so $t = 3$.",
         "incorrect": "Set $\\frac{t^3 - 1}{3} = \\frac{26}{3}$, so $t^3 - 1 = 26$ and $t^3 = 27$. Solve for $t$, then drag there.",
-        "hint": "$\\frac{t^3 - 1}{3} = \\frac{26}{3} \\to t^3 = 27 \\to t = 3$."
+        "hint": "The area from 1 to $t$ is $\\frac{t^3 - 1}{3}$ — set it equal to $\\frac{26}{3}$ and solve for $t$."
       }
     },
     {
@@ -607,7 +608,7 @@
       "feedback": {
         "correct": "Right — $\\frac{t^2 - 4}{2} = 6$ gives $t^2 = 16$, so $t = 4$.",
         "incorrect": "Set $\\frac{t^2 - 4}{2} = 6$, so $t^2 - 4 = 12$ and $t^2 = 16$. Solve for $t$, then drag there.",
-        "hint": "$\\frac{t^2 - 4}{2} = 6 \\to t^2 = 16 \\to t = 4$."
+        "hint": "The area from 2 to $t$ is $\\frac{t^2 - 4}{2}$ — set it equal to 6 and solve for $t$."
       }
     },
     {
@@ -647,17 +648,17 @@
         },
         "sandbox": {
           "preset": "ftc_explorer",
-          "fn": "x - 2",
-          "a": 1,
-          "b": 3,
-          "domain": [-1, 4],
-          "caption": "Slide the two limits on a different curve and watch the signed area — while the curve dips below the axis the total keeps subtracting."
+          "fn": "x^2 - 1",
+          "a": 0,
+          "b": 2,
+          "domain": [-2, 3],
+          "caption": "Slide the two limits on this different curve and watch the signed area — while the curve dips below the axis the total keeps subtracting."
         }
       },
       "feedback": {
         "correct": "Right — $f$ is negative until it crosses the axis at $x = 2$, so the running area keeps dropping until $t = 2$ and then climbs. The minimum is at $t = 2$.",
         "incorrect": "While $f$ stays below the axis the running area keeps subtracting; the moment $f$ turns positive it begins to recover. Find where the curve crosses zero.",
-        "hint": "$x^2 - 4 = 0$ at $x = 2$, so the running area bottoms out at $t = 2$."
+        "hint": "The signed area keeps dropping while $f < 0$ and turns back up once $f > 0$, so its lowest point is exactly where $x^2 - 4 = 0$ — solve that for $x$."
       }
     },
     {
@@ -693,7 +694,7 @@
       "feedback": {
         "correct": "Exactly — $\\int_2^4 x\\,dx = 6$, $\\int_1^4 x\\,dx = 7.5$, $\\int_1^3 x\\,dx = 4$, and $\\int_0^2 (x-2)\\,dx = -2$ because that region sits below the axis.",
         "incorrect": "Use $\\int_a^b x\\,dx = \\frac{b^2 - a^2}{2}$, and remember a region below the axis contributes negative area.",
-        "hint": "$\\int_2^4 x\\,dx = 6$, $\\int_1^4 x\\,dx = 7.5$, $\\int_1^3 x\\,dx = 4$, $\\int_0^2 (x-2)\\,dx = -2$."
+        "hint": "Each value is $\\frac{b^2 - a^2}{2}$ for the line $x$; the one integrand that's $x - 2$ runs below the axis, so its area comes out negative."
       }
     },
     {
@@ -719,10 +720,10 @@
         },
         "sandbox": {
           "preset": "riemann",
-          "fn": "x + 1",
+          "fn": "0.25*x^2 + 1",
           "a": 0,
           "b": 4,
-          "caption": "Add rectangles under this different curve and watch the estimate tighten toward the true area."
+          "caption": "Add rectangles under this different curve and watch the estimate tighten toward the true area as you add more."
         }
       },
       "feedback": {
@@ -765,7 +766,7 @@
       "feedback": {
         "correct": "Right — on [0, 2] the curve sits below the axis, so that area is negative; past x = 2 it rises above the axis and adds positive area.",
         "incorrect": "Negative area comes from where the curve is below the x-axis. Shade only the stretch where f(x) = x − 2 is less than 0.",
-        "hint": "f(x) = x − 2 is negative for x < 2, so shade [0, 2] and leave [2, 4] unshaded."
+        "hint": "Negative area is wherever the curve dips below the axis — so decide on which side of x = 2 the line f(x) = x − 2 is below zero."
       }
     },
     {
@@ -803,7 +804,7 @@
       "feedback": {
         "correct": "Exactly — sum each rectangle's area $f(x_i)\\,\\Delta x$ over all $n$ strips, then take the limit as $n \\to \\infty$ to land on the integral.",
         "incorrect": "Each rectangle contributes height × width = $f(x_i)\\,\\Delta x$, and you add up all $n$ of them with $\\Sigma$.",
-        "hint": "You need the sum of every rectangle's area: $\\sum_{i=1}^{n} f(x_i)\\,\\Delta x$."
+        "hint": "Each strip's area is its height $f(x_i)$ times its width $\\Delta x$, and you add up all $n$ — so check that the chosen tile keeps the $\\Delta x$ and sums them with $\\Sigma$."
       }
     },
     {
@@ -839,7 +840,7 @@
       "feedback": {
         "correct": "Right — the values are $-2$, $0.5$, $4$, and $9$. The below-axis region makes the first one negative.",
         "incorrect": "Compute each value (area below the axis is negative), then order from most negative to largest.",
-        "hint": "$\\int_0^2 (x-2)\\,dx = -2$, $\\int_0^1 x\\,dx = 0.5$, $\\int_1^3 x\\,dx = 4$, $\\int_0^3 x^2\\,dx = 9$."
+        "hint": "Compute each as a signed area — below-axis counts as negative — using $\\int_a^b x\\,dx = \\frac{b^2 - a^2}{2}$ for the lines, then order them."
       }
     },
     {
@@ -874,7 +875,7 @@
       "feedback": {
         "correct": "Exactly — split the interval, find Δx, scale each height, then sum the pieces.",
         "incorrect": "You have to chop $[a, b]$ into strips before you can measure any of them.",
-        "hint": "Width first, then height × width, then add the rectangle areas up."
+        "hint": "Subdividing the interval comes first and summing the areas comes last — place finding each width and scaling each height in between."
       }
     },
     {
@@ -935,7 +936,7 @@
       "feedback": {
         "correct": "Nice — $\\frac{1}{2}t^2 = 4.5$ gives $t^2 = 9$, so $t = 3$.",
         "incorrect": "Set $\\frac{1}{2}t^2 = 4.5$ and solve for $t$ before dragging.",
-        "hint": "$\\frac{1}{2}t^2 = 4.5 \\to t^2 = 9 \\to t = 3$."
+        "hint": "The area under $f(x) = x$ from 0 to $t$ is the triangle $\\frac{1}{2}t^2$ — set that equal to 4.5 and solve for $t$."
       }
     }
   ]

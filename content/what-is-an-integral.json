@@ -98,11 +98,11 @@
         },
         "sandbox": {
           "preset": "area_explorer",
-          "fn": "x + 1",
+          "fn": "3",
           "a": 0,
           "b": 4,
-          "integrand": "x + 1",
-          "caption": "Drag the upper limit and watch the shaded area pile up under this different line as the region widens."
+          "integrand": "3",
+          "caption": "Drag the upper limit under this different flat line and watch the shaded rectangle's area climb by the same amount each step."
         }
       },
       "solution": [
@@ -122,7 +122,7 @@
       "feedback": {
         "correct": "Exactly! The strip you add each step is a 1-by-2 rectangle, so the area grows by 2 every time x increases by 1. Area = height × width.",
         "incorrect": "Look at the new sliver added each step — it's a thin rectangle. How wide is it, and how tall? Its area is width × height.",
-        "hint": "Each step adds a rectangle 1 wide and 2 tall, so its area is 1 × 2 = 2."
+        "hint": "Each step adds a rectangle 1 wide and 2 tall — its area is width × height, so multiply those."
       }
     },
     {
@@ -163,11 +163,12 @@
         "hintAfterAttempts": 1,
         "answer": { "type": "numeric", "value": 8, "tolerance": 0.1 },
         "sandbox": {
-          "preset": "riemann",
-          "fn": "0.5*x^2 + 1",
+          "preset": "area_explorer",
+          "fn": "2*x",
           "a": 0,
-          "b": 3,
-          "caption": "Add rectangles under this different curve and watch the estimate close in on the true area — that limit is the integral."
+          "b": 4,
+          "integrand": "2x",
+          "caption": "Drag the upper limit and watch the shaded triangle's area grow under this different line."
         }
       },
       "solution": [
@@ -186,7 +187,7 @@
       "feedback": {
         "correct": "Right! That integral is the area of the triangle — base 4 and height f(4) = 4 — so it equals ½ · 4 · 4 = 8.",
         "incorrect": "The region is a right triangle. Its base runs from 0 to 4, and its height is f(4) = 4.",
-        "hint": "Area of a triangle = ½ · base · height = ½ · 4 · 4 = 8."
+        "hint": "Area of a triangle = ½ · base · height — read the base and height off the triangle, then multiply."
       }
     },
     {
@@ -262,7 +263,7 @@
       "feedback": {
         "correct": "Exactly — as the rectangles get thinner and more numerous, the gaps vanish and their total area closes in on the exact area. That limit is the definite integral.",
         "incorrect": "Think about what you just watched: more rectangles hugged the curve more tightly and the estimate settled down rather than blowing up or vanishing.",
-        "hint": "More, thinner rectangles → the gaps over the curve disappear → the sum converges to the true area (the integral)."
+        "hint": "As the rectangles get thinner the gaps above them shrink toward nothing, so the total doesn't vanish or stall at an overestimate — it settles on one exact value."
       }
     },
     {
@@ -353,7 +354,7 @@
       "feedback": {
         "correct": "Nice — the area under f(x) = x from 0 to t is ½ · t², and ½ · 2² = 2, so t = 2. That's where exactly 2 units of area have accumulated.",
         "incorrect": "The area from 0 to t is ½ · t². Set ½ · t² = 2, so t² = 4. Solve for t, then drag the slider there.",
-        "hint": "½ · t² = 2 → t² = 4 → t = 2."
+        "hint": "The area from 0 to t is ½ · t² — set that equal to 2 and solve for t."
       }
     },
     {
@@ -390,11 +391,11 @@
         },
         "sandbox": {
           "preset": "area_explorer",
-          "fn": "x + 1",
+          "fn": "0.5*x^2 + 1",
           "a": 0,
           "b": 4,
-          "integrand": "x + 1",
-          "caption": "Drag the upper limit and watch the shaded region accumulate under this different line."
+          "integrand": "0.5x^2 + 1",
+          "caption": "Drag the upper limit and watch the shaded region accumulate as a live integral under this different curve."
         }
       },
       "solution": [
@@ -411,7 +412,7 @@
       "feedback": {
         "correct": "Exactly — the definite integral from a to b is precisely the accumulated area under f over that interval.",
         "incorrect": "Area is an accumulation, not a slope or a single height. Which choice describes adding f up across the whole interval?",
-        "hint": "Slopes are derivatives; a single height is just f(b). The accumulated area is the integral from a to b."
+        "hint": "Slopes are derivatives, and a single height is just f(b) — so pick the choice that adds f up across the whole interval."
       }
     },
     {
@@ -521,7 +522,7 @@
       "feedback": {
         "correct": "Nice — ½ · 4² = 8, so t = 4 gives exactly 8 units of area.",
         "incorrect": "Set ½t² = 8, so t² = 16. Solve for t, then drag the slider there.",
-        "hint": "½t² = 8 → t² = 16 → t = 4."
+        "hint": "The area from 0 to t is ½t² — set ½t² = 8 and solve for t."
       }
     },
     {
@@ -561,17 +562,17 @@
         },
         "sandbox": {
           "preset": "area_explorer",
-          "fn": "0.5*x^2 + 1",
+          "fn": "4",
           "a": 0,
-          "b": 3,
-          "integrand": "0.5*x^2 + 1",
-          "caption": "Drag the upper limit and watch the shaded area accumulate under this different curve."
+          "b": 4,
+          "integrand": "4",
+          "caption": "Drag the upper limit under this different flat line and watch the rectangle's area build up."
         }
       },
       "feedback": {
         "correct": "Right — 2 · 3 = 6, so t = 3 encloses 6 units of area.",
         "incorrect": "The area is height × width = 2t. Set 2t = 6 and solve.",
-        "hint": "2t = 6 → t = 3."
+        "hint": "The rectangle's area is height × width = 2t — set 2t = 6 and solve for t."
       }
     },
     {
@@ -626,7 +627,7 @@
       "feedback": {
         "correct": "Nice — (t² − 1)/2 = 4 gives t² = 9, so t = 3. Starting at 1 instead of 0 leaves out the little triangle below x = 1.",
         "incorrect": "Set (t² − 1)/2 = 4, so t² − 1 = 8 and t² = 9. Solve for t, then drag the slider there.",
-        "hint": "(t² − 1)/2 = 4 → t² = 9 → t = 3."
+        "hint": "The area from 1 to t is (t² − 1)/2 — set it equal to 4 and solve for t."
       }
     },
     {
@@ -651,17 +652,18 @@
           "distractors": ["6", "-4"]
         },
         "sandbox": {
-          "preset": "riemann",
-          "fn": "0.5*x^2 + 1",
+          "preset": "ftc_explorer",
+          "fn": "x - 1",
           "a": 0,
           "b": 3,
-          "caption": "Add rectangles under this different curve and watch the estimate close in on the true area — that limit is the integral."
+          "domain": [-1, 4],
+          "caption": "Slide the two limits on this different line and watch the signed area — the stretch below the axis subtracts."
         }
       },
       "feedback": {
         "correct": "Exactly — ∫₀² x = 2 and ∫₁³ x = 4 are positive areas, ∫₀² (x−2) = −2 sits below the axis, and ∫₀⁴ (x−2) = 0 because the area below on [0, 2] cancels the area above on [2, 4].",
         "incorrect": "Use (b² − a²)/2 for ∫ₐᵇ x, and remember area below the axis counts as negative. ∫₀⁴ (x−2) cancels to 0.",
-        "hint": "∫₀² x = 2, ∫₁³ x = 4, ∫₀² (x−2) = −2, ∫₀⁴ (x−2) = 0."
+        "hint": "Use (b² − a²)/2 for ∫ₐᵇ x, and count any strip below the axis as negative — then work out each value."
       }
     },
     {
@@ -690,18 +692,18 @@
           ]
         },
         "sandbox": {
-          "preset": "area_explorer",
-          "fn": "2*x + 1",
+          "preset": "ftc_explorer",
+          "fn": "0.5*x - 1",
           "a": 0,
-          "b": 4,
-          "integrand": "2*x + 1",
-          "caption": "Drag the upper limit and watch the shaded area grow under this different line."
+          "b": 3,
+          "domain": [-1, 4],
+          "caption": "Slide the two limits on this different line and watch the signed area drop wherever the curve dips below the axis."
         }
       },
       "feedback": {
         "correct": "Right — on [0, 1] the curve sits below the axis, so those strips count as negative and pull the integral down.",
         "incorrect": "Negative area comes from where the curve is below the x-axis. Look for where f(x) = x − 1 is less than 0.",
-        "hint": "f(x) = x − 1 is negative when x < 1, so the negative area is on the stretch [0, 1]."
+        "hint": "The strip is negative only where the curve sits below the axis — locate where x − 1 < 0 and tap there."
       }
     },
     {
@@ -737,17 +739,18 @@
           "correctIndex": 0
         },
         "sandbox": {
-          "preset": "riemann",
-          "fn": "0.5*x + 1",
+          "preset": "area_explorer",
+          "fn": "0.5*x^2 + 1",
           "a": 0,
-          "b": 4,
-          "caption": "Add rectangles under this different line and watch the estimate close in on the true area — that limit is the integral."
+          "b": 3,
+          "integrand": "0.5x^2 + 1",
+          "caption": "Drag the upper limit under this different curve and watch the area pile up faster where the curve is taller."
         }
       },
       "feedback": {
         "correct": "Right — both slices are 1 unit wide, but x² is far taller on [1, 2], so its strips enclose much more area (about 2.3 vs 0.3).",
         "incorrect": "Both slices have the same width, so the taller one wins. Compare how high the curve sits on each half.",
-        "hint": "Equal widths, but the curve is much taller between 1 and 2 — taller strips mean more area."
+        "hint": "Both slices are the same width, so the taller one holds more area — compare how high x² rises on each half."
       }
     },
     {
@@ -792,17 +795,17 @@
         },
         "sandbox": {
           "preset": "area_explorer",
-          "fn": "0.25*x^2 + 1",
+          "fn": "3",
           "a": 0,
           "b": 4,
-          "integrand": "0.25*x^2 + 1",
-          "caption": "Drag the upper limit and watch the shaded area accumulate under this different curve."
+          "integrand": "3",
+          "caption": "Drag the upper limit under this different flat line and watch the rectangle's area accumulate."
         }
       },
       "feedback": {
         "correct": "Right — 2(t − 1) = 6 gives t − 1 = 3, so t = 4. The width runs from 1 to 4, not from 0.",
         "incorrect": "The area is height × width = 2(t − 1). Set 2(t − 1) = 6 and solve for t.",
-        "hint": "2(t − 1) = 6 → t − 1 = 3 → t = 4."
+        "hint": "The area is height × width = 2(t − 1) — set 2(t − 1) = 6 and solve for t."
       }
     },
     {
@@ -827,17 +830,18 @@
           ]
         },
         "sandbox": {
-          "preset": "riemann",
-          "fn": "2*x + 1",
+          "preset": "ftc_explorer",
+          "fn": "x + 1",
           "a": 0,
           "b": 3,
-          "caption": "Add rectangles under this different line and watch the estimate close in on the true area — that limit is the integral."
+          "domain": [0, 4],
+          "caption": "Slide the two limits on this different line and watch the area between them grow and shrink."
         }
       },
       "feedback": {
         "correct": "Right — the areas are 1.5, 2, 4, and 8. Use (b² − a²)/2 for each.",
         "incorrect": "Compute each with ∫ₐᵇ x = (b² − a²)/2, then order them smallest to largest.",
-        "hint": "∫₁² x = 1.5, ∫₀² x = 2, ∫₁³ x = 4, ∫₀⁴ x = 8."
+        "hint": "Evaluate each with ∫ₐᵇ x = (b² − a²)/2, then line them up from smallest to largest."
       }
     },
     {
@@ -859,17 +863,17 @@
         },
         "sandbox": {
           "preset": "area_explorer",
-          "fn": "0.5*x^2 + 1",
+          "fn": "0.5*x",
           "a": 0,
           "b": 4,
-          "integrand": "0.5*x^2 + 1",
-          "caption": "Drag the upper limit and watch the shaded area pile up under this different curve."
+          "integrand": "0.5x",
+          "caption": "Drag the upper limit and watch the shaded triangle's area grow under this different line."
         }
       },
       "feedback": {
         "correct": "Exactly — a triangle of base b and height b has area ½b².",
         "incorrect": "The region is a triangle: ½ · base · height, with base and height both b.",
-        "hint": "½ · b · b = ½b²."
+        "hint": "It's a triangle with base b and height b — apply ½ · base · height, then pick the matching tile."
       }
     },
     {
@@ -908,18 +912,18 @@
           "tolerance": 0.2
         },
         "sandbox": {
-          "preset": "area_explorer",
-          "fn": "x + 1",
+          "preset": "ftc_explorer",
+          "fn": "x - 1",
           "a": 0,
-          "b": 4,
-          "integrand": "x + 1",
-          "caption": "Drag the upper limit and watch the shaded area accumulate under this different line."
+          "b": 3,
+          "domain": [-1, 4],
+          "caption": "Slide the two limits on this different line and watch the signed area keep subtracting while the curve is below the axis."
         }
       },
       "feedback": {
         "correct": "Right — below the axis the area keeps subtracting, so the running total bottoms out exactly where the curve crosses zero, at t = 2 (area = −2).",
         "incorrect": "While f is below the axis the running area keeps dropping; once f turns positive it climbs back. The minimum is where the curve crosses the axis.",
-        "hint": "f(x) = x − 2 is negative until x = 2, then positive — so the running area is most negative at t = 2."
+        "hint": "While x − 2 sits below the axis the total falls, then it rises once the curve turns positive — so it bottoms out right where the curve crosses zero."
       }
     },
     {
@@ -945,17 +949,18 @@
           "yLabel": "f"
         },
         "sandbox": {
-          "preset": "riemann",
-          "fn": "x^2",
-          "a": 0,
+          "preset": "ftc_explorer",
+          "fn": "0.5*x + 1",
+          "a": 1,
           "b": 3,
-          "caption": "Drag to pile more rectangles under this different curve and watch the estimate close in on the true area — that's what a definite integral measures."
+          "domain": [0, 4],
+          "caption": "Slide the two limits on this different line to set a definite integral and watch the shaded area between them."
         }
       },
       "feedback": {
         "correct": "Exactly — the shaded trapezoid runs from x = 1 to x = 3, the limits of the integral.",
         "incorrect": "Place the left handle at x = 1 and the right handle at x = 3 so the shaded region matches the interval.",
-        "hint": "The lower limit is a = 1 and the upper limit is b = 3."
+        "hint": "Read the interval straight from the prompt and drag each handle to that endpoint."
       }
     },
     {
@@ -984,17 +989,17 @@
         },
         "sandbox": {
           "preset": "area_explorer",
-          "fn": "0.5*x + 1",
+          "fn": "2",
           "a": 0,
           "b": 5,
-          "integrand": "0.5*x + 1",
-          "caption": "Drag the upper limit and watch the shaded area pile up as the running total under this different line."
+          "integrand": "2",
+          "caption": "Drag the upper limit under this different flat line and watch the area pile up as a steady running total — accumulation in action."
         }
       },
       "feedback": {
         "correct": "Nice — a steady velocity of 1 accumulates into position = t, a straight line. That's integration in action.",
         "incorrect": "Set your velocity near 1 before you start, then hold it steady so the area you accumulate climbs alongside the dashed line.",
-        "hint": "Position is the running total of velocity. Hold a constant velocity of 1 and position grows as position = t."
+        "hint": "Position is the running total of velocity, so a steady velocity traces a straight position line — pick the constant speed that makes it climb to match position = t."
       }
     }
   ]

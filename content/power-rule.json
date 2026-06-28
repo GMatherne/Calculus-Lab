@@ -60,7 +60,7 @@
       "feedback": {
         "correct": "3x² — you brought the 3 down and reduced the exponent to 2.",
         "incorrect": "Apply the power rule n·xⁿ⁻¹ to x³: bring the exponent down as the new coefficient, then reduce the exponent by 1.",
-        "hint": "Multiply by the exponent (coefficient → 3), then subtract 1 from the exponent (→ 2)."
+        "hint": "Bring the exponent down to become the coefficient, then reduce the power by one — apply that to x³."
       }
     },
     {
@@ -100,7 +100,7 @@
       "feedback": {
         "correct": "f'(x) = 5x⁴ — the exponent 5 became the coefficient, and 5 − 1 = 4.",
         "incorrect": "Apply d/dx(xⁿ) = n·xⁿ⁻¹ to x⁵: bring the exponent down as the new coefficient, then reduce the exponent by 1.",
-        "hint": "The exponent 5 becomes the coefficient, and 5 − 1 = 4."
+        "hint": "The exponent becomes the coefficient, and the power drops by one — apply that to x⁵."
       }
     },
     {
@@ -173,7 +173,7 @@
       "feedback": {
         "correct": "f'(x) = 3x², so f'(2) = 12 — and the secant slope approaches 12. The rule checks out!",
         "incorrect": "Shrink h and read the secant slope, or compute 3 × 2².",
-        "hint": "3 × 2² = 3 × 4 = 12."
+        "hint": "You have f'(x) = 3x² — now evaluate it at x = 2 to get the slope."
       }
     },
     {
@@ -230,7 +230,7 @@
       "feedback": {
         "correct": "Right — 3x² = 3 means x² = 1, so x = 1.",
         "incorrect": "Set the slope formula equal to 3: 3x² = 3. Solve for x, then drag the slider there.",
-        "hint": "3x² = 3 → x² = 1 → x = 1."
+        "hint": "Set the slope formula 3x² equal to 3 and solve for x."
       }
     },
     {
@@ -273,7 +273,7 @@
       "feedback": {
         "correct": "12x³ — the exponent 4 drops down and multiplies the coefficient (3 · 4 = 12), and the exponent reduces to 3.",
         "incorrect": "Use d/dx(a·xⁿ) = a·n·xⁿ⁻¹ with a = 3 and n = 4: coefficient 3 · 4 = 12, exponent 4 − 1 = 3.",
-        "hint": "Multiply the coefficient by the exponent (3 × 4 = 12), then reduce the exponent by 1 (4 → 3)."
+        "hint": "Multiply the coefficient by the exponent, then reduce the power by one — apply that to 3x⁴."
       }
     },
     {
@@ -316,7 +316,7 @@
       "feedback": {
         "correct": "0 — a constant never changes, just like you saw in the first lesson.",
         "incorrect": "A constant like 7 graphs as a flat, horizontal line. Rewrite it as 7x⁰ and apply the power rule: multiply the coefficient by the exponent.",
-        "hint": "Write 7 as 7x⁰. Bringing the exponent (0) down multiplies by 0, so the coefficient becomes 0 — the same fact from the first lesson: the derivative of a constant is 0."
+        "hint": "Rewrite 7 as 7x⁰ and apply the power rule — think about what bringing down an exponent of 0 does to the coefficient."
       }
     },
     {
@@ -361,7 +361,7 @@
       "feedback": {
         "correct": "Right — bring the 5 down and reduce the exponent: 5x⁴.",
         "incorrect": "Apply d/dx(xⁿ) = n·xⁿ⁻¹ to x⁵: the exponent becomes the coefficient, then drops by 1.",
-        "hint": "The exponent 5 becomes the coefficient, and 5 − 1 = 4."
+        "hint": "The exponent becomes the coefficient, and the power drops by one — apply that to x⁵."
       }
     },
     {
@@ -387,7 +387,7 @@
       "feedback": {
         "correct": "Correct — d/dx(2x⁴) = 2 · 4x³ = 8x³.",
         "incorrect": "Use d/dx(a·xⁿ) = a·n·xⁿ⁻¹ with a = 2 and n = 4: multiply the coefficient by the exponent, then reduce the exponent by 1.",
-        "hint": "2 × 4 = 8, and the exponent drops to 3."
+        "hint": "Multiply the coefficient by the exponent, then drop the power by one — apply that to 2x⁴."
       }
     },
     {
@@ -413,7 +413,7 @@
       "feedback": {
         "correct": "Correct — d/dx(3x²) = 3 · 2x = 6x.",
         "incorrect": "Use d/dx(a·xⁿ) = a·n·xⁿ⁻¹ with a = 3 and n = 2: multiply 3 by 2, then reduce the exponent by 1.",
-        "hint": "3 × 2 = 6, and the exponent drops to 1, giving 6x."
+        "hint": "Multiply the coefficient by the exponent, then drop the power by one — apply that to 3x²."
       }
     },
     {
@@ -439,7 +439,7 @@
       "feedback": {
         "correct": "Right — bring the 7 down and reduce the exponent: 7x⁶.",
         "incorrect": "Apply d/dx(xⁿ) = n·xⁿ⁻¹ to x⁷: the exponent becomes the coefficient, then drops by 1.",
-        "hint": "The exponent 7 becomes the coefficient, and 7 − 1 = 6."
+        "hint": "The exponent becomes the coefficient, and the power drops by one — apply that to x⁷."
       }
     },
     {
@@ -468,7 +468,7 @@
       "feedback": {
         "correct": "Exactly — each derivative drops the exponent out front and reduces the power by 1.",
         "incorrect": "For xⁿ the derivative is n·xⁿ⁻¹. Apply that to each function.",
-        "hint": "x² → 2x, x³ → 3x², and so on."
+        "hint": "Apply n·xⁿ⁻¹ to each function — bring the exponent down and reduce the power — then pair them up."
       }
     },
     {
@@ -492,7 +492,7 @@
       "feedback": {
         "correct": "Right — for xⁿ, f'(1) = n, so the values are 2, 3, 4, 5 in that order.",
         "incorrect": "Differentiate each: f'(x) = n·xⁿ⁻¹, and at x = 1 that's just n. Order by n.",
-        "hint": "At x = 1, f'(1) = n, so a larger exponent gives a larger derivative."
+        "hint": "Differentiate each with the power rule, then evaluate at x = 1 — compare those values to order them."
       }
     },
     {
@@ -517,7 +517,7 @@
       "feedback": {
         "correct": "Exactly — d/dx(x⁶) = 6x⁵.",
         "incorrect": "Bring the exponent 6 down as the coefficient and reduce the power by 1.",
-        "hint": "6 · x⁶⁻¹ = 6x⁵."
+        "hint": "Bring the 6 down as a factor and reduce the exponent by one."
       }
     },
     {
@@ -543,7 +543,7 @@
       "feedback": {
         "correct": "Correct — d/dx(5x²) = 5 · 2x = 10x.",
         "incorrect": "Use d/dx(a·xⁿ) = a·n·xⁿ⁻¹ with a = 5 and n = 2: multiply 5 by 2, then reduce the exponent by 1.",
-        "hint": "5 × 2 = 10, and the exponent drops to 1, giving 10x."
+        "hint": "Multiply the coefficient by the exponent, then drop the power by one — apply that to 5x²."
       }
     },
     {
@@ -572,7 +572,7 @@
       "feedback": {
         "correct": "Right — differentiate, then plug in x = 1 to get each value.",
         "incorrect": "First find f'(x) with the power rule, then evaluate it at x = 1.",
-        "hint": "For example, 2x² → 4x, and 4x at x = 1 is 4."
+        "hint": "Differentiate each function, then substitute x = 1 — that number is its match."
       }
     },
     {
@@ -599,7 +599,7 @@
       "feedback": {
         "correct": "Exactly — 3x² = 12 gives x² = 4, so x = ±2. Both x = 2 and x = -2 have a tangent slope of 12.",
         "incorrect": "Apply the power rule and set the derivative equal to 12: 3x² = 12. Solve for x — there are two solutions — then tap one of those points.",
-        "hint": "3x² = 12 → x² = 4 → x = ±2. Either point works."
+        "hint": "Set the slope 3x² equal to 12 and solve for x — there are two such points."
       }
     }
   ]
