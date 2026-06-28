@@ -21,6 +21,24 @@ export function evalFunction(fn: string, x: number): number {
   return result;
 }
 
+/**
+ * Evaluate a math.js expression with an arbitrary variable scope (e.g. a target
+ * curve written in terms of `t`). Shares the compile cache with
+ * {@link evalFunction}; throws when the result isn't a finite number.
+ */
+export function evalAt(expr: string, scope: Record<string, number>): number {
+  let compiled = compiledCache.get(expr);
+  if (!compiled) {
+    compiled = math.compile(expr);
+    compiledCache.set(expr, compiled);
+  }
+  const result = compiled.evaluate(scope);
+  if (typeof result !== "number" || !Number.isFinite(result)) {
+    throw new Error(`Invalid evaluation of "${expr}"`);
+  }
+  return result;
+}
+
 export function secantSlope(
   fn: string,
   x0: number,
@@ -168,7 +186,11 @@ export function checkAnswer(
           };
     }
     case "power_term": {
-      const v = (answer ?? {}) as { coefficient?: number; exponent?: number };
+      const v = (answer ?? {}) as {
+        coefficient?: number;
+        exponent?: number;
+        denominator?: number;
+      };
       const coeff = Number(v.coefficient);
       const exp = Number(v.exponent);
       if (!Number.isFinite(coeff) || !Number.isFinite(exp)) {
@@ -179,12 +201,19 @@ export function checkAnswer(
           hint: step.feedback.hint,
         };
       }
-      // A zero coefficient means the term vanished (e.g. a constant's
-      // derivative), so the exponent doesn't matter in that case.
+      // Fraction mode (reverse power rule): the coefficient is a fraction, so
+      // the numerator, denominator, and exponent must all match exactly.
       const verified =
-        spec.coefficient === 0
-          ? coeff === 0
-          : coeff === spec.coefficient && exp === spec.exponent;
+        spec.denominator != null
+          ? Number.isFinite(Number(v.denominator)) &&
+            coeff === spec.coefficient &&
+            Number(v.denominator) === spec.denominator &&
+            exp === spec.exponent
+          : // A zero coefficient means the term vanished (e.g. a constant's
+            // derivative), so the exponent doesn't matter in that case.
+            spec.coefficient === 0
+            ? coeff === 0
+            : coeff === spec.coefficient && exp === spec.exponent;
       return verified
         ? { correct: true, message: step.feedback.correct }
         : {
@@ -288,53 +317,184 @@ export function checkAnswer(
             hint: step.feedback.hint,
           };
     }
+    case "construct_graph": {
+      const ys = Array.isArray(answer) ? (answer as (number | null)[]) : [];
+      // Target y for node i: the function sampled at its x, else the explicit
+      // per-node target. Any evaluation failure makes the node ungradeable.
+      const target = (i: number): number => {
+        try {
+          if (spec.targetFn !== undefined) {
+            return evalFunction(spec.targetFn, spec.nodes[i].x);
+          }
+          return spec.targetY?.[i] ?? NaN;
+        } catch {
+          return NaN;
+        }
+      };
+      const allPlaced =
+        spec.nodes.length > 0 &&
+        spec.nodes.every((_, i) => Number.isFinite(Number(ys[i])));
+      const allCorrect =
+        allPlaced &&
+        spec.nodes.every((node, i) => {
+          const tol = node.tolerance ?? 0.4;
+          const t = target(i);
+          return Number.isFinite(t) && Math.abs(Number(ys[i]) - t) <= tol;
+        });
+      return allCorrect
+        ? { correct: true, message: step.feedback.correct }
+        : {
+            correct: false,
+            message: step.feedback.incorrect,
+            showHint: false,
+            hint: step.feedback.hint,
+          };
+    }
+    case "paint_intervals": {
+      const picks = Array.isArray(answer) ? (answer as boolean[]) : [];
+      // Exact match: every segment's shaded/unshaded state must match. A missing
+      // entry counts as unshaded (false).
+      const allCorrect =
+        spec.correct.length > 0 &&
+        spec.correct.every((c, i) => Boolean(picks[i]) === c);
+      return allCorrect
+        ? { correct: true, message: step.feedback.correct }
+        : {
+            correct: false,
+            message: step.feedback.incorrect,
+            showHint: false,
+            hint: step.feedback.hint,
+          };
+    }
+    case "tangent_line": {
+      const num = Number(answer);
+      if (!Number.isFinite(num)) {
+        return {
+          correct: false,
+          message: "Drag the line to set its slope.",
+          showHint: false,
+          hint: step.feedback.hint,
+        };
+      }
+      const tolerance = spec.tolerance ?? 0.3;
+      const verified = Math.abs(num - spec.slope) <= tolerance;
+      return verified
+        ? { correct: true, message: step.feedback.correct }
+        : {
+            correct: false,
+            message: step.feedback.incorrect,
+            showHint: false,
+            hint: step.feedback.hint,
+          };
+    }
+    case "integral_bounds": {
+      const v = (answer ?? {}) as { a?: number; b?: number };
+      const a = Number(v.a);
+      const b = Number(v.b);
+      if (!Number.isFinite(a) || !Number.isFinite(b)) {
+        return {
+          correct: false,
+          message: "Drag both bounds into place.",
+          showHint: false,
+          hint: step.feedback.hint,
+        };
+      }
+      // Grade sorted, so the handles may be dragged in either order.
+      const lo = Math.min(a, b);
+      const hi = Math.max(a, b);
+      const tolerance = spec.tolerance ?? 0.25;
+      const verified =
+        Math.abs(lo - spec.a) <= tolerance && Math.abs(hi - spec.b) <= tolerance;
+      return verified
+        ? { correct: true, message: step.feedback.correct }
+        : {
+            correct: false,
+            message: step.feedback.incorrect,
+            showHint: false,
+            hint: step.feedback.hint,
+          };
+    }
+    case "simulate": {
+      // The trace is resampled to N evenly spaced points across [0, duration].
+      // Compare each to the target at the same t and pass when enough land in
+      // the tolerance band — a coverage check, not an exact match.
+      const series = Array.isArray(answer) ? (answer as number[]) : [];
+      const n = series.length;
+      if (n < 2) {
+        return {
+          correct: false,
+          message: "Press Run and trace the curve.",
+          showHint: false,
+          hint: step.feedback.hint,
+        };
+      }
+      const tolerance = spec.tolerance ?? 0.5;
+      const coverage = spec.coverage ?? 0.85;
+      let inBand = 0;
+      for (let i = 0; i < n; i++) {
+        const t = (spec.duration * i) / (n - 1);
+        let target: number;
+        try {
+          target = evalAt(spec.target, { t });
+        } catch {
+          continue;
+        }
+        if (Number.isFinite(series[i]) && Math.abs(series[i] - target) <= tolerance) {
+          inBand++;
+        }
+      }
+      const verified = inBand / n >= coverage;
+      return verified
+        ? { correct: true, message: step.feedback.correct }
+        : {
+            correct: false,
+            message: step.feedback.incorrect,
+            showHint: false,
+            hint: step.feedback.hint,
+          };
+    }
+    case "select_region": {
+      if (spec.multi) {
+        // Multi-select: every band's chosen state must match its `correct` flag.
+        const picks = Array.isArray(answer) ? (answer as boolean[]) : [];
+        const allCorrect =
+          spec.bands.length > 0 &&
+          spec.bands.every((b, i) => Boolean(picks[i]) === Boolean(b.correct));
+        return allCorrect
+          ? { correct: true, message: step.feedback.correct }
+          : {
+              correct: false,
+              message: step.feedback.incorrect,
+              showHint: false,
+              hint: step.feedback.hint,
+            };
+      }
+      // Single-select: the chosen band index must be the (one) correct band.
+      const idx = answer == null ? NaN : Number(answer);
+      if (!Number.isInteger(idx) || idx < 0 || idx >= spec.bands.length) {
+        return {
+          correct: false,
+          message: "Select a region.",
+          showHint: false,
+          hint: step.feedback.hint,
+        };
+      }
+      const verified = spec.bands[idx]?.correct === true;
+      return verified
+        ? { correct: true, message: step.feedback.correct }
+        : {
+            correct: false,
+            message: step.feedback.incorrect,
+            showHint: false,
+            hint: step.feedback.hint,
+          };
+    }
     default:
       return {
         correct: false,
         message: "Unknown answer type.",
         showHint: false,
       };
-  }
-}
-
-/**
- * Signed distance from the learner's current value to the nearest acceptable
- * target, for the distance-based answer types (`numeric`, `slider`,
- * `graph_point`, `predict_point`, `riemann`). Positive means the value sits
- * above the target (so it should come down), negative means below (it should go
- * up), and 0 means dead on. Returns null for answer types with no meaningful
- * scalar distance (e.g. `multiple_choice`, `drag_drop`) and when the value isn't
- * a finite number yet.
- *
- * Magnitudes are in the answer's own units — divide by the tolerance for a
- * normalized "how many tolerances away" measure. This never grades; it only
- * powers live "warmer/colder" feedback while {@link checkAnswer} stays the
- * single source of truth for the verdict.
- */
-export function answerProximity(step: Step, answer: unknown): number | null {
-  const spec = step.interaction?.answer;
-  if (!spec) return null;
-  const nearest = (targets: number[], v: number): number =>
-    targets.reduce((best, t) => (Math.abs(v - t) < Math.abs(v - best) ? t : best));
-  switch (spec.type) {
-    case "numeric":
-    case "slider": {
-      const num = Number(answer);
-      return Number.isFinite(num) ? num - spec.value : null;
-    }
-    case "graph_point":
-    case "predict_point": {
-      const num = Number(answer);
-      if (!Number.isFinite(num)) return null;
-      return num - nearest([spec.x, ...(spec.acceptX ?? [])], num);
-    }
-    case "riemann": {
-      const n = Number(answer);
-      if (!Number.isFinite(n) || n <= 0) return null;
-      return riemannSum(spec.fn, spec.a, spec.b, n) - spec.trueArea;
-    }
-    default:
-      return null;
   }
 }
 

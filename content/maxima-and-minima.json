@@ -57,7 +57,27 @@
             "It stays zero the whole time"
           ],
           "correctIndex": 0
+        },
+        "sandbox": {
+          "preset": "slope_explorer",
+          "fn": "4 - x^2",
+          "domain": [-3, 3],
+          "caption": "Drag the point across this practice hill — the tangent slope eases to 0 right at the crest, the one place where the slope reverses sign as you pass through."
         }
+      },
+      "solution": [
+        { "type": "text", "body": "The slope is $f'(x) = -2x + 4$. Sample it on each side of the peak at $x = 2$:" },
+        { "type": "math", "latex": "f'(1) = 2 > 0, \\qquad f'(3) = -2 < 0", "display": true },
+        { "type": "text", "body": "The slope flips from positive to negative — the first option. Rising then falling marks a maximum." }
+      ],
+      "solveAnimation": {
+        "kind": "narrated",
+        "showSlopeValue": true,
+        "phases": [
+          { "text": "Left of the peak the tangent slopes uphill: $f'(x) > 0$.", "to": 0.5, "ms": 1500 },
+          { "text": "At $x = 2$ the slope passes through $0$ at the top.", "to": 2, "ms": 1700 },
+          { "text": "Past the peak the tangent slopes downhill: $f'(x) < 0$ — the slope flips from positive to negative.", "to": 4, "ms": 1700 }
+        ]
       },
       "feedback": {
         "correct": "Right — left of the peak the slope is positive (f rising), and right of it the slope is negative (f falling). Increasing then decreasing makes x = 2 a maximum.",
@@ -100,7 +120,27 @@
             "It stays zero the whole time"
           ],
           "correctIndex": 0
+        },
+        "sandbox": {
+          "preset": "slope_explorer",
+          "fn": "-x^2 + 6*x",
+          "domain": [0, 6],
+          "caption": "Drag the point over this hill and watch the readout: the tangent slope passes through 0 at the very top, flipping sign as you cross the turn."
         }
+      },
+      "solution": [
+        { "type": "text", "body": "The slope is $f'(x) = 2x - 2$. Sample it on each side of the bottom at $x = 1$:" },
+        { "type": "math", "latex": "f'(0) = -2 < 0, \\qquad f'(2) = 2 > 0", "display": true },
+        { "type": "text", "body": "The slope flips from negative to positive — the first option. Falling then rising marks a minimum." }
+      ],
+      "solveAnimation": {
+        "kind": "narrated",
+        "showSlopeValue": true,
+        "phases": [
+          { "text": "Approaching the bottom the tangent slopes downhill: $f'(x) < 0$.", "to": 0, "ms": 1600 },
+          { "text": "At $x = 1$ the slope passes through $0$ at the lowest point.", "to": 1, "ms": 1600 },
+          { "text": "Past the bottom the tangent slopes uphill: $f'(x) > 0$ — the slope flips from negative to positive.", "to": 3, "ms": 1700 }
+        ]
       },
       "feedback": {
         "correct": "Exactly — the slope is negative as the curve falls toward the bottom, then positive as it rises away. Decreasing then increasing makes x = 1 a minimum.",
@@ -138,7 +178,24 @@
             "Falling the whole way — no turning point"
           ],
           "correctIndex": 0
+        },
+        "sandbox": {
+          "preset": "slope_explorer",
+          "fn": "x^2 - 4*x",
+          "domain": [-1, 5],
+          "caption": "Drag the point through this valley — the tangent flattens to slope 0 at the lowest point, the single spot where the slope switches sign."
         }
+      },
+      "solution": [
+        { "type": "text", "body": "Translate the slope signs into motion: positive slope means rising, negative slope means falling." },
+        { "type": "text", "body": "If $f'$ goes $+ \\to -$ as x increases, f rises then falls — the curve tops out at a maximum (the first option)." }
+      ],
+      "solveAnimation": {
+        "kind": "narrated",
+        "phases": [
+          { "text": "Positive slope means rising; negative slope means falling." },
+          { "text": "If $f'$ runs $+ \\to -$ as x increases, the curve rises then falls — a maximum." }
+        ]
       },
       "feedback": {
         "correct": "Positive-to-negative slope means f increases then decreases, so the curve peaks — a maximum.",
@@ -187,7 +244,25 @@
           "x": -1,
           "tolerance": 0.3,
           "reveal": { "point": true, "tangent": true, "vertical": true }
+        },
+        "sandbox": {
+          "preset": "slope_explorer",
+          "fn": "-0.5*x^2 + 2*x",
+          "domain": [-1, 5],
+          "caption": "Drag the point up this gentle hill — the tangent slope fades to 0 exactly at the crest, then runs negative on the way down."
         }
+      },
+      "solution": [
+        { "type": "text", "body": "Critical points solve $f'(x) = 0$. With $f'(x) = 3x^2 - 3$:" },
+        { "type": "math", "latex": "3x^2 - 3 = 0 \\;\\Rightarrow\\; x = \\pm 1", "display": true },
+        { "type": "text", "body": "The slope runs $+ \\to -$ at $x = -1$ (rising then falling), so the local maximum is at $x = -1$. Drag the dot there." }
+      ],
+      "solveAnimation": {
+        "kind": "narrated",
+        "phases": [
+          { "text": "Critical points solve $f'(x) = 0$. With $f'(x) = 3x^2 - 3$, that's $x = \\pm 1$." },
+          { "text": "The slope runs $+ \\to -$ at $x = -1$ (rising then falling) — the local maximum." }
+        ]
       },
       "feedback": {
         "correct": "Nailed it — at x = −1 the curve turns from rising to falling, so the tangent is flat (f'(−1) = 0): a local maximum.",
@@ -218,7 +293,25 @@
           "type": "graph_point",
           "x": 1,
           "tolerance": 0.1
+        },
+        "sandbox": {
+          "preset": "slope_explorer",
+          "fn": "4 - x^2",
+          "domain": [-3, 3],
+          "caption": "Drag the point on this hill — the tangent goes flat right at the top, where the slope passes through 0. A turning point is exactly where the slope is 0."
         }
+      },
+      "solution": [
+        { "type": "text", "body": "The two critical points are $x = \\pm 1$ (where $f'(x) = 3x^2 - 3 = 0$)." },
+        { "type": "text", "body": "At $x = 1$ the slope runs $- \\to +$ (falling then rising), so this is the local minimum — the valley on the right. Tap $x = 1$." }
+      ],
+      "solveAnimation": {
+        "kind": "narrated",
+        "phases": [
+          { "text": "The critical points are $x = \\pm 1$ (where $f'(x) = 3x^2 - 3 = 0$)." },
+          { "text": "At $x = 1$ the slope runs $- \\to +$ (falling then rising) — the local minimum." }
+        ],
+        "reveal": { "x": 1, "point": true, "tangent": true }
       },
       "feedback": {
         "correct": "Right — at x = 1 the curve turns from falling to rising, so f'(1) = 0 and it's a local minimum (the valley).",
@@ -246,7 +339,26 @@
             { "prompt": "$x = 1$", "match": "Neither" },
             { "prompt": "$x = 2$", "match": "Minimum" }
           ]
+        },
+        "sandbox": {
+          "preset": "slope_explorer",
+          "fn": "x^3 - 6*x",
+          "domain": [-3, 3],
+          "caption": "Drag the point along this practice curve — the tangent goes flat (slope 0) at each turning point: over the hump and again down in the dip."
         }
+      },
+      "solution": [
+        { "type": "text", "body": "Factor the derivative to find the critical points:" },
+        { "type": "math", "latex": "f'(x) = 3x^2 - 6x = 3x(x - 2) = 0 \\;\\Rightarrow\\; x = 0,\\ 2", "display": true },
+        { "type": "text", "body": "Test the sign of $f'$ around each: at $x = 0$ it runs $+ \\to -$ (a maximum); at $x = 2$ it runs $- \\to +$ (a minimum). Since $f'(1) = -3 \\ne 0$, $x = 1$ isn't a critical point — neither." }
+      ],
+      "solveAnimation": {
+        "kind": "narrated",
+        "phases": [
+          { "text": "Factor the derivative: $f'(x) = 3x^2 - 6x = 3x(x - 2) = 0$, so the critical points are $x = 0$ and $x = 2$." },
+          { "text": "Sign of $f'$ at each: $x = 0$ runs $+ \\to -$ (a maximum); $x = 2$ runs $- \\to +$ (a minimum)." },
+          { "text": "$f'(1) = -3 \\ne 0$, so $x = 1$ isn't critical — neither." }
+        ]
       },
       "feedback": {
         "correct": "Right — f'(x) = 3x(x − 2) is zero only at x = 0 and x = 2. At x = 0 the slope runs + → − (rising then falling), a maximum; at x = 2 it runs − → + (falling then rising), a minimum. At x = 1, f'(1) = −3 ≠ 0, so the curve is just falling there — neither.",
@@ -300,6 +412,12 @@
           "type": "graph_point",
           "x": -1,
           "tolerance": 0.25
+        },
+        "sandbox": {
+          "preset": "slope_explorer",
+          "fn": "9 - x^2",
+          "domain": [-4, 4],
+          "caption": "Drag the point over this hill — the tangent slope passes through 0 at the peak, where the curve stops rising and starts falling."
         }
       },
       "feedback": {
@@ -331,6 +449,12 @@
           "type": "graph_point",
           "x": 1,
           "tolerance": 0.25
+        },
+        "sandbox": {
+          "preset": "slope_explorer",
+          "fn": "x^2 - 4*x",
+          "domain": [-1, 5],
+          "caption": "Drag the point down into this valley — the tangent slope hits 0 at the bottom, where the curve stops falling and starts rising."
         }
       },
       "feedback": {
@@ -360,6 +484,12 @@
             { "correctIndex": 1 },
             { "correctIndex": 0 }
           ]
+        },
+        "sandbox": {
+          "preset": "slope_explorer",
+          "fn": "4 - x^2",
+          "domain": [-3, 3],
+          "caption": "Drag the point across this hill — the tangent slope reads positive on the way up, 0 at the crest, and negative on the way down."
         }
       },
       "feedback": {
@@ -387,6 +517,12 @@
             { "prompt": "$x = 1$", "correctIndex": 1 },
             { "prompt": "$x = 0$", "correctIndex": 2 }
           ]
+        },
+        "sandbox": {
+          "preset": "slope_explorer",
+          "fn": "x^2 - 2*x",
+          "domain": [-2, 4],
+          "caption": "Drag the point through this valley — the tangent slope reads negative as the curve falls, 0 at the bottom, then positive as it climbs out."
         }
       },
       "feedback": {
@@ -415,6 +551,12 @@
             { "prompt": "$-x^2 + 8x$", "match": "4" }
           ],
           "distractors": ["0"]
+        },
+        "sandbox": {
+          "preset": "slope_explorer",
+          "fn": "-x^2 + 6*x",
+          "domain": [0, 6],
+          "caption": "Drag the point over this hill — the tangent slope drops to 0 at the single high point, the curve's one turning point."
         }
       },
       "feedback": {
@@ -446,6 +588,12 @@
           "type": "graph_point",
           "x": 3,
           "tolerance": 0.25
+        },
+        "sandbox": {
+          "preset": "slope_explorer",
+          "fn": "x^3 - 6*x",
+          "domain": [-3, 3],
+          "caption": "Drag the point along this curve — at each turning point the tangent goes flat (slope 0): once over the hump and once down in the dip."
         }
       },
       "feedback": {
@@ -477,6 +625,12 @@
           "type": "graph_point",
           "x": 3,
           "tolerance": 0.25
+        },
+        "sandbox": {
+          "preset": "slope_explorer",
+          "fn": "-0.5*x^2 + 2*x",
+          "domain": [-1, 5],
+          "caption": "Drag the point over this hill — the tangent slope thins to 0 right at the top, the spot where rising turns to falling."
         }
       },
       "feedback": {
@@ -505,6 +659,12 @@
             "Check the sign of $f'$ on each side",
             "Classify each as max, min, or neither"
           ]
+        },
+        "sandbox": {
+          "preset": "slope_explorer",
+          "fn": "9 - x^2",
+          "domain": [-4, 4],
+          "caption": "Drag the point across this hill — feel the tangent slope go from positive, through 0 at the crest, to negative."
         }
       },
       "feedback": {
@@ -534,6 +694,12 @@
             { "correctIndex": 1 },
             { "correctIndex": 0 }
           ]
+        },
+        "sandbox": {
+          "preset": "slope_explorer",
+          "fn": "x^2 - 2*x",
+          "domain": [-2, 4],
+          "caption": "Drag the point through this valley — the tangent slope is negative while the curve falls, 0 at the bottom, and positive as it rises."
         }
       },
       "feedback": {
@@ -561,6 +727,12 @@
             { "prompt": "Slope stays +", "match": "Not an extremum" }
           ],
           "distractors": ["Both"]
+        },
+        "sandbox": {
+          "preset": "slope_explorer",
+          "fn": "x^2 - 4*x",
+          "domain": [-1, 5],
+          "caption": "Drag the point through this valley — watch the tangent slope pass through 0 and switch sign right at the turning point."
         }
       },
       "feedback": {
@@ -593,6 +765,12 @@
           "x": 2,
           "tolerance": 0.3,
           "reveal": { "point": true, "tangent": true, "vertical": true }
+        },
+        "sandbox": {
+          "preset": "slope_explorer",
+          "fn": "-x^2 + 6*x",
+          "domain": [0, 6],
+          "caption": "Drag the point over this hill — the tangent slope eases to 0 exactly at the crest, then turns negative beyond it."
         }
       },
       "feedback": {

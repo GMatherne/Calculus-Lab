@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useProgress } from "../contexts/ProgressContext";
+import { useSound } from "../contexts/SoundContext";
+import { playSound } from "../lib/sound";
 import { AppHeader } from "../components/layout/AppHeader";
 import { SafeArea } from "../components/layout/SafeArea";
 import { PasswordInput } from "../components/auth/PasswordInput";
@@ -412,6 +414,49 @@ function DeleteAccountSection({
   );
 }
 
+function SoundSection() {
+  const { enabled, setEnabled } = useSound();
+
+  const toggle = () => {
+    const next = !enabled;
+    setEnabled(next);
+    // Preview the sound the instant it's switched on, so the change is audible.
+    if (next) playSound("correct");
+  };
+
+  return (
+    <section className={cardClass}>
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <h2 className="text-sm font-semibold text-slate-800">Sound effects</h2>
+          <p className="mt-1 text-xs text-slate-500">
+            Play short sounds for answers, rewards, and taps.
+          </p>
+        </div>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={enabled}
+          aria-label="Sound effects"
+          onClick={toggle}
+          // Suppress the global tap sound here so toggling off stays silent and
+          // toggling on plays only the preview.
+          data-no-sound
+          className={`relative inline-flex h-7 w-12 shrink-0 items-center rounded-full transition-colors ${
+            enabled ? "bg-indigo-600" : "bg-slate-300"
+          }`}
+        >
+          <span
+            className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
+              enabled ? "translate-x-6" : "translate-x-1"
+            }`}
+          />
+        </button>
+      </div>
+    </section>
+  );
+}
+
 export function SettingsPage() {
   const { user, isDemo } = useAuth();
   const { profile, loading } = useProgress();
@@ -440,7 +485,7 @@ export function SettingsPage() {
       <main className="flex-1 px-4 py-8 max-w-md mx-auto w-full">
         <h1 className="text-2xl font-bold text-slate-900">Settings</h1>
         <p className="mt-1 text-sm text-slate-500">
-          Manage your account details.
+          Manage your account and preferences.
         </p>
 
         {isDemo && (
@@ -449,28 +494,31 @@ export function SettingsPage() {
           </div>
         )}
 
-        {loading ? (
-          <p className="mt-8 text-slate-500">Loading…</p>
-        ) : (
-          <div className="mt-6 space-y-5">
-            <DisplayNameSection initialName={displayName} />
-            <EmailSection
-              initialEmail={email}
-              editable={emailEditable}
-              requireCurrentPassword={emailRequiresPassword}
-              immediate={isDemo}
-              readOnlyNote="Your email is managed by your Google account."
-            />
-            <PasswordSection
-              enabled={passwordEnabled}
-              disabledNote={passwordDisabledNote}
-            />
-            <DeleteAccountSection
-              requiresPassword={!isDemo && hasPasswordProvider}
-              isDemo={isDemo}
-            />
-          </div>
-        )}
+        <div className="mt-6 space-y-5">
+          <SoundSection />
+          {loading ? (
+            <p className="text-slate-500">Loading…</p>
+          ) : (
+            <>
+              <DisplayNameSection initialName={displayName} />
+              <EmailSection
+                initialEmail={email}
+                editable={emailEditable}
+                requireCurrentPassword={emailRequiresPassword}
+                immediate={isDemo}
+                readOnlyNote="Your email is managed by your Google account."
+              />
+              <PasswordSection
+                enabled={passwordEnabled}
+                disabledNote={passwordDisabledNote}
+              />
+              <DeleteAccountSection
+                requiresPassword={!isDemo && hasPasswordProvider}
+                isDemo={isDemo}
+              />
+            </>
+          )}
+        </div>
       </main>
     </SafeArea>
   );

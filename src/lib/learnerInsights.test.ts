@@ -49,8 +49,10 @@ describe("getConceptInsight", () => {
     expect(insight).not.toBeNull();
     expect(insight.concept).toBe(entry.concept);
     expect(insight.label).toBe(entry.label);
-    expect(insight.tier).toBe("mastered");
-    expect(insight.percent).toBe(100);
+    // A flawless lesson with no practice yet only reaches the halfway mark — the
+    // top half of mastery is earned through practice/review.
+    expect(insight.tier).toBe("learning");
+    expect(insight.percent).toBe(50);
     // Recency comes from `updatedAt`; rounding absorbs the sub-ms now() drift.
     expect(Math.round(insight.daysSinceSeen ?? -1)).toBe(10);
     expect(insight.lessonTitle).toBe(getLesson(entry.lessonIds[0])?.title ?? null);

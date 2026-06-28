@@ -110,6 +110,23 @@ describe("getReviewPriorities", () => {
     expect(w.priority).toBeGreaterThan(s.priority);
   });
 
+  it("eases a concept's weakness once review of it goes well", () => {
+    const [reviewed] = disjointPair();
+    const progress = buildProgress([{ entry: reviewed, attempts: 2 }]);
+    const before = getReviewPriorities(progress).find(
+      (p) => p.concept === reviewed.concept,
+    )!;
+    const after = getReviewPriorities(progress, {
+      [reviewed.concept]: {
+        seen: 8,
+        firstTryCorrect: 8,
+        lastReviewed: new Date().toISOString(),
+      },
+    }).find((p) => p.concept === reviewed.concept)!;
+    expect(after.weakness).toBeLessThan(before.weakness);
+    expect(after.priority).toBeLessThan(before.priority);
+  });
+
   it("breaks ties by recency — a staler concept ranks higher", () => {
     const [stale, recent] = disjointPair();
     const priorities = getReviewPriorities(

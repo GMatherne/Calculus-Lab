@@ -124,23 +124,32 @@ concrete **do** with file references.
 
 ### Tier 2 — Strong evidence, low–moderate effort
 
-#### ④ Tiered / faded hints (the `hintAfterAttempts` field is dead code — wire it up)
+#### ④ Tiered / faded hints — **Implemented** as a learner-controlled assistance toggle
 
 - **Evidence:** Worked-example and guidance-fading effects + cognitive load
   theory: novices benefit from scaffolding; fade it as expertise grows or it
   backfires (the *expertise reversal effect*, Kalyuga et al.; Sweller on guidance
   fading).
-- **Current state:** `Interaction.hintAfterAttempts` is authored in many lesson
-  JSON files but **no runtime code reads it** — the "Show hint" button appears
-  immediately on the first wrong answer (`LessonPlayer.tsx`, `FeedbackPanel.tsx`).
-- **Do:**
-  - Gate the hint button on attempt count in `LessonPlayer.tsx`.
-  - Support **progressive hints** (nudge → strategy → near-worked step) instead of
-    a single hint string.
-  - For early lessons, lead with a fully worked example, then "completion
-    problems" (learner fills the last step), then independent problems — literal
-    backward-fading. This mirrors Brilliant's "drop into the action, name the
-    technique afterward" design.
+- **Current state:** Each question carries a three-state assistance toggle
+  (`AssistanceToggle.tsx`): **Solve it** (shows the interactive question first, then
+  a "Work through it" walkthrough that animates the widget to the answer while the
+  concept-to-answer `Step.solution` reveals step by step, via `solutionService.ts`
+  + `SolutionPanel.tsx`),
+  **Hints** (live "warmer/colder" proximity feedback while interacting on
+  value-tuning questions, plus the authored hint offered proactively and the AI
+  tutor), and
+  **No help** (hints and tutor hidden). The level is a sticky per-learner
+  preference (`useAssistancePreference.ts`, default Hints) and the learner can
+  override it on any question. "Solve it" is a worked example, not a test, so it
+  advances the lesson but is excluded from concept mastery (`markStepSolved` +
+  `solvedSteps`, honored in `masteryService.ts`); it is offered on lesson
+  questions only — practice questions get just Hints / No help. The legacy
+  `Interaction.hintAfterAttempts` field is superseded by this toggle.
+- **Possible follow-ups:**
+  - Auto-fade the default level by mastery (start new concepts on "Solve it",
+    fade to Hints, then None) instead of a single sticky preference.
+  - **Progressive hints** (nudge → strategy → near-worked step) within the Hints
+    level instead of a single hint string (pairs with AI-4).
 
 #### ⑤ Self-explanation prompts
 
@@ -313,8 +322,8 @@ A pragmatic order by evidence-to-effort, given the current architecture:
    existing review infrastructure. Start with a simple interval ladder.
 3. **③ Mastery actually drives study** — `getWeakConcepts` already exists; wire it
    into "Continue" + review sampling, then add decay.
-4. **④ Faded/tiered hints** — wire up the dead `hintAfterAttempts`, add
-   progressive hints.
+4. **④ Faded/tiered hints** — **done** (three-state assistance toggle); optional
+   follow-ups: auto-fade by mastery and progressive hints.
 5. **⑤ Self-explanation** and **⑥ difficulty targeting** — content + sampling
    changes.
 6. **⑦–⑨** — calibration, concreteness-fading authoring guidelines, humane
@@ -334,7 +343,7 @@ A pragmatic order by evidence-to-effort, given the current architecture:
 | Elaborated/misconception feedback | **Missing** | `AnswerSpec`, `feedbackEngine.ts` |
 | Mastery-driven study | Partial (display-only) | `masteryService.ts`, roadmap, sampler |
 | Mastery decay + `"mastered"` write | **Missing** | `progressService.ts`, `masteryService.ts` |
-| Faded scaffolding / tiered hints | **Stubbed** (`hintAfterAttempts` unused) | `LessonPlayer.tsx`, `FeedbackPanel.tsx` |
+| Faded scaffolding / tiered hints | **Done** (3-state assistance toggle: solve / hints / none) | `AssistanceToggle.tsx`, `LessonPlayer.tsx`, `solutionService.ts` |
 | Self-explanation | **Missing** | new prompt via `multiple_choice` |
 | Difficulty / flow targeting | **Missing** | difficulty tags + `sampleSession` |
 | Metacognition / calibration | **Missing** | submit UI + profile |

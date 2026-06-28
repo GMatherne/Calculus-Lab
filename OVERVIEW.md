@@ -804,6 +804,8 @@ sheet (`content/reference.json`) is validated the same way (`validateReference.t
 - `predict_point` questions need a graph config, a finite `x` (and finite
   `acceptX`), a positive `tolerance` when set, and a `reveal` spec.
 - Non-read steps must have all three feedback fields (correct/incorrect/hint).
+- Graded **lesson** steps must include a `solution` (worked-solution blocks)
+  powering the "Solve it" assistance level; practice questions are exempt.
 - Practice banks must hold ≥ 3 interactive questions with unique IDs.
 
 The reference deck has its own checks (`validateReference.ts`): every fact needs
@@ -832,13 +834,16 @@ Here is a representative step (a `power_term` "derivative builder") from
     { "type": "text", "body": "Build the derivative of f(x) = x³." }
   ],
   "interaction": {
-    "hintAfterAttempts": 1,
     "answer": {
       "type": "power_term",
       "coefficient": 3, "exponent": 2,
       "startCoefficient": 1, "startExponent": 3
     }
   },
+  "solution": [
+    { "type": "text", "body": "Apply the power rule to $x^3$: the exponent 3 drops down to become the coefficient, and the new exponent is 3 − 1 = 2." },
+    { "type": "math", "latex": "\\frac{d}{dx}(x^3) = 3x^{2}", "display": true }
+  ],
   "feedback": {
     "correct": "3x² — you brought the 3 down and reduced the exponent to 2.",
     "incorrect": "Apply the power rule n·xⁿ⁻¹ to x³ ...",
@@ -846,6 +851,22 @@ Here is a representative step (a `power_term` "derivative builder") from
   }
 }
 ```
+
+Every question also carries a learner-facing **assistance toggle**
+(`AssistanceToggle.tsx`): **Solve it** (shows the interactive question first, then
+a "Work through it" button that animates the widget to the answer while the
+concept-to-answer `solution` reveals step by step — lesson questions only, and
+excluded from mastery since it's a worked example), **Hints** (live "warmer/colder" feedback while interacting on
+value-tuning questions, plus the authored hint offered proactively and the AI tutor),
+or **No help** (hints and tutor hidden). The choice is a sticky per-learner
+preference (`useAssistancePreference.ts`, default Hints); practice questions offer
+only Hints / No help.
+
+A graph step may carry an optional `solveAnimation` recipe (e.g.
+`{ "kind": "secant", "a": 1, "b": 3 }`) that the "Solve it" walkthrough plays
+instead of the generic slider sweep — the secant recipe draws a "rate of change
+between two points" demo. The live x / f(x) readouts are hidden during any
+walkthrough so values don't flash.
 
 ---
 

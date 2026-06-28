@@ -4,9 +4,18 @@ import {
   recordActivity,
   checkMilestones,
   isLessonComplete,
+  mergeConceptStats,
   nextStepProgress,
+  testedOutLessonProgress,
 } from "./progressService";
-import type { MilestoneStats, UserProfile } from "../types/content";
+import { getConceptMastery } from "./masteryService";
+import { getLesson, getPublishedLessons } from "./contentLoader";
+import type {
+  ConceptStat,
+  LessonProgress,
+  MilestoneStats,
+  UserProfile,
+} from "../types/content";
 
 function baseProfile(overrides: Partial<UserProfile> = {}): UserProfile {
   return {
@@ -235,5 +244,123 @@ describe("nextStepProgress", () => {
       true,
     );
     expect(res).toEqual({ status: "complete", currentStepIndex: 9 });
+  });
+});
+
+describe("mergeConceptStats", () => {
+  const now = "2026-06-01T00:00:00.000Z";
+
+  it("seeds stats for a concept seen for the first time", () => {
+    const merged = mergeConceptStats(
+      undefined,
+      { power_rule: { seen: 3, firstTryCorrect: 2 } },
+      now,
+    );
+    expect(merged.power_rule).toEqual({
+      seen: 3,
+      firstTryCorrect: 2,
+      lastReviewed: now,
+    });
+  });
+
+  it("accumulates onto existing stats and refreshes lastReviewed", () => {
+    const current: Record<string, ConceptStat> = {
+      power_rule: { seen: 4, firstTryCorrect: 1, lastReviewed: "2026-05-01T00:00:00.000Z" },
+    };
+    const merged = mergeConceptStats(
+      current,
+      { power_rule: { seen: 2, firstTryCorrect: 2 } },
+      now,
+    );
+    expect(merged.power_rule).toEqual({
+      seen: 6,
+      firstTryCorrect: 3,
+      lastReviewed: now,
+    });
+  });
+
+  it("ignores empty deltas and untagged entries, and doesn't mutate the input", () => {
+    const current: Record<string, ConceptStat> = {
+      integral: { seen: 1, firstTryCorrect: 1, lastReviewed: now },
+    };
+    const merged = mergeConceptStats(
+      current,
+      { integral: { seen: 0, firstTryCorrect: 0 }, "": { seen: 5, firstTryCorrect: 5 } },
+      now,
+    );
+    expect(merged).toEqual(current);
+    expect(merged).not.toBe(current);
+  });
+});
+
+describe("testedOutLessonProgress", () => {
+  const lesson = getLesson(getPublishedLessons()[0].id)!;
+
+  const fresh = (): LessonProgress => ({
+    status: "not_started",
+    currentStepIndex: 0,
+    stepAttempts: {},
+    stepAnswers: {},
+    completedAt: null,
+    updatedAt: "",
+  });
+
+  const gradableSteps = lesson.steps.filter(
+    (s) => s.type !== "read" && Boolean(s.interaction?.answer),
+  );
+
+  it("completes the lesson and seeds a first-try attempt for every gradable step", () => {
+    const now = "2026-06-27T00:00:00.000Z";
+    const res = testedOutLessonProgress(fresh(), lesson, now);
+
+    expect(res.status).toBe("complete");
+    expect(res.currentStepIndex).toBe(lesson.steps.length);
+    expect(res.completedAt).toBe(now);
+    for (const step of gradableSteps) {
+      expect(res.stepAttempts[step.id]).toBe(1);
+    }
+  });
+
+  it("preserves a learner's real attempt counts rather than overwriting them", () => {
+    const seeded = gradableSteps[0];
+    const current = { ...fresh(), stepAttempts: { [seeded.id]: 3 } };
+    const res = testedOutLessonProgress(current, lesson);
+    expect(res.stepAttempts[seeded.id]).toBe(3);
+  });
+
+  // The point of seeding: completion alone records no attempts, so without it a
+  // tested-out concept would read 0% and look "weak". Verify it reads as real
+  // mastery instead.
+  it("lifts every concept the lesson teaches out of not_started", () => {
+    const before = getConceptMastery({});
+    expect(before.every((m) => m.tier === "not_started")).toBe(true);
+
+    const progress = { [lesson.id]: testedOutLessonProgress(fresh(), lesson) };
+    const after = getConceptMastery(progress);
+
+    const taught = after.filter((m) => m.lessonIds.includes(lesson.id));
+    expect(taught.length).toBeGreaterThan(0);
+    for (const m of taught) {
+      expect(m.tier).not.toBe("not_started");
+      expect(m.percent).toBeGreaterThan(0);
+    }
+  });
+
+  it("tests a single-lesson concept out to ~50% (mastery needs practice)", () => {
+    const solo = getConceptMastery({}).find((m) => m.lessonIds.length === 1);
+    expect(solo).toBeDefined();
+    const soloLesson = getLesson(solo!.lessonIds[0])!;
+
+    const progress = {
+      [soloLesson.id]: testedOutLessonProgress(fresh(), soloLesson),
+    };
+    const mastery = getConceptMastery(progress).find(
+      (m) => m.concept === solo!.concept,
+    )!;
+    // Testing out clears every question first-try, but the lesson can only
+    // account for half of mastery — the rest is earned through practice/review —
+    // so it lands around 50% / learning, not mastered.
+    expect(mastery.percent).toBe(50);
+    expect(mastery.tier).toBe("learning");
   });
 });

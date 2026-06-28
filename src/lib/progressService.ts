@@ -1,10 +1,17 @@
 import type {
+  ConceptSessionResult,
+  ConceptStat,
+  Lesson,
   LessonProgress,
   MilestoneStats,
   StreakData,
   UserProfile,
 } from "../types/content";
-import { MILESTONE_DEFS, milestoneProgress } from "../types/content";
+import {
+  MILESTONE_DEFS,
+  isInstructionStep,
+  milestoneProgress,
+} from "../types/content";
 import { getConceptMastery } from "./masteryService";
 import { getPublishedLessons } from "./contentLoader";
 import { useLocalPersistence, db } from "./firebase";
@@ -61,6 +68,31 @@ export function recordActivity(
   };
 }
 
+/**
+ * Folds one session's per-concept first-try results into the lifetime
+ * `conceptStats` map. Pure (returns a new map) so it's trivially testable; the
+ * provider persists the result. Concepts with no questions this session and
+ * untagged entries are ignored. `lastReviewed` is stamped on every touched
+ * concept so the recency signal stays fresh.
+ */
+export function mergeConceptStats(
+  current: Record<string, ConceptStat> | undefined,
+  deltas: Record<string, ConceptSessionResult>,
+  now: string = new Date().toISOString(),
+): Record<string, ConceptStat> {
+  const next: Record<string, ConceptStat> = { ...(current ?? {}) };
+  for (const [concept, delta] of Object.entries(deltas)) {
+    if (!concept || delta.seen <= 0) continue;
+    const prev = next[concept] ?? { seen: 0, firstTryCorrect: 0, lastReviewed: "" };
+    next[concept] = {
+      seen: prev.seen + delta.seen,
+      firstTryCorrect: prev.firstTryCorrect + delta.firstTryCorrect,
+      lastReviewed: now,
+    };
+  }
+  return next;
+}
+
 /** Longest run of consecutive active days recorded in the activity log. */
 export function computeLongestStreak(
   activityLog: Record<string, number> | undefined,
@@ -113,6 +145,39 @@ export function nextStepProgress(
   return {
     status: "in_progress",
     currentStepIndex: isCorrect ? stepIndex + 1 : stepIndex,
+  };
+}
+
+/**
+ * Progress for a lesson the learner has *tested out* of: marked complete, with a
+ * first-try attempt seeded for every still-unattempted gradable step and the
+ * step pointer advanced to the end. The seeding mirrors the dev "complete all"
+ * path and exists because completion alone records no attempts, while mastery
+ * scores first-try accuracy — so without it a tested-out concept would read 0%
+ * and immediately look "weak". Steps the learner actually attempted keep their
+ * real counts. Pure: the caller persists the result.
+ */
+export function testedOutLessonProgress(
+  current: LessonProgress,
+  lesson: Lesson | undefined,
+  now: string = new Date().toISOString(),
+): LessonProgress {
+  const stepAttempts = { ...current.stepAttempts };
+  let currentStepIndex = current.currentStepIndex ?? 0;
+  if (lesson) {
+    for (const step of lesson.steps) {
+      if (isInstructionStep(step) || !step.interaction?.answer) continue;
+      if ((stepAttempts[step.id] ?? 0) === 0) stepAttempts[step.id] = 1;
+    }
+    currentStepIndex = lesson.steps.length;
+  }
+  return {
+    ...current,
+    status: "complete",
+    currentStepIndex,
+    stepAttempts,
+    completedAt: current.completedAt ?? now,
+    updatedAt: now,
   };
 }
 
@@ -246,7 +311,7 @@ export function buildMilestoneStats(
   progress: Record<string, LessonProgress>,
 ): MilestoneStats {
   const published = getPublishedLessons();
-  const mastery = getConceptMastery(progress);
+  const mastery = getConceptMastery(progress, profile.conceptStats);
   return {
     lessonsCompleted: published.filter((l) =>
       isLessonComplete(progress[l.id]?.status),

@@ -22,11 +22,11 @@
         },
         {
           "type": "text",
-          "body": "Each term uses the reverse power rule: add 1 to the exponent, then divide by the new exponent. So $x^2 + x$ integrates to:"
+          "body": "Each term uses the reverse power rule: add 1 to the exponent, then divide by the new exponent — and because this is an indefinite integral, the result carries the constant of integration $C$ you met earlier. So $x^2 + x$ integrates to:"
         },
         {
           "type": "math",
-          "latex": "\\int (x^2 + x)\\,dx = \\int x^2\\,dx + \\int x\\,dx = \\frac{x^3}{3} + \\frac{x^2}{2}",
+          "latex": "\\int (x^2 + x)\\,dx = \\int x^2\\,dx + \\int x\\,dx = \\frac{x^3}{3} + \\frac{x^2}{2} + C",
           "display": true
         }
       ],
@@ -39,7 +39,7 @@
       "content": [
         {
           "type": "text",
-          "body": "Integrate term by term — reverse the power rule on each. Drag the antiderivative of each term into the blanks to build $F(x)$ for $f(x) = x^3 + x^2 + x$."
+          "body": "Integrate $x^3 + x^2 + x$ term by term — reverse the power rule on each. Drag a tile into each blank, then finish with the $+ C$ every indefinite integral carries."
         }
       ],
       "interaction": {
@@ -52,26 +52,45 @@
         },
         "answer": {
           "type": "drag_drop",
-          "prefix": "F(x) =",
+          "prefix": "\\int (x^3 + x^2 + x)\\,dx =",
           "blanks": [
             { "accept": "\\frac{x^4}{4}" },
             { "accept": "\\frac{x^3}{3}" },
-            { "accept": "\\frac{x^2}{2}" }
+            { "accept": "\\frac{x^2}{2}" },
+            { "accept": "C", "connector": "+" }
           ],
           "bank": [
             "\\frac{x^4}{4}",
             "\\frac{x^3}{3}",
             "\\frac{x^2}{2}",
+            "C",
             "\\frac{x^3}{2}",
             "\\frac{x^2}{3}",
             "\\frac{x^4}{3}"
           ]
+        },
+        "sandbox": {
+          "preset": "reverse_power_rule",
+          "caption": "Walk through the reverse power rule in general form, then apply it term by term — and remember the + C."
         }
       },
+      "solution": [
+        { "type": "text", "body": "Reverse the power rule on each term: add 1 to the exponent, then divide by the new exponent." },
+        { "type": "math", "latex": "x^3 \\to \\frac{x^4}{4}, \\quad x^2 \\to \\frac{x^3}{3}, \\quad x \\to \\frac{x^2}{2}", "display": true },
+        { "type": "text", "body": "Combine, and add the constant of integration for the indefinite integral: $\\int (x^3 + x^2 + x)\\,dx = \\frac{x^4}{4} + \\frac{x^3}{3} + \\frac{x^2}{2} + C$." }
+      ],
+      "solveAnimation": {
+        "kind": "antiderivative",
+        "terms": [
+          { "coefficient": 1, "exponent": 3 },
+          { "coefficient": 1, "exponent": 2 },
+          { "coefficient": 1, "exponent": 1 }
+        ]
+      },
       "feedback": {
-        "correct": "Right — reverse the power rule on each: $x^3 \\to \\frac{x^4}{4}$, $x^2 \\to \\frac{x^3}{3}$, and $x \\to \\frac{x^2}{2}$, so $F(x) = \\frac{x^4}{4} + \\frac{x^3}{3} + \\frac{x^2}{2}$.",
-        "incorrect": "Add 1 to each exponent, then divide by that new exponent.",
-        "hint": "$x^n \\to \\frac{x^{n+1}}{n+1}$, so $x^2 \\to \\frac{x^3}{3}$ (divide by the new exponent, 3)."
+        "correct": "Right — $x^3 \\to \\frac{x^4}{4}$, $x^2 \\to \\frac{x^3}{3}$, $x \\to \\frac{x^2}{2}$, plus the $+ C$, so $\\int (x^3 + x^2 + x)\\,dx = \\frac{x^4}{4} + \\frac{x^3}{3} + \\frac{x^2}{2} + C$.",
+        "incorrect": "Add 1 to each exponent, then divide by that new exponent — and don't forget the $+ C$ for an indefinite integral.",
+        "hint": "$x^n \\to \\frac{x^{n+1}}{n+1}$, so $x^2 \\to \\frac{x^3}{3}$; then finish with $+ C$."
       }
     },
     {
@@ -81,7 +100,7 @@
       "content": [
         {
           "type": "text",
-          "body": "One subtlety: an antiderivative isn't unique. The derivative of any constant is 0, so you can tack any number onto $\\frac{x^3}{3}$ and it still differentiates back to $x^2$. That means $\\frac{x^3}{3}$, $\\frac{x^3}{3} + 1$, and $\\frac{x^3}{3} - 7$ are all antiderivatives of $x^2$."
+          "body": "Remember why that $+ C$ is there: an antiderivative isn't unique. The derivative of any constant is 0, so you can tack any number onto $\\frac{x^3}{3}$ and it still differentiates back to $x^2$ — making $\\frac{x^3}{3}$, $\\frac{x^3}{3} + 1$, and $\\frac{x^3}{3} - 7$ all antiderivatives of $x^2$."
         },
         {
           "type": "math",
@@ -90,16 +109,12 @@
         },
         {
           "type": "text",
-          "body": "To capture the whole family at once, we add a constant of integration $C$. An integral with no limits — an indefinite integral — stands for every antiderivative together:"
+          "body": "The constant of integration $C$ stands for that whole family. For a sum there's one twist worth noting: a single shared $C$ covers every term at once — you never write a separate constant per term:"
         },
         {
           "type": "math",
-          "latex": "\\int x^2\\,dx = \\frac{x^3}{3} + C",
+          "latex": "\\int (x^2 + x)\\,dx = \\frac{x^3}{3} + \\frac{x^2}{2} + C",
           "display": true
-        },
-        {
-          "type": "text",
-          "body": "So the very first example is, more precisely, $\\int (x^2 + x)\\,dx = \\frac{x^3}{3} + \\frac{x^2}{2} + C$ — a single $C$ covers the constant for the whole sum."
         }
       ],
       "feedback": { "correct": "", "incorrect": "", "hint": "" }
@@ -120,7 +135,20 @@
           "type": "multiple_choice",
           "options": ["$x^3 + C$", "$x^3$", "$3x^3 + C$", "$6x + C$"],
           "correctIndex": 0
+        },
+        "sandbox": {
+          "preset": "reverse_power_rule",
+          "caption": "Practice the reverse power rule on a different term, and see why every antiderivative needs a + C."
         }
+      },
+      "solution": [
+        { "type": "text", "body": "Reverse the power rule on $3x^2$: raise the exponent to 3 and divide the coefficient by it, $\\frac{3}{3} = 1$, giving $x^3$." },
+        { "type": "text", "body": "Because the derivative of any constant is 0, add $+ C$ to capture every antiderivative — so $\\int 3x^2\\,dx = x^3 + C$ (the first option)." }
+      ],
+      "solveAnimation": {
+        "kind": "antiderivative",
+        "terms": [{ "coefficient": 3, "exponent": 2 }],
+        "captions": ["Reverse the power rule on $3x^2$: raise to $x^3$, then divide $3$ by the new exponent $3$."]
       },
       "feedback": {
         "correct": "Right — $\\frac{d}{dx}(x^3) = 3x^2$, and the $+ C$ captures every antiderivative at once.",
@@ -181,7 +209,25 @@
           "static": true
         },
         "hintAfterAttempts": 1,
-        "answer": { "type": "numeric", "value": 12, "tolerance": 0.1 }
+        "answer": { "type": "numeric", "value": 12, "tolerance": 0.1 },
+        "sandbox": {
+          "preset": "area_explorer",
+          "fn": "0.5*x + 1",
+          "a": 0,
+          "b": 4,
+          "integrand": "0.5x + 1",
+          "caption": "Drag the upper limit and watch the area accumulate as a live integral on a different line."
+        }
+      },
+      "solution": [
+        { "type": "text", "body": "Evaluate the antiderivative $F(x) = x^2 + x$ at the limits and subtract:" },
+        { "type": "math", "latex": "\\int_0^3 (2x+1)\\,dx = F(3) - F(0) = (9 + 3) - 0 = 12", "display": true }
+      ],
+      "solveAnimation": {
+        "kind": "ftc_evaluate",
+        "terms": [{ "coefficient": 2, "exponent": 1 }, { "coefficient": 1, "exponent": 0 }],
+        "a": 0,
+        "b": 3
       },
       "feedback": {
         "correct": "Exactly — $F(3) - F(0) = (9 + 3) - 0 = 12$.",
@@ -225,7 +271,29 @@
           "initialSlider": 1
         },
         "hintAfterAttempts": 1,
-        "answer": { "type": "slider", "value": 3, "tolerance": 0.15 }
+        "answer": { "type": "slider", "value": 3, "tolerance": 0.15 },
+        "sandbox": {
+          "preset": "area_explorer",
+          "fn": "x + 2",
+          "a": 0,
+          "b": 4,
+          "integrand": "x + 2",
+          "caption": "Drag the upper limit and watch how the accumulated area grows on a different line."
+        }
+      },
+      "solution": [
+        { "type": "text", "body": "With $F(x) = x^2 + x$, the integral from 1 to t is $F(t) - F(1) = (t^2 + t) - 2$. Set it equal to 10:" },
+        { "type": "math", "latex": "(t^2 + t) - 2 = 10 \\;\\Rightarrow\\; t^2 + t - 12 = 0 \\;\\Rightarrow\\; (t-3)(t+4) = 0", "display": true },
+        { "type": "text", "body": "The positive solution is $t = 3$; drag the slider there." }
+      ],
+      "solveAnimation": {
+        "kind": "narrated",
+        "showAreaValue": true,
+        "phases": [
+          { "text": "With $F(x) = x^2 + x$, the integral from $1$ to $t$ is $(t^2 + t) - 2$." },
+          { "text": "Set it to $10$: $t^2 + t - 12 = 0$, so $(t - 3)(t + 4) = 0$ and $t = 3$." },
+          { "text": "Drag to $t = 3$.", "to": 3, "ms": 1800 }
+        ]
       },
       "feedback": {
         "correct": "Nice — $(t^2 + t) - 2 = 10$ gives $t^2 + t - 12 = 0$, so $(t - 3)(t + 4) = 0$ and $t = 3$.",
@@ -273,7 +341,29 @@
           "type": "slider",
           "value": 2,
           "tolerance": 0.2
+        },
+        "sandbox": {
+          "preset": "area_explorer",
+          "fn": "0.4*x + 1",
+          "a": 0,
+          "b": 4,
+          "integrand": "0.4x + 1",
+          "caption": "Slide the upper limit to feel how area builds up as a running integral."
         }
+      },
+      "solution": [
+        { "type": "text", "body": "An antiderivative of $x + 1$ is $\\frac{x^2}{2} + x$, so the area from 0 to t is $\\frac{1}{2}t^2 + t$. Set it equal to 4:" },
+        { "type": "math", "latex": "\\tfrac{1}{2}t^2 + t = 4 \\;\\Rightarrow\\; t^2 + 2t - 8 = 0 \\;\\Rightarrow\\; (t-2)(t+4) = 0", "display": true },
+        { "type": "text", "body": "The positive solution is $t = 2$; drag the slider there." }
+      ],
+      "solveAnimation": {
+        "kind": "narrated",
+        "showAreaValue": true,
+        "phases": [
+          { "text": "An antiderivative of $x + 1$ is $\\frac{x^2}{2} + x$, so the area from $0$ to $t$ is $\\frac{1}{2}t^2 + t$." },
+          { "text": "Set it to $4$: $t^2 + 2t - 8 = 0$, so $(t - 2)(t + 4) = 0$ and $t = 2$." },
+          { "text": "Drag to $t = 2$.", "to": 2, "ms": 1800 }
+        ]
       },
       "feedback": {
         "correct": "Nice — $\\frac{1}{2}t^2 + t = 4$ gives $t^2 + 2t - 8 = 0$, so $(t - 2)(t + 4) = 0$ and $t = 2$.",
@@ -310,11 +400,26 @@
           "exponent": 3,
           "startCoefficient": 6,
           "startExponent": 2,
-          "previewPrefix": "F(x) ="
+          "previewPrefix": "F(x) =",
+          "plusC": true
+        },
+        "sandbox": {
+          "preset": "reverse_power_rule",
+          "caption": "Try the reverse power rule on a sample term: raise the exponent, divide the coefficient, and add + C."
         }
       },
+      "solution": [
+        { "type": "text", "body": "Use the reverse power rule with the coefficient riding along: raise the exponent to 3, then divide the coefficient by that new exponent." },
+        { "type": "math", "latex": "\\int 6x^2\\,dx = 6 \\cdot \\frac{x^3}{3} + C = 2x^3 + C", "display": true },
+        { "type": "text", "body": "The steppers build the $2x^3$ term; as an indefinite integral it carries the constant, $2x^3 + C$. Set the coefficient to 2 and the exponent to 3. Check: $\\frac{d}{dx}(2x^3) = 6x^2$." }
+      ],
+      "solveAnimation": {
+        "kind": "antiderivative",
+        "terms": [{ "coefficient": 6, "exponent": 2 }],
+        "captions": ["Reverse the power rule on $6x^2$: raise to $x^3$, then divide the coefficient $6$ by the new exponent $3$."]
+      },
       "feedback": {
-        "correct": "Right — raise the exponent to 3, then divide the coefficient by it: $6x^2 \\to 6 \\cdot \\frac{x^3}{3} = 2x^3$. Differentiate $2x^3$ to check: back to $6x^2$.",
+        "correct": "Right — raise the exponent to 3, then divide the coefficient by it: $6x^2 \\to 6 \\cdot \\frac{x^3}{3} = 2x^3$, so $\\int 6x^2\\,dx = 2x^3 + C$. Differentiate $2x^3$ to check: back to $6x^2$.",
         "incorrect": "Add 1 to the exponent, then divide the coefficient by that new exponent: $6x^2 \\to \\frac{6}{3}x^3$.",
         "hint": "Exponent $2 \\to 3$, then $6 \\div 3 = 2$, giving $2x^3$."
       }
@@ -353,30 +458,34 @@
           "pairs": [
             {
               "prompt": "$x^2$",
-              "match": "$\\frac{x^3}{3}$"
+              "match": "$\\frac{x^3}{3} + C$"
             },
             {
               "prompt": "$x^3$",
-              "match": "$\\frac{x^4}{4}$"
+              "match": "$\\frac{x^4}{4} + C$"
             },
             {
               "prompt": "$x^4$",
-              "match": "$\\frac{x^5}{5}$"
+              "match": "$\\frac{x^5}{5} + C$"
             },
             {
               "prompt": "$x^5$",
-              "match": "$\\frac{x^6}{6}$"
+              "match": "$\\frac{x^6}{6} + C$"
             }
           ],
           "distractors": [
-            "$\\frac{x^3}{2}$"
+            "$\\frac{x^3}{2} + C$"
           ]
+        },
+        "sandbox": {
+          "preset": "reverse_power_rule",
+          "caption": "Step through the reverse power rule in general form so each pairing makes sense — don't forget the + C."
         }
       },
       "feedback": {
-        "correct": "Right — $x^n \\to \\frac{x^{n+1}}{n+1}$: raise the power, divide by the new one.",
-        "incorrect": "Add 1 to the exponent, then divide by that new exponent.",
-        "hint": "$x^2 \\to \\frac{x^3}{3}$, $x^3 \\to \\frac{x^4}{4}$, and so on."
+        "correct": "Right — $x^n \\to \\frac{x^{n+1}}{n+1} + C$: raise the power, divide by the new one, then add the constant of integration.",
+        "incorrect": "Add 1 to the exponent, divide by that new exponent, then add $+ C$.",
+        "hint": "$x^2 \\to \\frac{x^3}{3} + C$, $x^3 \\to \\frac{x^4}{4} + C$, and so on."
       }
     },
     {
@@ -386,7 +495,7 @@
       "content": [
         {
           "type": "text",
-          "body": "Integrate term by term to build $\\int (x^2 + x)\\,dx$. Drag a tile into each blank — an indefinite integral also picks up a $+ C$."
+          "body": "Integrate term by term to build $\\int (x^2 + x)\\,dx$. Drag a tile into each blank, then finish with the $+ C$ that every indefinite integral carries."
         }
       ],
       "interaction": {
@@ -394,20 +503,22 @@
           "type": "drag_drop",
           "prefix": "\\int (x^2 + x)\\,dx =",
           "blanks": [
-            {
-              "accept": "\\frac{x^3}{3}"
-            },
-            {
-              "accept": "\\frac{x^2}{2}"
-            }
+            { "accept": "\\frac{x^3}{3}" },
+            { "accept": "\\frac{x^2}{2}" },
+            { "accept": "C", "connector": "+" }
           ],
           "bank": [
             "\\frac{x^3}{3}",
             "\\frac{x^2}{2}",
+            "C",
             "\\frac{x^2}{3}",
             "x^3",
             "\\frac{x^4}{4}"
           ]
+        },
+        "sandbox": {
+          "preset": "reverse_power_rule",
+          "caption": "Step through the reverse power rule on each term in general, and finish with the + C."
         }
       },
       "feedback": {
@@ -423,7 +534,7 @@
       "content": [
         {
           "type": "text",
-          "body": "Drag the antiderivative of $3x^2$ into the blank. (Add $+ C$ for the full indefinite integral.)"
+          "body": "Build the full indefinite integral $\\int 3x^2\\,dx$: drag the antiderivative into the first blank and its $+ C$ into the second."
         }
       ],
       "interaction": {
@@ -431,22 +542,26 @@
           "type": "drag_drop",
           "prefix": "\\int 3x^2\\,dx =",
           "blanks": [
-            {
-              "accept": "x^3"
-            }
+            { "accept": "x^3" },
+            { "accept": "C", "connector": "+" }
           ],
           "bank": [
             "x^3",
+            "C",
             "3x^3",
             "\\frac{x^3}{3}",
             "x^2"
           ]
+        },
+        "sandbox": {
+          "preset": "reverse_power_rule",
+          "caption": "Walk through the reverse power rule in general, then add the + C that every indefinite integral carries."
         }
       },
       "feedback": {
-        "correct": "Right — $3x^2 \\to 3 \\cdot \\frac{x^3}{3} = x^3$, so $\\int 3x^2\\,dx = x^3 + C$.",
-        "incorrect": "Raise the exponent, then divide the coefficient by the new exponent.",
-        "hint": "$3x^2 \\to \\frac{3}{3}x^3 = x^3$."
+        "correct": "Right — $3x^2 \\to 3 \\cdot \\frac{x^3}{3} = x^3$, and an indefinite integral carries a constant, so $\\int 3x^2\\,dx = x^3 + C$.",
+        "incorrect": "Raise the exponent, divide the coefficient by the new exponent, then add the $+ C$.",
+        "hint": "$3x^2 \\to \\frac{3}{3}x^3 = x^3$, then $+ C$."
       }
     },
     {
@@ -465,30 +580,34 @@
           "pairs": [
             {
               "prompt": "$2x$",
-              "match": "$x^2$"
+              "match": "$x^2 + C$"
             },
             {
               "prompt": "$3x^2$",
-              "match": "$x^3$"
+              "match": "$x^3 + C$"
             },
             {
               "prompt": "$4x^3$",
-              "match": "$x^4$"
+              "match": "$x^4 + C$"
             },
             {
               "prompt": "$5x^4$",
-              "match": "$x^5$"
+              "match": "$x^5 + C$"
             }
           ],
           "distractors": [
-            "$\\frac{x^2}{2}$"
+            "$\\frac{x^2}{2} + C$"
           ]
+        },
+        "sandbox": {
+          "preset": "reverse_power_rule",
+          "caption": "Walk through the reverse power rule in general to see how each function pairs with its antiderivative."
         }
       },
       "feedback": {
-        "correct": "Right — each coefficient divides by the new exponent to land on a clean power.",
-        "incorrect": "Raise the exponent by 1 and divide the coefficient by that new exponent.",
-        "hint": "$2x \\to x^2$ and $3x^2 \\to x^3$."
+        "correct": "Right — each coefficient divides by the new exponent to land on a clean power, plus $+ C$ for the whole family.",
+        "incorrect": "Raise the exponent by 1, divide the coefficient by that new exponent, then add $+ C$.",
+        "hint": "$2x \\to x^2 + C$ and $3x^2 \\to x^3 + C$."
       }
     },
     {
@@ -510,6 +629,10 @@
             "Divide each term by its new exponent",
             "Add the constant of integration $C$"
           ]
+        },
+        "sandbox": {
+          "preset": "reverse_power_rule",
+          "caption": "Replay the reverse power rule step by step to see the order the operations follow."
         }
       },
       "feedback": {
@@ -525,7 +648,7 @@
       "content": [
         {
           "type": "text",
-          "body": "Integrate $\\int (2x + 1)\\,dx$ term by term. Drag a tile into each blank — add $+ C$ for the full indefinite integral."
+          "body": "Integrate $\\int (2x + 1)\\,dx$ term by term. Drag a tile into each blank, then finish with the $+ C$ every indefinite integral carries."
         }
       ],
       "interaction": {
@@ -533,20 +656,22 @@
           "type": "drag_drop",
           "prefix": "\\int (2x + 1)\\,dx =",
           "blanks": [
-            {
-              "accept": "x^2"
-            },
-            {
-              "accept": "x"
-            }
+            { "accept": "x^2" },
+            { "accept": "x" },
+            { "accept": "C", "connector": "+" }
           ],
           "bank": [
             "x^2",
             "x",
+            "C",
             "2x",
             "\\frac{x^2}{2}",
             "x^3"
           ]
+        },
+        "sandbox": {
+          "preset": "reverse_power_rule",
+          "caption": "Rehearse the reverse power rule term by term, including the + C for an indefinite integral."
         }
       },
       "feedback": {
@@ -571,69 +696,76 @@
           "pairs": [
             {
               "prompt": "$6x^2$",
-              "match": "$2x^3$"
+              "match": "$2x^3 + C$"
             },
             {
               "prompt": "$4x$",
-              "match": "$2x^2$"
+              "match": "$2x^2 + C$"
             },
             {
               "prompt": "$1$",
-              "match": "$x$"
+              "match": "$x + C$"
             },
             {
               "prompt": "$x$",
-              "match": "$\\frac{x^2}{2}$"
+              "match": "$\\frac{x^2}{2} + C$"
             }
           ],
           "distractors": [
-            "$x^2$"
+            "$x^2 + C$"
           ]
+        },
+        "sandbox": {
+          "preset": "reverse_power_rule",
+          "caption": "Rehearse the reverse power rule in general so each function-antiderivative pairing clicks — plus the + C."
         }
       },
       "feedback": {
-        "correct": "Right — divide each coefficient by the new exponent: $6x^2 \\to 2x^3$ and $4x \\to 2x^2$.",
-        "incorrect": "Raise the exponent by 1, then divide the coefficient by that new exponent.",
-        "hint": "$6x^2 \\to \\frac{6}{3}x^3 = 2x^3$ and $x \\to \\frac{x^2}{2}$."
+        "correct": "Right — divide each coefficient by the new exponent, then add $+ C$: $6x^2 \\to 2x^3 + C$ and $4x \\to 2x^2 + C$.",
+        "incorrect": "Raise the exponent by 1, divide the coefficient by that new exponent, then add $+ C$.",
+        "hint": "$6x^2 \\to \\frac{6}{3}x^3 + C = 2x^3 + C$ and $x \\to \\frac{x^2}{2} + C$."
       }
     },
     {
       "id": "ip-practice-8",
-      "type": "slider_graph",
-      "conceptTag": "definite_integral",
+      "type": "power_term",
+      "conceptTag": "antiderivative",
       "content": [
         {
           "type": "text",
-          "body": "Drag $t$ until $\\int_1^t x^2\\,dx \\approx 8.67$ (which is $\\frac{26}{3}$)."
+          "body": "Build an antiderivative of $f(x) = 12x^3$. Use the steppers to set the coefficient and exponent of $F(x)$."
         }
       ],
       "interaction": {
         "graph": {
-          "fn": "x^2",
-          "domain": [0, 4],
-          "yDomain": [0, 16],
-          "sliderLabel": "t",
+          "fn": "12*x^3",
+          "domain": [0, 1.5],
+          "yDomain": [0, 42],
           "xLabel": "x",
           "yLabel": "f",
-          "showSecant": false,
-          "showValue": false,
           "showArea": true,
-          "areaStart": 1,
-          "showAreaValue": false,
-          "areaReadoutMath": true,
-          "integrand": "x^2",
-          "sliderMin": 1,
-          "sliderMax": 4,
-          "sliderStep": 0.1,
-          "initialSlider": 1
+          "areaStart": 0,
+          "initialSlider": 1,
+          "static": true
         },
-        "hintAfterAttempts": 1,
-        "answer": { "type": "slider", "value": 3, "tolerance": 0.15 }
+        "answer": {
+          "type": "power_term",
+          "coefficient": 3,
+          "exponent": 4,
+          "startCoefficient": 12,
+          "startExponent": 3,
+          "previewPrefix": "F(x) =",
+          "plusC": true
+        },
+        "sandbox": {
+          "preset": "reverse_power_rule",
+          "caption": "Build an antiderivative of a different term to rehearse the reverse power rule and its + C."
+        }
       },
       "feedback": {
-        "correct": "Yes — $\\int_1^t x^2\\,dx = \\frac{t^3 - 1}{3}$, and $\\frac{t^3 - 1}{3} = \\frac{26}{3}$ gives $t^3 = 27$, so $t = 3$.",
-        "incorrect": "Set $\\frac{t^3 - 1}{3} = \\frac{26}{3}$ and solve for $t$, then drag the slider there.",
-        "hint": "$\\frac{t^3 - 1}{3} = \\frac{26}{3} \\to t^3 = 27 \\to t = 3$."
+        "correct": "Right — raise the exponent to 4, then divide the coefficient by it: 12x³ → 12/4 · x⁴ = 3x⁴, so the indefinite integral is 3x⁴ + C. Differentiate 3x⁴ to check: back to 12x³.",
+        "incorrect": "Add 1 to the exponent, then divide the coefficient by that new exponent: 12x³ → 12/4 · x⁴.",
+        "hint": "Exponent 3 → 4, then 12 ÷ 4 = 3, giving 3x⁴."
       }
     },
     {
@@ -643,7 +775,7 @@
       "content": [
         {
           "type": "text",
-          "body": "Integrate $\\int (x^3 + 2)\\,dx$ term by term. Drag a tile into each blank — add $+ C$ for the indefinite integral."
+          "body": "Integrate $\\int (x^3 + 2)\\,dx$ term by term. Drag a tile into each blank, then add the $+ C$ for the indefinite integral."
         }
       ],
       "interaction": {
@@ -651,20 +783,22 @@
           "type": "drag_drop",
           "prefix": "\\int (x^3 + 2)\\,dx =",
           "blanks": [
-            {
-              "accept": "\\frac{x^4}{4}"
-            },
-            {
-              "accept": "2x"
-            }
+            { "accept": "\\frac{x^4}{4}" },
+            { "accept": "2x" },
+            { "accept": "C", "connector": "+" }
           ],
           "bank": [
             "\\frac{x^4}{4}",
             "2x",
+            "C",
             "\\frac{x^4}{2}",
             "2",
             "x^4"
           ]
+        },
+        "sandbox": {
+          "preset": "reverse_power_rule",
+          "caption": "Apply the reverse power rule to each term in a sample integral, then add the + C."
         }
       },
       "feedback": {
@@ -693,12 +827,148 @@
             "$\\int x^3\\,dx$",
             "$\\int x^4\\,dx$"
           ]
+        },
+        "sandbox": {
+          "preset": "reverse_power_rule",
+          "caption": "Walk through the reverse power rule in general to see how an integral raises the exponent."
         }
       },
       "feedback": {
         "correct": "Right — the antiderivatives are $\\frac{x^2}{2}, \\frac{x^3}{3}, \\frac{x^4}{4}, \\frac{x^5}{5}$ — powers 2 through 5.",
         "incorrect": "Integrate each one: $\\int x^n\\,dx$ produces an $x^{n+1}$ term.",
         "hint": "$\\int x\\,dx \\to x^2$ (lowest), up to $\\int x^4\\,dx \\to x^5$ (highest)."
+      }
+    },
+    {
+      "id": "ip-practice-11",
+      "type": "power_term",
+      "conceptTag": "antiderivative",
+      "content": [
+        {
+          "type": "text",
+          "body": "Here the coefficient doesn't divide evenly, so the antiderivative is a fraction. Build an antiderivative of $f(x) = 5x^2$ — set the numerator, denominator, and exponent of $F(x)$."
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "5*x^2",
+          "domain": [0, 2],
+          "yDomain": [0, 22],
+          "xLabel": "x",
+          "yLabel": "f",
+          "showArea": true,
+          "areaStart": 0,
+          "initialSlider": 1,
+          "static": true
+        },
+        "answer": {
+          "type": "power_term",
+          "coefficient": 5,
+          "denominator": 3,
+          "exponent": 3,
+          "startCoefficient": 5,
+          "startDenominator": 1,
+          "startExponent": 2,
+          "previewPrefix": "F(x) =",
+          "plusC": true
+        },
+        "sandbox": {
+          "preset": "reverse_power_rule",
+          "caption": "Rehearse the reverse power rule on a sample term, including when the coefficient makes a fraction."
+        }
+      },
+      "feedback": {
+        "correct": "Right — raise the exponent to 3, then the old coefficient rides on top over that new exponent: $5x^2 \\to \\frac{5}{3}x^3$. Notice the denominator and the new exponent are both 3.",
+        "incorrect": "Keep the coefficient as the numerator, add 1 to the exponent, and put that new exponent underneath as the denominator.",
+        "hint": "Exponent $2 \\to 3$. The numerator stays 5 and the denominator is the new exponent 3, giving $\\frac{5}{3}x^3$."
+      }
+    },
+    {
+      "id": "ip-practice-12",
+      "type": "power_term",
+      "conceptTag": "antiderivative",
+      "content": [
+        {
+          "type": "text",
+          "body": "Build an antiderivative of $f(x) = 5x^3$. The coefficient stays on top as the numerator — set the denominator and exponent of $F(x)$."
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "5*x^3",
+          "domain": [0, 1.5],
+          "yDomain": [0, 18],
+          "xLabel": "x",
+          "yLabel": "f",
+          "showArea": true,
+          "areaStart": 0,
+          "initialSlider": 1,
+          "static": true
+        },
+        "answer": {
+          "type": "power_term",
+          "coefficient": 5,
+          "denominator": 4,
+          "exponent": 4,
+          "startCoefficient": 5,
+          "startDenominator": 1,
+          "startExponent": 3,
+          "previewPrefix": "F(x) =",
+          "plusC": true
+        },
+        "sandbox": {
+          "preset": "reverse_power_rule",
+          "caption": "Practice the reverse power rule on another term — raise the exponent, divide the coefficient, add + C."
+        }
+      },
+      "feedback": {
+        "correct": "Right — $5x^3 \\to \\frac{5}{4}x^4$: numerator 5, and the denominator matches the new exponent, 4.",
+        "incorrect": "Add 1 to the exponent, keep the coefficient on top, and divide by that new exponent (put it in the denominator).",
+        "hint": "Exponent $3 \\to 4$. Numerator 5 over denominator 4, giving $\\frac{5}{4}x^4$."
+      }
+    },
+    {
+      "id": "ip-practice-13",
+      "type": "power_term",
+      "conceptTag": "antiderivative",
+      "content": [
+        {
+          "type": "text",
+          "body": "Build an antiderivative of $f(x) = 3x^4$ — set the numerator, denominator, and exponent of $F(x)$."
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "3*x^4",
+          "domain": [0, 1.5],
+          "yDomain": [0, 17],
+          "xLabel": "x",
+          "yLabel": "f",
+          "showArea": true,
+          "areaStart": 0,
+          "initialSlider": 1,
+          "static": true
+        },
+        "answer": {
+          "type": "power_term",
+          "coefficient": 3,
+          "denominator": 5,
+          "exponent": 5,
+          "startCoefficient": 3,
+          "startDenominator": 1,
+          "startExponent": 4,
+          "previewPrefix": "F(x) =",
+          "plusC": true
+        },
+        "sandbox": {
+          "preset": "reverse_power_rule",
+          "caption": "Walk through the reverse power rule on a sample term to see where the fraction and + C come from."
+        }
+      },
+      "feedback": {
+        "correct": "Right — $3x^4 \\to \\frac{3}{5}x^5$: the numerator is the old coefficient 3, and both the denominator and the new exponent are 5.",
+        "incorrect": "Keep the coefficient as the numerator, raise the exponent by 1, and use that new exponent as the denominator.",
+        "hint": "Exponent $4 \\to 5$. Numerator 3 over denominator 5, so $\\frac{3}{5}x^5$."
       }
     }
   ]

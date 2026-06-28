@@ -114,6 +114,360 @@ body {
   animation: hero-rise 0.6s ease-out both;
 }
 
+/* Fade-in for the "rate of change" rise/run overlay in the solve walkthrough. */
+.secant-reveal {
+  animation: hero-fade 0.45s ease-out both;
+}
+
+/* Power-rule "exponent drops down" solve animation (a·xⁿ → (a·n)·xⁿ⁻¹). */
+.pr-anim {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 1.5rem 1rem 0.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgb(199 210 254);
+  background: rgb(238 242 255 / 0.6);
+  overflow: visible;
+}
+
+.pr-row {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1;
+  color: rgb(30 41 59);
+  min-height: 2.5rem;
+}
+
+.pr-anim--compact .pr-row {
+  font-size: 1.5rem;
+  min-height: 2rem;
+}
+
+.pr-prefix {
+  margin-right: 0.4rem;
+  font-style: italic;
+  color: rgb(71 85 105);
+}
+
+.pr-coeff {
+  display: inline-block;
+  min-width: 0.9em;
+  /* Reserve full line height so an empty coefficient slot (e.g. the a = 1 case
+     like x³) still aligns with the x baseline. Without this it collapses to zero
+     height and the dropping exponent clone measures its target at the top of the
+     row, landing too high. */
+  min-height: 1em;
+  text-align: right;
+  color: rgb(79 70 229);
+  transition: color 0.3s ease;
+}
+
+/* Reserved landing zone to the right of an existing coefficient. It keeps the
+   coefficient visible while the dropping exponent settles beside it, and its
+   full line height keeps that landing point on the baseline (not the row top). */
+.pr-land {
+  display: inline-block;
+  width: 0.8em;
+  min-height: 1em;
+}
+
+.pr-x {
+  font-style: italic;
+}
+
+.pr-exp {
+  font-size: 0.62em;
+  vertical-align: super;
+  margin-left: 0.04em;
+  color: rgb(79 70 229);
+  transition: color 0.3s ease;
+}
+
+.pr-exp--pulse {
+  display: inline-block;
+  transform-origin: center bottom;
+  animation: pr-pulse 0.8s ease-in-out;
+}
+
+/* The flying clone of the exponent: starts over the exponent and travels to the
+   coefficient slot via a transform transition (offsets are measured in JS). */
+.pr-fly {
+  position: absolute;
+  font-size: 0.62em;
+  font-weight: 700;
+  color: rgb(79 70 229);
+  pointer-events: none;
+  white-space: nowrap;
+  transition:
+    transform 0.6s cubic-bezier(0.33, 0, 0.2, 1),
+    opacity 0.3s ease;
+  will-change: transform, opacity;
+}
+
+.pr-zero {
+  font-weight: 700;
+  color: rgb(5 150 105);
+}
+
+/* The finished derivative settles to green. */
+.pr-settle .pr-coeff,
+.pr-settle .pr-x,
+.pr-settle .pr-exp {
+  color: rgb(5 150 105);
+}
+
+.pr-caption {
+  min-height: 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: center;
+  color: rgb(67 56 202);
+}
+
+/* Learner-paced montage controls: step through the example terms by hand
+   (prev/next arrows + a clickable dot per example) instead of auto-cycling. */
+.pr-anim--montage {
+  padding-bottom: 1rem;
+}
+
+.pr-montage-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.pr-montage-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+  border: 1px solid rgb(199 210 254);
+  background: #fff;
+  color: rgb(79 70 229);
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.1s ease,
+    opacity 0.15s ease;
+}
+
+.pr-montage-btn:hover:not(:disabled) {
+  background: rgb(238 242 255);
+  border-color: rgb(165 180 252);
+}
+
+.pr-montage-btn:active:not(:disabled) {
+  transform: scale(0.94);
+}
+
+.pr-montage-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.pr-montage-btn svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.pr-montage-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.pr-montage-dot {
+  width: 0.6rem;
+  height: 0.6rem;
+  padding: 0;
+  border: none;
+  border-radius: 9999px;
+  background: rgb(199 210 254);
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    transform 0.15s ease;
+}
+
+.pr-montage-dot:hover {
+  background: rgb(165 180 252);
+}
+
+.pr-montage-dot--active {
+  background: rgb(79 70 229);
+  transform: scale(1.3);
+}
+
+.pr-pop {
+  animation: pr-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Polynomial "differentiate term by term" solve animation: f(x) on top, the
+   assembling f'(x) below, sharing the pr-* surface and pop/settle styling. */
+.pr-poly {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  width: 100%;
+}
+
+.pr-poly-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.15rem 0.3rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: rgb(30 41 59);
+}
+
+.pr-anim--compact .pr-poly-row {
+  font-size: 1.15rem;
+}
+
+.pr-poly-cell {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  transition:
+    opacity 0.4s ease,
+    transform 0.4s ease;
+}
+
+.pr-poly-cell--faded {
+  opacity: 0;
+  transform: translateY(0.5rem);
+}
+
+.pr-poly-op {
+  color: rgb(100 116 139);
+}
+
+.pr-poly-term {
+  display: inline-flex;
+  transition:
+    color 0.3s ease,
+    transform 0.4s ease;
+}
+
+.pr-poly-term--active {
+  color: rgb(79 70 229);
+  transform: scale(1.18);
+}
+
+.pr-poly-term--dim {
+  color: rgb(100 116 139);
+  opacity: 0.6;
+}
+
+.pr-poly-term--result {
+  color: rgb(79 70 229);
+}
+
+.pr-poly-row--done .pr-poly-term--result {
+  color: rgb(5 150 105);
+}
+
+.pr-poly-pending {
+  color: rgb(148 163 184);
+}
+
+/* FTC "evaluate the definite integral" solve animation: the term-by-term
+   antiderivative build, then the F(b) − F(a) substitution and result revealed
+   below a divider. */
+.ftc-eval {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.ftc-eval-rows {
+  border-top: 1px dashed rgb(203 213 225);
+  padding-top: 0.75rem;
+}
+
+/* Riemann "rectangle refinement" solve animation: a curve sliced into more and
+   more midpoint rectangles, sharing the pr-anim surface. */
+.rr-plot {
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid rgb(226 232 240);
+  background: rgb(255 255 255);
+  padding: 0.25rem;
+}
+
+.rr-rects {
+  animation: rr-fade 0.4s ease-out;
+}
+
+.rr-readout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem 1.1rem;
+  font-size: 0.875rem;
+  color: rgb(71 85 105);
+}
+
+.rr-num {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: rgb(30 41 59);
+}
+
+.rr-num--close {
+  color: rgb(5 150 105);
+}
+
+@keyframes rr-fade {
+  from {
+    opacity: 0.3;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pr-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.4);
+  }
+}
+
+@keyframes pr-pop {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 /* XP gain animations */
 @keyframes xp-pop {
   0% {
@@ -299,7 +653,23 @@ body {
     opacity: 1;
   }
   .hero-float,
-  .hero-rise {
+  .hero-rise,
+  .secant-reveal {
+    animation: none;
+  }
+  .pr-pop,
+  .pr-exp--pulse {
+    animation: none;
+  }
+  .pr-fly {
+    transition: none;
+    opacity: 0;
+  }
+  .pr-poly-term,
+  .pr-poly-cell {
+    transition: none;
+  }
+  .rr-rects {
     animation: none;
   }
   .xp-pop,

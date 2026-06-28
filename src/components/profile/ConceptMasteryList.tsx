@@ -62,8 +62,8 @@ function ConceptRow({ mastery }: { mastery: ConceptMastery }) {
 
 /** Every concept in the course with its first-try mastery, in course order. */
 export function ConceptMasteryList() {
-  const { progress } = useProgress();
-  const mastery = getConceptMastery(progress);
+  const { progress, profile } = useProgress();
+  const mastery = getConceptMastery(progress, profile?.conceptStats);
 
   return (
     <section>

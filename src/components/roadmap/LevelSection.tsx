@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import {
+  canTestOutLevel,
   hasLevelReview,
   type LevelStatus,
   type ResolvedLevel,
@@ -63,6 +64,15 @@ export function LevelSection({
           </p>
           <h2 className="text-lg font-bold text-slate-900">{level.title}</h2>
           <p className="mt-0.5 text-sm text-slate-500">{level.description}</p>
+          {!complete && canTestOutLevel(level.id) && (
+            <Link
+              to={`/level/${level.id}/test-out`}
+              className="mt-1.5 inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-700 hover:underline"
+            >
+              Skip ahead
+              <span aria-hidden>→</span>
+            </Link>
+          )}
         </div>
         <div className="flex shrink-0 flex-col items-end gap-2">
           <span
