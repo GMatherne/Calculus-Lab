@@ -398,7 +398,7 @@ type AnswerSpec =
       regions: SignChartRegion[]; variableLabel?: string }
   | { type: "order_list"; items: string[]; orderLabel?: string }
   | { type: "riemann"; fn: string; a: number; b: number; trueArea: number;
-      targetWithin: number; maxRects?: number;
+      targetWithin: number; maxRects?: number; demo?: boolean;  // demo: ungraded
       domain?: [number, number]; yMax?: number };
 ```
 
@@ -596,6 +596,11 @@ function that returns a `FeedbackResult`. Grading per answer type:
 | `sign_chart` | Every interval's chosen label must match its `correctIndex` (graded by position) |
 | `order_list` | The submitted ordering must exactly equal the authored order |
 | `riemann` | The midpoint Riemann sum for the chosen `n` must land within `targetWithin` of `trueArea` |
+
+A `riemann` step can also be authored as an ungraded **demo** (`demo: true`,
+detected by `isRiemannDemo`): the learner still drags to watch the estimate
+converge, but the step advances with **Continue** like a read step and is left
+out of grading and concept mastery.
 
 Feedback is rendered by `FeedbackPanel`:
 
