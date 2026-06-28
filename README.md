@@ -92,8 +92,9 @@ Each lesson is ~6–8 minutes, has 6–10 steps, and includes at least one slide
 interaction. Finished lessons unlock per-lesson **Practice**; the roadmap also offers a
 cross-lesson **Targeted review** (weakest/stalest concepts first) and **Custom practice**
 (pick your own concepts), and completed levels unlock a **Level review**. A **Reference**
-cheat sheet of key formulas and definitions — grouped by level and unlocking as you complete
-the course — is one tap from the header on any page.
+cheat sheet of key formulas and definitions — grouped by level and unlocking a level at a
+time as you advance (each level's facts open once the previous level is complete) — is one
+tap from the header on any page.
 
 ## Architecture
 
