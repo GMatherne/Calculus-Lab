@@ -22,7 +22,7 @@ import {
 import {
   PRACTICE_SESSION_SIZE,
   TEST_OUT_LEVEL_MAX_QUESTIONS,
-} from "../types/content";
+} from "./constants";
 
 const published = getPublishedLessons();
 

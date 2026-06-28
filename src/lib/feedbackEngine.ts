@@ -73,28 +73,42 @@ export function riemannSum(fn: string, a: number, b: number, n: number): number 
   return sum;
 }
 
+/** A graded "pass" carrying the step's authored success message. */
+function pass(step: Step): FeedbackResult {
+  return { correct: true, message: step.feedback.correct };
+}
+
+/**
+ * A graded "fail": the authored (or a custom) message plus the step's hint, kept
+ * hidden until the learner asks for it. This is the exact result every grading
+ * branch built inline before, centralized so the shape stays consistent.
+ */
+function fail(step: Step, message: string = step.feedback.incorrect): FeedbackResult {
+  return {
+    correct: false,
+    message,
+    showHint: false,
+    hint: step.feedback.hint,
+  };
+}
+
+/** Resolve to pass/fail from a boolean, using the step's authored feedback. */
+function verdict(step: Step, ok: boolean): FeedbackResult {
+  return ok ? pass(step) : fail(step);
+}
+
 export function checkAnswer(
   step: Step,
   answer: unknown,
 ): FeedbackResult {
   const spec = step.interaction?.answer;
   if (!spec) {
-    return { correct: true, message: step.feedback.correct };
+    return pass(step);
   }
 
   switch (spec.type) {
-    case "multiple_choice": {
-      const index = answer as number;
-      const correct = index === spec.correctIndex;
-      return correct
-        ? { correct: true, message: step.feedback.correct }
-        : {
-            correct: false,
-            message: step.feedback.incorrect,
-            showHint: false,
-            hint: step.feedback.hint,
-          };
-    }
+    case "multiple_choice":
+      return verdict(step, (answer as number) === spec.correctIndex);
     case "multi_choice": {
       const picks = Array.isArray(answer) ? (answer as (number | null)[]) : [];
       const allAnswered =
@@ -102,88 +116,44 @@ export function checkAnswer(
         spec.parts.every((_, i) => typeof picks[i] === "number");
       const allCorrect =
         allAnswered && spec.parts.every((p, i) => picks[i] === p.correctIndex);
-      return allCorrect
-        ? { correct: true, message: step.feedback.correct }
-        : {
-            correct: false,
-            message: step.feedback.incorrect,
-            showHint: false,
-            hint: step.feedback.hint,
-          };
+      return verdict(step, allCorrect);
     }
     case "numeric":
     case "slider": {
       const num = Number(answer);
       if (!Number.isFinite(num)) {
-        return {
-          correct: false,
-          message: "Please enter a valid number.",
-          showHint: false,
-          hint: step.feedback.hint,
-        };
+        return fail(step, "Please enter a valid number.");
       }
       const tolerance = spec.tolerance ?? 0.01;
-      const verified = math.abs(math.subtract(num, spec.value)) <= tolerance;
-      return verified
-        ? { correct: true, message: step.feedback.correct }
-        : {
-            correct: false,
-            message: step.feedback.incorrect,
-            showHint: false,
-            hint: step.feedback.hint,
-          };
+      return verdict(step, math.abs(math.subtract(num, spec.value)) <= tolerance);
     }
     case "graph_point": {
       const num = Number(answer);
       if (!Number.isFinite(num)) {
-        return {
-          correct: false,
-          message: "Tap a point on the curve.",
-          showHint: false,
-          hint: step.feedback.hint,
-        };
+        return fail(step, "Tap a point on the curve.");
       }
       const tolerance = spec.tolerance ?? 0.25;
       // Several points can satisfy a prompt (e.g. f′(x) = 3x² = 12 holds at
       // x = ±2), so any listed x within tolerance counts as correct.
       const targets = [spec.x, ...(spec.acceptX ?? [])];
-      const verified = targets.some(
-        (t) => math.abs(math.subtract(num, t)) <= tolerance,
+      return verdict(
+        step,
+        targets.some((t) => math.abs(math.subtract(num, t)) <= tolerance),
       );
-      return verified
-        ? { correct: true, message: step.feedback.correct }
-        : {
-            correct: false,
-            message: step.feedback.incorrect,
-            showHint: false,
-            hint: step.feedback.hint,
-          };
     }
     case "predict_point": {
       const num = Number(answer);
       if (!Number.isFinite(num)) {
-        return {
-          correct: false,
-          message: "Drag the marker onto the curve.",
-          showHint: false,
-          hint: step.feedback.hint,
-        };
+        return fail(step, "Drag the marker onto the curve.");
       }
       // Predicting a feature is graded like a tapped point, just with a wider
       // default window since the marker is dragged freely rather than snapped.
       const tolerance = spec.tolerance ?? 0.3;
       const targets = [spec.x, ...(spec.acceptX ?? [])];
-      const verified = targets.some(
-        (t) => math.abs(math.subtract(num, t)) <= tolerance,
+      return verdict(
+        step,
+        targets.some((t) => math.abs(math.subtract(num, t)) <= tolerance),
       );
-      return verified
-        ? { correct: true, message: step.feedback.correct }
-        : {
-            correct: false,
-            message: step.feedback.incorrect,
-            showHint: false,
-            hint: step.feedback.hint,
-          };
     }
     case "power_term": {
       const v = (answer ?? {}) as {
@@ -194,12 +164,7 @@ export function checkAnswer(
       const coeff = Number(v.coefficient);
       const exp = Number(v.exponent);
       if (!Number.isFinite(coeff) || !Number.isFinite(exp)) {
-        return {
-          correct: false,
-          message: step.feedback.incorrect,
-          showHint: false,
-          hint: step.feedback.hint,
-        };
+        return fail(step);
       }
       // Fraction mode (reverse power rule): the coefficient is a fraction, so
       // the numerator, denominator, and exponent must all match exactly.
@@ -214,14 +179,7 @@ export function checkAnswer(
             spec.coefficient === 0
             ? coeff === 0
             : coeff === spec.coefficient && exp === spec.exponent;
-      return verified
-        ? { correct: true, message: step.feedback.correct }
-        : {
-            correct: false,
-            message: step.feedback.incorrect,
-            showHint: false,
-            hint: step.feedback.hint,
-          };
+      return verdict(step, verified);
     }
     case "drag_drop": {
       const placed = Array.isArray(answer) ? (answer as (string | null)[]) : [];
@@ -238,14 +196,7 @@ export function checkAnswer(
       const got = placed.map((p, i) => `${sign(i)}${p}`).sort();
       const allCorrect =
         allFilled && expected.every((e, i) => e === got[i]);
-      return allCorrect
-        ? { correct: true, message: step.feedback.correct }
-        : {
-            correct: false,
-            message: step.feedback.incorrect,
-            showHint: false,
-            hint: step.feedback.hint,
-          };
+      return verdict(step, allCorrect);
     }
     case "match": {
       const picks = Array.isArray(answer) ? (answer as (string | null)[]) : [];
@@ -256,14 +207,7 @@ export function checkAnswer(
       // every `match` is unique, an option maps to exactly one prompt.
       const allCorrect =
         allMatched && spec.pairs.every((p, i) => picks[i] === p.match);
-      return allCorrect
-        ? { correct: true, message: step.feedback.correct }
-        : {
-            correct: false,
-            message: step.feedback.incorrect,
-            showHint: false,
-            hint: step.feedback.hint,
-          };
+      return verdict(step, allCorrect);
     }
     case "sign_chart": {
       const picks = Array.isArray(answer) ? (answer as (number | null)[]) : [];
@@ -273,49 +217,22 @@ export function checkAnswer(
       const allCorrect =
         allAnswered &&
         spec.regions.every((r, i) => picks[i] === r.correctIndex);
-      return allCorrect
-        ? { correct: true, message: step.feedback.correct }
-        : {
-            correct: false,
-            message: step.feedback.incorrect,
-            showHint: false,
-            hint: step.feedback.hint,
-          };
+      return verdict(step, allCorrect);
     }
     case "order_list": {
       const order = Array.isArray(answer) ? (answer as string[]) : [];
       const allCorrect =
         order.length === spec.items.length &&
         spec.items.every((item, i) => order[i] === item);
-      return allCorrect
-        ? { correct: true, message: step.feedback.correct }
-        : {
-            correct: false,
-            message: step.feedback.incorrect,
-            showHint: false,
-            hint: step.feedback.hint,
-          };
+      return verdict(step, allCorrect);
     }
     case "riemann": {
       const n = Number(answer);
       if (!Number.isFinite(n) || n <= 0) {
-        return {
-          correct: false,
-          message: "Drag the slider to add rectangles.",
-          showHint: false,
-          hint: step.feedback.hint,
-        };
+        return fail(step, "Drag the slider to add rectangles.");
       }
       const estimate = riemannSum(spec.fn, spec.a, spec.b, n);
-      const verified = Math.abs(estimate - spec.trueArea) <= spec.targetWithin;
-      return verified
-        ? { correct: true, message: step.feedback.correct }
-        : {
-            correct: false,
-            message: step.feedback.incorrect,
-            showHint: false,
-            hint: step.feedback.hint,
-          };
+      return verdict(step, Math.abs(estimate - spec.trueArea) <= spec.targetWithin);
     }
     case "construct_graph": {
       const ys = Array.isArray(answer) ? (answer as (number | null)[]) : [];
@@ -341,14 +258,7 @@ export function checkAnswer(
           const t = target(i);
           return Number.isFinite(t) && Math.abs(Number(ys[i]) - t) <= tol;
         });
-      return allCorrect
-        ? { correct: true, message: step.feedback.correct }
-        : {
-            correct: false,
-            message: step.feedback.incorrect,
-            showHint: false,
-            hint: step.feedback.hint,
-          };
+      return verdict(step, allCorrect);
     }
     case "paint_intervals": {
       const picks = Array.isArray(answer) ? (answer as boolean[]) : [];
@@ -357,62 +267,31 @@ export function checkAnswer(
       const allCorrect =
         spec.correct.length > 0 &&
         spec.correct.every((c, i) => Boolean(picks[i]) === c);
-      return allCorrect
-        ? { correct: true, message: step.feedback.correct }
-        : {
-            correct: false,
-            message: step.feedback.incorrect,
-            showHint: false,
-            hint: step.feedback.hint,
-          };
+      return verdict(step, allCorrect);
     }
     case "tangent_line": {
       const num = Number(answer);
       if (!Number.isFinite(num)) {
-        return {
-          correct: false,
-          message: "Drag the line to set its slope.",
-          showHint: false,
-          hint: step.feedback.hint,
-        };
+        return fail(step, "Drag the line to set its slope.");
       }
       const tolerance = spec.tolerance ?? 0.3;
-      const verified = Math.abs(num - spec.slope) <= tolerance;
-      return verified
-        ? { correct: true, message: step.feedback.correct }
-        : {
-            correct: false,
-            message: step.feedback.incorrect,
-            showHint: false,
-            hint: step.feedback.hint,
-          };
+      return verdict(step, Math.abs(num - spec.slope) <= tolerance);
     }
     case "integral_bounds": {
       const v = (answer ?? {}) as { a?: number; b?: number };
       const a = Number(v.a);
       const b = Number(v.b);
       if (!Number.isFinite(a) || !Number.isFinite(b)) {
-        return {
-          correct: false,
-          message: "Drag both bounds into place.",
-          showHint: false,
-          hint: step.feedback.hint,
-        };
+        return fail(step, "Drag both bounds into place.");
       }
       // Grade sorted, so the handles may be dragged in either order.
       const lo = Math.min(a, b);
       const hi = Math.max(a, b);
       const tolerance = spec.tolerance ?? 0.25;
-      const verified =
-        Math.abs(lo - spec.a) <= tolerance && Math.abs(hi - spec.b) <= tolerance;
-      return verified
-        ? { correct: true, message: step.feedback.correct }
-        : {
-            correct: false,
-            message: step.feedback.incorrect,
-            showHint: false,
-            hint: step.feedback.hint,
-          };
+      return verdict(
+        step,
+        Math.abs(lo - spec.a) <= tolerance && Math.abs(hi - spec.b) <= tolerance,
+      );
     }
     case "simulate": {
       // The trace is resampled to N evenly spaced points across [0, duration].
@@ -421,12 +300,7 @@ export function checkAnswer(
       const series = Array.isArray(answer) ? (answer as number[]) : [];
       const n = series.length;
       if (n < 2) {
-        return {
-          correct: false,
-          message: "Press Run and trace the curve.",
-          showHint: false,
-          hint: step.feedback.hint,
-        };
+        return fail(step, "Press Run and trace the curve.");
       }
       const tolerance = spec.tolerance ?? 0.5;
       const coverage = spec.coverage ?? 0.85;
@@ -443,15 +317,7 @@ export function checkAnswer(
           inBand++;
         }
       }
-      const verified = inBand / n >= coverage;
-      return verified
-        ? { correct: true, message: step.feedback.correct }
-        : {
-            correct: false,
-            message: step.feedback.incorrect,
-            showHint: false,
-            hint: step.feedback.hint,
-          };
+      return verdict(step, inBand / n >= coverage);
     }
     case "select_region": {
       if (spec.multi) {
@@ -460,34 +326,14 @@ export function checkAnswer(
         const allCorrect =
           spec.bands.length > 0 &&
           spec.bands.every((b, i) => Boolean(picks[i]) === Boolean(b.correct));
-        return allCorrect
-          ? { correct: true, message: step.feedback.correct }
-          : {
-              correct: false,
-              message: step.feedback.incorrect,
-              showHint: false,
-              hint: step.feedback.hint,
-            };
+        return verdict(step, allCorrect);
       }
       // Single-select: the chosen band index must be the (one) correct band.
       const idx = answer == null ? NaN : Number(answer);
       if (!Number.isInteger(idx) || idx < 0 || idx >= spec.bands.length) {
-        return {
-          correct: false,
-          message: "Select a region.",
-          showHint: false,
-          hint: step.feedback.hint,
-        };
+        return fail(step, "Select a region.");
       }
-      const verified = spec.bands[idx]?.correct === true;
-      return verified
-        ? { correct: true, message: step.feedback.correct }
-        : {
-            correct: false,
-            message: step.feedback.incorrect,
-            showHint: false,
-            hint: step.feedback.hint,
-          };
+      return verdict(step, spec.bands[idx]?.correct === true);
     }
     default:
       return {

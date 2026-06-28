@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import type { PracticeResult } from "../../types/content";
-import { TEST_OUT_PASS_RATIO } from "../../types/content";
+import { TEST_OUT_PASS_RATIO } from "../../lib/constants";
 import { useProgress } from "../../contexts/ProgressContext";
 import { conceptLabel } from "../../lib/masteryService";
 import { useCountUp } from "../../hooks/useCountUp";

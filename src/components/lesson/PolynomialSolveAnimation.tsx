@@ -9,6 +9,7 @@ import {
   sourceTermLatex,
   type SolveDirection,
 } from "./polynomialBeats";
+import { prefersReducedMotion } from "../../lib/reducedMotion";
 
 /**
  * Per-beat dwell times (ms) for a single term's transformation, and the
@@ -20,13 +21,6 @@ const MULT_MS = 700;
 const REDUCE_MS = 800;
 const CONST_BRING_MS = 750;
 const CONST_DROP_MS = 950;
-
-function prefersReducedMotion(): boolean {
-  return (
-    typeof window !== "undefined" &&
-    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true
-  );
-}
 
 /** A fully-specified visual state of the walkthrough at one beat. */
 interface Frame {

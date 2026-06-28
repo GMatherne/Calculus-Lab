@@ -7,16 +7,14 @@ import {
 import { conceptLabel } from "../lib/masteryService";
 import { getReviewPriorities } from "../lib/reviewPlanner";
 import { useProgress } from "../contexts/ProgressContext";
-import type { Lesson, PracticeResult } from "../types/content";
 import {
   CUSTOM_PRACTICE_DEFAULT_SIZE,
   CUSTOM_PRACTICE_MAX_SIZE,
-} from "../types/content";
-import { LessonPlayer } from "../components/lesson/LessonPlayer";
+} from "../lib/constants";
 import { PracticeResults } from "../components/lesson/PracticeResults";
-import { ConfirmDialog } from "../components/common/ConfirmDialog";
+import { SessionRunner } from "../components/lesson/SessionRunner";
+import { useQuizSession } from "../hooks/useQuizSession";
 import { Icon } from "../components/common/Icon";
-import { useSessionExitGuard } from "../hooks/useSessionExitGuard";
 import { AppHeader } from "../components/layout/AppHeader";
 import { SafeArea } from "../components/layout/SafeArea";
 
@@ -77,10 +75,8 @@ export function CustomPracticePage() {
 
   const [selected, setSelected] = useState<string[]>([]);
   const [size, setSize] = useState(CUSTOM_PRACTICE_DEFAULT_SIZE);
+  // Dismissed (true) once the learner starts; the picker shows until then.
   const [started, setStarted] = useState(false);
-  // Bumping this re-samples a new set and remounts the player.
-  const [attempt, setAttempt] = useState(0);
-  const [result, setResult] = useState<PracticeResult | null>(null);
 
   // How many questions back the current selection, used to cap the count.
   const availableForSelection = useMemo(
@@ -93,35 +89,12 @@ export function CustomPracticePage() {
   const maxSize = Math.min(CUSTOM_PRACTICE_MAX_SIZE, availableForSelection);
   const effectiveSize = clampSize(size, maxSize);
 
-  // A fresh draw for this attempt; selection and size are locked in at start.
-  const sessionSteps = useMemo(
-    () => getCustomPracticeSession(progress, selected, effectiveSize),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [attempt],
-  );
-
-  // Synthetic lesson so the player can run the set in practice mode without
-  // touching any real lesson's saved progress.
-  const practiceLesson: Lesson | undefined = useMemo(
-    () =>
-      sessionSteps.length > 0
-        ? {
-            id: "custom-practice",
-            title: "Custom Practice",
-            order: 0,
-            estimatedMinutes: 0,
-            conceptTags: [],
-            published: true,
-            steps: sessionSteps,
-          }
-        : undefined,
-    [sessionSteps],
-  );
-
-  // Active only during the running session — not the topic-selection/config
-  // phase and not the results screen. Warn before abandoning that session.
-  const sessionActive = started && !!practiceLesson && !result;
-  const exitGuard = useSessionExitGuard(sessionActive);
+  const session = useQuizSession({
+    ready: started,
+    lesson: { id: "custom-practice", title: "Custom Practice", order: 0 },
+    // A fresh draw for this attempt; selection and size are locked in at start.
+    buildSteps: () => getCustomPracticeSession(progress, selected, effectiveSize),
+  });
 
   function toggleTopic(concept: string) {
     setSelected((prev) =>
@@ -142,28 +115,25 @@ export function CustomPracticePage() {
 
   function startSession() {
     if (selected.length === 0) return;
-    setResult(null);
     setStarted(true);
-    setAttempt((a) => a + 1);
+    // Re-samples with the locked-in selection (and clears any prior result).
+    session.retry();
   }
 
   // --- Session phase ---
-  if (started && practiceLesson) {
-    if (result) {
+  if (started && session.lesson) {
+    if (session.result) {
       return (
         <PracticeResults
-          result={result}
+          result={session.result}
           title="Custom practice"
           retryLabel="New set"
-          onRetry={() => {
-            setResult(null);
-            setAttempt((a) => a + 1);
-          }}
+          onRetry={session.retry}
           secondaryAction={{
             label: "Change topics",
             onClick: () => {
-              setResult(null);
               setStarted(false);
+              session.retry();
             },
           }}
         />
@@ -171,28 +141,14 @@ export function CustomPracticePage() {
     }
 
     return (
-      <SafeArea>
-        <AppHeader />
-        <main className="flex-1 flex flex-col px-4 py-4 max-w-3xl mx-auto w-full min-h-0">
-          <LessonPlayer
-            key={`custom-practice-${attempt}`}
-            lesson={practiceLesson}
-            practiceMode
-            onComplete={(r) =>
-              setResult(r ?? { correct: 0, total: sessionSteps.length })
-            }
-          />
-        </main>
-        <ConfirmDialog
-          open={exitGuard.open}
-          title="Leave practice?"
-          message="You'll lose your progress in this session and won't earn any XP. Are you sure you want to leave?"
-          confirmLabel="Leave"
-          cancelLabel="Keep practicing"
-          onConfirm={exitGuard.confirmLeave}
-          onCancel={exitGuard.cancelLeave}
-        />
-      </SafeArea>
+      <SessionRunner
+        lesson={session.lesson}
+        playerKey={session.playerKey}
+        onComplete={session.complete}
+        exitGuard={session.exitGuard}
+        leaveTitle="Leave practice?"
+        cancelLabel="Keep practicing"
+      />
     );
   }
 

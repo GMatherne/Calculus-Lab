@@ -3,6 +3,7 @@ import {
   createGeneralTutorChat,
   isAiAvailable,
   isQuotaError,
+  QUOTA_MESSAGE,
   type GeneralContext,
   type TutorChat,
 } from "../../lib/aiTutor";
@@ -15,10 +16,6 @@ import { getWeakConcepts } from "../../lib/masteryService";
 import { useProgress } from "../../contexts/ProgressContext";
 import { Icon } from "../common/Icon";
 import { TutorChatModal, type ChatTurn } from "./TutorChatModal";
-
-/** Shown when the per-user tutor rate limit (or an upstream provider limit) is hit. */
-const QUOTA_MESSAGE =
-  "You've reached the AI tutor limit for now — it resets within a day. Your lessons and instant grading keep working in the meantime.";
 
 /**
  * Floating "chat with the AI tutor" button for the roadmap. Opens a free-form

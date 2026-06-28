@@ -23,7 +23,7 @@ export function isDropped(t: PowerRuleTerm, direction: SolveDirection): boolean 
 }
 
 /** Magnitude-only LaTeX for c·xᵉ: a coefficient of 1 is hidden unless e = 0. */
-export function termBody(coeff: number, exp: number): string {
+function termBody(coeff: number, exp: number): string {
   const m = Math.abs(coeff);
   if (exp === 0) return `${m}`;
   const c = m === 1 ? "" : `${m}`;

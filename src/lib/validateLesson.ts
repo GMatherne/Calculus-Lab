@@ -5,8 +5,8 @@ import {
   PRACTICE_BANK_MIN,
   MIN_MC_OPTIONS,
   MIN_MATCH_PAIRS,
-  isRiemannDemo,
-} from "../types/content";
+} from "./constants";
+import { isRiemannDemo } from "./stepHelpers";
 import { derivativeAt, evalAt } from "./feedbackEngine";
 
 export function validateLesson(lesson: Lesson): string[] {

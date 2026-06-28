@@ -6,7 +6,7 @@ import {
   TEST_OUT_LEVEL_MAX_QUESTIONS,
   TEST_OUT_MIN_QUESTIONS,
   TEST_OUT_PER_CONCEPT,
-} from "../types/content";
+} from "./constants";
 import { assertValidLesson } from "./validateLesson";
 
 import courseData from "../../content/course.json";
@@ -42,8 +42,21 @@ const lessonsById = new Map(rawLessons.map((l) => [l.id, l]));
 
 export const course = courseData as Course;
 
+// The course manifest and lessons are frozen at import time, so anything derived
+// purely from them is computed once and cached (callers treat the results as
+// read-only). These helpers run on nearly every render and session build, so
+// caching avoids repeatedly re-filtering/sorting/aggregating the same static data.
+let publishedLessonsCache: LessonMeta[] | null = null;
+const practiceBankCache = new Map<string, Step[]>();
+let levelsCache: ResolvedLevel[] | null = null;
+
 export function getPublishedLessons(): LessonMeta[] {
-  return course.lessons.filter((l) => l.published).sort((a, b) => a.order - b.order);
+  if (!publishedLessonsCache) {
+    publishedLessonsCache = course.lessons
+      .filter((l) => l.published)
+      .sort((a, b) => a.order - b.order);
+  }
+  return publishedLessonsCache;
 }
 
 export function getLesson(id: string): Lesson | undefined {
@@ -75,6 +88,9 @@ function lessonQuestions(lesson: Lesson | undefined): Step[] {
  * Deduplicated by id.
  */
 export function getPracticeBank(lessonId: string): Step[] {
+  const cached = practiceBankCache.get(lessonId);
+  if (cached) return cached;
+
   const lesson = lessonsById.get(lessonId);
   const authored = lesson?.practiceBank ?? [];
   const seen = new Set<string>();
@@ -97,6 +113,7 @@ export function getPracticeBank(lessonId: string): Step[] {
     }
   }
 
+  practiceBankCache.set(lessonId, pool);
   return pool;
 }
 
@@ -307,33 +324,35 @@ export interface ResolvedLevel {
  * holding every published lesson when the course defines none.
  */
 export function getLevels(): ResolvedLevel[] {
+  if (levelsCache) return levelsCache;
+
   const published = getPublishedLessons();
   const byId = new Map(published.map((l) => [l.id, l]));
   const defined = course.levels ?? [];
 
-  if (defined.length === 0) {
-    return [
-      {
-        id: "all",
-        title: course.title,
-        description: course.description,
-        order: 1,
-        lessons: published,
-      },
-    ];
-  }
-
-  return defined
-    .map((level, i) => ({
-      id: level.id,
-      title: level.title,
-      description: level.description,
-      order: i + 1,
-      lessons: level.lessonIds
-        .map((id) => byId.get(id))
-        .filter((m): m is LessonMeta => Boolean(m)),
-    }))
-    .filter((level) => level.lessons.length > 0);
+  levelsCache =
+    defined.length === 0
+      ? [
+          {
+            id: "all",
+            title: course.title,
+            description: course.description,
+            order: 1,
+            lessons: published,
+          },
+        ]
+      : defined
+          .map((level, i) => ({
+            id: level.id,
+            title: level.title,
+            description: level.description,
+            order: i + 1,
+            lessons: level.lessonIds
+              .map((id) => byId.get(id))
+              .filter((m): m is LessonMeta => Boolean(m)),
+          }))
+          .filter((level) => level.lessons.length > 0);
+  return levelsCache;
 }
 
 /** Resolve a single level by its id, including its order and lessons. */

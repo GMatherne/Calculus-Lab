@@ -1,4 +1,3 @@
-import { useMemo, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import {
   canAccessLesson,
@@ -6,12 +5,10 @@ import {
   getPracticeSession,
   hasPractice,
 } from "../lib/contentLoader";
-import type { Lesson, PracticeResult } from "../types/content";
 import { useProgress } from "../contexts/ProgressContext";
-import { LessonPlayer } from "../components/lesson/LessonPlayer";
 import { PracticeResults } from "../components/lesson/PracticeResults";
-import { ConfirmDialog } from "../components/common/ConfirmDialog";
-import { useSessionExitGuard } from "../hooks/useSessionExitGuard";
+import { SessionRunner } from "../components/lesson/SessionRunner";
+import { useQuizSession } from "../hooks/useQuizSession";
 import { AppHeader } from "../components/layout/AppHeader";
 import { SafeArea } from "../components/layout/SafeArea";
 
@@ -21,42 +18,24 @@ export function PracticePage() {
 
   const lesson = lessonId ? getLesson(lessonId) : undefined;
 
-  const [result, setResult] = useState<PracticeResult | null>(null);
-  // Bumping this remounts the player AND re-samples the bank, so each attempt
-  // starts fresh with a (potentially) different set of questions.
-  const [attempt, setAttempt] = useState(0);
+  const session = useQuizSession({
+    ready:
+      !!lessonId &&
+      !!lesson &&
+      hasPractice(lessonId) &&
+      !progressLoading &&
+      canAccessLesson(lessonId, progress),
+    lesson: {
+      id: lesson?.id ?? "practice",
+      title: `Practice: ${lesson?.title ?? ""}`,
+      order: lesson?.order ?? 0,
+    },
+    // A fresh random draw from the lesson's practice bank for this attempt.
+    buildSteps: () => (lessonId ? getPracticeSession(lessonId) : []),
+    resampleKey: [lessonId],
+  });
 
-  // A fresh random draw from the lesson's practice bank for this attempt.
-  const sessionSteps = useMemo(
-    () => (lessonId ? getPracticeSession(lessonId) : []),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [lessonId, attempt],
-  );
-
-  // A lightweight lesson whose steps are the sampled questions, so we can reuse
-  // the existing player and grader without touching real lesson progress.
-  const practiceLesson: Lesson | undefined = useMemo(
-    () =>
-      lesson && sessionSteps.length > 0
-        ? { ...lesson, title: `Practice: ${lesson.title}`, steps: sessionSteps }
-        : undefined,
-    [lesson, sessionSteps],
-  );
-
-  // True only when the player itself is on screen — i.e. every guard below has
-  // passed and the session hasn't reached its results screen yet. Warn before
-  // an in-app navigation or tab close abandons that unfinished session.
-  const sessionActive =
-    !!lessonId &&
-    !!lesson &&
-    hasPractice(lessonId) &&
-    !!practiceLesson &&
-    !progressLoading &&
-    canAccessLesson(lessonId, progress) &&
-    result === null;
-  const exitGuard = useSessionExitGuard(sessionActive);
-
-  if (!lesson || !lessonId || !hasPractice(lessonId) || !practiceLesson) {
+  if (!lesson || !lessonId || !hasPractice(lessonId) || !session.lesson) {
     return (
       <SafeArea>
         <AppHeader />
@@ -87,42 +66,25 @@ export function PracticePage() {
     return <Navigate to="/lessons" replace />;
   }
 
-  if (result) {
+  if (session.result) {
     return (
       <PracticeResults
-        result={result}
+        result={session.result}
         title={lesson.title}
         reviewLessonId={lesson.id}
-        onRetry={() => {
-          setResult(null);
-          setAttempt((a) => a + 1);
-        }}
+        onRetry={session.retry}
       />
     );
   }
 
   return (
-    <SafeArea>
-      <AppHeader />
-      <main className="flex-1 flex flex-col px-4 py-4 max-w-3xl mx-auto w-full min-h-0">
-        <LessonPlayer
-          key={`${lesson.id}-practice-${attempt}`}
-          lesson={practiceLesson}
-          practiceMode
-          onComplete={(r) =>
-            setResult(r ?? { correct: 0, total: sessionSteps.length })
-          }
-        />
-      </main>
-      <ConfirmDialog
-        open={exitGuard.open}
-        title="Leave practice?"
-        message="You'll lose your progress in this session and won't earn any XP. Are you sure you want to leave?"
-        confirmLabel="Leave"
-        cancelLabel="Keep practicing"
-        onConfirm={exitGuard.confirmLeave}
-        onCancel={exitGuard.cancelLeave}
-      />
-    </SafeArea>
+    <SessionRunner
+      lesson={session.lesson}
+      playerKey={session.playerKey}
+      onComplete={session.complete}
+      exitGuard={session.exitGuard}
+      leaveTitle="Leave practice?"
+      cancelLabel="Keep practicing"
+    />
   );
 }

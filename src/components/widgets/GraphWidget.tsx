@@ -13,7 +13,7 @@ import { MathBlock } from "./MathBlock";
 import { clamp, fmtNum, makeToSvg, ticksFor } from "./plotGeometry";
 
 /** A reveal overlay for a committed prediction: the true feature at `x`. */
-export interface GraphReveal {
+interface GraphReveal {
   x: number;
   /** Draw a dot at (x, f(x)). Defaults to true. */
   point?: boolean;

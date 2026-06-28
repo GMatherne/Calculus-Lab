@@ -1,16 +1,13 @@
-import { useMemo, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import {
   getLevel,
   getLevelReviewSession,
   getLevelStatus,
 } from "../lib/contentLoader";
-import type { Lesson, PracticeResult } from "../types/content";
 import { useProgress } from "../contexts/ProgressContext";
-import { LessonPlayer } from "../components/lesson/LessonPlayer";
 import { PracticeResults } from "../components/lesson/PracticeResults";
-import { ConfirmDialog } from "../components/common/ConfirmDialog";
-import { useSessionExitGuard } from "../hooks/useSessionExitGuard";
+import { SessionRunner } from "../components/lesson/SessionRunner";
+import { useQuizSession } from "../hooks/useQuizSession";
 import { AppHeader } from "../components/layout/AppHeader";
 import { SafeArea } from "../components/layout/SafeArea";
 
@@ -19,46 +16,22 @@ export function LevelReviewPage() {
   const { progress, loading: progressLoading } = useProgress();
   const level = levelId ? getLevel(levelId) : undefined;
 
-  const [result, setResult] = useState<PracticeResult | null>(null);
-  // Bumping this re-samples a new mixed set and remounts the player.
-  const [attempt, setAttempt] = useState(0);
+  const session = useQuizSession({
+    ready:
+      !!level &&
+      !progressLoading &&
+      getLevelStatus(level, progress) === "complete",
+    lesson: {
+      id: `${level?.id ?? "level"}-review`,
+      title: `Review: ${level?.title ?? ""}`,
+      order: level?.order ?? 0,
+    },
+    // A fresh cross-lesson draw from this level's lessons for the attempt.
+    buildSteps: () => (levelId ? getLevelReviewSession(levelId) : []),
+    resampleKey: [levelId],
+  });
 
-  // A fresh cross-lesson draw from this level's lessons for the attempt.
-  const sessionSteps = useMemo(
-    () => (levelId ? getLevelReviewSession(levelId) : []),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [levelId, attempt],
-  );
-
-  // Synthetic lesson so the player can run the mixed set in practice mode
-  // without touching any real lesson's saved progress.
-  const reviewLesson: Lesson | undefined = useMemo(
-    () =>
-      level && sessionSteps.length > 0
-        ? {
-            id: `${level.id}-review`,
-            title: `Review: ${level.title}`,
-            order: level.order,
-            estimatedMinutes: 0,
-            conceptTags: [],
-            published: true,
-            steps: sessionSteps,
-          }
-        : undefined,
-    [level, sessionSteps],
-  );
-
-  // True only when the player is on screen — every guard below has passed and
-  // the session hasn't reached its results screen. Warn before navigating away.
-  const sessionActive =
-    !!level &&
-    !!reviewLesson &&
-    !progressLoading &&
-    getLevelStatus(level, progress) === "complete" &&
-    result === null;
-  const exitGuard = useSessionExitGuard(sessionActive);
-
-  if (!level || !reviewLesson) {
+  if (!level || !session.lesson) {
     return (
       <SafeArea>
         <AppHeader />
@@ -93,42 +66,25 @@ export function LevelReviewPage() {
     return <Navigate to="/lessons" replace />;
   }
 
-  if (result) {
+  if (session.result) {
     return (
       <PracticeResults
-        result={result}
+        result={session.result}
         title={`${level.title} review`}
         retryLabel="New review set"
-        onRetry={() => {
-          setResult(null);
-          setAttempt((a) => a + 1);
-        }}
+        onRetry={session.retry}
       />
     );
   }
 
   return (
-    <SafeArea>
-      <AppHeader />
-      <main className="flex-1 flex flex-col px-4 py-4 max-w-3xl mx-auto w-full min-h-0">
-        <LessonPlayer
-          key={`${level.id}-review-${attempt}`}
-          lesson={reviewLesson}
-          practiceMode
-          onComplete={(r) =>
-            setResult(r ?? { correct: 0, total: sessionSteps.length })
-          }
-        />
-      </main>
-      <ConfirmDialog
-        open={exitGuard.open}
-        title="Leave review?"
-        message="You'll lose your progress in this session and won't earn any XP. Are you sure you want to leave?"
-        confirmLabel="Leave"
-        cancelLabel="Keep reviewing"
-        onConfirm={exitGuard.confirmLeave}
-        onCancel={exitGuard.cancelLeave}
-      />
-    </SafeArea>
+    <SessionRunner
+      lesson={session.lesson}
+      playerKey={session.playerKey}
+      onComplete={session.complete}
+      exitGuard={session.exitGuard}
+      leaveTitle="Leave review?"
+      cancelLabel="Keep reviewing"
+    />
   );
 }

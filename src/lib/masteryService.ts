@@ -3,12 +3,10 @@ import type {
   ConceptMasteryTier,
   ConceptStat,
 } from "../types/content";
-import {
-  MASTERY_MASTERED,
-  MASTERY_PROFICIENT,
-  isInstructionStep,
-} from "../types/content";
+import { MASTERY_MASTERED, MASTERY_PROFICIENT } from "./constants";
+import { isInstructionStep } from "./stepHelpers";
 import { getLesson, getPublishedLessons, hasPractice } from "./contentLoader";
+import { isLessonComplete } from "./lessonStatus";
 
 /** Per-concept practice/review stats, keyed by concept tag. */
 export type ConceptStatMap = Record<string, ConceptStat>;
@@ -114,10 +112,6 @@ export function getConceptCatalog(): ConceptCatalogEntry[] {
   return catalog;
 }
 
-function isLessonDone(status: string | undefined): boolean {
-  return status === "complete" || status === "mastered";
-}
-
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 /**
@@ -159,7 +153,7 @@ const LESSON_MASTERY_CEIL = 0.5;
  * enough good practice carries a concept all the way to mastery regardless of a
  * shaky lesson, and enough poor practice lets it slip the same way.
  */
-export function blendReviewRatio(
+function blendReviewRatio(
   lessonRatio: number,
   review: ConceptStat | undefined,
 ): number {
@@ -176,7 +170,7 @@ export function blendReviewRatio(
  * A null age (we don't know when it was last seen) means no decay, so unknown
  * timing never penalizes the displayed number.
  */
-export function masteryDecayMultiplier(daysSinceSeen: number | null): number {
+function masteryDecayMultiplier(daysSinceSeen: number | null): number {
   if (daysSinceSeen === null || daysSinceSeen <= MASTERY_DECAY_GRACE_DAYS) {
     return 1;
   }
@@ -243,7 +237,7 @@ export function getConceptMastery(
       total += 1;
       if (!p) continue;
       const isCleared =
-        isLessonDone(p.status) || ref.stepIndex < (p.currentStepIndex ?? 0);
+        isLessonComplete(p.status) || ref.stepIndex < (p.currentStepIndex ?? 0);
       if (!isCleared) continue;
       cleared += 1;
       if ((p.stepAttempts?.[ref.stepId] ?? 0) === 1) firstTry += 1;

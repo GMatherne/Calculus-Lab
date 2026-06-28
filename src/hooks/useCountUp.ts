@@ -1,12 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-
-function prefersReducedMotion(): boolean {
-  return (
-    typeof window !== "undefined" &&
-    typeof window.matchMedia === "function" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches
-  );
-}
+import { prefersReducedMotion } from "../lib/reducedMotion";
 
 interface CountUpOptions {
   /** How long the roll takes, in milliseconds. */

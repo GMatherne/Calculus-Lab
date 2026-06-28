@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import type { MultipleChoiceAnswer } from "../../types/content";
 import { RichText } from "./MathBlock";
+import { shuffledIndices } from "../../lib/shuffle";
 
 interface MultipleChoiceInputProps {
   spec: MultipleChoiceAnswer;
@@ -12,24 +13,6 @@ interface MultipleChoiceInputProps {
   reveal?: boolean;
   /** Whether the submitted answer was correct (only meaningful when reveal is true). */
   isCorrect?: boolean;
-}
-
-/**
- * A permutation of [0, n) that differs from the identity order when possible, so
- * a question authored with the correct answer first doesn't always show it
- * first.
- */
-function shuffledIndices(n: number): number[] {
-  const order = Array.from({ length: n }, (_, i) => i);
-  if (n < 2) return order;
-  for (let attempt = 0; attempt < 12; attempt++) {
-    for (let i = order.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [order[i], order[j]] = [order[j], order[i]];
-    }
-    if (order.some((v, i) => v !== i)) return order;
-  }
-  return order;
 }
 
 /**

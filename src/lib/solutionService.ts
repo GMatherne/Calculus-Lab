@@ -5,7 +5,7 @@ import type {
   SimulateAnswer,
   Step,
 } from "../types/content";
-import { describeCorrectAnswer } from "./aiTutor";
+import { describeCorrectAnswer } from "./answerFormat";
 import { evalAt, evalFunction, riemannSum } from "./feedbackEngine";
 
 /**

@@ -21,7 +21,7 @@ import { ReferenceModal } from "../components/reference/ReferenceModal";
 import { RoadmapTutorFab } from "../components/tutor/RoadmapTutorFab";
 import { DevTools } from "../components/dev/DevTools";
 import { Icon } from "../components/common/Icon";
-import { MILESTONE_DEFS, MILESTONE_ORDER } from "../types/content";
+import { MILESTONE_DEFS, MILESTONE_ORDER } from "../lib/milestones";
 
 export function RoadmapPage() {
   const { progress, loading, profile } = useProgress();

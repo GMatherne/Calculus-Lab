@@ -7,6 +7,7 @@ import {
   isAiAvailable,
   isQuotaError,
   MAX_FOLLOWUPS,
+  QUOTA_MESSAGE,
   type LearnerHistory,
   type TutorChat,
   type TutorContext,
@@ -16,10 +17,6 @@ import { useProgress } from "../../contexts/ProgressContext";
 import { useSessionInsights } from "../../contexts/SessionInsightsContext";
 import { Icon } from "../common/Icon";
 import { TutorText } from "../tutor/TutorText";
-
-/** Shown when the per-user tutor rate limit (or an upstream provider limit) is hit. */
-const QUOTA_MESSAGE =
-  "You've reached the AI tutor limit for now — it resets within a day. Your lessons and instant grading keep working in the meantime.";
 
 interface TutorPanelProps {
   step: Step;

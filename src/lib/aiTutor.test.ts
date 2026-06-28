@@ -1,12 +1,14 @@
 import {
-  contentToText,
-  describeAnswer,
-  describeCorrectAnswer,
   buildStepContext,
   buildHistorySummary,
   isQuotaError,
   type LearnerHistory,
 } from "./aiTutor";
+import {
+  contentToText,
+  describeAnswer,
+  describeCorrectAnswer,
+} from "./answerFormat";
 import type {
   AnswerSpec,
   ContentBlock,

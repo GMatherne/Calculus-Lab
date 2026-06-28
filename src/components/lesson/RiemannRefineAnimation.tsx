@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { evalFunction, riemannSum } from "../../lib/feedbackEngine";
 import { RIEMANN_REFINE_COUNTS } from "./riemannRefineBeats";
+import { prefersReducedMotion } from "../../lib/reducedMotion";
 
 const W = 340;
 const H = 220;
@@ -11,13 +12,6 @@ const PAD_B = 26;
 
 /** Per-beat dwell time (ms) when auto-playing (uncontrolled). */
 const BEAT_MS = 1100;
-
-function prefersReducedMotion(): boolean {
-  return (
-    typeof window !== "undefined" &&
-    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true
-  );
-}
 
 interface RiemannRefineAnimationProps {
   /** Curve to slice, as an expression in x (e.g. "x^2"). */

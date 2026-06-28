@@ -2,18 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { MathBlock, RichText } from "../widgets/MathBlock";
 import type { PowerRuleTerm } from "../../types/content";
 import { PHASES, POWER_RULE_BEAT_COUNT, captionFor } from "./powerRuleBeats";
+import { prefersReducedMotion } from "../../lib/reducedMotion";
 
 /** Per-beat dwell time (ms) when the derivation auto-plays. */
 const STEP_MS = 950;
 /** Extra hold after a term finishes before the montage moves to the next one. */
 const MONTAGE_HOLD_MS = 1100;
-
-function prefersReducedMotion(): boolean {
-  return (
-    typeof window !== "undefined" &&
-    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true
-  );
-}
 
 /** Render a single power term a·xⁿ as LaTeX, collapsing trivial cases. */
 function termLatex(a: number, n: number): string {

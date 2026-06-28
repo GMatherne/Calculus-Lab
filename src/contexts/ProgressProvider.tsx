@@ -24,12 +24,8 @@ import {
   testedOutLessonProgress,
 } from "../lib/progressService";
 import { getLesson, getPublishedLessons } from "../lib/contentLoader";
-import {
-  XP_PER_LESSON,
-  XP_PER_MULTIPART_BONUS,
-  isInstructionStep,
-  isMultiPart,
-} from "../types/content";
+import { XP_PER_LESSON, XP_PER_MULTIPART_BONUS } from "../lib/constants";
+import { isInstructionStep, isMultiPart } from "../lib/stepHelpers";
 import { ProgressContext, isLessonDone } from "./ProgressContext";
 
 function defaultProgress(): LessonProgress {
@@ -432,7 +428,6 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
         updateProfileInfo,
         completeAllLessons,
         resetProgress,
-        refresh,
       }}
     >
       {children}

@@ -26,6 +26,7 @@ import {
   Gem,
   type LucideIcon,
 } from "lucide-react";
+import type { IconName } from "../../types/icons";
 
 /**
  * The app's single iconography source. Every UI icon is a Lucide SVG so the
@@ -34,9 +35,10 @@ import {
  * because the same glyph is reused across features; add new icons here and
  * reference them by name through the `Icon` component.
  *
- * This is plain data (no JSX) so non-UI modules — e.g. `types/content.ts`, which
- * the Node-side lesson validator also compiles — can import {@link IconName}
- * without pulling in a `.tsx` file.
+ * This is plain data (no JSX), and the names it maps are typed by {@link IconName}
+ * (declared in `types/icons.ts`) so non-UI modules can reference icons by name
+ * without depending on this UI module. The `satisfies` below keeps the registry
+ * and the name union in lockstep.
  */
 export const ICON_REGISTRY = {
   flame: Flame,
@@ -64,6 +66,8 @@ export const ICON_REGISTRY = {
   brain: Brain,
   crown: Crown,
   gem: Gem,
-} satisfies Record<string, LucideIcon>;
+} satisfies Record<IconName, LucideIcon>;
 
-export type IconName = keyof typeof ICON_REGISTRY;
+// Re-exported so existing UI importers (`Icon`, `AssistanceToggle`, …) can keep
+// importing the type from here; the source of truth is `types/icons.ts`.
+export type { IconName };

@@ -1,18 +1,11 @@
 import { useState, useCallback, useEffect, useMemo, useRef } from "react";
-import type {
-  ConceptSessionResult,
-  Lesson,
-  Step,
-  StepPart,
-  PracticeResult,
-} from "../../types/content";
+import type { Lesson, Step, PracticeResult } from "../../types/content";
 import {
   isInstructionStep,
   isMultiPart,
   getStepParts,
   partAsStep,
-  XP_PER_MULTIPART_BONUS,
-} from "../../types/content";
+} from "../../lib/stepHelpers";
 import { checkAnswer } from "../../lib/feedbackEngine";
 import { correctAnswerValue, solutionBlocks } from "../../lib/solutionService";
 import { playSound } from "../../lib/sound";
@@ -44,270 +37,17 @@ import { useProgress, isLessonDone } from "../../contexts/ProgressContext";
 import { useSessionInsights } from "../../contexts/SessionInsightsContext";
 import { useAssistancePreference } from "../../hooks/useAssistancePreference";
 import { useActionLock } from "../../hooks/useActionLock";
-
-/** Shuffle a list into an order that differs from the original when possible. */
-function shuffleOrder(items: string[]): string[] {
-  if (items.length < 2) return [...items];
-  for (let attempt = 0; attempt < 12; attempt++) {
-    const out = [...items];
-    for (let i = out.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [out[i], out[j]] = [out[j], out[i]];
-    }
-    if (out.some((v, i) => v !== items[i])) return out;
-  }
-  return [...items];
-}
-
-/**
- * The starting answer for question types that begin from a non-empty state: the
- * power-term builder opens on the original term, an order_list opens shuffled,
- * and a Riemann sum opens at a single (clearly-too-coarse) rectangle. Everything
- * else starts blank (undefined).
- */
-function seedAnswer(step: Step): unknown {
-  const a = step.interaction?.answer;
-  if (a?.type === "power_term") {
-    // Fraction mode (reverse power rule) opens with the denominator stepper too.
-    return a.denominator != null
-      ? {
-          coefficient: a.startCoefficient ?? 1,
-          denominator: a.startDenominator ?? 1,
-          exponent: a.startExponent ?? 1,
-        }
-      : { coefficient: a.startCoefficient ?? 1, exponent: a.startExponent ?? 1 };
-  }
-  if (a?.type === "order_list") return shuffleOrder(a.items);
-  if (a?.type === "riemann") return 1;
-  if (a?.type === "construct_graph") {
-    // Open every node resting on the x-axis (clamped into range), so the learner
-    // drags each up or down from a neutral baseline.
-    const [lo, hi] = a.yDomain;
-    const start = Math.min(Math.max(0, lo), hi);
-    return a.nodes.map(() => start);
-  }
-  if (a?.type === "paint_intervals") {
-    // Open with nothing shaded; the learner brushes segments on.
-    return a.correct.map(() => false);
-  }
-  if (a?.type === "tangent_line") {
-    // Open with a flat line through the pivot, ready to be rotated.
-    return 0;
-  }
-  if (a?.type === "integral_bounds") {
-    // Open with two handles inside the domain, away from the correct limits.
-    const [d0, d1] = a.domain;
-    const w = d1 - d0;
-    return {
-      a: parseFloat((d0 + w * 0.3).toFixed(3)),
-      b: parseFloat((d0 + w * 0.6).toFixed(3)),
-    };
-  }
-  if (a?.type === "select_region") {
-    // Multi-select opens with nothing chosen (a boolean per band); single-select
-    // opens blank (undefined) until a band is tapped.
-    return a.multi ? a.bands.map(() => false) : undefined;
-  }
-  return undefined;
-}
-
-/**
- * Where a predict marker starts: the graph's initial slider if authored, else
- * the midpoint of the domain — a neutral spot to drag away from. Returns null
- * for non-predict steps.
- */
-function predictStartX(step: Step): number | null {
-  if (step.interaction?.answer?.type !== "predict_point") return null;
-  const g = step.interaction.graph;
-  if (!g) return 0;
-  if (typeof g.initialSlider === "number") return g.initialSlider;
-  return (g.domain[0] + g.domain[1]) / 2;
-}
-
-/** Linear interpolation between a and b at fraction e (0..1). */
-function lerp(a: number, b: number, e: number): number {
-  return a + (b - a) * e;
-}
-
-/**
- * Fallback captions for a secant "rate of change" walkthrough when a step doesn't
- * author its own: beat 0 draws the secant, beat 1 reads off the rise / run.
- */
-const DEFAULT_SECANT_CAPTIONS = [
-  "A derivative is the rate of change — how much f changes for each step in x. Join two points on the line with a secant.",
-  "Its slope is the rise Δy over the run Δx, and on a straight line that ratio is the same everywhere — so it is the derivative.",
-];
-
-/** Finite number from a value, else the fallback. */
-function toNum(value: unknown, fallback: number): number {
-  const n = Number(value);
-  return Number.isFinite(n) ? n : fallback;
-}
-
-/**
- * Whether the "solve" walkthrough can smoothly tween this answer type to its
- * target. Pick/place types (multiple_choice, drag_drop, match, …) have no
- * meaningful in-between state, so they snap to the answer instead.
- */
-function isTweenable(type: string | undefined): boolean {
-  return (
-    type === "slider" ||
-    type === "numeric" ||
-    type === "graph_point" ||
-    type === "predict_point" ||
-    type === "power_term" ||
-    type === "riemann" ||
-    type === "tangent_line" ||
-    type === "integral_bounds" ||
-    type === "construct_graph"
-  );
-}
-
-/**
- * Interpolate an `answer`-shaped value from `from` toward `to` at fraction e, so
- * the "solve" walkthrough can animate the widget into its answer (slider/point
- * values are tweened separately via graphValue/clickedX/predictX).
- */
-function lerpAnswer(
-  type: string | undefined,
-  from: unknown,
-  to: unknown,
-  e: number,
-): unknown {
-  switch (type) {
-    case "numeric":
-    case "tangent_line":
-      return Math.round(lerp(toNum(from, 0), to as number, e) * 100) / 100;
-    case "riemann":
-      return Math.max(1, Math.round(lerp(toNum(from, 1), to as number, e)));
-    case "power_term": {
-      const f = (from ?? {}) as {
-        coefficient?: number;
-        exponent?: number;
-        denominator?: number;
-      };
-      const t = to as {
-        coefficient: number;
-        exponent: number;
-        denominator?: number;
-      };
-      const next: { coefficient: number; exponent: number; denominator?: number } = {
-        coefficient: Math.round(lerp(toNum(f.coefficient, 0), t.coefficient, e)),
-        exponent: Math.round(lerp(toNum(f.exponent, t.exponent), t.exponent, e)),
-      };
-      if (t.denominator != null) {
-        next.denominator = Math.round(lerp(toNum(f.denominator, 1), t.denominator, e));
-      }
-      return next;
-    }
-    case "integral_bounds": {
-      const f = (from ?? {}) as { a?: number; b?: number };
-      const t = to as { a: number; b: number };
-      return { a: lerp(toNum(f.a, t.a), t.a, e), b: lerp(toNum(f.b, t.b), t.b, e) };
-    }
-    case "construct_graph": {
-      const f = Array.isArray(from) ? (from as number[]) : [];
-      return (to as number[]).map((ty, i) => lerp(toNum(f[i], 0), ty, e));
-    }
-    default:
-      return to;
-  }
-}
-
-/**
- * A snapshot of a follow-up part the learner has cleared, capturing enough of the
- * committed widget state to re-render the part faithfully (but locked) above the
- * active one — so a multi-part question reads as one continuous, scrollable thread.
- */
-interface SolvedPartSnapshot {
-  part: StepPart;
-  answer: unknown;
-  graphValue: number;
-  clickedX: number | null;
-  predictX: number | null;
-}
-
-/**
- * A previously-cleared part, re-rendered in full (prompt + graph/answer in the
- * state the learner left them) but locked: `pointer-events-none` makes the whole
- * block non-interactive, so it can be scrolled back to but not changed.
- */
-function LockedPart({ snap, index }: { snap: SolvedPartSnapshot; index: number }) {
-  const { part } = snap;
-  const a = part.interaction?.answer;
-  const answerType = a?.type;
-  const isTapPoint = answerType === "graph_point";
-  const isPredict = answerType === "predict_point";
-  const usesWidgetAnswer =
-    answerType === "slider" || isTapPoint || isPredict;
-  const graph = part.interaction?.graph;
-
-  // Re-create the prediction reveal so the locked plot still shows the true
-  // feature next to the learner's committed guess.
-  const reveal =
-    isPredict && a?.type === "predict_point"
-      ? (() => {
-          const guess = snap.predictX ?? a.x;
-          const tx = [a.x, ...(a.acceptX ?? [])].reduce((best, t) =>
-            Math.abs(guess - t) < Math.abs(guess - best) ? t : best,
-          );
-          return {
-            x: tx,
-            point: a.reveal.point !== false,
-            tangent: a.reveal.tangent === true,
-            vertical: a.reveal.vertical === true,
-          };
-        })()
-      : null;
-
-  return (
-    <section className="rounded-2xl border border-slate-200 bg-white/50">
-      <div className="flex items-center gap-1.5 border-b border-slate-100 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-emerald-700">
-        <svg
-          viewBox="0 0 20 20"
-          fill="currentColor"
-          className="h-4 w-4"
-          aria-hidden="true"
-        >
-          <path
-            fillRule="evenodd"
-            d="M16.704 5.29a1 1 0 0 1 .006 1.414l-7.2 7.3a1 1 0 0 1-1.42.006l-3.3-3.3a1 1 0 1 1 1.414-1.414l2.59 2.59 6.494-6.59a1 1 0 0 1 1.416-.006Z"
-            clipRule="evenodd"
-          />
-        </svg>
-        Part {index + 1} · Answered
-      </div>
-      <div
-        className="pointer-events-none select-none space-y-4 p-4 opacity-75"
-        aria-disabled="true"
-      >
-        <ContentBlocks blocks={part.content} />
-        {graph && (
-          <GraphWidget
-            config={graph}
-            sliderValue={snap.graphValue}
-            showSlider={!isTapPoint && !isPredict && !graph.static}
-            selectedX={isTapPoint ? snap.clickedX : null}
-            predictX={isPredict ? snap.predictX : null}
-            satisfied={answerType === "slider"}
-            reveal={reveal}
-          />
-        )}
-        {a && !usesWidgetAnswer && (
-          <AnswerInput
-            spec={a}
-            value={snap.answer}
-            onChange={() => {}}
-            disabled
-            reveal
-            isCorrect
-          />
-        )}
-        <FeedbackPanel message={part.feedback.correct} isCorrect={true} />
-      </div>
-    </section>
-  );
-}
+import {
+  seedAnswer,
+  predictStartX,
+  graphInitial,
+  lerp,
+  isTweenable,
+  lerpAnswer,
+  DEFAULT_SECANT_CAPTIONS,
+} from "./lessonPlayerHelpers";
+import { LockedPart, type SolvedPartSnapshot } from "./LockedPart";
+import { usePracticeScore } from "./usePracticeScore";
 
 interface LessonPlayerProps {
   lesson: Lesson;
@@ -337,10 +77,6 @@ export function LessonPlayer({
   // above the active one so the question reads as one scrollable thread.
   const [solvedParts, setSolvedParts] = useState<SolvedPartSnapshot[]>([]);
   const [answer, setAnswer] = useState<unknown>(undefined);
-  const graphInitial = (s: Step) =>
-    s.interaction?.graph?.initialSlider ??
-    s.interaction?.graph?.sliderMin ??
-    0;
   const [graphValue, setGraphValue] = useState<number>(() =>
     graphInitial(lesson.steps[initialStepIndex]),
   );
@@ -384,15 +120,9 @@ export function LessonPlayer({
   // position even when the learner advances mid-animation.
   const graphValueRef = useRef(graphValue);
 
-  // Practice scoring: each question counts toward the score only on its first
-  // submission, so "Try Again" retries don't inflate the result.
-  const scoredStepIds = useRef<Set<string>>(new Set());
-  const correctFirstTry = useRef(0);
-  // Per-concept first-try tally for this practice/review session, folded into
-  // the learner's lifetime mastery on the results screen.
-  const conceptResults = useRef<Record<string, ConceptSessionResult>>({});
-  // Flat XP earned this session for multi-part questions cleared first-try.
-  const bonusXp = useRef(0);
+  // Practice/review scoring (first-try count, bonus XP, per-concept tally), read
+  // once when the session ends.
+  const { record: scoreQuestion, result: getPracticeResult } = usePracticeScore();
   // Wrong submissions across every part of the current step, so a multi-part
   // question is "first try" only when no part was missed.
   const wrongCount = useRef(0);
@@ -603,28 +333,12 @@ export function LessonPlayer({
       const firstTry = wrongCount.current === 0;
 
       if (practiceMode) {
-        if (!scoredStepIds.current.has(step.id)) {
-          scoredStepIds.current.add(step.id);
-          if (firstTry) {
-            correctFirstTry.current += 1;
-            // A multi-part question still counts as one question, but earns a
-            // flat bonus when cleared on the first try.
-            if (multiPart) bonusXp.current += XP_PER_MULTIPART_BONUS;
-          }
-          // Tally this question against its concept so the session can feed
-          // mastery. Counts the question once (first submission), first-try or not.
-          const tag = step.conceptTag;
-          if (tag) {
-            const prev = conceptResults.current[tag] ?? {
-              seen: 0,
-              firstTryCorrect: 0,
-            };
-            conceptResults.current[tag] = {
-              seen: prev.seen + 1,
-              firstTryCorrect: prev.firstTryCorrect + (firstTry ? 1 : 0),
-            };
-          }
-        }
+        scoreQuestion({
+          stepId: step.id,
+          conceptTag: step.conceptTag,
+          firstTry,
+          multiPart,
+        });
         return;
       }
 
@@ -660,6 +374,7 @@ export function LessonPlayer({
       updateStepProgress,
       recordAnswer,
       lesson.id,
+      scoreQuestion,
     ],
   );
 
@@ -729,21 +444,12 @@ export function LessonPlayer({
 
   const goToNextStep = useCallback(() => {
     if (stepIndex >= total - 1) {
-      onComplete(
-        practiceMode
-          ? {
-              correct: correctFirstTry.current,
-              total,
-              bonusXp: bonusXp.current,
-              conceptResults: conceptResults.current,
-            }
-          : undefined,
-      );
+      onComplete(practiceMode ? getPracticeResult(total) : undefined);
     } else {
       setMaxReachedIndex((m) => Math.max(m, stepIndex + 1));
       goToStep(stepIndex + 1);
     }
-  }, [stepIndex, total, onComplete, practiceMode, goToStep]);
+  }, [stepIndex, total, onComplete, practiceMode, goToStep, getPracticeResult]);
 
   const goToPrevStep = useCallback(() => {
     goToStep(stepIndex - 1);

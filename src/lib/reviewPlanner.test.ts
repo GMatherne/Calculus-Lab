@@ -5,7 +5,7 @@ import {
 } from "./reviewPlanner";
 import { getConceptCatalog, type ConceptCatalogEntry } from "./masteryService";
 import { getPublishedLessons, getPracticeBank } from "./contentLoader";
-import { REVIEW_SESSION_SIZE } from "../types/content";
+import { REVIEW_SESSION_SIZE } from "./constants";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const catalog = getConceptCatalog();

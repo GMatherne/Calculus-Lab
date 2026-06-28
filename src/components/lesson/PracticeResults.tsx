@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import type { PracticeResult } from "../../types/content";
-import { XP_PER_PRACTICE_CORRECT } from "../../types/content";
+import { XP_PER_PRACTICE_CORRECT } from "../../lib/constants";
 import { useProgress } from "../../contexts/ProgressContext";
 import { useCountUp } from "../../hooks/useCountUp";
 import { playSound } from "../../lib/sound";

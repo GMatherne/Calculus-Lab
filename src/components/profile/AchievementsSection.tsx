@@ -8,7 +8,7 @@ import {
   milestoneProgress,
   type MilestoneDef,
   type MilestoneStats,
-} from "../../types/content";
+} from "../../lib/milestones";
 
 function unitFor(def: MilestoneDef): string {
   switch (def.metric) {

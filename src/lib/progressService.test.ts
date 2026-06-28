@@ -13,9 +13,9 @@ import { getLesson, getPublishedLessons } from "./contentLoader";
 import type {
   ConceptStat,
   LessonProgress,
-  MilestoneStats,
   UserProfile,
 } from "../types/content";
+import type { MilestoneStats } from "./milestones";
 
 function baseProfile(overrides: Partial<UserProfile> = {}): UserProfile {
   return {

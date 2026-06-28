@@ -3,17 +3,18 @@ import type {
   ConceptStat,
   Lesson,
   LessonProgress,
-  MilestoneStats,
   StreakData,
   UserProfile,
 } from "../types/content";
 import {
   MILESTONE_DEFS,
-  isInstructionStep,
   milestoneProgress,
-} from "../types/content";
+  type MilestoneStats,
+} from "./milestones";
+import { isInstructionStep } from "./stepHelpers";
 import { getConceptMastery } from "./masteryService";
 import { getPublishedLessons } from "./contentLoader";
+import { isLessonComplete } from "./lessonStatus";
 import { useLocalPersistence, db } from "./firebase";
 import {
   doc,
@@ -118,10 +119,9 @@ export function computeLongestStreak(
   return longest;
 }
 
-/** Status values that mean a lesson has been finished. */
-export function isLessonComplete(status: string | undefined): boolean {
-  return status === "complete" || status === "mastered";
-}
+// Re-exported for the many call sites that already import it from here (e.g.
+// ProgressContext's `isLessonDone`); the definition now lives in `lessonStatus`.
+export { isLessonComplete };
 
 /**
  * The next persisted status and step pointer after answering a question.

@@ -1,18 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
+import { prefersReducedMotion } from "../lib/reducedMotion";
 
 const KEY_BASE = "derivatives_sound_enabled";
 
 function storageKey(uid?: string): string {
   return uid ? `${KEY_BASE}_${uid}` : KEY_BASE;
-}
-
-function prefersReducedMotion(): boolean {
-  return (
-    typeof window !== "undefined" &&
-    typeof window.matchMedia === "function" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches
-  );
 }
 
 /**

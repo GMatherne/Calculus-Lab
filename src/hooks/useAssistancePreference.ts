@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import type { AssistanceLevel } from "../types/content";
-import { DEFAULT_ASSISTANCE_LEVEL } from "../types/content";
+import { DEFAULT_ASSISTANCE_LEVEL } from "../lib/constants";
 import { useAuth } from "../contexts/AuthContext";
 
 const KEY_BASE = "derivatives_assistance_level";

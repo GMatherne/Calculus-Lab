@@ -67,7 +67,6 @@ interface ProgressContextValue {
   completeAllLessons: () => Promise<void>;
   /** Dev/testing only: wipe all progress and reset streak/milestones. */
   resetProgress: () => Promise<void>;
-  refresh: () => Promise<void>;
 }
 
 export const ProgressContext = createContext<ProgressContextValue | null>(null);

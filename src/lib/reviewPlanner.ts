@@ -1,5 +1,5 @@
 import type { ConceptMastery, Step } from "../types/content";
-import { REVIEW_SESSION_SIZE } from "../types/content";
+import { REVIEW_SESSION_SIZE } from "./constants";
 import { getConceptMastery, type ConceptStatMap } from "./masteryService";
 import { getReviewBank, shuffle } from "./contentLoader";
 

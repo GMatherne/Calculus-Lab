@@ -12,7 +12,7 @@ export function fmtNum(n: number): string {
 }
 
 /** Pick a "nice" tick spacing (1, 2, 5 x 10^n) for a given range. */
-export function niceStep(range: number, target = 5): number {
+function niceStep(range: number, target = 5): number {
   if (range <= 0) return 1;
   const raw = range / target;
   const mag = 10 ** Math.floor(Math.log10(raw));

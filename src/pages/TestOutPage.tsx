@@ -6,13 +6,11 @@ import {
   getLevelStatus,
   getLevelTestOutSession,
 } from "../lib/contentLoader";
-import type { Lesson, PracticeResult } from "../types/content";
-import { TEST_OUT_PASS_RATIO } from "../types/content";
+import { TEST_OUT_PASS_RATIO } from "../lib/constants";
 import { useProgress } from "../contexts/ProgressContext";
-import { LessonPlayer } from "../components/lesson/LessonPlayer";
 import { TestOutResults } from "../components/lesson/TestOutResults";
-import { ConfirmDialog } from "../components/common/ConfirmDialog";
-import { useSessionExitGuard } from "../hooks/useSessionExitGuard";
+import { SessionRunner } from "../components/lesson/SessionRunner";
+import { useQuizSession } from "../hooks/useQuizSession";
 import { AppHeader } from "../components/layout/AppHeader";
 import { SafeArea } from "../components/layout/SafeArea";
 import { Icon } from "../components/common/Icon";
@@ -22,16 +20,8 @@ export function TestOutPage() {
   const { progress, loading: progressLoading } = useProgress();
   const level = levelId ? getLevel(levelId) : undefined;
 
-  const [result, setResult] = useState<PracticeResult | null>(null);
+  // The intro must be dismissed before the player runs; gates the exit guard too.
   const [started, setStarted] = useState(false);
-  // Bumping this re-samples a fresh coverage set and remounts the player.
-  const [attempt, setAttempt] = useState(0);
-
-  const sessionSteps = useMemo(
-    () => (levelId ? getLevelTestOutSession(levelId) : []),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [levelId, attempt],
-  );
 
   const title = level?.title ?? "";
 
@@ -46,29 +36,16 @@ export function TestOutPage() {
   const alreadyComplete =
     !!level && getLevelStatus(level, progress) === "complete";
 
-  // Synthetic lesson so the player runs the coverage set in practice mode
-  // without touching any real lesson's saved progress (the same trick the
-  // review pages use).
-  const testLesson: Lesson | undefined = useMemo(
-    () =>
-      sessionSteps.length > 0
-        ? {
-            id: `${levelId}-test-out`,
-            title: `Skip ahead: ${title}`,
-            order: 0,
-            estimatedMinutes: 0,
-            conceptTags: [],
-            published: true,
-            steps: sessionSteps,
-          }
-        : undefined,
-    [sessionSteps, levelId, title],
-  );
-
-  // Active only while the player is on screen — the learner has started and the
-  // session hasn't reached its results. Warn before abandoning it.
-  const sessionActive = started && !!testLesson && result === null;
-  const exitGuard = useSessionExitGuard(sessionActive);
+  const session = useQuizSession({
+    ready: started,
+    lesson: {
+      id: `${levelId ?? "level"}-test-out`,
+      title: `Skip ahead: ${title}`,
+      order: 0,
+    },
+    buildSteps: () => (levelId ? getLevelTestOutSession(levelId) : []),
+    resampleKey: [levelId],
+  });
 
   if (!level) {
     return (
@@ -98,24 +75,20 @@ export function TestOutPage() {
   // The results screen is checked before the redirect below, so passing (which
   // marks the level's lessons complete and flips `alreadyComplete`) still lands
   // on the celebration screen instead of bouncing to the roadmap.
-  if (result) {
+  if (session.result) {
     return (
       <TestOutResults
-        result={result}
+        result={session.result}
         title={title}
         lessonIds={lessonIds}
         learnHref={learnHref}
-        onRetry={() => {
-          setResult(null);
-          setStarted(true);
-          setAttempt((a) => a + 1);
-        }}
+        onRetry={session.retry}
       />
     );
   }
 
   // Already complete, or not enough questions to certify: nothing to do here.
-  if (alreadyComplete || !eligible || !testLesson) {
+  if (alreadyComplete || !eligible || !session.lesson) {
     return <Navigate to="/lessons" replace />;
   }
 
@@ -133,8 +106,8 @@ export function TestOutPage() {
           <p className="text-sm font-semibold text-indigo-600">Skip ahead</p>
           <h1 className="mt-1 text-2xl font-bold text-slate-900">{title}</h1>
           <p className="mt-3 text-slate-500">
-            Answer {sessionSteps.length}{" "}
-            {sessionSteps.length === 1 ? "question" : "questions"} covering this
+            Answer {session.steps.length}{" "}
+            {session.steps.length === 1 ? "question" : "questions"} covering this
             level's lessons. Score {passPercent}% or higher on your first try and
             we'll mark every lesson in it complete and unlock the next level — no
             walkthrough needed.
@@ -165,27 +138,13 @@ export function TestOutPage() {
   }
 
   return (
-    <SafeArea>
-      <AppHeader />
-      <main className="flex-1 flex flex-col px-4 py-4 max-w-3xl mx-auto w-full min-h-0">
-        <LessonPlayer
-          key={`${testLesson.id}-${attempt}`}
-          lesson={testLesson}
-          practiceMode
-          onComplete={(r) =>
-            setResult(r ?? { correct: 0, total: sessionSteps.length })
-          }
-        />
-      </main>
-      <ConfirmDialog
-        open={exitGuard.open}
-        title="Leave these questions?"
-        message="You'll lose your progress in this attempt. Are you sure you want to leave?"
-        confirmLabel="Leave"
-        cancelLabel="Keep going"
-        onConfirm={exitGuard.confirmLeave}
-        onCancel={exitGuard.cancelLeave}
-      />
-    </SafeArea>
+    <SessionRunner
+      lesson={session.lesson}
+      playerKey={session.playerKey}
+      onComplete={session.complete}
+      exitGuard={session.exitGuard}
+      leaveTitle="Leave these questions?"
+      leaveMessage="You'll lose your progress in this attempt. Are you sure you want to leave?"
+    />
   );
 }

@@ -1,21 +1,63 @@
+import { lazy, Suspense, type ReactElement } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthProvider";
 import { ProgressProvider } from "./contexts/ProgressProvider";
 import { SessionInsightsProvider } from "./contexts/SessionInsightsProvider";
 import { SoundProvider } from "./contexts/SoundProvider";
-import { LandingPage } from "./pages/LandingPage";
-import { LoginPage } from "./pages/LoginPage";
-import { SignupPage } from "./pages/SignupPage";
-import { RoadmapPage } from "./pages/RoadmapPage";
-import { ProfilePage } from "./pages/ProfilePage";
-import { LessonPage } from "./pages/LessonPage";
-import { PracticePage } from "./pages/PracticePage";
-import { ReviewPage } from "./pages/ReviewPage";
-import { CustomPracticePage } from "./pages/CustomPracticePage";
-import { LevelReviewPage } from "./pages/LevelReviewPage";
-import { TestOutPage } from "./pages/TestOutPage";
-import { SettingsPage } from "./pages/SettingsPage";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
+
+// Pages are code-split per route so the initial bundle stays small: each page
+// (and its heavy dependencies — the lesson player pulls in math.js + KaTeX) is
+// fetched on first navigation rather than up front. The pages use named exports,
+// so each import is mapped to a `default` for React.lazy.
+const LandingPage = lazy(() =>
+  import("./pages/LandingPage").then((m) => ({ default: m.LandingPage })),
+);
+const LoginPage = lazy(() =>
+  import("./pages/LoginPage").then((m) => ({ default: m.LoginPage })),
+);
+const SignupPage = lazy(() =>
+  import("./pages/SignupPage").then((m) => ({ default: m.SignupPage })),
+);
+const RoadmapPage = lazy(() =>
+  import("./pages/RoadmapPage").then((m) => ({ default: m.RoadmapPage })),
+);
+const ProfilePage = lazy(() =>
+  import("./pages/ProfilePage").then((m) => ({ default: m.ProfilePage })),
+);
+const LessonPage = lazy(() =>
+  import("./pages/LessonPage").then((m) => ({ default: m.LessonPage })),
+);
+const PracticePage = lazy(() =>
+  import("./pages/PracticePage").then((m) => ({ default: m.PracticePage })),
+);
+const ReviewPage = lazy(() =>
+  import("./pages/ReviewPage").then((m) => ({ default: m.ReviewPage })),
+);
+const CustomPracticePage = lazy(() =>
+  import("./pages/CustomPracticePage").then((m) => ({
+    default: m.CustomPracticePage,
+  })),
+);
+const LevelReviewPage = lazy(() =>
+  import("./pages/LevelReviewPage").then((m) => ({ default: m.LevelReviewPage })),
+);
+const TestOutPage = lazy(() =>
+  import("./pages/TestOutPage").then((m) => ({ default: m.TestOutPage })),
+);
+const SettingsPage = lazy(() =>
+  import("./pages/SettingsPage").then((m) => ({ default: m.SettingsPage })),
+);
+
+/** Shown briefly while a route's code chunk loads; sized to avoid layout jump. */
+function RouteFallback() {
+  return <div className="min-h-dvh" aria-busy="true" />;
+}
+
+/** Wrap a route element in a Suspense boundary for its lazy page chunk. */
+const page = (node: ReactElement): ReactElement => (
+  <Suspense fallback={<RouteFallback />}>{node}</Suspense>
+);
 
 // A data router (rather than the component <BrowserRouter>) so route components
 // can use useBlocker to guard navigation away from an unfinished session.
@@ -23,79 +65,79 @@ import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 // re-renders; the providers stay above <RouterProvider> so route elements still
 // see Auth/Progress context when rendered.
 const router = createBrowserRouter([
-  { path: "/", element: <LandingPage /> },
-  { path: "/login", element: <LoginPage /> },
-  { path: "/signup", element: <SignupPage /> },
+  { path: "/", element: page(<LandingPage />) },
+  { path: "/login", element: page(<LoginPage />) },
+  { path: "/signup", element: page(<SignupPage />) },
   {
     path: "/lessons",
-    element: (
+    element: page(
       <ProtectedRoute>
         <RoadmapPage />
-      </ProtectedRoute>
+      </ProtectedRoute>,
     ),
   },
   {
     path: "/profile",
-    element: (
+    element: page(
       <ProtectedRoute>
         <ProfilePage />
-      </ProtectedRoute>
+      </ProtectedRoute>,
     ),
   },
   {
     path: "/lesson/:lessonId",
-    element: (
+    element: page(
       <ProtectedRoute>
         <LessonPage />
-      </ProtectedRoute>
+      </ProtectedRoute>,
     ),
   },
   {
     path: "/lesson/:lessonId/practice",
-    element: (
+    element: page(
       <ProtectedRoute>
         <PracticePage />
-      </ProtectedRoute>
+      </ProtectedRoute>,
     ),
   },
   {
     path: "/level/:levelId/test-out",
-    element: (
+    element: page(
       <ProtectedRoute>
         <TestOutPage />
-      </ProtectedRoute>
+      </ProtectedRoute>,
     ),
   },
   {
     path: "/review",
-    element: (
+    element: page(
       <ProtectedRoute>
         <ReviewPage />
-      </ProtectedRoute>
+      </ProtectedRoute>,
     ),
   },
   {
     path: "/practice/custom",
-    element: (
+    element: page(
       <ProtectedRoute>
         <CustomPracticePage />
-      </ProtectedRoute>
+      </ProtectedRoute>,
     ),
   },
   {
     path: "/level/:levelId/review",
-    element: (
+    element: page(
       <ProtectedRoute>
         <LevelReviewPage />
-      </ProtectedRoute>
+      </ProtectedRoute>,
     ),
   },
   {
     path: "/settings",
-    element: (
+    element: page(
       <ProtectedRoute>
         <SettingsPage />
-      </ProtectedRoute>
+      </ProtectedRoute>,
     ),
   },
 ]);

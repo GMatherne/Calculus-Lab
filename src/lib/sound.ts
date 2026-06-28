@@ -213,10 +213,6 @@ export function setSoundEnabled(value: boolean): void {
   enabled = value;
 }
 
-export function isSoundEnabled(): boolean {
-  return enabled;
-}
-
 /**
  * Resume the shared AudioContext, creating it if needed. Browsers start audio
  * suspended until a user gesture, so the SoundProvider calls this on the first
