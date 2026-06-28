@@ -10,6 +10,7 @@ import {
 import type { GraphConfig } from "../../types/content";
 import { evalFunction, secantSlope, derivativeAt } from "../../lib/feedbackEngine";
 import { MathBlock } from "./MathBlock";
+import { clamp, fmtNum, makeToSvg, ticksFor } from "./plotGeometry";
 
 /** A reveal overlay for a committed prediction: the true feature at `x`. */
 export interface GraphReveal {
@@ -32,15 +33,18 @@ interface GraphWidgetProps {
   onPointClick?: (x: number) => void;
   /** x-coordinate of the learner's current tap selection, drawn as a marker. */
   selectedX?: number | null;
-  /**
-   * Shade a target window [lo, hi] in x as a goal zone; the moving point turns
-   * green while it sits inside. Used by live ("drag until …") steps.
-   */
-  targetBand?: { lo: number; hi: number } | null;
   /** Force the satisfied (green) styling on the moving point, e.g. on live-confirm. */
   satisfied?: boolean;
   /** Allow dragging a marker along the curve (predict_point steps). */
   draggablePoint?: boolean;
+  /**
+   * Explore mode: let the learner drag the moving (slider) point directly along
+   * the curve, in addition to the range slider, so they can scrub the
+   * tangent/secant readout by dragging the plot. Purely exploratory — it moves
+   * the same value the slider does and never grades. Used by `graph.explore`
+   * steps whose graded answer is a separate multiple_choice/numeric.
+   */
+  exploreDrag?: boolean;
   /** Current x of the draggable predict marker. */
   predictX?: number | null;
   /** Called with the x as the learner drags the predict marker. */
@@ -50,16 +54,6 @@ interface GraphWidgetProps {
 }
 
 const PAD = 44;
-
-function clamp(v: number, lo: number, hi: number): number {
-  return Math.min(Math.max(v, lo), hi);
-}
-
-/** Format a number for readouts: round to 2 dp and drop trailing zeros. */
-function fmtNum(n: number): string {
-  if (!Number.isFinite(n)) return "—";
-  return String(parseFloat(n.toFixed(2)));
-}
 
 /**
  * Substitute the current x into a slope label written in function notation
@@ -73,26 +67,6 @@ function withCurrentX(label: string, varName: string, xStr: string): string {
   return label.replace(new RegExp(`\\b${escaped}\\b`, "g"), () => xStr);
 }
 
-/** Pick a "nice" tick spacing (1, 2, 5 x 10^n) for a given range. */
-function niceStep(range: number, target = 5): number {
-  if (range <= 0) return 1;
-  const raw = range / target;
-  const mag = 10 ** Math.floor(Math.log10(raw));
-  const norm = raw / mag;
-  const step = norm < 1.5 ? 1 : norm < 3 ? 2 : norm < 7 ? 5 : 10;
-  return step * mag;
-}
-
-function ticksFor(min: number, max: number): number[] {
-  const step = niceStep(max - min);
-  const start = Math.ceil(min / step) * step;
-  const out: number[] = [];
-  for (let v = start; v <= max + 1e-9; v += step) {
-    out.push(Math.abs(v) < 1e-9 ? 0 : parseFloat(v.toFixed(6)));
-  }
-  return out;
-}
-
 export function GraphWidget({
   config,
   onSliderChange,
@@ -100,9 +74,9 @@ export function GraphWidget({
   showSlider = true,
   onPointClick,
   selectedX,
-  targetBand,
   satisfied,
   draggablePoint,
+  exploreDrag,
   predictX,
   onPredictDrag,
   reveal,
@@ -186,11 +160,13 @@ export function GraphWidget({
   const yMin = config.yDomain ? config.yDomain[0] : lo - (lo < 0 ? padY : 0);
   const yMax = config.yDomain ? config.yDomain[1] : hi + padY;
 
-  const toSvg = (x: number, y: number) => {
-    const sx = PAD + ((x - d0) / (d1 - d0)) * (size.w - 2 * PAD);
-    const sy = size.h - PAD - ((y - yMin) / (yMax - yMin)) * (size.h - 2 * PAD);
-    return { sx, sy };
-  };
+  const toSvg = makeToSvg({
+    domain: [d0, d1],
+    range: [yMin, yMax],
+    width: size.w,
+    height: size.h,
+    pad: PAD,
+  });
 
   // Map a pointer's screen x to a clamped data x, shared by tap-the-point clicks
   // and the draggable predict marker.
@@ -238,6 +214,22 @@ export function GraphWidget({
   };
   const handlePredictUp = () => {
     if (dragging) setDragging(false);
+  };
+
+  // Explore-drag handlers slide the moving point along the curve directly, so the
+  // learner can scrub the tangent/secant readout by dragging the plot. They drive
+  // the slider value (which also fires onSliderChange) and never grade anything.
+  const handleExploreDown = (e: ReactPointerEvent<SVGSVGElement>) => {
+    if (!exploreDrag) return;
+    e.preventDefault();
+    e.currentTarget.setPointerCapture?.(e.pointerId);
+    setDragging(true);
+    setSlider(dataXFromClient(e.clientX));
+  };
+  const handleExploreMove = (e: ReactPointerEvent<SVGSVGElement>) => {
+    if (!dragging || !exploreDrag) return;
+    e.preventDefault();
+    setSlider(dataXFromClient(e.clientX));
   };
 
   const pathD = points
@@ -409,18 +401,9 @@ export function GraphWidget({
       return [{ x: cx, sx, sy, isSel }];
     }) ?? [];
 
-  // Goal zone for live "drag until …" steps: a shaded x-window the moving point
-  // must land in. The point goes green while it's inside (or when forced via
-  // `satisfied`), giving feedback during the drag instead of only on submit.
-  const inBand =
-    targetBand != null && x1 >= targetBand.lo && x1 <= targetBand.hi;
-  const pointSatisfied = satisfied === true || inBand;
-  let bandRect: { x: number; w: number } | null = null;
-  if (targetBand) {
-    const sxLo = toSvg(clamp(targetBand.lo, d0, d1), 0).sx;
-    const sxHi = toSvg(clamp(targetBand.hi, d0, d1), 0).sx;
-    bandRect = { x: Math.min(sxLo, sxHi), w: Math.max(Math.abs(sxHi - sxLo), 2) };
-  }
+  // The moving point shows its green "satisfied" styling only once the step is
+  // actually solved (live-confirm) or the answer is revealed.
+  const pointSatisfied = satisfied === true;
 
   // The predict marker, drawn on the curve at the learner's current guess. Shown
   // whenever a guess exists (so it stays visible next to the reveal after a
@@ -504,13 +487,27 @@ export function GraphWidget({
         height={size.h}
         viewBox={`0 0 ${size.w} ${size.h}`}
         onClick={onPointClick ? handlePlotClick : undefined}
-        onPointerDown={draggablePoint ? handlePredictDown : undefined}
-        onPointerMove={draggablePoint ? handlePredictMove : undefined}
-        onPointerUp={draggablePoint ? handlePredictUp : undefined}
-        onPointerCancel={draggablePoint ? handlePredictUp : undefined}
-        style={draggablePoint ? { touchAction: "none" } : undefined}
-        className={`rounded-xl bg-slate-50 border border-slate-200 overflow-hidden${
+        onPointerDown={
           draggablePoint
+            ? handlePredictDown
+            : exploreDrag
+              ? handleExploreDown
+              : undefined
+        }
+        onPointerMove={
+          draggablePoint
+            ? handlePredictMove
+            : exploreDrag
+              ? handleExploreMove
+              : undefined
+        }
+        onPointerUp={draggablePoint || exploreDrag ? handlePredictUp : undefined}
+        onPointerCancel={
+          draggablePoint || exploreDrag ? handlePredictUp : undefined
+        }
+        style={draggablePoint || exploreDrag ? { touchAction: "none" } : undefined}
+        className={`rounded-xl bg-slate-50 border border-slate-200 overflow-hidden${
+          draggablePoint || exploreDrag
             ? dragging
               ? " cursor-grabbing"
               : " cursor-grab"
@@ -563,18 +560,6 @@ export function GraphWidget({
             />
           );
         })}
-
-        {/* target goal zone for live "drag until …" steps */}
-        {bandRect && (
-          <rect
-            x={bandRect.x}
-            y={PAD}
-            width={bandRect.w}
-            height={Math.max(size.h - 2 * PAD, 0)}
-            fill="#10b981"
-            fillOpacity={0.12}
-          />
-        )}
 
         {/* x-axis */}
         <line
@@ -717,6 +702,56 @@ export function GraphWidget({
             strokeDasharray="6 4"
           />
         )}
+
+        {/* Rise/run triangle for the "rate of change" walkthrough: the run (Δx)
+            along the fixed point's height and the rise (Δy) up to the moving
+            point, so slope reads visibly as Δy / Δx. */}
+        {showSlider &&
+          config.showSecant !== false &&
+          config.showSecantRiseRun &&
+          x1 !== x0 && (
+            <g className="secant-reveal">
+              <line
+                x1={p0.sx}
+                y1={p0.sy}
+                x2={p1.sx}
+                y2={p0.sy}
+                stroke="#4f46e5"
+                strokeWidth={2}
+                strokeDasharray="5 3"
+              />
+              <line
+                x1={p1.sx}
+                y1={p0.sy}
+                x2={p1.sx}
+                y2={p1.sy}
+                stroke="#e11d48"
+                strokeWidth={2}
+                strokeDasharray="5 3"
+              />
+              <text
+                x={(p0.sx + p1.sx) / 2}
+                y={p0.sy + 16}
+                textAnchor="middle"
+                fontSize={12}
+                fontWeight={600}
+                fill="#4f46e5"
+              >
+                Δx = {fmtNum(x1 - x0)}
+              </text>
+              <text
+                x={p1.sx + 8}
+                y={(p0.sy + p1.sy) / 2}
+                textAnchor="start"
+                dominantBaseline="middle"
+                fontSize={12}
+                fontWeight={600}
+                fill="#e11d48"
+              >
+                Δy = {fmtNum(y1 - y0)}
+              </text>
+            </g>
+          )}
 
         {showSlider && tanA && tanB && (
           <line
@@ -946,12 +981,25 @@ export function GraphWidget({
 
       {showSlider &&
         (config.showSecant !== false || config.showTangent) &&
-        config.showSlopeValue !== false && (
+        config.showSlopeValue !== false &&
+        !config.showSecantRiseRun && (
           <p className="text-sm text-slate-600 font-mono">
             {slopeLabelText}
             {slopeSep}
             <strong>{slopeDisplay}</strong>
           </p>
+        )}
+
+      {/* Rate-of-change readout for the rise/run walkthrough: slope as Δy / Δx. */}
+      {showSlider &&
+        config.showSecant !== false &&
+        config.showSecantRiseRun &&
+        x1 !== x0 && (
+          <div className="secant-reveal text-center text-base text-slate-800">
+            <MathBlock
+              latex={`\\text{${rawSlopeLabel}} = \\dfrac{\\Delta y}{\\Delta x} = \\dfrac{${fmtNum(y1 - y0)}}{${fmtNum(x1 - x0)}} = ${fmtNum((y1 - y0) / (x1 - x0))}`}
+            />
+          </div>
         )}
 
       {showSlider &&

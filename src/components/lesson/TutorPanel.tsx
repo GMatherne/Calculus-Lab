@@ -14,9 +14,8 @@ import {
 import { getConceptInsight } from "../../lib/learnerInsights";
 import { useProgress } from "../../contexts/ProgressContext";
 import { useSessionInsights } from "../../contexts/SessionInsightsContext";
-import { RichText } from "../widgets/MathBlock";
 import { Icon } from "../common/Icon";
-import { stripListMarker } from "../../lib/inlineMarkup";
+import { TutorText } from "../tutor/TutorText";
 
 /** Shown when the per-user tutor rate limit (or an upstream provider limit) is hit. */
 const QUOTA_MESSAGE =
@@ -39,25 +38,8 @@ interface Turn {
   text: string;
 }
 
-/** Render tutor text: split into lines, each with inline math + light Markdown. */
-function TutorText({ text }: { text: string }) {
-  const lines = text
-    .split(/\n+/)
-    .map((l) => stripListMarker(l).trim())
-    .filter((l) => l.length > 0);
-  return (
-    <div className="space-y-1.5">
-      {lines.map((line, i) => (
-        <p key={i}>
-          <RichText text={line} />
-        </p>
-      ))}
-    </div>
-  );
-}
-
 export function TutorPanel({ step, answer, attempts, isCorrect }: TutorPanelProps) {
-  const { progress } = useProgress();
+  const { progress, profile } = useProgress();
   const { getSessionMisses } = useSessionInsights();
   const [phase, setPhase] = useState<Phase>("idle");
   const [explanation, setExplanation] = useState("");
@@ -76,7 +58,7 @@ export function TutorPanel({ step, answer, attempts, isCorrect }: TutorPanelProp
   // Assemble the learner-history signals that personalize the tutor: concept
   // mastery + recency from saved progress, plus what's been missed this session.
   const buildHistory = useCallback((): LearnerHistory => {
-    const insight = getConceptInsight(progress, step.conceptTag);
+    const insight = getConceptInsight(progress, step.conceptTag, profile?.conceptStats);
     const misses = getSessionMisses();
     const concept = step.conceptTag;
     const thisConceptTotal = concept
@@ -98,7 +80,7 @@ export function TutorPanel({ step, answer, attempts, isCorrect }: TutorPanelProp
         .filter((m) => m.concept !== concept)
         .map((m) => ({ label: m.label, count: m.count })),
     };
-  }, [progress, getSessionMisses, step.conceptTag, isCorrect]);
+  }, [progress, profile?.conceptStats, getSessionMisses, step.conceptTag, isCorrect]);
 
   const start = useCallback(async () => {
     const runId = ++runIdRef.current;

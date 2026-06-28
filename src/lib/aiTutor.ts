@@ -65,10 +65,32 @@ export interface TutorContext {
   attempts: number;
   /** The engine's verdict — the model is told this, never asked to decide it. */
   isCorrect: boolean;
-  /** The hand-authored feedback strings for this step. */
+  /**
+   * The hand-authored feedback strings for this step. Beyond seeding tone, these
+   * are the tutor's canonical, level-appropriate solution: the proxy feeds them
+   * to the model as the method to explain with, so the tutor stays within what
+   * the student has been taught (e.g. geometric area before the reverse power
+   * rule) instead of reaching for more advanced techniques.
+   */
   authoredFeedback: { correct: string; incorrect: string; hint: string };
   /** Optional learner-history signals for personalization (see LearnerHistory). */
   history?: LearnerHistory;
+}
+
+/**
+ * Light, PII-free personalization for the free-form roadmap chat (see {@link
+ * createGeneralTutorChat}). Unlike {@link TutorContext} it isn't tied to any
+ * graded step — it carries only coarse signals about where the learner is and
+ * what they're shakiest on, so the tutor can tailor suggestions. Mirrors the
+ * proxy's own `GeneralContext` DTO.
+ */
+export interface GeneralContext {
+  /** Title of the level the learner is currently working through. */
+  currentLevelTitle?: string;
+  /** A few concepts with the lowest first-try accuracy, most shaky first. */
+  weakConcepts?: { label: string; percent: number }[];
+  /** Overall course completion, 0–100. */
+  completionPercent?: number;
 }
 
 /** Flatten content blocks to plain text, wrapping math blocks in inline `$…$`. */
@@ -99,8 +121,17 @@ function optionAt(options: string[] | undefined, index: unknown): string {
   return options[index];
 }
 
-function formatPowerTerm(coefficient: number, exponent: number): string {
+function formatPowerTerm(
+  coefficient: number,
+  exponent: number,
+  denominator?: number,
+): string {
   if (coefficient === 0) return "0";
+  // Fraction mode (reverse power rule): write the coefficient as a fraction.
+  if (denominator != null && denominator !== 1) {
+    const x = exponent === 0 ? "" : exponent === 1 ? "x" : `x^${exponent}`;
+    return `(${coefficient}/${denominator})${x}`;
+  }
   if (exponent === 0) return `${coefficient}`;
   if (exponent === 1) return `${coefficient}x`;
   return `${coefficient}x^${exponent}`;
@@ -141,13 +172,18 @@ export function describeAnswer(spec: AnswerSpec, value: unknown): string {
       return n === null ? "(no point selected)" : `x = ${n}`;
     }
     case "power_term": {
-      const v = (value ?? {}) as { coefficient?: number; exponent?: number };
+      const v = (value ?? {}) as {
+        coefficient?: number;
+        exponent?: number;
+        denominator?: number;
+      };
       const coef = Number(v.coefficient);
       const exp = Number(v.exponent);
       if (!Number.isFinite(coef) || !Number.isFinite(exp)) {
         return "(incomplete term)";
       }
-      return formatPowerTerm(coef, exp);
+      const den = spec.denominator != null ? Number(v.denominator) : undefined;
+      return formatPowerTerm(coef, exp, den);
     }
     case "drag_drop": {
       const placed = Array.isArray(value) ? (value as (string | null)[]) : [];
@@ -179,6 +215,50 @@ export function describeAnswer(spec: AnswerSpec, value: unknown): string {
       const n = asFiniteNumber(value);
       return n !== null && n > 0 ? `${Math.round(n)} rectangles` : "(no rectangles)";
     }
+    case "construct_graph": {
+      const ys = Array.isArray(value) ? (value as (number | null)[]) : [];
+      return spec.nodes
+        .map((node, i) => {
+          const y = ys[i];
+          return `x=${node.x}: ${typeof y === "number" ? y : "—"}`;
+        })
+        .join(", ");
+    }
+    case "paint_intervals": {
+      const picks = Array.isArray(value) ? (value as boolean[]) : [];
+      const shaded = picks
+        .map((v, i) => (v ? i + 1 : null))
+        .filter((v): v is number => v !== null);
+      return shaded.length ? `shaded segments ${shaded.join(", ")}` : "(nothing shaded)";
+    }
+    case "tangent_line": {
+      const n = asFiniteNumber(value);
+      return n === null ? "(no line set)" : `slope = ${n}`;
+    }
+    case "integral_bounds": {
+      const v = (value ?? {}) as { a?: number; b?: number };
+      const a = asFiniteNumber(v.a);
+      const b = asFiniteNumber(v.b);
+      if (a === null || b === null) return "(bounds not set)";
+      return `a = ${Math.min(a, b)}, b = ${Math.max(a, b)}`;
+    }
+    case "simulate":
+      return Array.isArray(value) && value.length > 1
+        ? "a real-time traced curve"
+        : "(no run yet)";
+    case "select_region": {
+      if (spec.multi) {
+        const picks = Array.isArray(value) ? (value as boolean[]) : [];
+        const chosen = picks
+          .map((v, i) => (v ? i + 1 : null))
+          .filter((v): v is number => v !== null);
+        return chosen.length ? `regions ${chosen.join(", ")}` : "(no region selected)";
+      }
+      const idx = typeof value === "number" ? value : -1;
+      if (idx < 0 || idx >= spec.bands.length) return "(no region selected)";
+      const b = spec.bands[idx];
+      return `region ${idx + 1} (x from ${b.from} to ${b.to})`;
+    }
     default:
       return "(unknown)";
   }
@@ -197,7 +277,7 @@ export function describeCorrectAnswer(spec: AnswerSpec): string {
     case "graph_point":
       return `x = ${spec.x}`;
     case "power_term":
-      return formatPowerTerm(spec.coefficient, spec.exponent);
+      return formatPowerTerm(spec.coefficient, spec.exponent, spec.denominator);
     case "drag_drop":
       return formatAssembled(
         spec.prefix,
@@ -214,6 +294,34 @@ export function describeCorrectAnswer(spec: AnswerSpec): string {
       return spec.items.join(" → ");
     case "riemann":
       return `true area = ${spec.trueArea} (use enough rectangles to land within ${spec.targetWithin})`;
+    case "construct_graph":
+      return spec.targetFn
+        ? `each point on y = ${spec.targetFn}`
+        : `y-values ${(spec.targetY ?? []).join(", ")}`;
+    case "paint_intervals": {
+      const shaded = spec.correct
+        .map((v, i) => (v ? i + 1 : null))
+        .filter((v): v is number => v !== null);
+      return shaded.length ? `shade segments ${shaded.join(", ")}` : "(shade nothing)";
+    }
+    case "tangent_line":
+      return `slope = ${spec.slope}`;
+    case "integral_bounds":
+      return `a = ${spec.a}, b = ${spec.b}`;
+    case "simulate":
+      return `trace the target ${spec.target} over [0, ${spec.duration}]`;
+    case "select_region": {
+      const correct = spec.bands
+        .map((b, i) => (b.correct ? i + 1 : null))
+        .filter((v): v is number => v !== null);
+      if (spec.multi) {
+        return correct.length ? `regions ${correct.join(", ")}` : "(none)";
+      }
+      const idx = correct[0];
+      if (idx === undefined) return "(none)";
+      const b = spec.bands[idx - 1];
+      return `region ${idx} (x from ${b.from} to ${b.to})`;
+    }
     default:
       return "(unknown)";
   }
@@ -320,13 +428,21 @@ export function isQuotaError(err: unknown): boolean {
 }
 
 /** The request payload POSTed to the tutor proxy. */
-interface TutorPayload {
-  mode: "explain" | "chat";
-  ctx: TutorContext;
-  seedExplanation?: string;
-  history?: { role: "user" | "tutor"; text: string }[];
-  message?: string;
-}
+type TutorPayload =
+  | { mode: "explain"; ctx: TutorContext }
+  | {
+      mode: "chat";
+      ctx: TutorContext;
+      seedExplanation?: string;
+      history?: { role: "user" | "tutor"; text: string }[];
+      message?: string;
+    }
+  | {
+      mode: "general";
+      general?: GeneralContext;
+      history?: { role: "user" | "tutor"; text: string }[];
+      message: string;
+    };
 
 /** The deployed Cloudflare Worker proxy URL (see `tutor-proxy/`). */
 const TUTOR_PROXY_URL = import.meta.env.VITE_TUTOR_PROXY_URL;
@@ -426,6 +542,39 @@ export function createTutorChat(
         seedExplanation,
         history: [...transcript],
         message,
+      })) {
+        acc += piece;
+        yield piece;
+      }
+      transcript.push({ role: "user", text: message });
+      transcript.push({ role: "tutor", text: acc });
+    },
+  };
+}
+
+/**
+ * How many prior turns the client replays on each general-chat send. Bounds the
+ * prompt size (and cost) of a long conversation; the proxy clamps this too.
+ */
+const GENERAL_REPLAY_TURNS = 16;
+
+/**
+ * Create a free-form ("general") roadmap chat. Unlike {@link createTutorChat}
+ * it isn't tied to a graded step — it carries only the optional light learner
+ * context, and the tutor may teach and work examples freely within the course's
+ * scope. The transcript is kept here and the most recent turns are replayed to
+ * the stateless proxy on each send so the conversation stays coherent.
+ */
+export function createGeneralTutorChat(general?: GeneralContext): TutorChat {
+  const transcript: { role: "user" | "tutor"; text: string }[] = [];
+  return {
+    async *send(message: string): AsyncGenerator<string> {
+      let acc = "";
+      for await (const piece of callTutor({
+        mode: "general",
+        history: transcript.slice(-GENERAL_REPLAY_TURNS),
+        message,
+        ...(general ? { general } : {}),
       })) {
         acc += piece;
         yield piece;

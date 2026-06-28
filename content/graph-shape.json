@@ -73,7 +73,27 @@
             "f increases before x = 2 and decreases after it"
           ],
           "correctIndex": 0
+        },
+        "sandbox": {
+          "preset": "shape_explorer",
+          "fn": "x^3 - 3*x",
+          "domain": [-2.5, 2.5],
+          "caption": "Drag the point along this curve: where it climbs, the orange f' rides above 0; where it falls, f' drops below 0, and the bend shows the concavity."
         }
+      },
+      "solution": [
+        { "type": "text", "body": "The slope is $f'(x) = 2x - 4$, which is zero at $x = 2$. Check the sign on each side:" },
+        { "type": "math", "latex": "f'(0) = -4 < 0, \\qquad f'(4) = 4 > 0", "display": true },
+        { "type": "text", "body": "So f decreases before $x = 2$ and increases after it — the first statement." }
+      ],
+      "solveAnimation": {
+        "kind": "narrated",
+        "showSlopeValue": true,
+        "phases": [
+          { "text": "Drag x toward the left: the tangent slopes downhill, so $f'(x) < 0$ and f is falling.", "to": 0.5, "ms": 1600 },
+          { "text": "Cross $x = 2$ — the slope passes through $0$ at the bottom of the dip.", "to": 2, "ms": 1800 },
+          { "text": "Past $x = 2$ the tangent slopes uphill, so $f'(x) > 0$: f decreases, then increases.", "to": 4, "ms": 1800 }
+        ]
       },
       "feedback": {
         "correct": "Right — left of x = 2 the slope is negative, so f is decreasing and the curve falls; right of it the slope is positive, so f is increasing and the curve rises.",
@@ -104,7 +124,26 @@
           "type": "graph_point",
           "x": 2,
           "tolerance": 0.1
+        },
+        "sandbox": {
+          "preset": "slope_explorer",
+          "fn": "x^2",
+          "domain": [-3, 3],
+          "caption": "Drag the point on this different curve — watch the slope go negative, flatten to 0 at the bottom, then turn positive. Now find that flat spot on the real curve yourself."
         }
+      },
+      "solution": [
+        { "type": "text", "body": "The tangent is flat where $f'(x) = 0$. With $f'(x) = 2x - 4$:" },
+        { "type": "math", "latex": "2x - 4 = 0 \\;\\Rightarrow\\; x = 2", "display": true },
+        { "type": "text", "body": "Tap the bottom of the parabola at $x = 2$." }
+      ],
+      "solveAnimation": {
+        "kind": "narrated",
+        "phases": [
+          { "text": "The tangent is flat where $f'(x) = 0$, and here $f'(x) = 2x - 4$." },
+          { "text": "Solve $2x - 4 = 0$ to get $x = 2$ — the bottom of the parabola." }
+        ],
+        "reveal": { "x": 2, "point": true, "tangent": true }
       },
       "feedback": {
         "correct": "Exactly — at x = 2 the tangent is flat, so f'(2) = 0. This is the minimum of the parabola.",
@@ -145,7 +184,27 @@
           "type": "slider",
           "value": 3,
           "tolerance": 0.2
+        },
+        "sandbox": {
+          "preset": "shape_explorer",
+          "fn": "x^3 - 3*x^2",
+          "domain": [-1.5, 3.5],
+          "caption": "Drag the point and read the live tangent slope — that value is f'. Watch the orange f' curve track the steepness as you move along."
         }
+      },
+      "solution": [
+        { "type": "text", "body": "Set the slope formula $f'(x) = 2x - 4$ equal to the target, 2:" },
+        { "type": "math", "latex": "2x - 4 = 2 \\;\\Rightarrow\\; 2x = 6 \\;\\Rightarrow\\; x = 3", "display": true },
+        { "type": "text", "body": "Drag the slider to $x = 3$." }
+      ],
+      "solveAnimation": {
+        "kind": "narrated",
+        "showSlopeValue": true,
+        "phases": [
+          { "text": "The tangent slope at x is $f'(x) = 2x - 4$." },
+          { "text": "Set it equal to the target slope $2$: $2x - 4 = 2$, so $x = 3$." },
+          { "text": "Drag to $x = 3$, where the tangent slope is $2$.", "to": 3, "ms": 1800 }
+        ]
       },
       "feedback": {
         "correct": "Right — f'(x) = 2x − 4 = 2 gives x = 3, where the curve rises with slope 2.",
@@ -178,7 +237,24 @@
           "type": "multiple_choice",
           "options": ["Increasing", "Decreasing", "Constant", "At a maximum"],
           "correctIndex": 0
+        },
+        "sandbox": {
+          "preset": "shape_explorer",
+          "fn": "-x^2 + 4",
+          "domain": [-3, 3],
+          "caption": "Drag the point and watch the orange f' and tangent together: the sign of f' changes exactly as the curve switches between heading uphill and downhill."
         }
+      },
+      "solution": [
+        { "type": "text", "body": "The derivative is the slope of the tangent, and a positive slope points uphill." },
+        { "type": "text", "body": "So wherever $f'(x) > 0$, the function is increasing and the graph rises — the first option." }
+      ],
+      "solveAnimation": {
+        "kind": "narrated",
+        "phases": [
+          { "text": "$f'(x)$ is the slope of the tangent line." },
+          { "text": "A positive slope points uphill, so where $f'(x) > 0$ the function is increasing — the graph rises." }
+        ]
       },
       "feedback": {
         "correct": "Positive derivative → f is increasing, so the graph goes uphill (rises).",
@@ -225,7 +301,26 @@
           "type": "graph_point",
           "x": 2,
           "tolerance": 0.1
+        },
+        "sandbox": {
+          "preset": "shape_explorer",
+          "fn": "-x^3 + 3*x",
+          "domain": [-2.5, 2.5],
+          "caption": "Drag the point on this hill-and-valley curve: the orange f' passes through 0 right where the tangent goes flat at a turning point."
         }
+      },
+      "solution": [
+        { "type": "text", "body": "A turning point — peak or valley — has a flat tangent, so set $f'(x) = 0$. Here $f'(x) = -2x + 4$:" },
+        { "type": "math", "latex": "-2x + 4 = 0 \\;\\Rightarrow\\; x = 2", "display": true },
+        { "type": "text", "body": "Tap the peak at $x = 2$." }
+      ],
+      "solveAnimation": {
+        "kind": "narrated",
+        "phases": [
+          { "text": "A turning point has a flat tangent, so set $f'(x) = 0$. Here $f'(x) = -2x + 4$." },
+          { "text": "Solve $-2x + 4 = 0$ to get $x = 2$ — the peak of the hill." }
+        ],
+        "reveal": { "x": 2, "point": true, "tangent": true }
       },
       "feedback": {
         "correct": "Exactly — at x = 2 the curve peaks and f'(2) = 0. A maximum has a flat tangent, just like a minimum.",
@@ -254,7 +349,25 @@
           "showTangent": true
         },
         "hintAfterAttempts": 1,
-        "answer": { "type": "numeric", "value": -2, "tolerance": 0.01 }
+        "answer": { "type": "numeric", "value": -2, "tolerance": 0.01 },
+        "sandbox": {
+          "preset": "shape_explorer",
+          "fn": "0.25*x^3",
+          "domain": [-3, 3],
+          "caption": "Drag the point — the live tangent slope is f'. See how the orange f' keeps one sign while the curve heads steadily one way, and flips where the direction changes."
+        }
+      },
+      "solution": [
+        { "type": "text", "body": "Substitute $x = 3$ into the slope formula $f'(x) = -2x + 4$:" },
+        { "type": "math", "latex": "f'(3) = -2(3) + 4 = -6 + 4 = -2", "display": true },
+        { "type": "text", "body": "The negative result means f is decreasing — past the peak the curve heads down." }
+      ],
+      "solveAnimation": {
+        "kind": "narrated",
+        "phases": [
+          { "text": "The slope formula is $f'(x) = -2x + 4$; substitute $x = 3$." },
+          { "text": "$f'(3) = -2(3) + 4 = -2$ — negative, so f is falling there." }
+        ]
       },
       "feedback": {
         "correct": "f'(3) = −2(3) + 4 = −2 — negative, so f is decreasing and past the peak the curve is falling.",
@@ -302,6 +415,12 @@
           "points": [2],
           "options": ["Increasing", "Decreasing"],
           "regions": [{ "correctIndex": 1 }, { "correctIndex": 0 }]
+        },
+        "sandbox": {
+          "preset": "shape_explorer",
+          "fn": "x^3 - 3*x",
+          "domain": [-2.5, 2.5],
+          "caption": "Drag along this curve and watch the orange f': it sits above 0 where the curve rises and dips below 0 where it falls."
         }
       },
       "feedback": {
@@ -327,6 +446,12 @@
           "points": [-1, 1],
           "options": ["Increasing", "Decreasing"],
           "regions": [{ "correctIndex": 0 }, { "correctIndex": 1 }, { "correctIndex": 0 }]
+        },
+        "sandbox": {
+          "preset": "shape_explorer",
+          "fn": "x^2 - 4*x + 3",
+          "domain": [-1, 5],
+          "caption": "Drag the point: where the curve climbs, the orange f' is positive; where it falls, f' is negative; the bend tracks concavity."
         }
       },
       "feedback": {
@@ -358,6 +483,12 @@
           "type": "graph_point",
           "x": -1,
           "tolerance": 0.25
+        },
+        "sandbox": {
+          "preset": "shape_explorer",
+          "fn": "x^3 - 3*x^2",
+          "domain": [-1.5, 3.5],
+          "caption": "Drag the point: as the curve tops out and turns over, the orange f' falls through 0 from positive to negative."
         }
       },
       "feedback": {
@@ -383,6 +514,12 @@
           "points": [0],
           "options": ["f'(x) > 0", "f'(x) < 0"],
           "regions": [{ "correctIndex": 1 }, { "correctIndex": 0 }]
+        },
+        "sandbox": {
+          "preset": "shape_explorer",
+          "fn": "-x^2 + 4",
+          "domain": [-3, 3],
+          "caption": "Drag the point and read the tangent slope (that's f'): the orange f' changes sign as the curve switches between rising and falling."
         }
       },
       "feedback": {
@@ -414,6 +551,12 @@
           "type": "graph_point",
           "x": 2,
           "tolerance": 0.25
+        },
+        "sandbox": {
+          "preset": "shape_explorer",
+          "fn": "-x^3 + 3*x",
+          "domain": [-2.5, 2.5],
+          "caption": "Drag the point: where the curve bottoms out and turns around, the orange f' rises through 0 from negative to positive."
         }
       },
       "feedback": {
@@ -445,6 +588,12 @@
           "type": "graph_point",
           "x": 1,
           "tolerance": 0.25
+        },
+        "sandbox": {
+          "preset": "shape_explorer",
+          "fn": "x^2 - 2",
+          "domain": [-3, 3],
+          "caption": "Drag the point and watch the orange f' cross 0 at the turning point — its sign on each side tells you the curve's direction."
         }
       },
       "feedback": {
@@ -468,6 +617,12 @@
           "type": "order_list",
           "orderLabel": "Most negative f'(x) → most positive (f(x) = x²)",
           "items": ["$x = -2$", "$x = -1$", "$x = 1$", "$x = 2$"]
+        },
+        "sandbox": {
+          "preset": "shape_explorer",
+          "fn": "x^2 - 4*x + 3",
+          "domain": [-1, 5],
+          "caption": "Drag the point and watch the live tangent slope (f'): it grows more positive where the curve steepens uphill and more negative where it steepens downhill."
         }
       },
       "feedback": {
@@ -499,6 +654,12 @@
           "type": "graph_point",
           "x": 2,
           "tolerance": 0.25
+        },
+        "sandbox": {
+          "preset": "shape_explorer",
+          "fn": "x^3 - 3*x",
+          "domain": [-2.5, 2.5],
+          "caption": "Drag the point: the orange f' peaks and dips, crossing 0 wherever the tangent goes flat at a hill or a valley."
         }
       },
       "feedback": {
@@ -514,7 +675,7 @@
       "content": [
         {
           "type": "text",
-          "body": "Match each sign of $f'(x)$ to what the graph is doing."
+          "body": "Match each condition on $f'(x)$ to how the graph of $f$ behaves."
         }
       ],
       "interaction": {
@@ -523,13 +684,19 @@
           "pairs": [
             { "prompt": "$f'(x) > 0$", "match": "Increasing" },
             { "prompt": "$f'(x) < 0$", "match": "Decreasing" },
-            { "prompt": "$f'(x) = 0$", "match": "Flat (turning point)" }
+            { "prompt": "$f'(x) = 0$", "match": "Flat (horizontal tangent)" }
           ],
           "distractors": ["Vertical"]
+        },
+        "sandbox": {
+          "preset": "shape_explorer",
+          "fn": "0.25*x^3",
+          "domain": [-3, 3],
+          "caption": "Drag the point: the orange f' sits above 0 where the curve rises, below 0 where it falls, and hits 0 where the tangent is flat."
         }
       },
       "feedback": {
-        "correct": "Right — positive slope rises, negative slope falls, and zero slope is a flat turning point.",
+        "correct": "Right — positive slope rises, negative slope falls, and zero slope is a flat, horizontal tangent.",
         "incorrect": "Recall how the sign of the slope translates into the curve's direction.",
         "hint": "$f' > 0$ rises, $f' < 0$ falls, $f' = 0$ is flat."
       }
@@ -557,12 +724,53 @@
           "type": "graph_point",
           "x": 0,
           "tolerance": 0.25
+        },
+        "sandbox": {
+          "preset": "shape_explorer",
+          "fn": "-x^2 + 4",
+          "domain": [-3, 3],
+          "caption": "Drag the point and read the live tangent slope (f'): the more steeply the curve heads downhill, the more negative f' becomes."
         }
       },
       "feedback": {
         "correct": "Yes — $f'(x) = 3x^2 - 3$ bottoms out at $x = 0$, where the slope is $-3$.",
         "incorrect": "The slope $f'(x) = 3x^2 - 3$ is smallest where $3x^2$ is smallest.",
         "hint": "$3x^2 - 3$ is most negative at $x = 0$, giving $f' = -3$."
+      }
+    },
+    {
+      "id": "gs-practice-11",
+      "type": "paint_intervals",
+      "conceptTag": "graph_shape",
+      "content": [
+        {
+          "type": "text",
+          "body": "Here is $f(x) = x^3 - 3x$. Drag across the plot to shade every interval where $f$ is increasing."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "paint_intervals",
+          "fn": "x^3 - 3*x",
+          "domain": [-2.2, 2.2],
+          "yDomain": [-5, 5],
+          "breakpoints": [-1, 1],
+          "correct": [true, false, true],
+          "prompt": "Shade where f is increasing.",
+          "xLabel": "x",
+          "yLabel": "f"
+        },
+        "sandbox": {
+          "preset": "shape_explorer",
+          "fn": "-x^3 + 3*x",
+          "domain": [-2.5, 2.5],
+          "caption": "Drag the point: the orange f' is positive on the stretches where the curve is rising and negative where it's falling."
+        }
+      },
+      "feedback": {
+        "correct": "Right — f'(x) = 3x² − 3 is positive for x < −1 and x > 1, so f rises on the outer two intervals and falls in the middle.",
+        "incorrect": "f is increasing where its slope f'(x) = 3x² − 3 is positive. Solve 3x² − 3 > 0.",
+        "hint": "3x² − 3 > 0 when |x| > 1, i.e. on (−2.2, −1) and (1, 2.2)."
       }
     }
   ]

@@ -1,6 +1,6 @@
 import type { ConceptMastery, Step } from "../types/content";
 import { REVIEW_SESSION_SIZE } from "../types/content";
-import { getConceptMastery } from "./masteryService";
+import { getConceptMastery, type ConceptStatMap } from "./masteryService";
 import { getReviewBank, shuffle } from "./contentLoader";
 
 /**
@@ -89,13 +89,30 @@ export function daysSinceLastSeen(
  */
 export function getReviewPriorities(
   progress: ReviewProgressInput,
+  conceptStats: ConceptStatMap = {},
 ): ReviewPriority[] {
   const now = Date.now();
-  return getConceptMastery(progress)
+  return getConceptMastery(progress, conceptStats, now)
     .filter((m) => m.cleared > 0)
     .map((m) => {
-      const weakness = m.total > 0 ? 1 - m.firstTry / m.total : 0;
-      const days = daysSinceLastSeen(m.lessonIds, progress, now);
+      // Weakness tracks the blended mastery percent (lesson + review), so doing
+      // well in review lowers a concept's priority and it stops being nagged.
+      const weakness = 1 - m.percent / 100;
+      // "Last seen" is the more recent of the concept's lessons being touched
+      // and the learner practicing it, so a fresh review resets staleness too
+      // (otherwise a just-reviewed concept would keep resurfacing on recency).
+      const lessonDays = daysSinceLastSeen(m.lessonIds, progress, now);
+      const reviewedAt = conceptStats[m.concept]?.lastReviewed;
+      const reviewDays =
+        reviewedAt && !Number.isNaN(Date.parse(reviewedAt))
+          ? Math.max(0, (now - Date.parse(reviewedAt)) / DAY_MS)
+          : null;
+      const days =
+        lessonDays === null
+          ? reviewDays
+          : reviewDays === null
+            ? lessonDays
+            : Math.min(lessonDays, reviewDays);
       // A missing timestamp means we can't tell when it was last seen, so bias
       // toward resurfacing it (treat as fully stale).
       const recency = days === null ? 1 : Math.min(1, days / SPACING_HORIZON_DAYS);
@@ -126,9 +143,10 @@ function questionsByConcept(progress: ReviewProgressInput): Map<string, Step[]> 
 export function getReviewTargets(
   progress: ReviewProgressInput,
   limit: number = TARGET_CONCEPT_SPREAD,
+  conceptStats: ConceptStatMap = {},
 ): string[] {
   const byConcept = questionsByConcept(progress);
-  return getReviewPriorities(progress)
+  return getReviewPriorities(progress, conceptStats)
     .filter((p) => byConcept.has(p.concept))
     .slice(0, limit)
     .map((p) => p.label);
@@ -146,12 +164,13 @@ export function getReviewTargets(
 export function getTargetedReviewSession(
   progress: ReviewProgressInput,
   size: number = REVIEW_SESSION_SIZE,
+  conceptStats: ConceptStatMap = {},
 ): Step[] {
   const byConcept = questionsByConcept(progress);
 
   // One queue per top concept, ordered interactive-first then shuffled within
   // each tier so the draw stays hands-on but varied between sessions.
-  const queues = getReviewPriorities(progress)
+  const queues = getReviewPriorities(progress, conceptStats)
     .filter((p) => byConcept.has(p.concept))
     .slice(0, TARGET_CONCEPT_SPREAD)
     .map((p) => {

@@ -13,15 +13,34 @@ function mathFallback(latex: string) {
   return <code className="text-sm">{latex}</code>;
 }
 
+/**
+ * KaTeX render options. `trust: false` is KaTeX's default, but we pin it
+ * explicitly because this component typesets UNTRUSTED input — AI tutor output
+ * and authored lesson content — and `trust: false` is what disables commands
+ * like `\href`/`\url`/`\includegraphics` that could otherwise smuggle a
+ * `javascript:` URL or arbitrary markup into the DOM (XSS).
+ */
+const KATEX_SETTINGS = { trust: false } as const;
+
 export function MathBlock({ latex, display }: { latex: string; display?: boolean }) {
   if (display) {
     return (
       <div className="my-3 overflow-x-auto text-base sm:text-lg">
-        <BlockMath math={latex} renderError={() => mathFallback(latex)} />
+        <BlockMath
+          math={latex}
+          settings={KATEX_SETTINGS}
+          renderError={() => mathFallback(latex)}
+        />
       </div>
     );
   }
-  return <InlineMath math={latex} renderError={() => mathFallback(latex)} />;
+  return (
+    <InlineMath
+      math={latex}
+      settings={KATEX_SETTINGS}
+      renderError={() => mathFallback(latex)}
+    />
+  );
 }
 
 /** Render a tokenized inline run (text, math, code, and bold/italic emphasis). */
@@ -34,6 +53,7 @@ function renderTokens(tokens: InlineToken[], keyPrefix = ""): ReactNode {
           <InlineMath
             key={key}
             math={token.value}
+            settings={KATEX_SETTINGS}
             renderError={() => mathFallback(token.value)}
           />
         );

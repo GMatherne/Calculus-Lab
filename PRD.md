@@ -175,10 +175,10 @@ Source of truth: [`OVERVIEW.md`](./OVERVIEW.md).
 ### Not yet built
 - **All of Phase 2 (AI).** No model calls anywhere today.
 - **Several high-leverage Phase 3 items** (see §8): scheduled spaced repetition,
-  misconception-specific feedback, mastery that *drives* study + decays, faded /
-  tiered hints (the authored `hintAfterAttempts` field is currently **dead
-  code**), self-explanation prompts, difficulty targeting, calibration, humane
-  streaks.
+  misconception-specific feedback, mastery that *drives* study + decays,
+  self-explanation prompts, difficulty targeting, calibration, humane streaks.
+  (Faded / tiered hints — **LS-4** — are now **done**: a three-state per-question
+  assistance toggle, which supersedes the old `hintAfterAttempts` field.)
 
 ---
 
@@ -234,7 +234,7 @@ Prioritized by evidence-to-effort from [`LEARNING_SCIENCE.md`](./LEARNING_SCIENC
 | **LS-1** | **Scheduled spaced repetition.** Add a per-concept memory record (`lastReviewed`, `intervalDays`, `stability`, `lapses`); compute "due" concepts; show a **"N concepts due"** card on the roadmap; weight `getReviewSession` toward overdue + weak. Start with a Leitner/SM-2 ladder, optionally graduate to FSRS. | **P0** | Spacing is one of the largest effects in the literature (Cepeda 2006). Today review is on-demand random with no schedule. |
 | **LS-2** | **Misconception-specific feedback.** Extend `AnswerSpec` so distractors carry targeted feedback (e.g. `optionFeedback[]`, or a `misconceptions` map for `numeric`/`power_term`); `checkAnswer` selects the matching message, else falls back to authored `incorrect`. | **P0** | Elaborated feedback beats right/wrong (Hattie & Timperley; Shute). Today all wrong answers show the same message. Mostly additive. |
 | **LS-3** | **Make mastery drive the experience + let it decay.** Feed `getWeakConcepts` into the roadmap "Continue" recommendation and the review sampler; actually **write** `"mastered"` at `MASTERY_MASTERED = 0.9`; decay mastery over time (ties to LS-1). | **P0** | Mastery learning ≈ Bloom's 2-sigma. Today `getWeakConcepts` is display-only; `"mastered"` status is never written; no decay. |
-| **LS-4** | **Tiered / faded hints — wire up `hintAfterAttempts`.** Gate the hint button on attempt count in `LessonPlayer`; support progressive hints (nudge → strategy → near-worked); use worked-example → completion-problem → independent fading in early lessons. | **P1** | Guidance-fading / expertise-reversal. `hintAfterAttempts` is authored but **no runtime code reads it** (dead code). |
+| **LS-4** | **Tiered / faded hints — DONE.** Each question has a three-state assistance toggle: **Solve it** (shows the interactive question first, then a "Work through it" walkthrough that animates the widget to the answer while the concept-to-answer solution reveals step by step; lesson questions only — excluded from mastery), **Hints** (live "warmer/colder" feedback while interacting on value-tuning questions + proactive authored hint + AI tutor), and **No help**. Sticky per-learner default (`useAssistancePreference`). `AssistanceToggle.tsx`, `SolutionPanel.tsx`, `solutionService.ts`, `Step.solution`. | **Done** | Guidance-fading / expertise-reversal. Supersedes the old (dead) `hintAfterAttempts`. Optional follow-ups: auto-fade by mastery; progressive hint ladder (AI-4). |
 | **LS-5** | **Self-explanation prompts.** After a correct answer, occasionally ask a gradable "Why did that work?" multiple-choice (reuses the existing widget; no free-text grading needed). | **P1** | Chi et al. (1989): 82% vs 46% post-test. Overlaps AI-6 (AI is the richer version). |
 | **LS-6** | **Difficulty targeting (~80% success).** Tag practice-bank questions with difficulty; bias `sampleSession` toward the learner's edge (mostly can-do + a few stretch) instead of uniform random. | **P1** | Flow / ZPD; Duolingo "Birdbrain" ~80% target. |
 | **LS-7** | **Comprehensive "test out" to skip levels.** Let experts skip a lesson/level by passing a cumulative test (required # of questions per lesson, all topics represented). | **P1** | From [`IDEAS.md`](./IDEAS.md): "forcing scaffolds on experts is bad" (expertise reversal). |
@@ -311,7 +311,7 @@ make it stick** — with these gates:
    risk) → unblocks safe content scaling.
 3. **AI-2** runtime misconception diagnosis.
 4. **LS-1** scheduled spaced repetition; **LS-3** mastery-driven study + decay.
-5. **LS-4** faded hints (+ **AI-4** hint ladder); **LS-5/AI-6** self-explanation.
+5. **LS-4** faded hints — **done** (assistance toggle); next **AI-4** hint ladder; **LS-5/AI-6** self-explanation.
 6. **AI-5/AI-7** personalization; **LS-6/LS-8** difficulty targeting + humane
    streaks; remainder as polish.
 

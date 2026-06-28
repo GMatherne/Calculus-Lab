@@ -18,6 +18,7 @@ import { AppHeader } from "../components/layout/AppHeader";
 import { SafeArea } from "../components/layout/SafeArea";
 import { LevelSection } from "../components/roadmap/LevelSection";
 import { ReferenceModal } from "../components/reference/ReferenceModal";
+import { RoadmapTutorFab } from "../components/tutor/RoadmapTutorFab";
 import { DevTools } from "../components/dev/DevTools";
 import { Icon } from "../components/common/Icon";
 import { MILESTONE_DEFS, MILESTONE_ORDER } from "../types/content";
@@ -46,7 +47,7 @@ export function RoadmapPage() {
   // The concepts this review will home in on, for the card's subtitle. Empty
   // until the learner has worked through some material (then we fall back to
   // generic copy).
-  const reviewTargets = getReviewTargets(progress, 2);
+  const reviewTargets = getReviewTargets(progress, 2, profile?.conceptStats);
   const reviewSubtitle =
     reviewTargets.length > 0
       ? `Focus on ${reviewTargets.join(" & ")}`
@@ -222,6 +223,7 @@ export function RoadmapPage() {
         </div>
       </main>
       <ReferenceModal open={referenceOpen} onClose={() => setReferenceOpen(false)} />
+      <RoadmapTutorFab />
     </SafeArea>
   );
 }

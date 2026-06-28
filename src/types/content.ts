@@ -12,7 +12,13 @@ type StepType =
   | "sign_chart"
   | "order_list"
   | "riemann"
-  | "predict";
+  | "predict"
+  | "construct_graph"
+  | "paint_intervals"
+  | "tangent_line"
+  | "integral_bounds"
+  | "simulate"
+  | "select_region";
 
 type LessonStatus =
   | "not_started"
@@ -70,8 +76,24 @@ export interface GraphConfig {
    * a "find the x where the slope is …" question can't be solved by matching.
    */
   showSlopeValue?: boolean;
+  /**
+   * Draw a rise/run triangle between the secant's two points (the Δy and Δx
+   * legs, with labels) and a "Δy / Δx = rate" readout. Set programmatically by
+   * the "solve" secant walkthrough after the moving point reaches its target; not
+   * authored in lesson content.
+   */
+  showSecantRiseRun?: boolean;
   /** Show a live "f(x) = value" readout for the current slider position. Defaults to on. */
   showValue?: boolean;
+  /**
+   * Let the learner drag the moving point directly along the curve (on top of
+   * the slider) to explore how the tangent/secant slope changes — an exploratory
+   * aid that does NOT grade. Pair it with a separate `multiple_choice`/`numeric`
+   * answer for the "estimate, then commit" pattern: the point is a manipulable
+   * tool and the authored answer is what's graded. Ignored for
+   * slider/graph_point/predict_point answers, which already own the gesture.
+   */
+  explore?: boolean;
   /**
    * Render the graph as a static, non-interactive illustration: no slider and
    * no live readouts, just the curve (plus any marker/area below). Used to give
@@ -128,7 +150,7 @@ export interface GraphConfig {
   integrand?: string;
 }
 
-interface MultipleChoiceAnswer {
+export interface MultipleChoiceAnswer {
   type: "multiple_choice";
   options: string[];
   correctIndex: number;
@@ -239,21 +261,46 @@ export interface PredictPointAnswer {
  * the `{ coefficient, exponent }` pair. A coefficient of 0 collapses the whole
  * term to 0 (e.g. the derivative of a constant), so the exponent is ignored when
  * grading that case.
+ *
+ * Setting {@link denominator} switches the builder into a fraction mode for the
+ * reverse power rule: the coefficient becomes the numerator of a fraction over
+ * {@link denominator}, the builder shows three steppers (numerator, denominator,
+ * exponent), and the preview renders a/b·xⁿ. The antiderivative of a·xⁿ is
+ * (a)/(n+1)·xⁿ⁺¹, so the denominator and the new exponent are both n+1 — a nice
+ * structural cue. In fraction mode the submitted answer is the
+ * `{ coefficient, denominator, exponent }` triple and all three must match.
  */
 interface PowerTermAnswer {
   type: "power_term";
   coefficient: number;
   exponent: number;
-  /** Coefficient shown in the builder before editing — usually the original term's. */
+  /**
+   * Denominator of the fraction coefficient. When set, the builder runs in
+   * fraction mode (numerator/denominator/exponent), e.g. ∫5x² dx = 5/3·x³ is
+   * `{ coefficient: 5, denominator: 3, exponent: 3 }`. Must be a positive
+   * integer. Omit for the plain integer-coefficient derivative/antiderivative
+   * builder.
+   */
+  denominator?: number;
+  /** Coefficient (numerator in fraction mode) shown before editing — usually the original term's. */
   startCoefficient?: number;
   /** Exponent shown in the builder before editing — usually the original power. */
   startExponent?: number;
+  /** Denominator shown before editing in fraction mode (defaults to 1, i.e. the bare term). */
+  startDenominator?: number;
   /**
    * LaTeX prefix for the live preview of the term being built. Defaults to
    * "f'(x) =" for a derivative builder; set to "F(x) =" when the learner is
    * building an antiderivative via the reverse power rule.
    */
   previewPrefix?: string;
+  /**
+   * Append a static "+ C" (the constant of integration) to the preview, marking
+   * the built term as the full indefinite integral. Display only — the learner
+   * never edits or grades it. Set on antiderivative builders; omit (or false)
+   * for derivative builders.
+   */
+  plusC?: boolean;
 }
 
 /** One blank in a {@link DragDropAnswer}, filled by dragging a tile from the bank. */
@@ -418,6 +465,235 @@ export interface RiemannAnswer {
   yMax?: number;
 }
 
+/** One draggable node in a {@link ConstructGraphAnswer}: fixed in x, free in y. */
+export interface ConstructGraphNode {
+  /** Fixed x-position of this node on the plot. */
+  x: number;
+  /** Half-width of the accepted y-window when grading this node (default 0.4). */
+  tolerance?: number;
+}
+
+/**
+ * "Construct the graph" question: the learner drags a row of points — each
+ * pinned at a fixed x, free to move in y — to build a curve, e.g. plotting the
+ * derivative f'(x) at several sample x-values. The points connect into a
+ * polyline preview so the shape emerges as they drag. The submitted answer is
+ * the array of chosen y-values (one per node, null until first moved); it grades
+ * correct when every node sits within its tolerance of the target y. The target
+ * comes from `targetFn` evaluated at the node's x (e.g. "2*x" for the derivative
+ * of x^2) or, failing that, from the matching entry in `targetY`. The widget
+ * draws its own axes, so a construct_graph step needs no separate `graph` config.
+ */
+export interface ConstructGraphAnswer {
+  type: "construct_graph";
+  /** Plot domain [x-min, x-max]. */
+  domain: [number, number];
+  /** Plot range [y-min, y-max]; also the bounds each node can be dragged within. */
+  yDomain: [number, number];
+  /** Draggable nodes in display order, each fixed in x. */
+  nodes: ConstructGraphNode[];
+  /**
+   * Target curve evaluated at each node's x to grade it (a math.js expression in
+   * x). Mutually exclusive with {@link targetY}; provide exactly one.
+   */
+  targetFn?: string;
+  /** Explicit target y per node, in the same order as {@link nodes}. */
+  targetY?: number[];
+  /** Faint reference curve drawn behind the nodes, e.g. the original f. */
+  referenceFn?: string;
+  /** Connect the placed nodes with a polyline. Defaults to true. */
+  connect?: boolean;
+  /** Snap each dragged y to this grid step (e.g. 0.5). Free drag when omitted. */
+  snap?: number;
+  /**
+   * Gridline/label spacing on the x-axis. Overrides the auto "nice" step so the
+   * plot can show more specific ticks (e.g. every 1 unit). Auto when omitted.
+   */
+  xTickStep?: number;
+  /** Gridline/label spacing on the y-axis. Auto "nice" step when omitted. */
+  yTickStep?: number;
+  /** Axis labels. Default to "x" and "y". */
+  xLabel?: string;
+  yLabel?: string;
+}
+
+/**
+ * "Paint the intervals" question: the learner drags across the plot to shade the
+ * segments where some condition holds — e.g. where f is increasing, or concave
+ * up. The domain is split into contiguous segments by `breakpoints` (so there is
+ * always one more segment than there are breakpoints), and the learner brushes
+ * segments on or off with a pointer drag. The submitted answer is a boolean per
+ * segment in left-to-right order; it grades correct on an exact match against
+ * `correct`. The widget draws its own curve and axis, so a paint_intervals step
+ * needs no separate `graph` config.
+ */
+export interface PaintIntervalsAnswer {
+  type: "paint_intervals";
+  /** Curve drawn behind the segments (a math.js expression in x). */
+  fn: string;
+  /** Plot domain [x-min, x-max]. */
+  domain: [number, number];
+  /** Explicit y-range; auto-fit to the curve when omitted. */
+  yDomain?: [number, number];
+  /** Interior x-values dividing the domain; segments = breakpoints.length + 1. */
+  breakpoints: number[];
+  /** Which segments should be shaded (true), one per segment, left to right. */
+  correct: boolean[];
+  /** Short instruction shown under the plot, e.g. "Shade where f is increasing". */
+  prompt?: string;
+  /** Axis labels. Default to "x" and "y". */
+  xLabel?: string;
+  yLabel?: string;
+}
+
+/** One selectable vertical band in a {@link SelectRegionAnswer}. */
+export interface SelectRegionBand {
+  /** Left x-edge of the band. */
+  from: number;
+  /** Right x-edge of the band (must exceed `from`). */
+  to: number;
+  /**
+   * Whether tapping this band is a correct choice. A single-select question has
+   * exactly one correct band; a multi-select question grades an exact match of
+   * every band's selected state against its `correct` flag.
+   */
+  correct?: boolean;
+}
+
+/**
+ * "Select the region" question: vertical bands are overlaid on a static curve
+ * and the learner taps the one — or, with `multi`, the several — that satisfy a
+ * property, e.g. the stretch where the curve is steepest, flattest, or concave
+ * up. It's visual multiple-choice over intervals of the plot, distinct from
+ * {@link PaintIntervalsAnswer} (brush every segment on/off to an exact pattern)
+ * and {@link SignChartAnswer} (label every region). The submitted answer is the
+ * chosen band index for single-select, or a boolean per band for multi-select.
+ * The widget draws its own curve, so a select_region step needs no `graph`.
+ */
+export interface SelectRegionAnswer {
+  type: "select_region";
+  /** Curve drawn behind the bands (a math.js expression in x). */
+  fn: string;
+  /** Plot domain [x-min, x-max]. */
+  domain: [number, number];
+  /** Explicit y-range; auto-fit to the curve when omitted. */
+  yDomain?: [number, number];
+  /** Selectable bands, left to right; they should tile the plot without overlapping. */
+  bands: SelectRegionBand[];
+  /** Allow choosing several bands, graded as an exact set match. Default false (single-select). */
+  multi?: boolean;
+  /** Short instruction shown under the plot, e.g. "Tap the steepest stretch". */
+  prompt?: string;
+  /** Axis labels. Default to "x" and "y". */
+  xLabel?: string;
+  yLabel?: string;
+}
+
+/**
+ * "Rotate the tangent" question: a line is pinned to the curve at a fixed point
+ * (x0, f(x0)) and the learner drags to rotate it about that pivot until its slope
+ * matches the curve's slope there. The submitted answer is the line's slope; it
+ * grades correct when |slope - spec.slope| <= tolerance. Unlike a slider (one
+ * value on a track), this is a genuine rotate-about-a-pivot gesture. The widget
+ * draws its own curve, so a tangent_line step needs no separate `graph` config.
+ */
+export interface TangentLineAnswer {
+  type: "tangent_line";
+  /** Curve (a math.js expression in x). */
+  fn: string;
+  /** Plot domain [x-min, x-max]. */
+  domain: [number, number];
+  /** Explicit y-range; auto-fit to the curve when omitted. */
+  yDomain?: [number, number];
+  /** Fixed x the tangent line pivots through. */
+  x0: number;
+  /** Correct slope at x0 (i.e. f'(x0)). */
+  slope: number;
+  /** Half-width of the accepted slope window (default 0.3). */
+  tolerance?: number;
+  xLabel?: string;
+  yLabel?: string;
+}
+
+/**
+ * "Set the bounds" question: the learner drags two vertical handles to place the
+ * lower and upper limits a, b of a definite integral, shading the area between
+ * them as they go. The submitted answer is `{ a, b }` (graded sorted, so the
+ * handles may be dragged in either order); it grades correct when each bound is
+ * within tolerance of its target. The widget draws its own curve and the live
+ * shaded area, so an integral_bounds step needs no separate `graph` config.
+ */
+export interface IntegralBoundsAnswer {
+  type: "integral_bounds";
+  /** Curve to integrate (a math.js expression in x). */
+  fn: string;
+  /** Plot domain [x-min, x-max]. */
+  domain: [number, number];
+  /** Explicit y-range; auto-fit to the curve when omitted. */
+  yDomain?: [number, number];
+  /** Correct lower limit. */
+  a: number;
+  /** Correct upper limit (must exceed a). */
+  b: number;
+  /** Half-width of the accepted window for each bound (default 0.25). */
+  tolerance?: number;
+  /** Show the live "area ≈ value" readout. Defaults to true. */
+  showAreaValue?: boolean;
+  xLabel?: string;
+  yLabel?: string;
+}
+
+/**
+ * "Drive the value" question: a playhead sweeps left-to-right across [0, duration]
+ * while the learner moves the pointer up and down to set a "pen" height at the
+ * playhead, tracing a curve in real time. With match: "control" the trace itself
+ * is graded against the target; with match: "integral" the graded (and plotted)
+ * curve is the running accumulation of the pen value — e.g. holding a velocity to
+ * trace out position, the core calculus payoff. With match: "derivative" the
+ * learner instead reads the slope of a shown {@link referenceFn} f(t) and drives
+ * their rate estimate to match its derivative — a "speedometer" for f. The driven
+ * value is graded directly against `target` (the true f'), and the dashed target
+ * is hidden until the run ends so it can't simply be traced. The submitted answer
+ * is the trace resampled to evenly spaced points (an array of y-values); it grades
+ * correct when the fraction of samples landing within `tolerance` of the target is
+ * at least `coverage`. The widget draws its own plot, so a simulate step needs no
+ * separate `graph` config.
+ */
+export interface SimulateAnswer {
+  type: "simulate";
+  /** What the learner's hand feeds (currently a single driven value). */
+  control: "velocity";
+  /**
+   * How the pen input becomes the graded/plotted curve: `control` grades the pen
+   * trace itself, `integral` grades its running accumulation (drive a rate, watch
+   * the quantity build), and `derivative` grades the pen as a rate estimate read
+   * off {@link referenceFn} (drive the slope of a shown curve).
+   */
+  match: "control" | "integral" | "derivative";
+  /** Target curve as a function of t (a math.js expression in t). */
+  target: string;
+  /** Run length in seconds (must be positive). */
+  duration: number;
+  /** Plot y-range, which is also the pen's reachable range. */
+  yDomain: [number, number];
+  /** Vertical band half-width for "in-band" credit (default 0.5). */
+  tolerance?: number;
+  /** Fraction of samples that must be in-band to pass, in (0, 1] (default 0.85). */
+  coverage?: number;
+  /** Label for the driven value, e.g. "Throttle". */
+  controlLabel?: string;
+  xLabel?: string;
+  yLabel?: string;
+  /**
+   * Source curve f(t) drawn faintly for context in `derivative` mode — the curve
+   * whose slope the learner reads while driving the rate. A math.js expression in
+   * t. Ignored by the other modes.
+   */
+  referenceFn?: string;
+  /** Legend label for {@link referenceFn} (default "the curve"). */
+  referenceLabel?: string;
+}
+
 export type AnswerSpec =
   | MultipleChoiceAnswer
   | MultiChoiceAnswer
@@ -430,11 +706,100 @@ export type AnswerSpec =
   | MatchAnswer
   | SignChartAnswer
   | OrderListAnswer
-  | RiemannAnswer;
+  | RiemannAnswer
+  | ConstructGraphAnswer
+  | PaintIntervalsAnswer
+  | TangentLineAnswer
+  | IntegralBoundsAnswer
+  | SimulateAnswer
+  | SelectRegionAnswer;
+
+/**
+ * An ungraded "concept sandbox": a hints-only teaching aid that lets the learner
+ * experiment with the mechanic behind a question on a DIFFERENT example, with
+ * the readout the real question hides (e.g. the slope) switched on. It is never
+ * graded and shares no state with the graded widget, so it teaches the move
+ * without revealing this question's answer — the learner must still transfer
+ * what they see back to the real instance. Author it with a {@link Sandbox.preset}
+ * (the cheap path) or a full {@link Sandbox.graph} (the escape hatch).
+ */
+export interface Sandbox {
+  /** Short instruction, e.g. "Drag the point — where does the slope go flat?" Supports inline `$…$` math. */
+  caption?: string;
+  /**
+   * Ready-made explorer, each expanding to a self-contained widget with the
+   * relevant readout switched on:
+   * - `slope_explorer` — a draggable point + tangent + live slope; needs
+   *   {@link Sandbox.fn} (and optional {@link Sandbox.domain}).
+   * - `shape_explorer` — a draggable point on a curve with its derivative f′
+   *   overlaid and the tangent slope shown live, so the learner feels how the
+   *   sign of f′ (and the bend of the curve) tracks where f rises, falls, and
+   *   turns; needs {@link Sandbox.fn} (and optional {@link Sandbox.domain}).
+   * - `power_rule` — steps through the power rule in general form,
+   *   a·xⁿ → n(a·xⁿ⁻¹) → a·n·xⁿ⁻¹, with no concrete term (so it can't reveal an answer).
+   * - `reverse_power_rule` — steps through the reverse power rule in general form,
+   *   ∫a·xⁿ dx → a·xⁿ⁺¹/(n+1) + C, again with no concrete term; the antiderivative
+   *   mirror of `power_rule`.
+   * - `riemann` — drag rectangles under a curve to watch the estimate converge;
+   *   needs {@link Sandbox.fn} and the interval {@link Sandbox.a}/{@link Sandbox.b}.
+   * - `area_explorer` — drag the upper limit of a shaded region and watch the
+   *   accumulated area grow as a live integral, so "the integral is accumulated
+   *   area" is something you sweep out by hand; needs {@link Sandbox.fn} and the
+   *   interval {@link Sandbox.a}/{@link Sandbox.b}.
+   * - `ftc_explorer` — drag the two limits a, b of a definite integral and watch
+   *   the signed area between them update, the geometry behind F(b) − F(a); needs
+   *   {@link Sandbox.fn} and the interval {@link Sandbox.a}/{@link Sandbox.b}.
+   */
+  preset?:
+    | "slope_explorer"
+    | "shape_explorer"
+    | "power_rule"
+    | "reverse_power_rule"
+    | "riemann"
+    | "area_explorer"
+    | "ftc_explorer";
+  /**
+   * Curve for the curve-based presets (`slope_explorer`, `shape_explorer`,
+   * `riemann`, `area_explorer`, `ftc_explorer`) — a math.js expression in x. MUST
+   * differ from the graded graph's `fn`, so nothing read off the sandbox
+   * transfers as the answer.
+   */
+  fn?: string;
+  /** Plot domain for the curve-based presets; a sensible default window is used when omitted. */
+  domain?: [number, number];
+  /** Axis labels for the curve-based presets. Default to "x" and "y". */
+  xLabel?: string;
+  yLabel?: string;
+  /**
+   * Interval [a, b] the interval presets use: the slice for `riemann`, the area
+   * span (lower fixed at `a`, upper dragged toward `b`) for `area_explorer`, and
+   * the starting bounds for `ftc_explorer` (the curve comes from {@link Sandbox.fn}).
+   */
+  a?: number;
+  b?: number;
+  /**
+   * LaTeX integrand shown in the `area_explorer` live integral readout, e.g. "x"
+   * or "x + 1". Defaults to {@link Sandbox.fn} with `*` stripped when omitted.
+   */
+  integrand?: string;
+  /**
+   * Escape hatch: a fully-specified explorer plot used instead of a {@link Sandbox.preset}.
+   * Turn on the readout the question hides (e.g. `showSlopeValue: true`) and set
+   * `explore: true` so the point can be scrubbed.
+   */
+  graph?: GraphConfig;
+}
 
 interface Interaction {
   graph?: GraphConfig;
   answer?: AnswerSpec;
+  /**
+   * Optional hints-only {@link Sandbox}: an ungraded explorer on a DIFFERENT
+   * example, shown collapsed beside the question when the learner has the
+   * "hints" assistance level on. Never graded and never shares state with the
+   * graded widget.
+   */
+  sandbox?: Sandbox;
   /** Hints shown after this many wrong attempts (default 2; lesson 1 uses 1) */
   hintAfterAttempts?: number;
   /**
@@ -459,13 +824,320 @@ export interface StepFeedback {
   hint: string;
 }
 
+/**
+ * How much help a learner wants on a question, chosen per question via the
+ * assistance toggle (guidance fading / expertise reversal):
+ * - `solve` — we work the problem and explain *why*, pre-filling the answer.
+ *   Offered on lesson questions only and never counts toward first-try mastery.
+ * - `hints` — visual/text hints are available to guide the learner.
+ * - `none` — no hints at all; the learner is on their own.
+ */
+export type AssistanceLevel = "solve" | "hints" | "none";
+
+/** The assistance level a brand-new learner starts on before changing the toggle. */
+export const DEFAULT_ASSISTANCE_LEVEL: AssistanceLevel = "hints";
+
+/**
+ * "Rate of change between two points" walkthrough animation: in the "solve"
+ * level, draw a secant between a fixed point at `a` and a second point at `b`,
+ * sliding the second point out so the learner sees the rate of change (the
+ * secant's slope) — which equals the derivative for a line.
+ */
+export interface SecantSolveAnimation {
+  kind: "secant";
+  /** x of the first (fixed) point. */
+  a: number;
+  /** x of the second point the secant is drawn to. */
+  b: number;
+  /** Readout label; defaults to "Rate of change". */
+  label?: string;
+  /**
+   * Caption beats the learner steps through manually. Beat 0 draws the secant
+   * between the two points; later beats add the rise/run (Δy / Δx) breakdown.
+   * Defaults to a two-beat intro + rise/run when omitted.
+   */
+  captions?: string[];
+}
+
+/** One captioned beat of a {@link NarratedSolveAnimation}. */
+export interface NarratedPhase {
+  /** Caption banner shown during this phase (supports inline `$…$` math). */
+  text: string;
+  /**
+   * Animate the graph's slider value to this over the phase. For tangent graphs
+   * it's the x-position; for secant graphs (sliderLabel "h") it's h. Omit to
+   * hold the graph still and just show the caption.
+   */
+  to?: number;
+  /** Phase length in ms (default 1900). */
+  ms?: number;
+}
+
+/**
+ * A narrated walkthrough: a sequence of captioned phases that may drive the
+ * graph's slider (rotating a tangent, shrinking a secant, …), explaining what to
+ * look at, then reveals the answer and the full worked solution. Used for the
+ * Slope of a Curve graph questions.
+ */
+export interface NarratedSolveAnimation {
+  kind: "narrated";
+  phases: NarratedPhase[];
+  /**
+   * Force the slope readout on during the walkthrough even when the question
+   * hides it (e.g. a "find x where the slope is …" step).
+   */
+  showSlopeValue?: boolean;
+  /**
+   * Force the accumulated-area (integral) readout on during the walkthrough, so
+   * the learner watches the integral's value climb to its target as the slider
+   * tweens — used for the area-accumulation steps in lessons 7-10.
+   */
+  showAreaValue?: boolean;
+  /**
+   * Draw this feature once the narration finishes — e.g. the flat tangent at the
+   * answer for a tap-the-point question that has no slider to animate.
+   */
+  reveal?: { x: number; point?: boolean; tangent?: boolean; vertical?: boolean };
+  /**
+   * Optionally play the compact power-rule "exponent drop" animation alongside
+   * the narration — e.g. x³ → 3x² above the graph — so the symbolic rule and the
+   * geometric slope resolve together. The term is a·xⁿ.
+   */
+  powerTerm?: PowerRuleTerm;
+  /**
+   * Optionally play the term-by-term polynomial "sum" animation, advanced one
+   * term per beat in sync with {@link phases}: beat i drops `terms[i]`
+   * (a·xⁿ → a·n·xⁿ⁻¹), and the final beat shows the assembled f'(x). Author one
+   * phase per term plus a final "add the pieces" phase, so `phases.length` is
+   * `terms.length + 1`.
+   */
+  terms?: PowerRuleTerm[];
+}
+
+/**
+ * "Power rule" walkthrough animation: dramatize differentiating a single power
+ * term, a·xⁿ → (a·n)·xⁿ⁻¹. The exponent visibly drops down in front, multiplies
+ * the coefficient, and the power reduces by one; a constant (xⁿ with n = 0)
+ * collapses to 0. The source and result term are read from the step's
+ * `power_term` answer (`startCoefficient`/`startExponent` → `coefficient`/
+ * `exponent`), so a graded step opts in with just `{ kind: "power_rule" }`.
+ */
+export interface PowerRuleSolveAnimation {
+  kind: "power_rule";
+  /**
+   * Optional caption overrides shown in the solve caption banner as the beats
+   * play, indexed by beat: 0 bring-down, 1 multiply, 2 product, 3 reduce,
+   * 4 settle. Supports inline `$…$` math. Sensible defaults fill any gaps.
+   */
+  captions?: string[];
+}
+
+/**
+ * "Differentiate a polynomial" walkthrough: the sum rule and power rule together.
+ * The source polynomial f(x) is shown on top, and f'(x) is assembled below one
+ * term at a time — each source term a·xⁿ drops to (a·n)·xⁿ⁻¹ on its own beat, and
+ * a constant fades away. Authored on a step (e.g. a drag_drop derivative builder)
+ * with the source `terms` in display order; one beat per term plus a final
+ * "add the pieces" beat, so the walkthrough has `terms.length + 1` beats.
+ */
+export interface PolynomialSolveAnimation {
+  kind: "polynomial";
+  /** Source terms of f(x), in display order (a·xⁿ each). */
+  terms: PowerRuleTerm[];
+  /**
+   * Optional caption overrides shown in the solve caption banner, indexed by
+   * beat: one per term, then a final assembly beat. Supports inline `$…$` math.
+   */
+  captions?: string[];
+}
+
+/**
+ * "Integrate a polynomial" walkthrough: the reverse power rule, term by term. The
+ * source polynomial f(x) is shown on top, and the antiderivative F(x) is
+ * assembled below one term at a time — each source term a·xⁿ becomes
+ * a/(n+1)·xⁿ⁺¹ on its own beat (a constant c becomes c·x). Authored with the
+ * source `terms`; one beat per term plus a final "add the pieces" beat, so the
+ * walkthrough has `terms.length + 1` beats. Shares its component with
+ * {@link PolynomialSolveAnimation} via a direction flag.
+ */
+export interface AntiderivativeSolveAnimation {
+  kind: "antiderivative";
+  /** Source terms of f(x), in display order (a·xⁿ each); the animation builds F(x). */
+  terms: PowerRuleTerm[];
+  /**
+   * Optional caption overrides shown in the solve caption banner, indexed by
+   * beat: one per term, then a final assembly beat. Supports inline `$…$` math.
+   */
+  captions?: string[];
+}
+
+/**
+ * "Riemann sum refinement" walkthrough: slice the region under a curve into
+ * rectangles and multiply them beat by beat (a few wide ones → many thin ones),
+ * watching the running estimate close in on the true area — the integral as a
+ * limit of sums. Used for the limit-concept multiple-choice steps in lessons
+ * 7-8, which carry no graph of their own, so the curve/interval live here.
+ */
+export interface RiemannRefineSolveAnimation {
+  kind: "riemann_refine";
+  /** Curve to slice, as an expression in x (e.g. "x^2"). */
+  fn: string;
+  /** Lower and upper limits of the region. */
+  a: number;
+  b: number;
+  /** The exact area, shown alongside the converging estimate. */
+  trueArea: number;
+  /** Plot domain; defaults to [a, b]. */
+  domain?: [number, number];
+  /** Rectangle counts shown per beat; defaults to a sensible refining sequence. */
+  counts?: number[];
+  /** Optional caption overrides shown in the solve caption banner, indexed by beat. */
+  captions?: string[];
+}
+
+/**
+ * "Evaluate a definite integral" walkthrough: first build the antiderivative
+ * F(x) from the integrand's terms (the same term-by-term reverse-power-rule drop
+ * as {@link AntiderivativeSolveAnimation}), then plug in the limits and compute
+ * F(b) − F(a). Lets a definite-integral question show both halves of the
+ * Fundamental Theorem play out — find F, then subtract its endpoint values —
+ * instead of a plain slider sweep. The `terms` are the integrand a·xⁿ in display
+ * order; `a`/`b` are the lower/upper limits.
+ */
+export interface FtcEvaluateSolveAnimation {
+  kind: "ftc_evaluate";
+  /** Integrand terms a·xⁿ, in display order; the animation builds F(x) from them. */
+  terms: PowerRuleTerm[];
+  /** Lower limit of the definite integral. */
+  a: number;
+  /** Upper limit of the definite integral (the area runs a → b). */
+  b: number;
+  /** Optional caption overrides for the term-build beats, indexed by term. */
+  captions?: string[];
+}
+
+/**
+ * An optional, hand-authored animation played during the "solve" walkthrough,
+ * specific to a problem rather than the generic slider sweep. Extensible: more
+ * recipes can join this union.
+ */
+export type SolveAnimation =
+  | SecantSolveAnimation
+  | NarratedSolveAnimation
+  | PowerRuleSolveAnimation
+  | PolynomialSolveAnimation
+  | AntiderivativeSolveAnimation
+  | RiemannRefineSolveAnimation
+  | FtcEvaluateSolveAnimation;
+
+/**
+ * One source term in a {@link Step.montage} (and the optional term drop on a
+ * {@link NarratedSolveAnimation}): the coefficient a and exponent n of a·xⁿ,
+ * animated through the power-rule drop to (a·n)·xⁿ⁻¹.
+ */
+export interface PowerRuleTerm {
+  coefficient: number;
+  exponent: number;
+}
+
+/**
+ * One follow-up part of a multi-part question (see {@link Step.parts}). A part is
+ * the gradeable core of a step — its own prompt, interaction, and feedback —
+ * revealed only after the previous part is cleared. It can carry its own graph,
+ * live grading, and goal label via {@link Interaction}, and falls back to the
+ * step's {@link Step.conceptTag} when it doesn't set its own.
+ */
+export interface StepPart {
+  /** Unique within the step (and ideally the lesson); must not equal the step id. */
+  id: string;
+  /** Concept this part exercises; defaults to the step's `conceptTag`. */
+  conceptTag?: string;
+  content: ContentBlock[];
+  /** Must include an `answer`; may also define its own `graph`/`liveCheck`/`goalLabel`. */
+  interaction: Interaction;
+  feedback: StepFeedback;
+}
+
 export interface Step {
   id: string;
   type: StepType;
   conceptTag?: string;
   content: ContentBlock[];
   interaction?: Interaction;
+  /**
+   * Hand-authored, step-by-step worked solution shown in the "solve" assistance
+   * level — prose + display math explaining *why* each move is made. Required on
+   * graded lesson steps (enforced by {@link validateLesson}); practice questions
+   * omit it since they don't offer the "solve" level.
+   */
+  solution?: ContentBlock[];
+  /**
+   * Optional problem-specific animation played in the "solve" walkthrough (see
+   * {@link SolveAnimation}). Falls back to a generic slider sweep when absent.
+   */
+  solveAnimation?: SolveAnimation;
+  /**
+   * Auto-playing, looping power-rule montage shown on a `read` step: each term
+   * a·xⁿ animates through the drop to (a·n)·xⁿ⁻¹, so a recap shows the pattern as
+   * motion rather than static text. Ignored on graded steps. Respects
+   * `prefers-reduced-motion` (renders the first term's result statically).
+   */
+  montage?: PowerRuleTerm[];
   feedback: StepFeedback;
+  /**
+   * Optional follow-up parts, revealed one at a time after the step's own
+   * interaction (Part 1) is cleared. The whole chain is graded as a single
+   * question — one nav square, one mastery question — but earns a flat XP bonus
+   * for being multi-part (see {@link XP_PER_MULTIPART_BONUS}). Only graded steps
+   * may have parts (never `read`/Riemann demos).
+   */
+  parts?: StepPart[];
+}
+
+/** Whether a step has any follow-up parts beyond its own interaction. */
+export function isMultiPart(step: Step): boolean {
+  return (step.parts?.length ?? 0) > 0;
+}
+
+/**
+ * The step viewed as its own first {@link StepPart}, so the step's interaction
+ * can be handled uniformly alongside its follow-ups. Defaults a missing
+ * interaction to an empty object for the (graded) common case.
+ */
+export function stepAsPart(step: Step): StepPart {
+  return {
+    id: step.id,
+    conceptTag: step.conceptTag,
+    content: step.content,
+    interaction: step.interaction ?? {},
+    feedback: step.feedback,
+  };
+}
+
+/**
+ * Every part of a step in display order: index 0 is the step's own interaction
+ * (Part 1), followed by any authored {@link Step.parts}. A single-part step
+ * yields a one-element array.
+ */
+export function getStepParts(step: Step): StepPart[] {
+  return [stepAsPart(step), ...(step.parts ?? [])];
+}
+
+/**
+ * Synthesize a {@link Step} that represents a single part, so the per-step
+ * machinery — {@link checkAnswer}, {@link answerProximity}, and the AI tutor —
+ * can grade and explain one part without special-casing. The part's
+ * `conceptTag` wins, falling back to the parent step's.
+ */
+export function partAsStep(step: Step, part: StepPart): Step {
+  return {
+    id: part.id,
+    type: step.type,
+    conceptTag: part.conceptTag ?? step.conceptTag,
+    content: part.content,
+    interaction: part.interaction,
+    feedback: part.feedback,
+  };
 }
 
 /**
@@ -504,9 +1176,29 @@ export interface Lesson {
 }
 
 /** Outcome of a practice session: how many questions were correct on the first try. */
+/** First-try tally for one concept within a single practice/review session. */
+export interface ConceptSessionResult {
+  /** Questions for this concept answered in the session (first submission only). */
+  seen: number;
+  /** Of those, how many were correct on the first try. */
+  firstTryCorrect: number;
+}
+
 export interface PracticeResult {
   correct: number;
   total: number;
+  /**
+   * Extra XP earned this session beyond the per-correct base — currently the
+   * flat {@link XP_PER_MULTIPART_BONUS} for each multi-part question cleared on
+   * the first try. Optional; treated as 0 when absent.
+   */
+  bonusXp?: number;
+  /**
+   * First-try results grouped by concept tag, folded into the learner's
+   * lifetime `conceptStats` on the results screen so practice/review updates
+   * mastery. Absent for plain lesson completions (which score per step instead).
+   */
+  conceptResults?: Record<string, ConceptSessionResult>;
 }
 
 export interface LessonMeta {
@@ -581,6 +1273,13 @@ export interface LessonProgress {
   currentStepIndex: number;
   stepAttempts: Record<string, number>;
   stepAnswers: Record<string, unknown>;
+  /**
+   * Step ids the learner cleared via the "solve" assistance level (worked
+   * examples). These advance the lesson but are excluded from concept mastery,
+   * so seeing the solution never inflates first-try accuracy. Absent on progress
+   * saved before this field existed.
+   */
+  solvedSteps?: string[];
   completedAt: string | null;
   updatedAt: string;
 }
@@ -588,6 +1287,22 @@ export interface LessonProgress {
 export interface StreakData {
   count: number;
   lastActiveDate: string;
+}
+
+/**
+ * Lifetime practice/review performance for a single concept tag, accumulated
+ * across sessions. Lets mastery keep moving after the one-shot lesson
+ * questions: practicing a concept well lifts its mastery, practicing it poorly
+ * lets it slip. Only the first submission of each question in a session counts
+ * (mirrors the XP / first-try rule), so retries can't inflate it.
+ */
+export interface ConceptStat {
+  /** Practice/review questions answered for this concept (first submission only). */
+  seen: number;
+  /** Of those, how many were correct on the first try. */
+  firstTryCorrect: number;
+  /** ISO timestamp of the most recent practice/review touching this concept. */
+  lastReviewed: string;
 }
 
 export interface UserProfile {
@@ -610,6 +1325,12 @@ export interface UserProfile {
    * stat. Absent on profiles created before this field existed.
    */
   activityLog?: Record<string, number>;
+  /**
+   * Per-concept practice/review performance, keyed by concept-tag slug. Feeds
+   * mastery beyond the lesson's built-in questions so review actually moves the
+   * needle. Absent on profiles created before this field existed.
+   */
+  conceptStats?: Record<string, ConceptStat>;
   createdAt: string;
   updatedAt: string;
 }
@@ -861,6 +1582,14 @@ export const XP_PER_LESSON = 50;
  */
 export const XP_PER_PRACTICE_CORRECT = 10;
 
+/**
+ * Flat bonus XP for a multi-part question. A multi-part question still counts as
+ * a single question for scoring and mastery, but earns this extra on top — in a
+ * lesson it's added per multi-part step on first completion, and in practice
+ * it's added per multi-part question cleared on the first try.
+ */
+export const XP_PER_MULTIPART_BONUS = 5;
+
 /** Questions shown in a single lesson practice session (sampled from the bank). */
 export const PRACTICE_SESSION_SIZE = 3;
 
@@ -872,6 +1601,22 @@ export const CUSTOM_PRACTICE_DEFAULT_SIZE = 5;
 
 /** Upper bound on how many questions a single custom practice set may request. */
 export const CUSTOM_PRACTICE_MAX_SIZE = 20;
+
+/**
+ * First-try accuracy (0–1) a learner must reach on a test-out challenge to skip
+ * the lesson(s) it covers. Set high on purpose: testing out should require real
+ * fluency, not a coin-flip pass.
+ */
+export const TEST_OUT_PASS_RATIO = 0.8;
+
+/** Target number of questions per concept in a test-out's coverage set. */
+export const TEST_OUT_PER_CONCEPT = 2;
+
+/** Hard cap on questions in a whole-level test-out (it spans several lessons). */
+export const TEST_OUT_LEVEL_MAX_QUESTIONS = 16;
+
+/** Fewest questions a test-out must be able to offer to be worth taking. */
+export const TEST_OUT_MIN_QUESTIONS = 3;
 
 /** Minimum number of questions a practice bank should contain. */
 export const PRACTICE_BANK_MIN = PRACTICE_SESSION_SIZE;

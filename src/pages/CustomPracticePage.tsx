@@ -30,15 +30,18 @@ function clampSize(value: number, max: number): number {
 const RECOMMENDED_LIMIT = 3;
 
 export function CustomPracticePage() {
-  const { progress, loading } = useProgress();
+  const { progress, profile, loading } = useProgress();
 
   // Concepts the learner can practice, drawn only from started lessons.
   const topics = useMemo(() => getCustomPracticeTopics(progress), [progress]);
 
   // Concepts ranked by the same learning-science signal the targeted review
-  // uses: a blend of weakness (shaky first-try accuracy) and recency/spacing
-  // (how long since the topic was last practiced).
-  const priorities = useMemo(() => getReviewPriorities(progress), [progress]);
+  // uses: a blend of weakness (shaky first-try accuracy, including practice) and
+  // recency/spacing (how long since the topic was last practiced).
+  const priorities = useMemo(
+    () => getReviewPriorities(progress, profile?.conceptStats),
+    [progress, profile?.conceptStats],
+  );
 
   // The few highest-priority topics that are actually practiceable now, each
   // with a short reason. Only topics with a real signal (priority > 0) qualify,
@@ -285,9 +288,6 @@ export function CustomPracticePage() {
                             isSelected ? "text-amber-200" : "text-amber-500"
                           }`}
                         />
-                      )}
-                      {isSelected && (
-                        <Icon name="check" className="h-3.5 w-3.5 shrink-0" />
                       )}
                       <span>
                         {conceptLabel(t.concept)}

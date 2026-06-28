@@ -11,16 +11,17 @@ import { AppHeader } from "../components/layout/AppHeader";
 import { SafeArea } from "../components/layout/SafeArea";
 
 export function ReviewPage() {
-  const { progress } = useProgress();
+  const { progress, profile } = useProgress();
 
   const [result, setResult] = useState<PracticeResult | null>(null);
   // Bumping this re-samples a new targeted set and remounts the player.
   const [attempt, setAttempt] = useState(0);
 
   // A fresh targeted draw for this attempt — weighted toward weak and stale
-  // concepts, backfilled from the wider pool when those can't fill it.
+  // concepts (using mastery that now reflects past review), backfilled from the
+  // wider pool when those can't fill it.
   const sessionSteps = useMemo(
-    () => getTargetedReviewSession(progress),
+    () => getTargetedReviewSession(progress, undefined, profile?.conceptStats),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [attempt],
   );

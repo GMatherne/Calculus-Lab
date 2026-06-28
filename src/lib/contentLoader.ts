@@ -3,6 +3,9 @@ import {
   PRACTICE_BANK_MIN,
   PRACTICE_SESSION_SIZE,
   REVIEW_SESSION_SIZE,
+  TEST_OUT_LEVEL_MAX_QUESTIONS,
+  TEST_OUT_MIN_QUESTIONS,
+  TEST_OUT_PER_CONCEPT,
 } from "../types/content";
 import { assertValidLesson } from "./validateLesson";
 
@@ -359,6 +362,98 @@ export function getLevelReviewSession(
   size: number = REVIEW_SESSION_SIZE,
 ): Step[] {
   return shuffle(getLevelReviewSteps(levelId)).slice(0, size);
+}
+
+/**
+ * Build a coverage-oriented "test-out" set from a pool of practice questions.
+ * Unlike a practice/review draw (which favors variety from a small random
+ * sample), a test-out must *certify* the material, so it first guarantees every
+ * concept in the pool is represented — round-robin, up to `perConcept` questions
+ * each, interactive-first — then fills any remaining room toward `max` with the
+ * leftovers. The final order is shuffled. Untagged questions are used only as
+ * filler, never to satisfy coverage.
+ */
+function buildTestOutSession(
+  pool: Step[],
+  perConcept: number,
+  max: number,
+): Step[] {
+  const byConcept = new Map<string, Step[]>();
+  const untagged: Step[] = [];
+  for (const s of pool) {
+    if (s.conceptTag) {
+      const list = byConcept.get(s.conceptTag);
+      if (list) list.push(s);
+      else byConcept.set(s.conceptTag, [s]);
+    } else {
+      untagged.push(s);
+    }
+  }
+
+  // One queue per concept, interactive-first then shuffled within each tier so
+  // the draw stays hands-on but varies between attempts.
+  const queues = [...byConcept.values()].map((qs) => {
+    const interactive = shuffle(qs.filter(isInteractive));
+    const plain = shuffle(qs.filter((s) => !isInteractive(s)));
+    return [...interactive, ...plain];
+  });
+
+  const picked: Step[] = [];
+  const seen = new Set<string>();
+  const take = (s: Step | undefined) => {
+    if (!s || seen.has(s.id) || picked.length >= max) return;
+    seen.add(s.id);
+    picked.push(s);
+  };
+
+  // Coverage pass: one question per concept per round, up to `perConcept`
+  // rounds, so every concept is represented before any is doubled up.
+  for (let round = 0; round < perConcept && picked.length < max; round++) {
+    for (const queue of queues) {
+      if (picked.length >= max) break;
+      take(queue.shift());
+    }
+  }
+
+  // Fill remaining room with leftovers (interactive-first), including untagged
+  // questions, so a lesson with few concepts still yields a full-length set.
+  if (picked.length < max) {
+    const leftovers = [...queues.flat(), ...untagged];
+    const fill = [
+      ...shuffle(leftovers.filter(isInteractive)),
+      ...shuffle(leftovers.filter((s) => !isInteractive(s))),
+    ];
+    for (const s of fill) take(s);
+  }
+
+  return shuffle(picked);
+}
+
+/**
+ * A whole-level test-out: a coverage set spanning every lesson in the level,
+ * capped at {@link TEST_OUT_LEVEL_MAX_QUESTIONS}. Passing it skips the entire
+ * stage at once.
+ */
+export function getLevelTestOutSession(levelId: string): Step[] {
+  const level = getLevel(levelId);
+  if (!level) return [];
+  const pool = level.lessons.flatMap((meta) => getPracticeBank(meta.id));
+  return buildTestOutSession(
+    pool,
+    TEST_OUT_PER_CONCEPT,
+    TEST_OUT_LEVEL_MAX_QUESTIONS,
+  );
+}
+
+/** Whether a level has enough questions across its lessons for a test-out. */
+export function canTestOutLevel(levelId: string): boolean {
+  const level = getLevel(levelId);
+  if (!level) return false;
+  const total = level.lessons.reduce(
+    (n, meta) => n + getPracticeBank(meta.id).length,
+    0,
+  );
+  return total >= TEST_OUT_MIN_QUESTIONS;
 }
 
 /** Completed-lesson tally and percentage for a level. */

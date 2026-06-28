@@ -5,8 +5,8 @@ import { Icon } from "../common/Icon";
 
 /** "Recommended review" — the learner's shakiest concepts, linked to practice. */
 export function WeakAreas() {
-  const { progress } = useProgress();
-  const weak = getWeakConcepts(progress);
+  const { progress, profile } = useProgress();
+  const weak = getWeakConcepts(progress, 3, profile?.conceptStats);
   if (weak.length === 0) return null;
 
   return (

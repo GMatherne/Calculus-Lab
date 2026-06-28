@@ -1,8 +1,10 @@
+import { useEffect, useRef } from "react";
 import { AppHeader } from "../layout/AppHeader";
 import { SafeArea } from "../layout/SafeArea";
 import { Sparkles } from "../habit/Sparkles";
 import { Icon } from "../common/Icon";
 import { useCountUp } from "../../hooks/useCountUp";
+import { playSound } from "../../lib/sound";
 
 interface LessonCompleteProps {
   lessonTitle: string;
@@ -26,6 +28,15 @@ export function LessonComplete({
 }: LessonCompleteProps) {
   const animatedGain = useCountUp(xpGained, { initial: 0 });
   const animatedTotal = useCountUp(totalXp ?? 0, { initial: 0 });
+
+  // Play the finished-lesson fanfare once when this screen appears. The ref
+  // guards against React's double-invoked effects in dev.
+  const soundedRef = useRef(false);
+  useEffect(() => {
+    if (soundedRef.current) return;
+    soundedRef.current = true;
+    playSound("complete");
+  }, []);
 
   return (
     <SafeArea>

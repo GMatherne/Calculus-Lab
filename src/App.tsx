@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthProvider";
 import { ProgressProvider } from "./contexts/ProgressProvider";
 import { SessionInsightsProvider } from "./contexts/SessionInsightsProvider";
+import { SoundProvider } from "./contexts/SoundProvider";
 import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
 import { SignupPage } from "./pages/SignupPage";
@@ -12,6 +13,7 @@ import { PracticePage } from "./pages/PracticePage";
 import { ReviewPage } from "./pages/ReviewPage";
 import { CustomPracticePage } from "./pages/CustomPracticePage";
 import { LevelReviewPage } from "./pages/LevelReviewPage";
+import { TestOutPage } from "./pages/TestOutPage";
 import { SettingsPage } from "./pages/SettingsPage";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 
@@ -57,6 +59,14 @@ const router = createBrowserRouter([
     ),
   },
   {
+    path: "/level/:levelId/test-out",
+    element: (
+      <ProtectedRoute>
+        <TestOutPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
     path: "/review",
     element: (
       <ProtectedRoute>
@@ -95,7 +105,9 @@ function App() {
     <AuthProvider>
       <ProgressProvider>
         <SessionInsightsProvider>
-          <RouterProvider router={router} />
+          <SoundProvider>
+            <RouterProvider router={router} />
+          </SoundProvider>
         </SessionInsightsProvider>
       </ProgressProvider>
     </AuthProvider>

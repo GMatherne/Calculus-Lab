@@ -29,16 +29,16 @@
     },
     {
       "id": "ftc-step-2",
-      "type": "slider_graph",
+      "type": "drag_drop",
       "conceptTag": "ftc",
       "content": [
         {
           "type": "text",
-          "body": "Take f(x) = 2. Drag x and watch the area A(x) grow. Each time x increases by 1, by how much does the shaded area increase?"
+          "body": "As x slides right, the shaded area isn't a single number — it traces out a whole function of x, the area function A(x). For the flat line f(x) = 2 the region is always a rectangle of height 2 and width x. Drag the tile that gives this area function."
         },
         {
           "type": "math",
-          "latex": "f(x) = 2"
+          "latex": "A(x) = \\int_0^x 2\\,dt"
         }
       ],
       "interaction": {
@@ -46,28 +46,45 @@
           "fn": "2",
           "domain": [0, 5],
           "yDomain": [0, 4],
-          "sliderLabel": "x",
           "xLabel": "x",
           "yLabel": "f",
-          "showSecant": false,
-          "showValue": false,
           "showArea": true,
           "areaStart": 0,
-          "showAreaValue": false,
-          "areaReadoutMath": true,
-          "integrand": "2",
-          "sliderMin": 0,
-          "sliderMax": 5,
-          "sliderStep": 1,
-          "initialSlider": 0
+          "initialSlider": 3,
+          "static": true
         },
         "hintAfterAttempts": 1,
-        "answer": { "type": "numeric", "value": 2, "tolerance": 0.1 }
+        "answer": {
+          "type": "drag_drop",
+          "prefix": "A(x) = \\int_0^x 2\\,dt =",
+          "blanks": [{ "accept": "2x" }],
+          "bank": ["2x", "2", "x", "x^2"]
+        },
+        "sandbox": {
+          "preset": "area_explorer",
+          "fn": "x + 1",
+          "a": 0,
+          "b": 3,
+          "caption": "Drag the upper limit and watch the area accumulate as a running total on this different curve."
+        }
+      },
+      "solution": [
+        { "type": "text", "body": "The shaded region under the flat line $f(x) = 2$ is a rectangle of height 2 and width x, so its area is height × width." },
+        { "type": "math", "latex": "A(x) = \\int_0^x 2\\,dt = 2 \\cdot x = 2x", "display": true },
+        { "type": "text", "body": "So $A(x) = 2x$. Its derivative is $A'(x) = 2 = f(x)$ — the area function is an antiderivative of $f$. That inverse link is exactly what the theorem is about to make precise." }
+      ],
+      "solveAnimation": {
+        "kind": "narrated",
+        "phases": [
+          { "text": "Under the flat line $f(x) = 2$, the shaded region is a rectangle: height $2$, width $x$." },
+          { "text": "Area = height × width $= 2 \\cdot x = 2x$, so the area function is $A(x) = 2x$." },
+          { "text": "And $A'(x) = 2 = f(x)$ — the area function is an antiderivative of $f$." }
+        ]
       },
       "feedback": {
-        "correct": "Exactly — the area grows by 2 per step, which is precisely the height f(x) = 2. The rate the area grows equals the function's value.",
-        "incorrect": "Each step adds a strip of height f(x) = 2 and width 1. How much area is that?",
-        "hint": "Each new strip has area 2 × 1 = 2, so the area grows by 2 per step — the same as the height."
+        "correct": "Exactly — height 2 times width x gives A(x) = 2x. And since A'(x) = 2 = f(x), the area function is an antiderivative of f.",
+        "incorrect": "The area of the rectangle is height × width = 2 · x. That whole product is A(x) — not the height or the width on its own.",
+        "hint": "Height 2 times width x gives A(x) = 2x."
       }
     },
     {
@@ -151,7 +168,28 @@
           "initialSlider": 0
         },
         "hintAfterAttempts": 1,
-        "answer": { "type": "numeric", "value": 4, "tolerance": 0.1 }
+        "answer": { "type": "numeric", "value": 4, "tolerance": 0.1 },
+        "sandbox": {
+          "preset": "riemann",
+          "fn": "x^2",
+          "a": 0,
+          "b": 3,
+          "caption": "The area under a curve is built from thin rectangles. Drag to add more on this different curve and watch the estimate settle on the true area."
+        }
+      },
+      "solution": [
+        { "type": "text", "body": "By the Fundamental Theorem, the area function grows at the rate $f(x)$. Here $f(x) = x$, so evaluate it at $x = 4$:" },
+        { "type": "math", "latex": "f(4) = 4", "display": true },
+        { "type": "text", "body": "At $x = 4$ the area accumulates at 4 units per unit of x." }
+      ],
+      "solveAnimation": {
+        "kind": "narrated",
+        "showAreaValue": true,
+        "phases": [
+          { "text": "By the theorem, the area's growth rate equals the height $f(x)$." },
+          { "text": "Here $f(x) = x$, so at $x = 4$ the rate is $f(4) = 4$.", "to": 4, "ms": 1800 },
+          { "text": "The taller the curve, the faster the area accumulates." }
+        ]
       },
       "feedback": {
         "correct": "Right — f(4) = 4, so at x = 4 the area is growing at a rate of 4 units of area per unit of x. The taller the curve, the faster the area accumulates.",
@@ -175,7 +213,7 @@
         },
         {
           "type": "text",
-          "body": "No infinite strips required — just an antiderivative and a subtraction."
+          "body": "No infinite strips required — just an antiderivative and a subtraction. Any antiderivative works here: if you carried a $+\\,C$, it would cancel in $F(b) - F(a)$, so a definite integral never needs one."
         }
       ],
       "feedback": { "correct": "", "incorrect": "", "hint": "" }
@@ -206,7 +244,25 @@
           "initialSlider": 3,
           "static": true
         },
-        "answer": { "type": "numeric", "value": 9, "tolerance": 0.1 }
+        "answer": { "type": "numeric", "value": 9, "tolerance": 0.1 },
+        "sandbox": {
+          "preset": "ftc_explorer",
+          "fn": "x + 1",
+          "a": 1,
+          "b": 3,
+          "domain": [0, 4],
+          "caption": "Slide the two limits and watch the signed area between them — that area is F(b) − F(a) on this different curve."
+        }
+      },
+      "solution": [
+        { "type": "text", "body": "An antiderivative of $2x$ is $F(x) = x^2$. Evaluate at the limits and subtract:" },
+        { "type": "math", "latex": "\\int_0^3 2x\\,dx = F(3) - F(0) = 3^2 - 0^2 = 9", "display": true }
+      ],
+      "solveAnimation": {
+        "kind": "ftc_evaluate",
+        "terms": [{ "coefficient": 2, "exponent": 1 }],
+        "a": 0,
+        "b": 3
       },
       "feedback": {
         "correct": "Exactly — F(3) − F(0) = 3² − 0² = 9.",
@@ -250,7 +306,29 @@
           "initialSlider": 1
         },
         "hintAfterAttempts": 1,
-        "answer": { "type": "slider", "value": 3, "tolerance": 0.15 }
+        "answer": { "type": "slider", "value": 3, "tolerance": 0.15 },
+        "sandbox": {
+          "preset": "ftc_explorer",
+          "fn": "0.5*x^2 + 1",
+          "a": 0,
+          "b": 2,
+          "domain": [0, 4],
+          "caption": "Drag the upper and lower limits and see how the signed area between them tracks F(b) − F(a)."
+        }
+      },
+      "solution": [
+        { "type": "text", "body": "With $F(x) = x^2$, the integral from 1 to t is $F(t) - F(1) = t^2 - 1$. Set it equal to 8:" },
+        { "type": "math", "latex": "t^2 - 1 = 8 \\;\\Rightarrow\\; t^2 = 9 \\;\\Rightarrow\\; t = 3", "display": true },
+        { "type": "text", "body": "Drag the slider to $t = 3$." }
+      ],
+      "solveAnimation": {
+        "kind": "narrated",
+        "showAreaValue": true,
+        "phases": [
+          { "text": "With $F(x) = x^2$, the integral from $1$ to $t$ is $F(t) - F(1) = t^2 - 1$." },
+          { "text": "Set it to $8$: $t^2 - 1 = 8$, so $t^2 = 9$ and $t = 3$." },
+          { "text": "Drag to $t = 3$.", "to": 3, "ms": 1800 }
+        ]
       },
       "feedback": {
         "correct": "Yes — $t^2 - 1 = 8$ gives $t^2 = 9$, so $t = 3$. The lower limit is 1, not 0, and the Fundamental Theorem handles it just the same.",
@@ -265,7 +343,7 @@
       "content": [
         {
           "type": "text",
-          "body": "Which function is an antiderivative of $f(x) = x^2$? (Its derivative should be $x^2$.)"
+          "body": "Which expression is the indefinite integral $\\int x^2\\,dx$ — the one that captures EVERY antiderivative of $f(x) = x^2$?"
         }
       ],
       "interaction": {
@@ -275,26 +353,39 @@
           "yDomain": [0, 9],
           "xLabel": "x",
           "yLabel": "f",
-          "showArea": true,
-          "areaStart": 0,
-          "initialSlider": 2,
           "static": true
         },
         "answer": {
           "type": "multiple_choice",
           "options": [
+            "$\\frac{x^3}{3} + C$",
             "$\\frac{x^3}{3}$",
-            "$2x$",
-            "$3x^2$",
-            "$x^3$"
+            "$x^3 + C$",
+            "$3x^2 + C$"
           ],
           "correctIndex": 0
+        },
+        "sandbox": {
+          "preset": "reverse_power_rule",
+          "caption": "Walk through the reverse power rule in general form, then apply it to find F here."
         }
       },
+      "solution": [
+        { "type": "text", "body": "Reverse the power rule on $x^2$: raise the exponent to 3, then divide by 3, giving $\\frac{x^3}{3}$ — one antiderivative." },
+        { "type": "math", "latex": "\\frac{d}{dx}\\left(\\frac{x^3}{3}\\right) = \\frac{3x^2}{3} = x^2", "display": true },
+        { "type": "text", "body": "But the derivative of any constant is 0, so the indefinite integral adds $+\\,C$ to stand for every antiderivative at once: $\\int x^2\\,dx = \\frac{x^3}{3} + C$ (the first option). Dropping the $+\\,C$ names just one of them." }
+      ],
+      "solveAnimation": {
+        "kind": "narrated",
+        "phases": [
+          { "text": "Reverse the power rule on $x^2$: raise the exponent to $3$, divide by $3$, giving $\\frac{x^3}{3}$." },
+          { "text": "Any constant has derivative $0$, so the indefinite integral carries $+\\,C$: $\\int x^2\\,dx = \\frac{x^3}{3} + C$." }
+        ]
+      },
       "feedback": {
-        "correct": "Correct — the derivative of $\\frac{x^3}{3}$ is $x^2$, so $\\frac{x^3}{3}$ is an antiderivative. That's exactly why the area under $x^2$ is $\\frac{b^3}{3}$.",
-        "incorrect": "Differentiate each option and see which gives $x^2$ back.",
-        "hint": "$\\frac{d}{dx}\\left(\\frac{x^3}{3}\\right) = \\frac{3x^2}{3} = x^2$. That's the one."
+        "correct": "Right — $\\frac{d}{dx}\\left(\\frac{x^3}{3}\\right) = x^2$, and the $+\\,C$ captures every antiderivative at once, so $\\int x^2\\,dx = \\frac{x^3}{3} + C$.",
+        "incorrect": "Reverse the power rule to get $\\frac{x^3}{3}$, then add $+\\,C$ — an indefinite integral stands for every antiderivative, not just one.",
+        "hint": "$x^2 \\to \\frac{x^3}{3}$ (raise the exponent, divide by 3), then write $+\\,C$."
       }
     },
     {
@@ -331,30 +422,34 @@
           "pairs": [
             {
               "prompt": "$x^2$",
-              "match": "$\\frac{x^3}{3}$"
+              "match": "$\\frac{x^3}{3} + C$"
             },
             {
               "prompt": "$x$",
-              "match": "$\\frac{x^2}{2}$"
+              "match": "$\\frac{x^2}{2} + C$"
             },
             {
               "prompt": "$x^3$",
-              "match": "$\\frac{x^4}{4}$"
+              "match": "$\\frac{x^4}{4} + C$"
             },
             {
               "prompt": "$1$",
-              "match": "$x$"
+              "match": "$x + C$"
             }
           ],
           "distractors": [
-            "$\\frac{x^3}{2}$"
+            "$\\frac{x^3}{2} + C$"
           ]
+        },
+        "sandbox": {
+          "preset": "reverse_power_rule",
+          "caption": "Step through the reverse power rule in general form to see how each antiderivative is built."
         }
       },
       "feedback": {
-        "correct": "Right — reverse the power rule: $x^n \\to \\frac{x^{n+1}}{n+1}$.",
-        "incorrect": "Differentiate each candidate; the one landing back on the prompt is its antiderivative.",
-        "hint": "$x^2 \\to \\frac{x^3}{3}$ and the constant $1 \\to x$."
+        "correct": "Right — reverse the power rule: $x^n \\to \\frac{x^{n+1}}{n+1} + C$. Every antiderivative carries the constant of integration.",
+        "incorrect": "Differentiate each candidate; the one landing back on the prompt is its antiderivative — and an indefinite antiderivative carries $+ C$.",
+        "hint": "$x^2 \\to \\frac{x^3}{3} + C$ and the constant $1 \\to x + C$."
       }
     },
     {
@@ -376,6 +471,14 @@
             "Plug both limits into $F$",
             "Subtract: $F(b) - F(a)$"
           ]
+        },
+        "sandbox": {
+          "preset": "ftc_explorer",
+          "fn": "2*x + 1",
+          "a": 0,
+          "b": 3,
+          "domain": [0, 4],
+          "caption": "Move the two limits and watch the signed area update — the geometry behind F(b) − F(a)."
         }
       },
       "feedback": {
@@ -391,7 +494,7 @@
       "content": [
         {
           "type": "text",
-          "body": "Drag the antiderivative of $2x$ into the blank. (For an indefinite integral we would also add $+ C$.)"
+          "body": "Build the indefinite integral $\\int 2x\\,dx$: drag the antiderivative into the first blank, then its $+ C$ into the second — with no limits, an integral always carries one."
         }
       ],
       "interaction": {
@@ -399,22 +502,26 @@
           "type": "drag_drop",
           "prefix": "\\int 2x\\,dx =",
           "blanks": [
-            {
-              "accept": "x^2"
-            }
+            { "accept": "x^2" },
+            { "accept": "C", "connector": "+" }
           ],
           "bank": [
             "x^2",
+            "C",
             "2x^2",
             "\\frac{x^2}{2}",
             "\\frac{x^3}{3}"
           ]
+        },
+        "sandbox": {
+          "preset": "reverse_power_rule",
+          "caption": "Walk through the reverse power rule in general form, then apply it to find the antiderivative here."
         }
       },
       "feedback": {
-        "correct": "Right — $\\frac{d}{dx}(x^2) = 2x$, so $\\int 2x\\,dx = x^2 + C$.",
-        "incorrect": "Which tile differentiates back to $2x$?",
-        "hint": "Reverse the power rule: $2x \\to x^2$."
+        "correct": "Right — $\\frac{d}{dx}(x^2) = 2x$, and with no limits the integral carries a constant, so $\\int 2x\\,dx = x^2 + C$.",
+        "incorrect": "Find the tile that differentiates back to $2x$, then add the $+ C$.",
+        "hint": "Reverse the power rule: $2x \\to x^2$, then $+ C$."
       }
     },
     {
@@ -451,6 +558,14 @@
           "distractors": [
             "6"
           ]
+        },
+        "sandbox": {
+          "preset": "ftc_explorer",
+          "fn": "0.5*x^2 + 1",
+          "a": 1,
+          "b": 3,
+          "domain": [0, 4],
+          "caption": "Slide both limits and watch the signed area between them change — that's F(b) − F(a)."
         }
       },
       "feedback": {
@@ -484,6 +599,14 @@
             "2x",
             "t^2"
           ]
+        },
+        "sandbox": {
+          "preset": "ftc_explorer",
+          "fn": "x + 1",
+          "a": 0,
+          "b": 3,
+          "domain": [0, 4],
+          "caption": "Drag the limits and notice how the accumulated signed area is exactly F(b) − F(a)."
         }
       },
       "feedback": {
@@ -512,6 +635,14 @@
             "$\\int_0^3 2\\,dx$",
             "$\\int_1^3 2x\\,dx$"
           ]
+        },
+        "sandbox": {
+          "preset": "ftc_explorer",
+          "fn": "2*x + 1",
+          "a": 1,
+          "b": 3,
+          "domain": [0, 4],
+          "caption": "Slide the two limits to feel how the signed area between them grows and shrinks — that area is F(b) − F(a)."
         }
       },
       "feedback": {
@@ -522,83 +653,102 @@
     },
     {
       "id": "ftc-practice-7",
-      "type": "match",
-      "conceptTag": "antiderivative",
-      "content": [
-        {
-          "type": "text",
-          "body": "Match each function to its antiderivative."
-        }
-      ],
-      "interaction": {
-        "answer": {
-          "type": "match",
-          "pairs": [
-            {
-              "prompt": "$2x$",
-              "match": "x^2"
-            },
-            {
-              "prompt": "$3x^2$",
-              "match": "x^3"
-            },
-            {
-              "prompt": "$4x^3$",
-              "match": "x^4"
-            },
-            {
-              "prompt": "$2$",
-              "match": "2x"
-            }
-          ],
-          "distractors": [
-            "\\frac{x^2}{2}"
-          ]
-        }
-      },
-      "feedback": {
-        "correct": "Right — differentiate each answer and it returns the prompt.",
-        "incorrect": "Differentiate each option; it should give the prompt back.",
-        "hint": "$2x \\to x^2$ and the constant $2 \\to 2x$."
-      }
-    },
-    {
-      "id": "ftc-practice-8",
-      "type": "slider_graph",
+      "type": "construct_graph",
       "conceptTag": "ftc",
       "content": [
         {
           "type": "text",
-          "body": "$\\int_0^t (x - 2)\\,dx$ dips negative, then climbs back. Drag $t$ to where this signed area returns to 0."
+          "body": "For the constant function f(x) = 2 (the faint line), the accumulated-area function adds up the area swept from 0 to x. Drag each dot to plot A at x = 0, 1, 2, and 3."
+        },
+        {
+          "type": "math",
+          "latex": "A(x) = \\int_0^x 2\\,dt",
+          "display": true
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "construct_graph",
+          "domain": [0, 3.5],
+          "yDomain": [0, 7],
+          "referenceFn": "2",
+          "targetFn": "2*x",
+          "snap": 0.5,
+          "xTickStep": 1,
+          "yTickStep": 1,
+          "xLabel": "x",
+          "yLabel": "A",
+          "nodes": [
+            { "x": 0, "tolerance": 0.6 },
+            { "x": 1, "tolerance": 0.6 },
+            { "x": 2, "tolerance": 0.6 },
+            { "x": 3, "tolerance": 0.6 }
+          ]
+        },
+        "sandbox": {
+          "preset": "area_explorer",
+          "fn": "2*x + 1",
+          "a": 0,
+          "b": 3,
+          "caption": "Drag the upper limit and watch the accumulated area grow as a running total on a different curve."
+        }
+      },
+      "feedback": {
+        "correct": "Exactly — each unit step adds a 2-by-1 strip, so A(x) = 2x: a straight line through (0, 0), (1, 2), (2, 4), and (3, 6). Its slope is f(x) = 2, just as the theorem promises.",
+        "incorrect": "By x the area is a rectangle of height 2 and width x, so A(x) = 2x. Plot the heights 0, 2, 4, 6.",
+        "hint": "A(x) = 2x grows by 2 each step: (0, 0), (1, 2), (2, 4), (3, 6)."
+      }
+    },
+    {
+      "id": "ftc-practice-8",
+      "type": "multiple_choice",
+      "conceptTag": "ftc",
+      "content": [
+        {
+          "type": "text",
+          "body": "The curve f(x) = x − 2 is below the axis on [0, 2] and above it on [2, 3]. Using an antiderivative, what is the value of this integral?"
+        },
+        {
+          "type": "math",
+          "latex": "\\int_0^3 (x-2)\\,dx",
+          "display": true
         }
       ],
       "interaction": {
         "graph": {
           "fn": "x - 2",
-          "domain": [0, 4],
-          "yDomain": [-3, 3],
-          "sliderLabel": "t",
+          "domain": [0, 3],
+          "yDomain": [-2.5, 1.5],
           "xLabel": "x",
           "yLabel": "f",
-          "showSecant": false,
-          "showValue": false,
           "showArea": true,
           "areaStart": 0,
-          "showAreaValue": false,
-          "areaReadoutMath": true,
-          "integrand": "(x - 2)",
-          "sliderMin": 0,
-          "sliderMax": 4,
-          "sliderStep": 0.1,
-          "initialSlider": 0
+          "initialSlider": 3,
+          "static": true
         },
-        "hintAfterAttempts": 1,
-        "answer": { "type": "slider", "value": 4, "tolerance": 0.2 }
+        "answer": {
+          "type": "multiple_choice",
+          "options": [
+            "$-\\tfrac{3}{2}$",
+            "$\\tfrac{5}{2}$",
+            "$\\tfrac{1}{2}$",
+            "$-2$"
+          ],
+          "correctIndex": 0
+        },
+        "sandbox": {
+          "preset": "ftc_explorer",
+          "fn": "x - 1",
+          "a": 0,
+          "b": 3,
+          "domain": [-1, 4],
+          "caption": "Slide the two limits across a curve that dips below the axis and watch the signed area F(b) − F(a)."
+        }
       },
       "feedback": {
-        "correct": "Yes — $A(t) = \\frac{t^2}{2} - 2t = 0$ at $t = 4$: the negative area on $[0,2]$ exactly cancels the positive area on $[2,4]$.",
-        "incorrect": "The signed area is negative while $x < 2$, then grows positive. Find the $t > 0$ where it cancels back to 0.",
-        "hint": "$\\frac{t^2}{2} - 2t = 0 \\to \\frac{t}{2}(t - 4) = 0 \\to t = 4$."
+        "correct": "Right — with F(x) = x²/2 − 2x, F(3) − F(0) = (4.5 − 6) − 0 = −1.5. The −2 of area below the axis outweighs the +0.5 above it.",
+        "incorrect": "Use F(x) = x²/2 − 2x and compute F(3) − F(0). Area below the axis counts as negative, so the two pieces don't fully cancel.",
+        "hint": "F(3) − F(0) = (9/2 − 6) − 0 = −3/2. The below-axis part (−2) beats the above-axis part (+0.5)."
       }
     },
     {
@@ -608,7 +758,7 @@
       "content": [
         {
           "type": "text",
-          "body": "Drag the antiderivative of $x$ into the blank. (With no limits we would also write $+ C$.)"
+          "body": "Build the indefinite integral $\\int x\\,dx$: drag the antiderivative into the first blank, then its $+ C$ into the second — with no limits, an integral always carries one."
         }
       ],
       "interaction": {
@@ -616,22 +766,26 @@
           "type": "drag_drop",
           "prefix": "\\int x\\,dx =",
           "blanks": [
-            {
-              "accept": "\\frac{x^2}{2}"
-            }
+            { "accept": "\\frac{x^2}{2}" },
+            { "accept": "C", "connector": "+" }
           ],
           "bank": [
             "\\frac{x^2}{2}",
+            "C",
             "x^2",
             "\\frac{x^3}{3}",
             "2x"
           ]
+        },
+        "sandbox": {
+          "preset": "reverse_power_rule",
+          "caption": "Step through the reverse power rule in general form to see how to reverse a power."
         }
       },
       "feedback": {
-        "correct": "Right — $\\frac{d}{dx}\\!\\left(\\frac{x^2}{2}\\right) = x$, so $\\int x\\,dx = \\frac{x^2}{2} + C$.",
-        "incorrect": "Which tile differentiates back to $x$?",
-        "hint": "Reverse the power rule: $x \\to \\frac{x^2}{2}$."
+        "correct": "Right — $\\frac{d}{dx}\\!\\left(\\frac{x^2}{2}\\right) = x$, and with no limits the integral carries a constant, so $\\int x\\,dx = \\frac{x^2}{2} + C$.",
+        "incorrect": "Find the tile that differentiates back to $x$, then add the $+ C$.",
+        "hint": "Reverse the power rule: $x \\to \\frac{x^2}{2}$, then $+ C$."
       }
     },
     {
@@ -663,6 +817,14 @@
             "8",
             "6"
           ]
+        },
+        "sandbox": {
+          "preset": "ftc_explorer",
+          "fn": "x + 1",
+          "a": 1,
+          "b": 3,
+          "domain": [0, 4],
+          "caption": "Move the two limits and watch the signed area between them — that area is F(b) − F(a)."
         }
       },
       "feedback": {

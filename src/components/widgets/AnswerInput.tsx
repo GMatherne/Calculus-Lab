@@ -1,16 +1,25 @@
 import type { AnswerSpec } from "../../types/content";
-import { MathBlock, RichText } from "./MathBlock";
+import { MathBlock } from "./MathBlock";
 import { DragDropInput } from "./DragDropInput";
+import { MultipleChoiceInput } from "./MultipleChoiceInput";
 import { MultiChoiceInput } from "./MultiChoiceInput";
 import { MatchInput } from "./MatchInput";
 import { SignChartInput } from "./SignChartInput";
 import { OrderListInput } from "./OrderListInput";
 import { RiemannInput } from "./RiemannInput";
+import { ConstructGraphInput } from "./ConstructGraphInput";
+import { PaintIntervalsInput } from "./PaintIntervalsInput";
+import { TangentLineInput } from "./TangentLineInput";
+import { IntegralBoundsInput } from "./IntegralBoundsInput";
+import { SimulateInput } from "./SimulateInput";
+import { SelectRegionInput } from "./SelectRegionInput";
 
 const COEFF_MIN = 0;
 const COEFF_MAX = 99;
 const EXP_MIN = 0;
 const EXP_MAX = 9;
+const DEN_MIN = 1;
+const DEN_MAX = 12;
 
 /** Render a single power term a·xⁿ as LaTeX, collapsing trivial cases. */
 function termToLatex(coefficient: number, exponent: number): string {
@@ -19,6 +28,22 @@ function termToLatex(coefficient: number, exponent: number): string {
   const c = coefficient === 1 ? "" : coefficient === -1 ? "-" : `${coefficient}`;
   const p = exponent === 1 ? "x" : `x^{${exponent}}`;
   return `${c}${p}`;
+}
+
+/**
+ * Render a fractional power term (numerator/denominator)·xⁿ as LaTeX. A
+ * denominator of 1 is just an integer coefficient, so it falls back to the plain
+ * term; a zero numerator collapses the whole thing to 0.
+ */
+function fractionTermToLatex(
+  numerator: number,
+  denominator: number,
+  exponent: number,
+): string {
+  if (numerator === 0) return "0";
+  if (denominator === 1) return termToLatex(numerator, exponent);
+  const p = exponent === 0 ? "" : exponent === 1 ? "x" : `x^{${exponent}}`;
+  return `\\frac{${numerator}}{${denominator}}${p}`;
 }
 
 function clampInt(v: number, lo: number, hi: number): number {
@@ -98,37 +123,14 @@ export function AnswerInput({
 }: AnswerInputProps) {
   if (spec.type === "multiple_choice") {
     return (
-      <div className="space-y-2">
-        {spec.options.map((opt, i) => {
-          const selected = value === i;
-          let stateClasses: string;
-
-          if (reveal && isCorrect && i === spec.correctIndex) {
-            // A correct submission confirms the chosen option in green.
-            stateClasses = "border-emerald-500 bg-emerald-50 text-emerald-900";
-          } else if (reveal && !isCorrect && selected) {
-            // A wrong submission only flags the chosen option; the correct
-            // answer is never revealed so the learner can try again.
-            stateClasses = "border-rose-500 bg-rose-50 text-rose-900";
-          } else if (selected) {
-            stateClasses = "border-indigo-600 bg-indigo-50 text-indigo-900";
-          } else {
-            stateClasses = "border-slate-200 bg-white hover:border-indigo-300";
-          }
-
-          return (
-            <button
-              key={i}
-              type="button"
-              disabled={disabled}
-              onClick={() => onChange(i)}
-              className={`w-full min-h-[44px] rounded-xl border px-4 py-3 text-left text-base transition-colors ${stateClasses}`}
-            >
-              <RichText text={opt} />
-            </button>
-          );
-        })}
-      </div>
+      <MultipleChoiceInput
+        spec={spec}
+        value={value as number | undefined}
+        onChange={onChange}
+        disabled={disabled}
+        reveal={reveal}
+        isCorrect={isCorrect}
+      />
     );
   }
 
@@ -162,7 +164,9 @@ export function AnswerInput({
   }
 
   if (spec.type === "power_term") {
-    const v = value as { coefficient?: number; exponent?: number } | undefined;
+    const v = value as
+      | { coefficient?: number; exponent?: number; denominator?: number }
+      | undefined;
     const coefficient = clampInt(
       Number.isFinite(Number(v?.coefficient))
         ? Number(v?.coefficient)
@@ -177,6 +181,76 @@ export function AnswerInput({
       EXP_MIN,
       EXP_MAX,
     );
+
+    // Fraction mode (reverse power rule): the coefficient is a fraction, so the
+    // builder gains a denominator stepper and the preview renders a/b·xⁿ.
+    if (spec.denominator != null) {
+      const denominator = clampInt(
+        Number.isFinite(Number(v?.denominator))
+          ? Number(v?.denominator)
+          : spec.startDenominator ?? 1,
+        DEN_MIN,
+        DEN_MAX,
+      );
+      const setFraction = (n: number, d: number, e: number) =>
+        onChange({
+          coefficient: clampInt(n, COEFF_MIN, COEFF_MAX),
+          denominator: clampInt(d, DEN_MIN, DEN_MAX),
+          exponent: clampInt(e, EXP_MIN, EXP_MAX),
+        });
+
+      const liveMatch =
+        live === true &&
+        coefficient === spec.coefficient &&
+        denominator === spec.denominator &&
+        exponent === spec.exponent;
+      const previewClasses = reveal
+        ? isCorrect
+          ? "border-emerald-500 bg-emerald-50"
+          : "border-rose-500 bg-rose-50"
+        : liveMatch
+          ? "border-emerald-400 bg-emerald-50/60"
+          : "border-slate-200 bg-slate-50";
+
+      return (
+        <div className="space-y-3">
+          <div className="flex items-start justify-center gap-5 py-1 sm:gap-8">
+            <Stepper
+              label="Numerator"
+              value={coefficient}
+              min={COEFF_MIN}
+              max={COEFF_MAX}
+              disabled={disabled}
+              onChange={(n) => setFraction(n, denominator, exponent)}
+            />
+            <Stepper
+              label="Denominator"
+              value={denominator}
+              min={DEN_MIN}
+              max={DEN_MAX}
+              disabled={disabled}
+              onChange={(d) => setFraction(coefficient, d, exponent)}
+            />
+            <Stepper
+              label="Exponent"
+              value={exponent}
+              min={EXP_MIN}
+              max={EXP_MAX}
+              disabled={disabled}
+              onChange={(e) => setFraction(coefficient, denominator, e)}
+            />
+          </div>
+          <div
+            className={`rounded-xl border px-4 py-3 text-center text-lg ${previewClasses}`}
+          >
+            <MathBlock
+              latex={`${spec.previewPrefix ?? "F(x) ="} ${fractionTermToLatex(coefficient, denominator, exponent)}${spec.plusC ? " + C" : ""}`}
+            />
+          </div>
+        </div>
+      );
+    }
+
     const set = (c: number, e: number) =>
       onChange({
         coefficient: clampInt(c, COEFF_MIN, COEFF_MAX),
@@ -220,7 +294,7 @@ export function AnswerInput({
           className={`rounded-xl border px-4 py-3 text-center text-lg ${previewClasses}`}
         >
           <MathBlock
-            latex={`${spec.previewPrefix ?? "f'(x) ="} ${termToLatex(coefficient, exponent)}`}
+            latex={`${spec.previewPrefix ?? "f'(x) ="} ${termToLatex(coefficient, exponent)}${spec.plusC ? " + C" : ""}`}
           />
         </div>
       </div>
@@ -297,6 +371,84 @@ export function AnswerInput({
       <RiemannInput
         spec={spec}
         value={value as number | undefined}
+        onChange={onChange}
+        disabled={disabled}
+        reveal={reveal}
+        isCorrect={isCorrect}
+      />
+    );
+  }
+
+  if (spec.type === "construct_graph") {
+    return (
+      <ConstructGraphInput
+        spec={spec}
+        value={value as (number | null)[] | undefined}
+        onChange={onChange}
+        disabled={disabled}
+        reveal={reveal}
+        isCorrect={isCorrect}
+      />
+    );
+  }
+
+  if (spec.type === "paint_intervals") {
+    return (
+      <PaintIntervalsInput
+        spec={spec}
+        value={value as boolean[] | undefined}
+        onChange={onChange}
+        disabled={disabled}
+        reveal={reveal}
+        isCorrect={isCorrect}
+      />
+    );
+  }
+
+  if (spec.type === "tangent_line") {
+    return (
+      <TangentLineInput
+        spec={spec}
+        value={value as number | undefined}
+        onChange={onChange}
+        disabled={disabled}
+        reveal={reveal}
+        isCorrect={isCorrect}
+      />
+    );
+  }
+
+  if (spec.type === "integral_bounds") {
+    return (
+      <IntegralBoundsInput
+        spec={spec}
+        value={value as { a?: number; b?: number } | undefined}
+        onChange={onChange}
+        disabled={disabled}
+        reveal={reveal}
+        isCorrect={isCorrect}
+      />
+    );
+  }
+
+  if (spec.type === "simulate") {
+    return (
+      <SimulateInput
+        spec={spec}
+        value={value as number[] | undefined}
+        onChange={onChange}
+        disabled={disabled}
+        reveal={reveal}
+        isCorrect={isCorrect}
+      />
+    );
+  }
+
+  if (spec.type === "select_region") {
+    return (
+      <SelectRegionInput
+        spec={spec}
+        value={value as number | boolean[] | null | undefined}
         onChange={onChange}
         disabled={disabled}
         reveal={reveal}
