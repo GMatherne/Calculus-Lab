@@ -22,7 +22,8 @@ FIREBASE_PROJECT_ID = "calculus-lab"
 # real deployed origin(s) and any local dev ports.
 ALLOWED_ORIGINS = "https://calculus-lab.web.app,https://calculus-lab.firebaseapp.com,http://localhost:5173,http://localhost:5174"
 
-# Per-user limits. Enforced ONLY when a RATE_LIMIT KV namespace is bound below;
+# Per-user limits, counted across BOTH the per-step tutor and the free-form
+# roadmap chat. Enforced ONLY when a RATE_LIMIT KV namespace is bound below;
 # without KV the tutor still works, just without per-user counters (rely on the
 # OpenAI dashboard spend cap as the hard backstop).
 TUTOR_DAILY_LIMIT = "500"
@@ -33,7 +34,11 @@ TUTOR_BURST_LIMIT = "15"
 # MUST stay "false" (or be removed) for any public deployment.
 ALLOW_UNAUTHENTICATED = "false"
 
-# OPTIONAL HARDENING — per-user daily + burst rate limiting.
+# RECOMMENDED HARDENING — per-user daily + burst rate limiting.
+# Strongly recommended before shipping the free-form roadmap chat: it's an open
+# conversation (not a 5-message-per-step cap), so per-user counters are the main
+# guard against a signed-in user running up cost. The OpenAI spend cap remains
+# the hard backstop.
 # 1) Create a namespace:  npx wrangler kv namespace create RATE_LIMIT
 # 2) Paste the printed id below and uncomment the three lines.
 # [[kv_namespaces]]

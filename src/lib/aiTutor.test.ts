@@ -96,6 +96,22 @@ describe("describeAnswer", () => {
     expect(describeAnswer(spec, {})).toBe("(incomplete term)");
   });
 
+  it("power_term renders a fractional coefficient in fraction mode", () => {
+    const spec: AnswerSpec = {
+      type: "power_term",
+      coefficient: 5,
+      denominator: 3,
+      exponent: 3,
+    };
+    expect(
+      describeAnswer(spec, { coefficient: 5, denominator: 3, exponent: 3 }),
+    ).toBe("(5/3)x^3");
+    // A denominator of 1 collapses back to a plain term.
+    expect(
+      describeAnswer(spec, { coefficient: 5, denominator: 1, exponent: 3 }),
+    ).toBe("5x^3");
+  });
+
   it("drag_drop assembles placed tiles with connectors and a prefix", () => {
     const spec: AnswerSpec = {
       type: "drag_drop",

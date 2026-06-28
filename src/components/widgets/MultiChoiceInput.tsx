@@ -1,5 +1,23 @@
+import { useMemo } from "react";
 import type { MultiChoiceAnswer } from "../../types/content";
 import { RichText } from "./MathBlock";
+
+/**
+ * A permutation of [0, n) that differs from the identity order when possible, so
+ * a row authored with the correct answer first doesn't always show it first.
+ */
+function shuffledIndices(n: number): number[] {
+  const order = Array.from({ length: n }, (_, i) => i);
+  if (n < 2) return order;
+  for (let attempt = 0; attempt < 12; attempt++) {
+    for (let i = order.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    if (order.some((v, i) => v !== i)) return order;
+  }
+  return order;
+}
 
 interface MultiChoiceInputProps {
   spec: MultiChoiceAnswer;
@@ -28,6 +46,19 @@ export function MultiChoiceInput({
 }: MultiChoiceInputProps) {
   const picks: (number | null)[] = spec.parts.map((_, i) => value?.[i] ?? null);
 
+  // Randomize each row's option order so the correct choice isn't always first.
+  // Indices (not options) are shuffled and every interaction maps back to the
+  // original index, so grading, persistence, and the tutor are unaffected. The
+  // spec is stable within a step, so the order holds across retries and only
+  // reshuffles when the step changes.
+  const orders = useMemo(
+    () =>
+      spec.parts.map((part) =>
+        shuffledIndices((part.options ?? spec.options ?? []).length),
+      ),
+    [spec],
+  );
+
   const select = (rowIndex: number, optionIndex: number) => {
     const next = spec.parts.map((_, i) => picks[i]);
     next[rowIndex] = optionIndex;
@@ -50,7 +81,8 @@ export function MultiChoiceInput({
               <RichText text={part.prompt} />
             </div>
             <div className="flex flex-wrap gap-2">
-              {options.map((opt, oi) => {
+              {orders[ri].map((oi) => {
+                const opt = options[oi];
                 const isChosen = chosen === oi;
                 let stateClasses: string;
 

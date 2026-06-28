@@ -1,5 +1,7 @@
 import { validateLesson, assertValidLesson } from "./validateLesson";
-import type { Lesson, Step, MultiChoicePart } from "../types/content";
+import type { Lesson, Step, MultiChoicePart, Sandbox } from "../types/content";
+
+const solution = [{ type: "text" as const, body: "Worked solution." }];
 
 function numericStep(id: string): Step {
   return {
@@ -7,6 +9,7 @@ function numericStep(id: string): Step {
     type: "numeric",
     content: [],
     interaction: { answer: { type: "numeric", value: 1 } },
+    solution,
     feedback: { correct: "c", incorrect: "i", hint: "h" },
   };
 }
@@ -20,6 +23,7 @@ function sliderGraphStep(id: string): Step {
       graph: { fn: "x^2", domain: [0, 4] },
       answer: { type: "slider", value: 2 },
     },
+    solution,
     feedback: { correct: "c", incorrect: "i", hint: "h" },
   };
 }
@@ -36,6 +40,7 @@ function dragDropStep(id: string): Step {
         bank: ["3x^2", "2x", "x^2"],
       },
     },
+    solution,
     feedback: { correct: "c", incorrect: "i", hint: "h" },
   };
 }
@@ -180,6 +185,7 @@ describe("validateLesson", () => {
         type: "multi_choice",
         content: [],
         interaction: { answer: { type: "multi_choice", options, parts } },
+        solution,
         feedback: { correct: "c", incorrect: "i", hint: "h" },
       };
       return lesson;
@@ -251,6 +257,7 @@ describe("validateLesson", () => {
             distractors: ["x^3/2"],
           },
         },
+        solution,
         feedback: { correct: "c", incorrect: "i", hint: "h" },
       };
     }
@@ -340,6 +347,7 @@ describe("validateLesson", () => {
             reveal: { tangent: true },
           },
         },
+        solution,
         feedback: { correct: "c", incorrect: "i", hint: "h" },
       };
     }
@@ -380,6 +388,389 @@ describe("validateLesson", () => {
       expect(hasError(validateLesson(lesson), /tolerance must be positive/)).toBe(
         true,
       );
+    });
+  });
+
+  describe("select_region", () => {
+    function selectRegionStep(id: string): Step {
+      return {
+        id,
+        type: "select_region",
+        content: [],
+        interaction: {
+          answer: {
+            type: "select_region",
+            fn: "x^2",
+            domain: [0, 4],
+            bands: [
+              { from: 0, to: 1, correct: true },
+              { from: 1, to: 2 },
+              { from: 2, to: 3 },
+            ],
+          },
+        },
+        solution,
+        feedback: { correct: "c", incorrect: "i", hint: "h" },
+      };
+    }
+
+    it("accepts a valid single-select region step", () => {
+      const lesson = validLesson();
+      lesson.steps[1] = selectRegionStep("s2");
+      expect(validateLesson(lesson)).toEqual([]);
+    });
+
+    it("flags fewer than two bands", () => {
+      const lesson = validLesson();
+      lesson.steps[1] = {
+        ...selectRegionStep("s2"),
+        interaction: {
+          answer: {
+            type: "select_region",
+            fn: "x^2",
+            domain: [0, 4],
+            bands: [{ from: 0, to: 1, correct: true }],
+          },
+        },
+      };
+      expect(hasError(validateLesson(lesson), /at least two bands/)).toBe(true);
+    });
+
+    it("requires exactly one correct band for single-select", () => {
+      const lesson = validLesson();
+      lesson.steps[1] = {
+        ...selectRegionStep("s2"),
+        interaction: {
+          answer: {
+            type: "select_region",
+            fn: "x^2",
+            domain: [0, 4],
+            bands: [
+              { from: 0, to: 1, correct: true },
+              { from: 1, to: 2, correct: true },
+              { from: 2, to: 3 },
+            ],
+          },
+        },
+      };
+      expect(hasError(validateLesson(lesson), /exactly one correct band/)).toBe(true);
+    });
+
+    it("flags overlapping bands", () => {
+      const lesson = validLesson();
+      lesson.steps[1] = {
+        ...selectRegionStep("s2"),
+        interaction: {
+          answer: {
+            type: "select_region",
+            fn: "x^2",
+            domain: [0, 4],
+            bands: [
+              { from: 0, to: 2, correct: true },
+              { from: 1, to: 3 },
+            ],
+          },
+        },
+      };
+      expect(hasError(validateLesson(lesson), /without overlapping/)).toBe(true);
+    });
+
+    it("flags a band outside the domain", () => {
+      const lesson = validLesson();
+      lesson.steps[1] = {
+        ...selectRegionStep("s2"),
+        interaction: {
+          answer: {
+            type: "select_region",
+            fn: "x^2",
+            domain: [0, 4],
+            bands: [
+              { from: 0, to: 1, correct: true },
+              { from: 1, to: 5 },
+            ],
+          },
+        },
+      };
+      expect(hasError(validateLesson(lesson), /within the domain/)).toBe(true);
+    });
+
+    it("rejects an accompanying graph config (the widget draws its own)", () => {
+      const lesson = validLesson();
+      lesson.steps[1] = {
+        ...selectRegionStep("s2"),
+        interaction: {
+          graph: { fn: "x^2", domain: [0, 4] },
+          answer: {
+            type: "select_region",
+            fn: "x^2",
+            domain: [0, 4],
+            bands: [
+              { from: 0, to: 1, correct: true },
+              { from: 1, to: 2 },
+            ],
+          },
+        },
+      };
+      expect(hasError(validateLesson(lesson), /must not also define a graph/)).toBe(
+        true,
+      );
+    });
+
+    it("accepts a valid multi-select region step", () => {
+      const lesson = validLesson();
+      lesson.steps[1] = {
+        ...selectRegionStep("s2"),
+        interaction: {
+          answer: {
+            type: "select_region",
+            fn: "x^3 - 3*x",
+            domain: [-2, 2],
+            multi: true,
+            bands: [
+              { from: -2, to: -1, correct: true },
+              { from: -1, to: 1 },
+              { from: 1, to: 2, correct: true },
+            ],
+          },
+        },
+      };
+      expect(validateLesson(lesson)).toEqual([]);
+    });
+  });
+
+  describe("multi-part questions", () => {
+    function multiPartStep(id: string): Step {
+      return {
+        id,
+        type: "numeric",
+        content: [],
+        interaction: { answer: { type: "numeric", value: 6 } },
+        solution,
+        feedback: { correct: "c", incorrect: "i", hint: "h" },
+        parts: [
+          {
+            id: `${id}-b`,
+            content: [],
+            interaction: { answer: { type: "numeric", value: 2 } },
+            feedback: { correct: "c", incorrect: "i", hint: "h" },
+          },
+        ],
+      };
+    }
+
+    it("accepts a valid multi-part step", () => {
+      const lesson = validLesson();
+      lesson.steps[1] = multiPartStep("s2");
+      expect(validateLesson(lesson)).toEqual([]);
+    });
+
+    it("flags a follow-up part with no answer spec", () => {
+      const lesson = validLesson();
+      const step = multiPartStep("s2");
+      step.parts![0].interaction = {};
+      lesson.steps[1] = step;
+      expect(hasError(validateLesson(lesson), /must have an answer spec/)).toBe(true);
+    });
+
+    it("flags a follow-up part missing feedback fields", () => {
+      const lesson = validLesson();
+      const step = multiPartStep("s2");
+      step.parts![0].feedback = { correct: "", incorrect: "", hint: "" };
+      lesson.steps[1] = step;
+      expect(hasError(validateLesson(lesson), /part .* is missing feedback/)).toBe(true);
+    });
+
+    it("flags duplicate part ids", () => {
+      const lesson = validLesson();
+      const step = multiPartStep("s2");
+      step.parts!.push({ ...step.parts![0] });
+      lesson.steps[1] = step;
+      expect(hasError(validateLesson(lesson), /duplicate part id/)).toBe(true);
+    });
+
+    it("rejects follow-up parts on a read step", () => {
+      const lesson = validLesson();
+      lesson.steps[1] = {
+        id: "s2",
+        type: "read",
+        content: [],
+        feedback: { correct: "", incorrect: "", hint: "" },
+        parts: [
+          {
+            id: "s2-b",
+            content: [],
+            interaction: { answer: { type: "numeric", value: 2 } },
+            feedback: { correct: "c", incorrect: "i", hint: "h" },
+          },
+        ],
+      };
+      expect(hasError(validateLesson(lesson), /cannot have follow-up parts/)).toBe(true);
+    });
+
+    it("requires a graph for a slider follow-up part", () => {
+      const lesson = validLesson();
+      const step = multiPartStep("s2");
+      step.parts![0].interaction = { answer: { type: "slider", value: 2 } };
+      lesson.steps[1] = step;
+      expect(hasError(validateLesson(lesson), /slider answer but has no graph/)).toBe(true);
+    });
+  });
+
+  describe("concept sandbox", () => {
+    function withSandbox(sandbox: Sandbox): Lesson {
+      const lesson = validLesson();
+      lesson.steps[0] = {
+        ...sliderGraphStep("s1"),
+        interaction: {
+          graph: { fn: "x^2", domain: [0, 4] },
+          answer: { type: "slider", value: 2 },
+          sandbox,
+        },
+      };
+      return lesson;
+    }
+
+    it("accepts a slope_explorer sandbox on a different curve", () => {
+      const lesson = withSandbox({
+        preset: "slope_explorer",
+        fn: "-x^2 + 4*x",
+        domain: [-1, 5],
+      });
+      expect(validateLesson(lesson)).toEqual([]);
+    });
+
+    it("rejects a sandbox that reuses the graded fn", () => {
+      const lesson = withSandbox({ preset: "slope_explorer", fn: "x^2" });
+      expect(hasError(validateLesson(lesson), /sandbox fn must differ/)).toBe(true);
+    });
+
+    it("requires exactly one of preset or graph", () => {
+      const lesson = withSandbox({
+        preset: "slope_explorer",
+        fn: "x^3",
+        graph: { fn: "x^3", domain: [-2, 2], showSlopeValue: true },
+      });
+      expect(hasError(validateLesson(lesson), /exactly one of preset or graph/)).toBe(
+        true,
+      );
+    });
+
+    it("requires an fn for the slope_explorer preset", () => {
+      const lesson = withSandbox({ preset: "slope_explorer" });
+      expect(hasError(validateLesson(lesson), /needs an fn/)).toBe(true);
+    });
+
+    it("requires a custom sandbox graph to keep its slope readout on", () => {
+      const lesson = withSandbox({
+        graph: { fn: "x^3", domain: [-2, 2], showSlopeValue: false },
+      });
+      expect(hasError(validateLesson(lesson), /slope readout on/)).toBe(true);
+    });
+
+    it("accepts a power_rule sandbox (it shows the rule in general form)", () => {
+      const lesson = withSandbox({ preset: "power_rule" });
+      expect(validateLesson(lesson)).toEqual([]);
+    });
+
+    it("accepts a riemann sandbox on a different curve", () => {
+      const lesson = withSandbox({ preset: "riemann", fn: "x", a: 0, b: 4 });
+      expect(validateLesson(lesson)).toEqual([]);
+    });
+
+    it("rejects a riemann sandbox that reuses the graded fn", () => {
+      const lesson = withSandbox({ preset: "riemann", fn: "x^2", a: 0, b: 2 });
+      expect(hasError(validateLesson(lesson), /sandbox fn must differ/)).toBe(true);
+    });
+
+    it("rejects a riemann sandbox with b <= a", () => {
+      const lesson = withSandbox({ preset: "riemann", fn: "x", a: 2, b: 1 });
+      expect(hasError(validateLesson(lesson), /needs b > a/)).toBe(true);
+    });
+
+    it("accepts a shape_explorer sandbox on a different curve", () => {
+      const lesson = withSandbox({
+        preset: "shape_explorer",
+        fn: "x^3 - 3*x",
+        domain: [-2.5, 2.5],
+      });
+      expect(validateLesson(lesson)).toEqual([]);
+    });
+
+    it("rejects a shape_explorer sandbox that reuses the graded fn", () => {
+      const lesson = withSandbox({ preset: "shape_explorer", fn: "x^2" });
+      expect(hasError(validateLesson(lesson), /sandbox fn must differ/)).toBe(true);
+    });
+
+    it("accepts a reverse_power_rule sandbox (general form, no fields)", () => {
+      const lesson = withSandbox({ preset: "reverse_power_rule" });
+      expect(validateLesson(lesson)).toEqual([]);
+    });
+
+    it("accepts an area_explorer sandbox on a different curve", () => {
+      const lesson = withSandbox({
+        preset: "area_explorer",
+        fn: "x + 1",
+        a: 0,
+        b: 4,
+      });
+      expect(validateLesson(lesson)).toEqual([]);
+    });
+
+    it("rejects an area_explorer sandbox that reuses the graded fn", () => {
+      const lesson = withSandbox({
+        preset: "area_explorer",
+        fn: "x^2",
+        a: 0,
+        b: 2,
+      });
+      expect(hasError(validateLesson(lesson), /sandbox fn must differ/)).toBe(true);
+    });
+
+    it("rejects an area_explorer sandbox missing its interval", () => {
+      const lesson = withSandbox({ preset: "area_explorer", fn: "x + 1" });
+      expect(hasError(validateLesson(lesson), /needs finite a and b/)).toBe(true);
+    });
+
+    it("accepts an ftc_explorer sandbox on a different curve", () => {
+      const lesson = withSandbox({
+        preset: "ftc_explorer",
+        fn: "x - 1",
+        a: 1,
+        b: 3,
+        domain: [-1, 4],
+      });
+      expect(validateLesson(lesson)).toEqual([]);
+    });
+
+    it("rejects an ftc_explorer sandbox with b <= a", () => {
+      const lesson = withSandbox({
+        preset: "ftc_explorer",
+        fn: "x - 1",
+        a: 3,
+        b: 1,
+      });
+      expect(hasError(validateLesson(lesson), /needs b > a/)).toBe(true);
+    });
+  });
+
+  describe("worked solution (solve assistance)", () => {
+    it("flags a graded lesson step missing a worked solution", () => {
+      const lesson = validLesson();
+      const step = numericStep("s2");
+      delete step.solution;
+      lesson.steps[1] = step;
+      expect(hasError(validateLesson(lesson), /missing a worked solution/)).toBe(true);
+    });
+
+    it("does not require a worked solution on practice questions", () => {
+      const lesson = validLesson();
+      const practice = (id: string): Step => {
+        const s = numericStep(id);
+        delete s.solution;
+        return s;
+      };
+      lesson.practiceBank = [practice("p1"), practice("p2"), practice("p3")];
+      expect(hasError(validateLesson(lesson), /missing a worked solution/)).toBe(false);
     });
   });
 

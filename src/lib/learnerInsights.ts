@@ -1,5 +1,5 @@
 import type { ConceptMasteryTier, LessonProgress } from "../types/content";
-import { getConceptMastery } from "./masteryService";
+import { getConceptMastery, type ConceptStatMap } from "./masteryService";
 import { daysSinceLastSeen } from "./reviewPlanner";
 import { getLesson } from "./contentLoader";
 
@@ -34,9 +34,10 @@ export interface ConceptInsight {
 export function getConceptInsight(
   progress: Record<string, LessonProgress>,
   conceptTag: string | undefined,
+  conceptStats: ConceptStatMap = {},
 ): ConceptInsight | null {
   if (!conceptTag) return null;
-  const mastery = getConceptMastery(progress).find(
+  const mastery = getConceptMastery(progress, conceptStats).find(
     (m) => m.concept === conceptTag,
   );
   if (!mastery) return null;

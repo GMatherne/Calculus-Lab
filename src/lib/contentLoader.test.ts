@@ -16,8 +16,13 @@ import {
   getCustomPracticeSession,
   shuffle,
   getLessonStepCount,
+  getLevelTestOutSession,
+  canTestOutLevel,
 } from "./contentLoader";
-import { PRACTICE_SESSION_SIZE } from "../types/content";
+import {
+  PRACTICE_SESSION_SIZE,
+  TEST_OUT_LEVEL_MAX_QUESTIONS,
+} from "../types/content";
 
 const published = getPublishedLessons();
 
@@ -263,5 +268,35 @@ describe("shuffle", () => {
     expect(out).toHaveLength(source.length);
     expect([...out].sort((a, b) => a - b)).toEqual(snapshot);
     expect(source).toEqual(snapshot);
+  });
+});
+
+describe("getLevelTestOutSession", () => {
+  const level = getLevels()[0];
+
+  it("draws a capped, deduped set across the level's lessons", () => {
+    const pool = level.lessons.flatMap((l) => getPracticeBank(l.id));
+    const uniqueIds = new Set(pool.map((s) => s.id));
+    const session = getLevelTestOutSession(level.id);
+
+    expect(new Set(session.map((s) => s.id)).size).toBe(session.length);
+    expect(session.every((s) => uniqueIds.has(s.id))).toBe(true);
+    expect(session.length).toBe(
+      Math.min(uniqueIds.size, TEST_OUT_LEVEL_MAX_QUESTIONS),
+    );
+  });
+
+  it("returns nothing for an unknown level", () => {
+    expect(getLevelTestOutSession("does-not-exist")).toEqual([]);
+  });
+});
+
+describe("test-out eligibility", () => {
+  it("is available for a real level", () => {
+    expect(canTestOutLevel(getLevels()[0].id)).toBe(true);
+  });
+
+  it("is unavailable for an unknown level", () => {
+    expect(canTestOutLevel("does-not-exist")).toBe(false);
   });
 });

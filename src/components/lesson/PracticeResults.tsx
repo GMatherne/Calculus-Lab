@@ -4,6 +4,7 @@ import type { PracticeResult } from "../../types/content";
 import { XP_PER_PRACTICE_CORRECT } from "../../types/content";
 import { useProgress } from "../../contexts/ProgressContext";
 import { useCountUp } from "../../hooks/useCountUp";
+import { playSound } from "../../lib/sound";
 import { AppHeader } from "../layout/AppHeader";
 import { SafeArea } from "../layout/SafeArea";
 import { Sparkles } from "../habit/Sparkles";
@@ -30,22 +31,32 @@ export function PracticeResults({
   reviewLessonId,
   secondaryAction,
 }: PracticeResultsProps) {
-  const { correct, total } = result;
+  const { correct, total, bonusXp = 0, conceptResults } = result;
   const allCorrect = total > 0 && correct === total;
   const passed = correct >= Math.ceil(total / 2);
 
   // Bank XP and count progress toward the practice-question achievements for
   // questions cleared on the first try only. Recorded once per results screen
   // (the ref guards against React's double-invoked effects in dev); the session
-  // itself still registers as activity even on a zero-first-try round.
+  // itself still registers as activity even on a zero-first-try round. Multi-part
+  // questions cleared first-try add a flat bonus on top of the per-correct base.
   const { addXp } = useProgress();
-  const xpGained = correct * XP_PER_PRACTICE_CORRECT;
+  const xpGained = correct * XP_PER_PRACTICE_CORRECT + bonusXp;
   const recordedRef = useRef(false);
   useEffect(() => {
     if (recordedRef.current || total <= 0) return;
     recordedRef.current = true;
-    void addXp(xpGained, correct);
-  }, [addXp, xpGained, correct, total]);
+    void addXp(xpGained, correct, conceptResults);
+  }, [addXp, xpGained, correct, total, conceptResults]);
+
+  // Sound the result once on mount, scaled to how it went (the earned-XP coin is
+  // layered on separately by the SoundProvider as the total ticks up).
+  const soundedRef = useRef(false);
+  useEffect(() => {
+    if (soundedRef.current || total <= 0) return;
+    soundedRef.current = true;
+    playSound(allCorrect ? "perfect" : passed ? "pass" : "fail");
+  }, [allCorrect, passed, total]);
 
   const animatedGain = useCountUp(xpGained, { initial: 0 });
 

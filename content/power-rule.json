@@ -38,7 +38,24 @@
           "exponent": 2,
           "startCoefficient": 1,
           "startExponent": 3
+        },
+        "sandbox": {
+          "preset": "power_rule",
+          "caption": "Step through the power rule in general form — bring the power down in front, drop the exponent by one, then multiply. Apply the same move to this question's term."
         }
+      },
+      "solution": [
+        { "type": "text", "body": "Apply the power rule to $x^3$: the exponent $n = 3$ drops down to become the coefficient, and the new exponent is one less, $3 - 1 = 2$." },
+        { "type": "math", "latex": "\\frac{d}{dx}\\left(x^3\\right) = 3x^{3-1} = 3x^2", "display": true },
+        { "type": "text", "body": "So set the coefficient to 3 and the exponent to 2." }
+      ],
+      "solveAnimation": {
+        "kind": "power_rule",
+        "captions": [
+          "Differentiate $x^3$.",
+          "Bring the power $3$ out in front and lower the exponent: $3(x^{2})$.",
+          "$f'(x) = 3x^2$."
+        ]
       },
       "feedback": {
         "correct": "3x² — you brought the 3 down and reduced the exponent to 2.",
@@ -61,7 +78,24 @@
           "exponent": 4,
           "startCoefficient": 1,
           "startExponent": 5
+        },
+        "sandbox": {
+          "preset": "power_rule",
+          "caption": "Run the power rule in the abstract — drop the exponent in front, then lower the power by one — before applying it to this term."
         }
+      },
+      "solution": [
+        { "type": "text", "body": "Use the power rule on $x^5$: bring the exponent 5 down in front, then subtract 1 from it." },
+        { "type": "math", "latex": "\\frac{d}{dx}\\left(x^5\\right) = 5x^{5-1} = 5x^4", "display": true },
+        { "type": "text", "body": "Coefficient 5, exponent 4." }
+      ],
+      "solveAnimation": {
+        "kind": "power_rule",
+        "captions": [
+          "Differentiate $x^5$.",
+          "Bring the power $5$ out in front and lower the exponent: $5(x^{4})$.",
+          "$f'(x) = 5x^4$."
+        ]
       },
       "feedback": {
         "correct": "f'(x) = 5x⁴ — the exponent 5 became the coefficient, and 5 − 1 = 4.",
@@ -82,6 +116,12 @@
           "type": "text",
           "body": "But does this tidy shortcut actually match the true slope of the curve? Let's put it to the test on a graph."
         }
+      ],
+      "montage": [
+        { "coefficient": 1, "exponent": 2 },
+        { "coefficient": 1, "exponent": 3 },
+        { "coefficient": 1, "exponent": 4 },
+        { "coefficient": 1, "exponent": 5 }
       ],
       "feedback": { "correct": "", "incorrect": "", "hint": "" }
     },
@@ -108,7 +148,27 @@
           "initialSlider": 0.5
         },
         "hintAfterAttempts": 1,
-        "answer": { "type": "numeric", "value": 12, "tolerance": 1 }
+        "answer": { "type": "numeric", "value": 12, "tolerance": 1 },
+        "sandbox": {
+          "preset": "power_rule",
+          "caption": "Replay the power rule symbolically (a·xⁿ → a·n·xⁿ⁻¹) so you trust the slope formula before reading values off the graph."
+        }
+      },
+      "solution": [
+        { "type": "text", "body": "First differentiate with the power rule: $f(x) = x^3$ gives $f'(x) = 3x^2$." },
+        { "type": "text", "body": "Now evaluate the slope at $x = 2$:" },
+        { "type": "math", "latex": "f'(2) = 3(2)^2 = 3 \\cdot 4 = 12", "display": true },
+        { "type": "text", "body": "As you shrink $h$, the secant slope closes in on this same value, 12 — confirming the rule." }
+      ],
+      "solveAnimation": {
+        "kind": "narrated",
+        "showSlopeValue": true,
+        "powerTerm": { "coefficient": 1, "exponent": 3 },
+        "phases": [
+          { "text": "Differentiate with the power rule: $x^3 \\to 3x^2$", "ms": 1700 },
+          { "text": "Shrink $h$ so the secant approaches the tangent at $x = 2$", "to": 0.05, "ms": 2000 },
+          { "text": "Evaluate the slope: $f'(2) = 3 \\cdot 2^2 = 12$", "ms": 1700 }
+        ]
       },
       "feedback": {
         "correct": "f'(x) = 3x², so f'(2) = 12 — and the secant slope approaches 12. The rule checks out!",
@@ -147,7 +207,25 @@
           "type": "slider",
           "value": 1,
           "tolerance": 0.2
+        },
+        "sandbox": {
+          "preset": "power_rule",
+          "caption": "Step through the general power rule to see how the slope formula is built, then use it to locate the spot you need."
         }
+      },
+      "solution": [
+        { "type": "text", "body": "The slope formula is $f'(x) = 3x^2$. Set it equal to the target slope, 3, and solve:" },
+        { "type": "math", "latex": "3x^2 = 3 \\;\\Rightarrow\\; x^2 = 1 \\;\\Rightarrow\\; x = 1", "display": true },
+        { "type": "text", "body": "On $0 \\le x \\le 3$ the solution is $x = 1$, so drag the slider there." }
+      ],
+      "solveAnimation": {
+        "kind": "narrated",
+        "showSlopeValue": true,
+        "phases": [
+          { "text": "For $f(x) = x^3$ the slope formula is $f'(x) = 3x^2$.", "to": 0.5, "ms": 1700 },
+          { "text": "We need slope 3, so solve $3x^2 = 3 \\Rightarrow x^2 = 1 \\Rightarrow x = 1$ — watch the tangent.", "to": 1, "ms": 2400 },
+          { "text": "At $x = 1$ the tangent slope is exactly 3.", "to": 1, "ms": 1500 }
+        ]
       },
       "feedback": {
         "correct": "Right — 3x² = 3 means x² = 1, so x = 1.",
@@ -173,7 +251,24 @@
           "exponent": 3,
           "startCoefficient": 3,
           "startExponent": 4
+        },
+        "sandbox": {
+          "preset": "power_rule",
+          "caption": "Watch how a coefficient out front just rides along when you bring the exponent down, then mirror that move on this term."
         }
+      },
+      "solution": [
+        { "type": "text", "body": "With a coefficient out front, use $\\frac{d}{dx}(a x^n) = a\\,n\\,x^{n-1}$. Here $a = 3$ and $n = 4$." },
+        { "type": "math", "latex": "\\frac{d}{dx}\\left(3x^4\\right) = 3 \\cdot 4 \\, x^{4-1} = 12x^3", "display": true },
+        { "type": "text", "body": "Multiply the coefficient by the exponent ($3 \\times 4 = 12$) and reduce the power to 3." }
+      ],
+      "solveAnimation": {
+        "kind": "power_rule",
+        "captions": [
+          "Differentiate $3x^4$.",
+          "Bring the power $4$ out in front and lower the exponent: $4(3x^{3})$.",
+          "Multiply 4 × 3 = 12, so $f'(x) = 12x^3$."
+        ]
       },
       "feedback": {
         "correct": "12x³ — the exponent 4 drops down and multiplies the coefficient (3 · 4 = 12), and the exponent reduces to 3.",
@@ -199,7 +294,24 @@
           "exponent": 0,
           "startCoefficient": 7,
           "startExponent": 0
+        },
+        "sandbox": {
+          "preset": "power_rule",
+          "caption": "Walk the power rule in general form to see exactly what happens to the exponent, then apply the same reasoning here."
         }
+      },
+      "solution": [
+        { "type": "text", "body": "A constant graphs as a flat, horizontal line, so its slope is 0 everywhere. The power rule shows the same thing if you write $7 = 7x^0$:" },
+        { "type": "math", "latex": "\\frac{d}{dx}\\left(7x^0\\right) = 7 \\cdot 0 \\cdot x^{-1} = 0", "display": true },
+        { "type": "text", "body": "Bringing the exponent 0 down multiplies by 0, so set the coefficient to 0." }
+      ],
+      "solveAnimation": {
+        "kind": "power_rule",
+        "captions": [
+          "Differentiate the constant $7$ — it has no x to vary.",
+          "A flat line has slope 0 everywhere.",
+          "$f'(x) = 0$."
+        ]
       },
       "feedback": {
         "correct": "0 — a constant never changes, just like you saw in the first lesson.",
@@ -240,6 +352,10 @@
           "exponent": 4,
           "startCoefficient": 1,
           "startExponent": 5
+        },
+        "sandbox": {
+          "preset": "power_rule",
+          "caption": "Practice the move in the abstract: bring the power down, then subtract one from the exponent. Then transfer it to this term."
         }
       },
       "feedback": {
@@ -262,6 +378,10 @@
           "exponent": 3,
           "startCoefficient": 2,
           "startExponent": 4
+        },
+        "sandbox": {
+          "preset": "power_rule",
+          "caption": "See the coefficient tag along as you pull the exponent out front in the general rule, then do the same here."
         }
       },
       "feedback": {
@@ -284,6 +404,10 @@
           "exponent": 1,
           "startCoefficient": 3,
           "startExponent": 2
+        },
+        "sandbox": {
+          "preset": "power_rule",
+          "caption": "Step through a·xⁿ → a·n·xⁿ⁻¹ symbolically before running it on this coefficient-and-power term."
         }
       },
       "feedback": {
@@ -306,6 +430,10 @@
           "exponent": 6,
           "startCoefficient": 1,
           "startExponent": 7
+        },
+        "sandbox": {
+          "preset": "power_rule",
+          "caption": "Rehearse the general power rule — exponent down, power reduced by one — then apply it to this question."
         }
       },
       "feedback": {
@@ -331,6 +459,10 @@
             { "prompt": "$x^5$", "match": "$5x^4$" }
           ],
           "distractors": ["$x^4$", "$5x^5$", "$4x^4$", "$3x^3$", "$2x^2$", "$3x^4$", "$2x^3$", "$4x^5$"]
+        },
+        "sandbox": {
+          "preset": "power_rule",
+          "caption": "Use the general form a·xⁿ → a·n·xⁿ⁻¹ to remind yourself how each derivative is built before you pair them up."
         }
       },
       "feedback": {
@@ -351,6 +483,10 @@
           "type": "order_list",
           "orderLabel": "Smallest → largest derivative at x = 1",
           "items": ["$x^2$", "$x^3$", "$x^4$", "$x^5$"]
+        },
+        "sandbox": {
+          "preset": "power_rule",
+          "caption": "Replay how the exponent comes down in the general rule so you know how big each derivative gets before you order them."
         }
       },
       "feedback": {
@@ -372,6 +508,10 @@
           "prefix": "\\frac{d}{dx}(x^6) =",
           "blanks": [{ "accept": "6x^5" }],
           "bank": ["6x^5", "6x^6", "5x^6", "x^5"]
+        },
+        "sandbox": {
+          "preset": "power_rule",
+          "caption": "Step through the power rule abstractly so you know how the exponent and coefficient change before filling the blank."
         }
       },
       "feedback": {
@@ -394,6 +534,10 @@
           "exponent": 1,
           "startCoefficient": 5,
           "startExponent": 2
+        },
+        "sandbox": {
+          "preset": "power_rule",
+          "caption": "Watch the coefficient ride along while the exponent drops in the general rule, then apply that to this term."
         }
       },
       "feedback": {
@@ -419,6 +563,10 @@
             { "prompt": "$3x^2$", "match": "6" }
           ],
           "distractors": ["2", "7", "8", "9", "10", "12"]
+        },
+        "sandbox": {
+          "preset": "power_rule",
+          "caption": "Run the general power rule to recall how each derivative forms before you evaluate them at a point."
         }
       },
       "feedback": {
@@ -442,7 +590,11 @@
           "yLabel": "f",
           "pointChoices": [-2, -1, 0, 1, 2]
         },
-        "answer": { "type": "graph_point", "x": 2, "acceptX": [-2], "tolerance": 0.25 }
+        "answer": { "type": "graph_point", "x": 2, "acceptX": [-2], "tolerance": 0.25 },
+        "sandbox": {
+          "preset": "power_rule",
+          "caption": "Step through a·xⁿ → a·n·xⁿ⁻¹ to rebuild the slope formula in general, then put it to work on this curve."
+        }
       },
       "feedback": {
         "correct": "Exactly — 3x² = 12 gives x² = 4, so x = ±2. Both x = 2 and x = -2 have a tangent slope of 12.",

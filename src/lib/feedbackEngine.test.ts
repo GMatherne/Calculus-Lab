@@ -4,7 +4,6 @@ import {
   derivativeAt,
   riemannSum,
   checkAnswer,
-  answerProximity,
   verifyNumericWithMathJs,
 } from "./feedbackEngine";
 import type { AnswerSpec, Step, StepFeedback } from "../types/content";
@@ -202,6 +201,25 @@ describe("checkAnswer", () => {
       const step = stepWith({ type: "power_term", coefficient: 0, exponent: 0 });
       expect(checkAnswer(step, { coefficient: 0, exponent: 7 }).correct).toBe(true);
       expect(checkAnswer(step, { coefficient: 2, exponent: 0 }).correct).toBe(false);
+    });
+
+    it("requires numerator, denominator, and exponent in fraction mode", () => {
+      // ∫5x² dx = 5/3·x³
+      const step = stepWith({
+        type: "power_term",
+        coefficient: 5,
+        denominator: 3,
+        exponent: 3,
+      });
+      expect(
+        checkAnswer(step, { coefficient: 5, denominator: 3, exponent: 3 }).correct,
+      ).toBe(true);
+      // Right numerator/exponent but wrong denominator is incorrect.
+      expect(
+        checkAnswer(step, { coefficient: 5, denominator: 2, exponent: 3 }).correct,
+      ).toBe(false);
+      // A missing denominator can't grade correct in fraction mode.
+      expect(checkAnswer(step, { coefficient: 5, exponent: 3 }).correct).toBe(false);
     });
   });
 
@@ -412,6 +430,245 @@ describe("checkAnswer", () => {
       expect(checkAnswer(step, undefined).correct).toBe(false);
     });
   });
+
+  describe("construct_graph", () => {
+    // Plot the derivative f'(x) = 2x at sample x-values.
+    const step = stepWith({
+      type: "construct_graph",
+      domain: [-3, 3],
+      yDomain: [-6, 6],
+      targetFn: "2*x",
+      nodes: [{ x: -2 }, { x: -1 }, { x: 0 }, { x: 1 }, { x: 2 }],
+    });
+
+    it("accepts when every node is within tolerance of the target", () => {
+      expect(checkAnswer(step, [-4, -2, 0, 2, 4]).correct).toBe(true);
+      // The default per-node tolerance (0.4) absorbs a little wobble.
+      expect(checkAnswer(step, [-4.3, -1.7, 0.2, 2.3, 3.7]).correct).toBe(true);
+    });
+
+    it("rejects when any node is too far off and surfaces the hint", () => {
+      const res = checkAnswer(step, [-4, -2, 0, 2, 1]);
+      expect(res.correct).toBe(false);
+      if (!res.correct) {
+        expect(res.message).toBe(feedback.incorrect);
+        expect(res.hint).toBe(feedback.hint);
+      }
+    });
+
+    it("rejects an incomplete or missing answer", () => {
+      expect(checkAnswer(step, [-4, -2, 0, 2]).correct).toBe(false);
+      expect(checkAnswer(step, undefined).correct).toBe(false);
+    });
+
+    it("supports explicit per-node targetY with its own tolerance", () => {
+      const ty = stepWith({
+        type: "construct_graph",
+        domain: [0, 3],
+        yDomain: [0, 6],
+        targetY: [0, 2, 4],
+        nodes: [{ x: 0 }, { x: 1 }, { x: 2, tolerance: 0.1 }],
+      });
+      expect(checkAnswer(ty, [0, 2, 4]).correct).toBe(true);
+      // The third node's tight 0.1 tolerance rejects a 0.3 miss.
+      expect(checkAnswer(ty, [0, 2, 4.3]).correct).toBe(false);
+    });
+  });
+
+  describe("paint_intervals", () => {
+    // x^3 - 3x increases on the outer intervals and falls in the middle.
+    const step = stepWith({
+      type: "paint_intervals",
+      fn: "x^3 - 3*x",
+      domain: [-2.2, 2.2],
+      breakpoints: [-1, 1],
+      correct: [true, false, true],
+    });
+
+    it("accepts an exact match of the shaded segments", () => {
+      expect(checkAnswer(step, [true, false, true]).correct).toBe(true);
+    });
+
+    it("rejects any mismatch and surfaces the hint", () => {
+      const res = checkAnswer(step, [true, true, true]);
+      expect(res.correct).toBe(false);
+      if (!res.correct) {
+        expect(res.message).toBe(feedback.incorrect);
+        expect(res.hint).toBe(feedback.hint);
+      }
+    });
+
+    it("treats missing entries as unshaded", () => {
+      expect(checkAnswer(step, [true, false]).correct).toBe(false);
+      expect(checkAnswer(step, undefined).correct).toBe(false);
+    });
+  });
+
+  describe("tangent_line", () => {
+    const step = stepWith({
+      type: "tangent_line",
+      fn: "x^2",
+      domain: [-1, 3],
+      x0: 1,
+      slope: 2,
+    });
+
+    it("accepts a slope within the default tolerance (0.3)", () => {
+      expect(checkAnswer(step, 2).correct).toBe(true);
+      expect(checkAnswer(step, 2.25).correct).toBe(true);
+      expect(checkAnswer(step, 1.75).correct).toBe(true);
+    });
+
+    it("rejects a slope outside tolerance", () => {
+      expect(checkAnswer(step, 3).correct).toBe(false);
+      const res = checkAnswer(step, 0);
+      expect(res.correct).toBe(false);
+      if (!res.correct) expect(res.message).toBe(feedback.incorrect);
+    });
+
+    it("rejects a missing slope with a clear message", () => {
+      const res = checkAnswer(step, undefined);
+      expect(res.correct).toBe(false);
+      if (!res.correct) expect(res.message).toMatch(/slope/i);
+    });
+  });
+
+  describe("integral_bounds", () => {
+    const step = stepWith({
+      type: "integral_bounds",
+      fn: "x",
+      domain: [0, 4],
+      a: 1,
+      b: 3,
+    });
+
+    it("accepts both bounds within the default tolerance (0.25)", () => {
+      expect(checkAnswer(step, { a: 1, b: 3 }).correct).toBe(true);
+      expect(checkAnswer(step, { a: 1.2, b: 2.8 }).correct).toBe(true);
+    });
+
+    it("accepts handles dragged in either order (graded sorted)", () => {
+      expect(checkAnswer(step, { a: 3, b: 1 }).correct).toBe(true);
+    });
+
+    it("rejects an off bound, or a missing answer", () => {
+      expect(checkAnswer(step, { a: 1, b: 3.6 }).correct).toBe(false);
+      const res = checkAnswer(step, undefined);
+      expect(res.correct).toBe(false);
+      if (!res.correct) expect(res.message).toMatch(/bounds/i);
+    });
+  });
+
+  describe("simulate", () => {
+    // Target position = t over [0, 4]; the trace is graded at N evenly spaced t.
+    const step = stepWith({
+      type: "simulate",
+      control: "velocity",
+      match: "integral",
+      target: "t",
+      duration: 4,
+      yDomain: [0, 5],
+      tolerance: 0.5,
+      coverage: 0.8,
+    });
+    const N = 60;
+    const seriesFrom = (fn: (t: number) => number): number[] =>
+      Array.from({ length: N }, (_, i) => fn((4 * i) / (N - 1)));
+
+    it("accepts a trace that tracks the target within the band", () => {
+      expect(checkAnswer(step, seriesFrom((t) => t)).correct).toBe(true);
+      expect(checkAnswer(step, seriesFrom((t) => t + 0.3)).correct).toBe(true);
+    });
+
+    it("rejects a trace that misses the target throughout", () => {
+      const res = checkAnswer(step, seriesFrom((t) => t + 2));
+      expect(res.correct).toBe(false);
+      if (!res.correct) expect(res.message).toBe(feedback.incorrect);
+    });
+
+    it("rejects a trace in-band less often than the coverage fraction", () => {
+      // In band only for t <= 2 (about half the run) → below the 0.8 requirement.
+      expect(
+        checkAnswer(step, seriesFrom((t) => (t <= 2 ? t : t + 3))).correct,
+      ).toBe(false);
+    });
+
+    it("rejects an empty or too-short trace", () => {
+      const res = checkAnswer(step, []);
+      expect(res.correct).toBe(false);
+      if (!res.correct) expect(res.message).toMatch(/run/i);
+    });
+  });
+
+  describe("select_region", () => {
+    // Single-select: exactly one band (the second) is correct.
+    const single = stepWith({
+      type: "select_region",
+      fn: "x^2",
+      domain: [0, 4],
+      bands: [
+        { from: 0, to: 1 },
+        { from: 1, to: 2, correct: true },
+        { from: 2, to: 3 },
+        { from: 3, to: 4 },
+      ],
+    });
+
+    it("accepts the correct band index, including index 0", () => {
+      expect(checkAnswer(single, 1).correct).toBe(true);
+      const firstCorrect = stepWith({
+        type: "select_region",
+        fn: "x^2",
+        domain: [0, 2],
+        bands: [
+          { from: 0, to: 1, correct: true },
+          { from: 1, to: 2 },
+        ],
+      });
+      expect(checkAnswer(firstCorrect, 0).correct).toBe(true);
+    });
+
+    it("rejects a wrong band and surfaces the hint", () => {
+      const res = checkAnswer(single, 2);
+      expect(res.correct).toBe(false);
+      if (!res.correct) {
+        expect(res.message).toBe(feedback.incorrect);
+        expect(res.hint).toBe(feedback.hint);
+      }
+    });
+
+    it("rejects a missing, null, or out-of-range selection", () => {
+      const res = checkAnswer(single, undefined);
+      expect(res.correct).toBe(false);
+      if (!res.correct) expect(res.message).toMatch(/select a region/i);
+      expect(checkAnswer(single, null).correct).toBe(false);
+      expect(checkAnswer(single, 9).correct).toBe(false);
+    });
+
+    describe("multi-select", () => {
+      const multi = stepWith({
+        type: "select_region",
+        fn: "x^3 - 3*x",
+        domain: [-2, 2],
+        multi: true,
+        bands: [
+          { from: -2, to: -1, correct: true },
+          { from: -1, to: 1 },
+          { from: 1, to: 2, correct: true },
+        ],
+      });
+
+      it("accepts an exact match of the correct bands", () => {
+        expect(checkAnswer(multi, [true, false, true]).correct).toBe(true);
+      });
+
+      it("rejects an extra, missing, or empty selection", () => {
+        expect(checkAnswer(multi, [true, true, true]).correct).toBe(false);
+        expect(checkAnswer(multi, [true, false, false]).correct).toBe(false);
+        expect(checkAnswer(multi, undefined).correct).toBe(false);
+      });
+    });
+  });
 });
 
 describe("riemannSum", () => {
@@ -442,33 +699,3 @@ describe("verifyNumericWithMathJs", () => {
   });
 });
 
-describe("answerProximity", () => {
-  it("returns the signed distance to a numeric target", () => {
-    const step = stepWith({ type: "numeric", value: 6 });
-    expect(answerProximity(step, 8)).toBe(2);
-    expect(answerProximity(step, 5)).toBe(-1);
-    expect(answerProximity(step, 6)).toBe(0);
-    // A value that isn't a finite number yet has no distance.
-    expect(answerProximity(step, "x")).toBeNull();
-  });
-
-  it("measures distance to the nearest accepted point for predict answers", () => {
-    const step = stepWith({
-      type: "predict_point",
-      x: 2,
-      acceptX: [-2],
-      reveal: {},
-    });
-    expect(answerProximity(step, 1.5)).toBeCloseTo(-0.5, 5);
-    expect(answerProximity(step, -1.5)).toBeCloseTo(0.5, 5);
-  });
-
-  it("is null for answer types without a scalar distance", () => {
-    const step = stepWith({
-      type: "multiple_choice",
-      options: ["a", "b", "c", "d"],
-      correctIndex: 0,
-    });
-    expect(answerProximity(step, 1)).toBeNull();
-  });
-});

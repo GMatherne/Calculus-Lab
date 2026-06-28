@@ -8,6 +8,12 @@ interface FeedbackPanelProps {
   hintRevealed?: boolean;
   onRevealHint?: () => void;
   prominentHint?: boolean;
+  /**
+   * Offer the hint proactively (before any submission), used by the "hints"
+   * assistance level so the learner can ask for guidance while still working —
+   * not only after a wrong answer.
+   */
+  proactive?: boolean;
 }
 
 export function FeedbackPanel({
@@ -17,6 +23,7 @@ export function FeedbackPanel({
   hintRevealed,
   onRevealHint,
   prominentHint,
+  proactive,
 }: FeedbackPanelProps) {
   if (isCorrect === null && !hint) return null;
 
@@ -36,7 +43,7 @@ export function FeedbackPanel({
           <RichText text={message} />
         </p>
       )}
-      {hint && isCorrect === false && (
+      {hint && (isCorrect === false || proactive === true) && (
         hintRevealed ? (
           <p className="mt-2 flex items-start gap-1.5 text-sm font-medium">
             <Icon

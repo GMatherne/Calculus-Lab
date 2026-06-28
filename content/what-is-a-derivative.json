@@ -66,7 +66,27 @@
           "initialSlider": 0
         },
         "hintAfterAttempts": 1,
-        "answer": { "type": "numeric", "value": 0, "tolerance": 0.01 }
+        "answer": { "type": "numeric", "value": 0, "tolerance": 0.01 },
+        "sandbox": {
+          "preset": "slope_explorer",
+          "fn": "x^2 - 2",
+          "domain": [-3, 3],
+          "caption": "Drag the point and watch the tangent tilt — the slope you read off is the derivative at that x."
+        }
+      },
+      "solution": [
+        { "type": "text", "body": "A derivative is the rate of change — how much the output moves per step in x. Track the output as x changes:" },
+        { "type": "math", "latex": "f(0) = 2,\\quad f(1) = 2,\\quad f(2) = 2", "display": true },
+        { "type": "text", "body": "The output never moves, so each step changes f by 0. A horizontal line has slope 0, so $f'(x) = 0$." }
+      ],
+      "solveAnimation": {
+        "kind": "secant",
+        "a": 1,
+        "b": 4,
+        "captions": [
+          "A derivative is the rate of change — how much f moves for each step in x. Join two points on the flat line with a secant.",
+          "The line never rises, so the rise Δy is 0: the slope is 0 ÷ Δx = 0. A flat line has derivative 0."
+        ]
       },
       "feedback": {
         "correct": "Exactly! Each time x increases by 1, f(x) stays at 2 — it changes by 0. So the rate of change is 0, and that's the derivative everywhere.",
@@ -104,7 +124,27 @@
           "initialSlider": 0
         },
         "hintAfterAttempts": 1,
-        "answer": { "type": "numeric", "value": 2, "tolerance": 0.01 }
+        "answer": { "type": "numeric", "value": 2, "tolerance": 0.01 },
+        "sandbox": {
+          "preset": "slope_explorer",
+          "fn": "3 - x",
+          "domain": [-1, 5],
+          "caption": "Drag the point along this line — its slope (the rate of change) is the same everywhere. A straight line has one constant derivative."
+        }
+      },
+      "solution": [
+        { "type": "text", "body": "Compare the output at neighboring x-values:" },
+        { "type": "math", "latex": "f(1) = 2,\\quad f(2) = 4,\\quad f(3) = 6", "display": true },
+        { "type": "text", "body": "Every step of 1 in x raises f by 2, so the rate of change — the slope — is 2. Thus $f'(x) = 2$." }
+      ],
+      "solveAnimation": {
+        "kind": "secant",
+        "a": 1,
+        "b": 3,
+        "captions": [
+          "A derivative is the rate of change. Pick two points on the line and connect them with a secant.",
+          "Read the rise Δy over the run Δx: f climbs by 2 for each step in x, so the slope — the derivative — is 2."
+        ]
       },
       "feedback": {
         "correct": "Right! Each time x increases by 1, f(x) goes up by 2, so the rate of change is 2 — and that constant rate is the derivative.",
@@ -142,7 +182,27 @@
           "initialSlider": 0
         },
         "hintAfterAttempts": 1,
-        "answer": { "type": "numeric", "value": 2, "tolerance": 0.01 }
+        "answer": { "type": "numeric", "value": 2, "tolerance": 0.01 },
+        "sandbox": {
+          "preset": "slope_explorer",
+          "fn": "0.5*x^2",
+          "domain": [-3, 3],
+          "caption": "Drag the point along this curve — the tangent's steepness is the derivative at that x. Read the slope right off the tangent."
+        }
+      },
+      "solution": [
+        { "type": "text", "body": "The + 3 lifts the whole line up but doesn't tilt it, so the steepness is unchanged. Check the steps:" },
+        { "type": "math", "latex": "f(1) = 5,\\quad f(2) = 7,\\quad f(3) = 9", "display": true },
+        { "type": "text", "body": "Still up 2 per step. A constant term never affects the slope, so $f'(x) = 2$." }
+      ],
+      "solveAnimation": {
+        "kind": "secant",
+        "a": 1,
+        "b": 3,
+        "captions": [
+          "Same idea on f(x) = 2x + 3 — draw a secant through two points on the line.",
+          "The + 3 lifts the line but never tilts it: Δy ÷ Δx is still 2, so f'(x) = 2."
+        ]
       },
       "feedback": {
         "correct": "Exactly 2 — the same as f(x) = 2x! Each time x increases by 1, f(x) rises by 2; the + 3 only shifts the line up. So the rate of change is 2, and a constant term has no effect on the derivative.",
@@ -196,7 +256,27 @@
           "initialSlider": 0
         },
         "hintAfterAttempts": 1,
-        "answer": { "type": "numeric", "value": -1, "tolerance": 0.01 }
+        "answer": { "type": "numeric", "value": -1, "tolerance": 0.01 },
+        "sandbox": {
+          "preset": "slope_explorer",
+          "fn": "-x^2 + 4",
+          "domain": [-3, 3],
+          "caption": "Drag the point — where the tangent points downhill the slope is negative, so the derivative is negative there."
+        }
+      },
+      "solution": [
+        { "type": "text", "body": "This line heads downhill, so its rate of change is negative. Track the output:" },
+        { "type": "math", "latex": "f(1) = 3,\\quad f(2) = 2,\\quad f(3) = 1", "display": true },
+        { "type": "text", "body": "Each step lowers f by 1, so $f'(x) = -1$ — a negative derivative means f is decreasing." }
+      ],
+      "solveAnimation": {
+        "kind": "secant",
+        "a": 1,
+        "b": 3,
+        "captions": [
+          "Join two points on this downhill line with a secant to measure its rate of change.",
+          "The line falls, so the rise Δy is negative: Δy ÷ Δx = −1. A downhill line has a negative derivative."
+        ]
       },
       "feedback": {
         "correct": "Yes — each time x increases by 1, f(x) drops by 1, so the rate of change is −1. That rate of change is the derivative, f'(x) = −1, and a negative derivative means the function is decreasing.",
@@ -234,7 +314,27 @@
           "initialSlider": 0
         },
         "hintAfterAttempts": 1,
-        "answer": { "type": "numeric", "value": 5, "tolerance": 0.01 }
+        "answer": { "type": "numeric", "value": 5, "tolerance": 0.01 },
+        "sandbox": {
+          "preset": "slope_explorer",
+          "fn": "x^2 + 1",
+          "domain": [-3, 3],
+          "caption": "Drag the point — the steeper the tangent, the larger the derivative at that x."
+        }
+      },
+      "solution": [
+        { "type": "text", "body": "A steeper line changes faster. Step through it:" },
+        { "type": "math", "latex": "f(1) = 5,\\quad f(2) = 10,\\quad f(3) = 15", "display": true },
+        { "type": "text", "body": "Each unit of x raises f by 5, so $f'(x) = 5$. The steeper the line, the larger the derivative." }
+      ],
+      "solveAnimation": {
+        "kind": "secant",
+        "a": 1,
+        "b": 3,
+        "captions": [
+          "Connect two points on this steeper line with a secant.",
+          "A steeper line means a bigger rise: Δy ÷ Δx = 5, so the derivative is 5."
+        ]
       },
       "feedback": {
         "correct": "Right — each time x increases by 1, f(x) climbs by 5, so the rate of change is 5 — that's the derivative, f'(x) = 5. The steeper the line, the bigger the derivative.",
@@ -281,7 +381,27 @@
             "Negative — it decreases"
           ],
           "correctIndex": 0
+        },
+        "sandbox": {
+          "preset": "slope_explorer",
+          "fn": "3 - 0.5*x^2",
+          "domain": [-3, 3],
+          "caption": "Drag the point and compare how gentle or steep the tangent is — a smaller tilt means a smaller derivative."
         }
+      },
+      "solution": [
+        { "type": "text", "body": "The derivative of a line is its slope. Here each step in x adds only 0.5:" },
+        { "type": "math", "latex": "f(1) = 0.5,\\quad f(2) = 1,\\quad f(3) = 1.5", "display": true },
+        { "type": "text", "body": "So $f'(x) = 0.5$. That's less than the 2 from $f(x) = 2x$, so this line changes more slowly — the first option." }
+      ],
+      "solveAnimation": {
+        "kind": "secant",
+        "a": 2,
+        "b": 4,
+        "captions": [
+          "Draw a secant through two points on the gentle line f(x) = 0.5x.",
+          "The rise is small: Δy ÷ Δx = 0.5 — less than the 2 from f(x) = 2x, so this line changes more slowly."
+        ]
       },
       "feedback": {
         "correct": "Correct — each time x increases by 1, f(x) rises by only 0.5, so the rate of change — the derivative — is 0.5. That's smaller than 2, so this line is gentler and changes more slowly.",
@@ -358,7 +478,13 @@
           "initialSlider": 0
         },
         "hintAfterAttempts": 1,
-        "answer": { "type": "numeric", "value": 3, "tolerance": 0.01 }
+        "answer": { "type": "numeric", "value": 3, "tolerance": 0.01 },
+        "sandbox": {
+          "preset": "slope_explorer",
+          "fn": "x^2 - 2",
+          "domain": [-3, 3],
+          "caption": "Drag the point and read the tangent's slope — that slope is the derivative at that x."
+        }
       },
       "feedback": {
         "correct": "Right — each step in x raises f by 3, so the rate of change is 3. The −4 only shifts the line down, so the derivative of a line is just its slope: f'(x) = 3.",
@@ -396,7 +522,13 @@
           "initialSlider": 0
         },
         "hintAfterAttempts": 1,
-        "answer": { "type": "numeric", "value": -2, "tolerance": 0.01 }
+        "answer": { "type": "numeric", "value": -2, "tolerance": 0.01 },
+        "sandbox": {
+          "preset": "slope_explorer",
+          "fn": "-x^2 + 2*x",
+          "domain": [-2, 4],
+          "caption": "Drag the point — when the tangent tips downhill the slope is negative, so the derivative is negative there."
+        }
       },
       "feedback": {
         "correct": "Yes — each step in x drops f by 2, so the rate of change is −2. A line heading downhill has a negative derivative: f'(x) = −2.",
@@ -435,6 +567,12 @@
           "points": [0],
           "options": ["Increasing", "Decreasing"],
           "regions": [{ "correctIndex": 1 }, { "correctIndex": 0 }]
+        },
+        "sandbox": {
+          "preset": "slope_explorer",
+          "fn": "x^3 - 3*x",
+          "domain": [-2.2, 2.2],
+          "caption": "Drag the point — where the tangent tilts up the function is increasing; where it tilts down it's decreasing."
         }
       },
       "feedback": {
@@ -483,6 +621,12 @@
             "It has no derivative because the line is flat"
           ],
           "correctIndex": 0
+        },
+        "sandbox": {
+          "preset": "slope_explorer",
+          "fn": "0.5*x^2",
+          "domain": [-3, 3],
+          "caption": "Drag the point — the derivative is the slope of the tangent, which is generally different from the height of the curve."
         }
       },
       "feedback": {
@@ -511,6 +655,12 @@
             "$f(x) = 0.5x$",
             "$f(x) = 3x + 1$"
           ]
+        },
+        "sandbox": {
+          "preset": "slope_explorer",
+          "fn": "x^2 - 2",
+          "domain": [-3, 3],
+          "caption": "Drag from left to right — the slope climbs from negative through 0 to positive. Ordering by derivative means ordering these slopes."
         }
       },
       "feedback": {
@@ -539,6 +689,12 @@
             { "prompt": "$f(x) = 5$", "match": "0" }
           ],
           "distractors": ["4", "-2"]
+        },
+        "sandbox": {
+          "preset": "slope_explorer",
+          "fn": "x^2 + 1",
+          "domain": [-3, 3],
+          "caption": "Drag the point and read the tangent's slope — matching a function to its derivative is just reading off this slope."
         }
       },
       "feedback": {
@@ -586,6 +742,12 @@
             "It is 0 until x > 0, then jumps to 2"
           ],
           "correctIndex": 0
+        },
+        "sandbox": {
+          "preset": "slope_explorer",
+          "fn": "4 - 0.5*x",
+          "domain": [-1, 5],
+          "caption": "Drag the point along this line — the slope readout never changes, because a straight line has one constant derivative."
         }
       },
       "feedback": {
@@ -615,6 +777,12 @@
             "The value of f when x = 0"
           ],
           "correctIndex": 0
+        },
+        "sandbox": {
+          "preset": "slope_explorer",
+          "fn": "-x^2 + 4",
+          "domain": [-3, 3],
+          "caption": "Drag the point and watch the slope readout react as x changes — that responsiveness, the rate at which the output changes, is what the derivative captures."
         }
       },
       "feedback": {
@@ -642,7 +810,13 @@
           "yLabel": "f",
           "pointChoices": [-1.5, -0.5, 0, 0.5, 1.5]
         },
-        "answer": { "type": "graph_point", "x": 0, "tolerance": 0.25 }
+        "answer": { "type": "graph_point", "x": 0, "tolerance": 0.25 },
+        "sandbox": {
+          "preset": "slope_explorer",
+          "fn": "-x^2 + 4",
+          "domain": [-3, 3],
+          "caption": "Drag the point and read the slope — it's negative where the curve heads downhill, and most negative where the descent is steepest."
+        }
       },
       "feedback": {
         "correct": "Exactly — the slope 3x² − 3 is smallest at x = 0, where it dips to −3, the steepest descent.",
@@ -671,12 +845,57 @@
             "They can't be compared without knowing x"
           ],
           "correctIndex": 0
+        },
+        "sandbox": {
+          "preset": "slope_explorer",
+          "fn": "2 - x",
+          "domain": [-1, 5],
+          "caption": "Drag the point along this line — its slope depends only on the tilt, not on how high the line sits, so sliding it up or down never changes the derivative."
         }
       },
       "feedback": {
         "correct": "Right — shifting a line up or down changes where it sits, not how steep it is. Adding a constant leaves the slope, and therefore the derivative, unchanged at 4.",
         "incorrect": "Shifting a graph vertically doesn't tilt it. Does moving the whole line up by 9 make it any steeper?",
         "hint": "A constant term only slides the line up or down; the slope (and the derivative) stays 4."
+      }
+    },
+    {
+      "id": "wid-practice-11",
+      "type": "simulate",
+      "conceptTag": "rate_of_change",
+      "content": [
+        {
+          "type": "text",
+          "body": "A ball is tossed straight up — the faint curve is its height over time. Drag to set a starting velocity, press Start, then drive the speedometer to match the ball's velocity: read how steep the height curve is at each moment (its slope) and steer to match."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "simulate",
+          "control": "velocity",
+          "match": "derivative",
+          "target": "4 - 2*t",
+          "referenceFn": "4*t - t^2",
+          "referenceLabel": "height",
+          "duration": 4,
+          "yDomain": [-4.5, 4.5],
+          "tolerance": 0.9,
+          "coverage": 0.6,
+          "controlLabel": "Velocity",
+          "xLabel": "t",
+          "yLabel": "velocity"
+        },
+        "sandbox": {
+          "preset": "slope_explorer",
+          "fn": "0.5*x^2",
+          "domain": [-3, 3],
+          "caption": "Drag the point and read the slope at that instant — matching a velocity means matching this instantaneous slope of the curve."
+        }
+      },
+      "feedback": {
+        "correct": "Exactly — velocity is the slope of the height curve, h'(t) = 4 − 2t. It starts positive (climbing fast), passes through 0 at the very top (t = 2), then goes negative as the ball falls.",
+        "incorrect": "Velocity is how fast the height is changing — the slope of the curve. Drive a large positive value where the curve climbs steeply, 0 at the peak, and negative as it comes down.",
+        "hint": "At the top of the toss the height stops changing for an instant, so the velocity is 0 there — positive before, negative after."
       }
     }
   ]

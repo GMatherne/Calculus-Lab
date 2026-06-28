@@ -95,7 +95,29 @@
           "type": "multiple_choice",
           "options": ["0", "2", "It depends on x", "1"],
           "correctIndex": 1
+        },
+        "sandbox": {
+          "preset": "area_explorer",
+          "fn": "x + 1",
+          "a": 0,
+          "b": 4,
+          "integrand": "x + 1",
+          "caption": "Drag the upper limit and watch the shaded area pile up under this different line as the region widens."
         }
+      },
+      "solution": [
+        { "type": "text", "body": "Each step to the right adds a thin strip under the flat line $f(x) = 2$. That strip is a rectangle 1 wide and 2 tall:" },
+        { "type": "math", "latex": "\\text{area added} = \\text{width} \\times \\text{height} = 1 \\times 2 = 2", "display": true },
+        { "type": "text", "body": "So the shaded area grows by 2 each step — the option \"2\"." }
+      ],
+      "solveAnimation": {
+        "kind": "narrated",
+        "showAreaValue": true,
+        "phases": [
+          { "text": "Each step right adds a strip under the flat line — a rectangle $1$ wide and $2$ tall.", "to": 1, "ms": 1400 },
+          { "text": "Watch the area climb: every unit step adds $1 \\times 2 = 2$.", "to": 3, "ms": 1700 },
+          { "text": "So the shaded area grows by $2$ each step.", "to": 5, "ms": 1700 }
+        ]
       },
       "feedback": {
         "correct": "Exactly! The strip you add each step is a 1-by-2 rectangle, so the area grows by 2 every time x increases by 1. Area = height × width.",
@@ -139,7 +161,27 @@
           "initialSlider": 0
         },
         "hintAfterAttempts": 1,
-        "answer": { "type": "numeric", "value": 8, "tolerance": 0.1 }
+        "answer": { "type": "numeric", "value": 8, "tolerance": 0.1 },
+        "sandbox": {
+          "preset": "riemann",
+          "fn": "0.5*x^2 + 1",
+          "a": 0,
+          "b": 3,
+          "caption": "Add rectangles under this different curve and watch the estimate close in on the true area — that limit is the integral."
+        }
+      },
+      "solution": [
+        { "type": "text", "body": "The region under $f(x) = x$ from 0 to 4 is a right triangle with base 4 and height $f(4) = 4$." },
+        { "type": "math", "latex": "\\int_0^4 x\\,dx = \\tfrac{1}{2} \\cdot 4 \\cdot 4 = 8", "display": true }
+      ],
+      "solveAnimation": {
+        "kind": "narrated",
+        "showAreaValue": true,
+        "phases": [
+          { "text": "The region under $f(x) = x$ from $0$ to $4$ is a right triangle." },
+          { "text": "Its base is $4$ and its height is $f(4) = 4$.", "to": 4, "ms": 1800 },
+          { "text": "Area $= \\frac{1}{2} \\cdot 4 \\cdot 4 = 8$." }
+        ]
       },
       "feedback": {
         "correct": "Right! That integral is the area of the triangle — base 4 and height f(4) = 4 — so it equals ½ · 4 · 4 = 8.",
@@ -197,7 +239,25 @@
             "The height of the curve at the right endpoint"
           ],
           "correctIndex": 2
+        },
+        "sandbox": {
+          "preset": "riemann",
+          "fn": "0.25*x^2 + 1",
+          "a": 0,
+          "b": 3,
+          "caption": "Pile more rectangles under this different curve and watch how the running estimate behaves as the strips get thinner."
         }
+      },
+      "solution": [
+        { "type": "text", "body": "As you add rectangles they hug the curve more tightly and the leftover gaps shrink." },
+        { "type": "text", "body": "In the limit of infinitely many, infinitely thin rectangles the gaps vanish and the running total reaches the exact area under the curve — the value of the definite integral (the third option)." }
+      ],
+      "solveAnimation": {
+        "kind": "riemann_refine",
+        "fn": "x^2",
+        "a": 0,
+        "b": 2,
+        "trueArea": 2.6667
       },
       "feedback": {
         "correct": "Exactly — as the rectangles get thinner and more numerous, the gaps vanish and their total area closes in on the exact area. That limit is the definite integral.",
@@ -266,7 +326,29 @@
           "type": "slider",
           "value": 2,
           "tolerance": 0.05
+        },
+        "sandbox": {
+          "preset": "area_explorer",
+          "fn": "2*x + 1",
+          "a": 0,
+          "b": 4,
+          "integrand": "2*x + 1",
+          "caption": "Drag the upper limit and watch the shaded area grow as a running total under this different line."
         }
+      },
+      "solution": [
+        { "type": "text", "body": "The area under $f(x) = x$ from 0 to t is a triangle with base t and height t, so it equals $\\tfrac{1}{2}t^2$. Set that equal to 2:" },
+        { "type": "math", "latex": "\\tfrac{1}{2}t^2 = 2 \\;\\Rightarrow\\; t^2 = 4 \\;\\Rightarrow\\; t = 2", "display": true },
+        { "type": "text", "body": "Drag the slider to $t = 2$." }
+      ],
+      "solveAnimation": {
+        "kind": "narrated",
+        "showAreaValue": true,
+        "phases": [
+          { "text": "The area under $f(x) = x$ from $0$ to $t$ is a triangle: $\\frac{1}{2}t^2$." },
+          { "text": "Set it to $2$: $\\frac{1}{2}t^2 = 2$, so $t^2 = 4$ and $t = 2$." },
+          { "text": "Drag to $t = 2$, where $2$ units of area have accumulated.", "to": 2, "ms": 1800 }
+        ]
       },
       "feedback": {
         "correct": "Nice — the area under f(x) = x from 0 to t is ½ · t², and ½ · 2² = 2, so t = 2. That's where exactly 2 units of area have accumulated.",
@@ -305,7 +387,26 @@
             "The derivative of f(x) at a"
           ],
           "correctIndex": 0
+        },
+        "sandbox": {
+          "preset": "area_explorer",
+          "fn": "x + 1",
+          "a": 0,
+          "b": 4,
+          "integrand": "x + 1",
+          "caption": "Drag the upper limit and watch the shaded region accumulate under this different line."
         }
+      },
+      "solution": [
+        { "type": "text", "body": "Area is an accumulation of the function across the interval, not a slope or a single height." },
+        { "type": "text", "body": "Slopes are derivatives, and $f(b)$ is just one height. The accumulated area from $a$ to $b$ is the definite integral of $f$ — the first option." }
+      ],
+      "solveAnimation": {
+        "kind": "narrated",
+        "phases": [
+          { "text": "Area is an accumulation of $f$ across the interval — not a slope or a single height." },
+          { "text": "Slopes are derivatives, and $f(b)$ is one height. The accumulated area from $a$ to $b$ is the definite integral." }
+        ]
       },
       "feedback": {
         "correct": "Exactly — the definite integral from a to b is precisely the accumulated area under f over that interval.",
@@ -314,13 +415,55 @@
       }
     },
     {
+      "id": "int-step-belowaxis",
+      "type": "read",
+      "conceptTag": "area_under_curve",
+      "content": [
+        {
+          "type": "text",
+          "body": "One important subtlety before we wrap up. Every curve so far has stayed above the x-axis, where each new strip adds a positive amount and the shaded area only grows. But a curve can dip below the axis — and there the strips hang underneath it, so their area counts as NEGATIVE and is subtracted from the running total. This signed total is what the integral really tracks."
+        },
+        {
+          "type": "text",
+          "body": "See it for yourself. Here f(x) = x − 3 starts below the axis and only climbs above it at x = 3. Drag x to the right and watch the running integral below the graph: it falls while the curve is under the axis, reaches its most negative right where the curve crosses zero, then climbs back as positive area piles on top."
+        },
+        {
+          "type": "math",
+          "latex": "\\int_0^x (t-3)\\,dt",
+          "display": true
+        }
+      ],
+      "interaction": {
+        "graph": {
+          "fn": "x - 3",
+          "domain": [0, 5],
+          "yDomain": [-4, 3],
+          "sliderLabel": "x",
+          "xLabel": "x",
+          "yLabel": "f",
+          "showSecant": false,
+          "showValue": false,
+          "showArea": true,
+          "areaStart": 0,
+          "showAreaValue": true,
+          "areaReadoutMath": true,
+          "integrand": "(x - 3)",
+          "sliderMin": 0,
+          "sliderMax": 5,
+          "sliderStep": 0.1,
+          "initialSlider": 0
+        }
+      },
+      "feedback": { "correct": "", "incorrect": "", "hint": "" }
+    },
+    {
       "id": "int-step-7",
       "type": "read",
       "conceptTag": "integral",
       "content": [
         {
           "type": "text",
-          "body": "To recap: an integral accumulates a function, and that accumulation is the area between the curve and the x-axis. Flat lines give rectangles, tilted lines give triangles, and for a genuine curve you slice the region into many thin rectangles and add them up — the more slices, the sharper the estimate."
+          "body": "To recap: an integral accumulates a function, and that accumulation is the signed area between the curve and the x-axis — area above the axis adds to the total, while area below it subtracts. Flat lines give rectangles, tilted lines give triangles, and for a genuine curve you slice the region into many thin rectangles and add them up — the more slices, the sharper the estimate."
         },
         {
           "type": "text",
@@ -365,6 +508,14 @@
           "type": "slider",
           "value": 4,
           "tolerance": 0.15
+        },
+        "sandbox": {
+          "preset": "area_explorer",
+          "fn": "0.5*x + 1",
+          "a": 0,
+          "b": 4,
+          "integrand": "0.5*x + 1",
+          "caption": "Drag the upper limit and watch the shaded area build up under this different line."
         }
       },
       "feedback": {
@@ -407,6 +558,14 @@
           "type": "slider",
           "value": 3,
           "tolerance": 0.15
+        },
+        "sandbox": {
+          "preset": "area_explorer",
+          "fn": "0.5*x^2 + 1",
+          "a": 0,
+          "b": 3,
+          "integrand": "0.5*x^2 + 1",
+          "caption": "Drag the upper limit and watch the shaded area accumulate under this different curve."
         }
       },
       "feedback": {
@@ -454,6 +613,14 @@
           "type": "slider",
           "value": 3,
           "tolerance": 0.15
+        },
+        "sandbox": {
+          "preset": "area_explorer",
+          "fn": "3 - 0.4*x",
+          "a": 0,
+          "b": 4,
+          "integrand": "3 - 0.4*x",
+          "caption": "Drag the upper limit and watch the shaded area pile up under this different line."
         }
       },
       "feedback": {
@@ -482,6 +649,13 @@
             { "prompt": "$\\int_0^4 (x-2)\\,dx$", "match": "0" }
           ],
           "distractors": ["6", "-4"]
+        },
+        "sandbox": {
+          "preset": "riemann",
+          "fn": "0.5*x^2 + 1",
+          "a": 0,
+          "b": 3,
+          "caption": "Add rectangles under this different curve and watch the estimate close in on the true area — that limit is the integral."
         }
       },
       "feedback": {
@@ -492,72 +666,88 @@
     },
     {
       "id": "int-practice-5",
-      "type": "slider_graph",
+      "type": "select_region",
       "conceptTag": "area_under_curve",
       "content": [
         {
           "type": "text",
-          "body": "Again, the shaded region is the area under f(x) = x from 0 to t. Drag t until that area equals 2."
+          "body": "The curve f(x) = x − 1 spends part of this interval below the x-axis. Tap the stretch where it contributes NEGATIVE area to the integral."
         }
       ],
       "interaction": {
-        "graph": {
-          "fn": "x",
-          "domain": [0, 5],
-          "yDomain": [0, 5],
-          "sliderLabel": "t",
+        "answer": {
+          "type": "select_region",
+          "fn": "x - 1",
+          "domain": [0, 3],
+          "yDomain": [-1.5, 2.5],
           "xLabel": "x",
           "yLabel": "f",
-          "showSecant": false,
-          "showValue": false,
-          "showArea": true,
-          "areaStart": 0,
-          "showAreaValue": false,
-          "areaReadoutMath": true,
-          "integrand": "x",
-          "sliderMin": 0,
-          "sliderMax": 5,
-          "sliderStep": 0.1,
-          "initialSlider": 0
+          "prompt": "Tap the stretch where the curve dips below the axis.",
+          "bands": [
+            { "from": 0, "to": 1, "correct": true },
+            { "from": 1, "to": 2 },
+            { "from": 2, "to": 3 }
+          ]
         },
-        "answer": {
-          "type": "slider",
-          "value": 2,
-          "tolerance": 0.15
+        "sandbox": {
+          "preset": "area_explorer",
+          "fn": "2*x + 1",
+          "a": 0,
+          "b": 4,
+          "integrand": "2*x + 1",
+          "caption": "Drag the upper limit and watch the shaded area grow under this different line."
         }
       },
       "feedback": {
-        "correct": "Yes — ½ · 2² = 2, so t = 2.",
-        "incorrect": "Set ½t² = 2, so t² = 4. Solve for t, then drag there.",
-        "hint": "½t² = 2 → t² = 4 → t = 2."
+        "correct": "Right — on [0, 1] the curve sits below the axis, so those strips count as negative and pull the integral down.",
+        "incorrect": "Negative area comes from where the curve is below the x-axis. Look for where f(x) = x − 1 is less than 0.",
+        "hint": "f(x) = x − 1 is negative when x < 1, so the negative area is on the stretch [0, 1]."
       }
     },
     {
       "id": "int-practice-6",
-      "type": "match",
-      "conceptTag": "integral",
+      "type": "multiple_choice",
+      "conceptTag": "area_under_curve",
       "content": [
         {
           "type": "text",
-          "body": "Match each integral to the area it represents."
+          "body": "The shaded region under f(x) = x² runs from 0 to 2. Without computing the numbers, which half holds more area: the slice from x = 0 to 1, or the slice from x = 1 to 2?"
         }
       ],
       "interaction": {
+        "graph": {
+          "fn": "x^2",
+          "domain": [0, 2],
+          "yDomain": [0, 4],
+          "xLabel": "x",
+          "yLabel": "f",
+          "showArea": true,
+          "areaStart": 0,
+          "initialSlider": 2,
+          "static": true
+        },
         "answer": {
-          "type": "match",
-          "pairs": [
-            { "prompt": "$\\int_0^4 3\\,dx$", "match": "12" },
-            { "prompt": "$\\int_0^6 x\\,dx$", "match": "18" },
-            { "prompt": "$\\int_0^5 2\\,dx$", "match": "10" },
-            { "prompt": "$\\int_1^3 x\\,dx$", "match": "4" }
+          "type": "multiple_choice",
+          "options": [
+            "The slice from 1 to 2 — the curve is much taller there, so its strips enclose more area",
+            "The slice from 0 to 1 — area always piles up fastest near the start",
+            "They hold equal area, since the two slices are the same width",
+            "There's no way to tell without computing both integrals"
           ],
-          "distractors": ["16"]
+          "correctIndex": 0
+        },
+        "sandbox": {
+          "preset": "riemann",
+          "fn": "0.5*x + 1",
+          "a": 0,
+          "b": 4,
+          "caption": "Add rectangles under this different line and watch the estimate close in on the true area — that limit is the integral."
         }
       },
       "feedback": {
-        "correct": "Right — constants give rectangles (3 · 4 = 12, 2 · 5 = 10) and lines give triangular areas: ∫₀⁶ x = ½ · 6² = 18, and starting at 1, ∫₁³ x = (9 − 1)/2 = 4.",
-        "incorrect": "A constant f makes a rectangle (height × width). For f(x) = x use (b² − a²)/2 — and mind the lower bound when it isn't 0.",
-        "hint": "∫₀⁴ 3 = 12, ∫₀⁶ x = 18, ∫₀⁵ 2 = 10, ∫₁³ x = (9 − 1)/2 = 4."
+        "correct": "Right — both slices are 1 unit wide, but x² is far taller on [1, 2], so its strips enclose much more area (about 2.3 vs 0.3).",
+        "incorrect": "Both slices have the same width, so the taller one wins. Compare how high the curve sits on each half.",
+        "hint": "Equal widths, but the curve is much taller between 1 and 2 — taller strips mean more area."
       }
     },
     {
@@ -599,6 +789,14 @@
           "type": "slider",
           "value": 4,
           "tolerance": 0.15
+        },
+        "sandbox": {
+          "preset": "area_explorer",
+          "fn": "0.25*x^2 + 1",
+          "a": 0,
+          "b": 4,
+          "integrand": "0.25*x^2 + 1",
+          "caption": "Drag the upper limit and watch the shaded area accumulate under this different curve."
         }
       },
       "feedback": {
@@ -627,6 +825,13 @@
             "$\\int_1^3 x\\,dx$",
             "$\\int_0^4 x\\,dx$"
           ]
+        },
+        "sandbox": {
+          "preset": "riemann",
+          "fn": "2*x + 1",
+          "a": 0,
+          "b": 3,
+          "caption": "Add rectangles under this different line and watch the estimate close in on the true area — that limit is the integral."
         }
       },
       "feedback": {
@@ -651,6 +856,14 @@
           "prefix": "\\int_0^b x\\,dx =",
           "blanks": [{ "accept": "\\frac{1}{2}b^2" }],
           "bank": ["\\frac{1}{2}b^2", "b^2", "2b^2", "\\frac{1}{2}b"]
+        },
+        "sandbox": {
+          "preset": "area_explorer",
+          "fn": "0.5*x^2 + 1",
+          "a": 0,
+          "b": 4,
+          "integrand": "0.5*x^2 + 1",
+          "caption": "Drag the upper limit and watch the shaded area pile up under this different curve."
         }
       },
       "feedback": {
@@ -693,12 +906,95 @@
           "type": "slider",
           "value": 2,
           "tolerance": 0.2
+        },
+        "sandbox": {
+          "preset": "area_explorer",
+          "fn": "x + 1",
+          "a": 0,
+          "b": 4,
+          "integrand": "x + 1",
+          "caption": "Drag the upper limit and watch the shaded area accumulate under this different line."
         }
       },
       "feedback": {
         "correct": "Right — below the axis the area keeps subtracting, so the running total bottoms out exactly where the curve crosses zero, at t = 2 (area = −2).",
         "incorrect": "While f is below the axis the running area keeps dropping; once f turns positive it climbs back. The minimum is where the curve crosses the axis.",
         "hint": "f(x) = x − 2 is negative until x = 2, then positive — so the running area is most negative at t = 2."
+      }
+    },
+    {
+      "id": "int-practice-11",
+      "type": "integral_bounds",
+      "conceptTag": "area_under_curve",
+      "content": [
+        {
+          "type": "text",
+          "body": "Set up the definite integral of f(x) = x that measures the area from x = 1 to x = 3. Drag the two handles to place the lower and upper limits."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "integral_bounds",
+          "fn": "x",
+          "domain": [0, 4],
+          "yDomain": [0, 4],
+          "a": 1,
+          "b": 3,
+          "tolerance": 0.3,
+          "xLabel": "x",
+          "yLabel": "f"
+        },
+        "sandbox": {
+          "preset": "riemann",
+          "fn": "x^2",
+          "a": 0,
+          "b": 3,
+          "caption": "Drag to pile more rectangles under this different curve and watch the estimate close in on the true area — that's what a definite integral measures."
+        }
+      },
+      "feedback": {
+        "correct": "Exactly — the shaded trapezoid runs from x = 1 to x = 3, the limits of the integral.",
+        "incorrect": "Place the left handle at x = 1 and the right handle at x = 3 so the shaded region matches the interval.",
+        "hint": "The lower limit is a = 1 and the upper limit is b = 3."
+      }
+    },
+    {
+      "id": "int-practice-12",
+      "type": "simulate",
+      "conceptTag": "integral",
+      "content": [
+        {
+          "type": "text",
+          "body": "Position is the accumulation of velocity. Drag up or down on the plot to set your starting velocity, then press Start. After the 3-2-1 countdown the playhead sweeps left to right — keep your velocity steady so your accumulated position (the solid line) tracks the dashed target, position = t."
+        }
+      ],
+      "interaction": {
+        "answer": {
+          "type": "simulate",
+          "control": "velocity",
+          "match": "integral",
+          "target": "t",
+          "duration": 4,
+          "yDomain": [0, 5],
+          "tolerance": 0.6,
+          "coverage": 0.7,
+          "controlLabel": "Velocity",
+          "xLabel": "t",
+          "yLabel": "position"
+        },
+        "sandbox": {
+          "preset": "area_explorer",
+          "fn": "0.5*x + 1",
+          "a": 0,
+          "b": 5,
+          "integrand": "0.5*x + 1",
+          "caption": "Drag the upper limit and watch the shaded area pile up as the running total under this different line."
+        }
+      },
+      "feedback": {
+        "correct": "Nice — a steady velocity of 1 accumulates into position = t, a straight line. That's integration in action.",
+        "incorrect": "Set your velocity near 1 before you start, then hold it steady so the area you accumulate climbs alongside the dashed line.",
+        "hint": "Position is the running total of velocity. Hold a constant velocity of 1 and position grows as position = t."
       }
     }
   ]

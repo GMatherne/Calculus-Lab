@@ -55,7 +55,23 @@
           "prefix": "f'(x) =",
           "blanks": [{ "accept": "3x^2" }, { "accept": "2x" }],
           "bank": ["3x^2", "2x", "3x^3", "x^2", "2x^2", "3x"]
+        },
+        "sandbox": {
+          "preset": "power_rule",
+          "caption": "Walk through the power rule in its general form (a·xⁿ → a·n·xⁿ⁻¹), then apply that same move to each term of this polynomial in turn."
         }
+      },
+      "solution": [
+        { "type": "text", "body": "The sum rule lets you differentiate each term on its own:" },
+        { "type": "math", "latex": "\\frac{d}{dx}(x^3) = 3x^2, \\qquad \\frac{d}{dx}(x^2) = 2x", "display": true },
+        { "type": "text", "body": "Add the pieces: $f'(x) = 3x^2 + 2x$. Drag in the $3x^2$ and $2x$ tiles — for a sum the order doesn't matter." }
+      ],
+      "solveAnimation": {
+        "kind": "polynomial",
+        "terms": [
+          { "coefficient": 1, "exponent": 3 },
+          { "coefficient": 1, "exponent": 2 }
+        ]
       },
       "feedback": {
         "correct": "Right — $\\frac{d}{dx}(x^3) = 3x^2$ and $\\frac{d}{dx}(x^2) = 2x$, so the derivative is $3x^2 + 2x$.",
@@ -88,7 +104,24 @@
           "showTangent": true
         },
         "hintAfterAttempts": 1,
-        "answer": { "type": "numeric", "value": 10, "tolerance": 0.1 }
+        "answer": { "type": "numeric", "value": 10, "tolerance": 0.1 },
+        "sandbox": {
+          "preset": "power_rule",
+          "caption": "Step through the power rule in general symbolic form first, then differentiate each term the same way before substituting your point."
+        }
+      },
+      "solution": [
+        { "type": "text", "body": "Differentiate term by term: $x^3 \\to 3x^2$ and $-2x \\to -2$, so" },
+        { "type": "math", "latex": "f'(x) = 3x^2 - 2", "display": true },
+        { "type": "text", "body": "Now substitute $x = 2$:" },
+        { "type": "math", "latex": "f'(2) = 3(2)^2 - 2 = 12 - 2 = 10", "display": true }
+      ],
+      "solveAnimation": {
+        "kind": "narrated",
+        "phases": [
+          { "text": "Differentiate term by term: $x^3 - 2x \\to 3x^2 - 2$" },
+          { "text": "Substitute $x = 2$: $f'(2) = 3 \\cdot 2^2 - 2 = 10$" }
+        ]
       },
       "feedback": {
         "correct": "Exactly — $f'(x) = 3x^2 - 2$, so $f'(2) = 3 \\cdot 4 - 2 = 10$.",
@@ -140,7 +173,25 @@
           "prefix": "f'(x) =",
           "blanks": [{ "accept": "6x^2" }, { "accept": "8x" }, { "accept": "-1" }],
           "bank": ["3x^2", "1", "5x^2", "6x^2", "4x", "8x", "-1", "7", "6x^3", "8x^2"]
+        },
+        "sandbox": {
+          "preset": "power_rule",
+          "caption": "Replay the power rule in general form — multiply by the exponent, then drop it by one — and use it on every term of this polynomial."
         }
+      },
+      "solution": [
+        { "type": "text", "body": "Differentiate each term, carrying coefficients and dropping the constant:" },
+        { "type": "math", "latex": "2x^3 \\to 6x^2, \\quad 4x^2 \\to 8x, \\quad -x \\to -1, \\quad 7 \\to 0", "display": true },
+        { "type": "text", "body": "Combine the pieces: $f'(x) = 6x^2 + 8x - 1$." }
+      ],
+      "solveAnimation": {
+        "kind": "polynomial",
+        "terms": [
+          { "coefficient": 2, "exponent": 3 },
+          { "coefficient": 4, "exponent": 2 },
+          { "coefficient": -1, "exponent": 1 },
+          { "coefficient": 7, "exponent": 0 }
+        ]
       },
       "feedback": {
         "correct": "Yes — each term differentiates on its own, and the constant 7 becomes 0.",
@@ -186,7 +237,25 @@
           "type": "slider",
           "value": 2,
           "tolerance": 0.2
+        },
+        "sandbox": {
+          "preset": "power_rule",
+          "caption": "Review the power rule in general form, then apply it term by term to build the slope formula you'll work with here."
         }
+      },
+      "solution": [
+        { "type": "text", "body": "The derivative is $f'(x) = 2x + 1$. Set it equal to the target slope, 5:" },
+        { "type": "math", "latex": "2x + 1 = 5 \\;\\Rightarrow\\; 2x = 4 \\;\\Rightarrow\\; x = 2", "display": true },
+        { "type": "text", "body": "Drag the slider to $x = 2$, where the tangent slope is 5." }
+      ],
+      "solveAnimation": {
+        "kind": "narrated",
+        "showSlopeValue": true,
+        "phases": [
+          { "text": "Differentiate term by term: $x^2 + x \\to 2x + 1$", "ms": 1700 },
+          { "text": "Set the slope to 5: $2x + 1 = 5 \\Rightarrow x = 2$", "ms": 1800 },
+          { "text": "Drag to $x = 2$, where the tangent slope is 5", "to": 2, "ms": 1800 }
+        ]
       },
       "feedback": {
         "correct": "Nice — $2x + 1 = 5$ gives $x = 2$, and the tangent there has slope 5.",
@@ -228,6 +297,10 @@
           "prefix": "f'(x) =",
           "blanks": [{ "accept": "3x^2" }, { "accept": "2x" }],
           "bank": ["3x^2", "2x", "x^2", "3x", "2x^2"]
+        },
+        "sandbox": {
+          "preset": "power_rule",
+          "caption": "Step through the power rule in general form (a·xⁿ → a·n·xⁿ⁻¹), then run each term of this polynomial through the same move."
         }
       },
       "feedback": {
@@ -252,6 +325,10 @@
           "prefix": "f'(x) =",
           "blanks": [{ "accept": "6x^2" }, { "accept": "5" }],
           "bank": ["6x^2", "5", "6x", "5x", "2x^2"]
+        },
+        "sandbox": {
+          "preset": "power_rule",
+          "caption": "Practice the general power rule first — bring the exponent down in front and lower it by one — then apply it to each term separately."
         }
       },
       "feedback": {
@@ -276,6 +353,10 @@
           "prefix": "f'(x) =",
           "blanks": [{ "accept": "4x^3" }, { "accept": "6x", "connector": "-" }],
           "bank": ["4x^3", "6x", "4x^2", "6x^2", "3x"]
+        },
+        "sandbox": {
+          "preset": "power_rule",
+          "caption": "Walk through the power rule in general form, then differentiate each term and carry the sign that sits between them."
         }
       },
       "feedback": {
@@ -304,6 +385,10 @@
             { "prompt": "$2x^2$", "match": "$4x$" }
           ],
           "distractors": ["$x^2+1$"]
+        },
+        "sandbox": {
+          "preset": "power_rule",
+          "caption": "Step through the general power rule, then use it term by term on each function before pairing it with its match."
         }
       },
       "feedback": {
@@ -328,6 +413,10 @@
           "prefix": "f'(x) =",
           "blanks": [{ "accept": "3x^2" }],
           "bank": ["3x^2", "3x^2+7", "7", "3x"]
+        },
+        "sandbox": {
+          "preset": "power_rule",
+          "caption": "Replay the power rule in general form, applying it to each term — and recall that a constant term contributes nothing."
         }
       },
       "feedback": {
@@ -353,6 +442,10 @@
           "exponent": 4,
           "startCoefficient": 4,
           "startExponent": 5
+        },
+        "sandbox": {
+          "preset": "power_rule",
+          "caption": "Step through the power rule in general form — bring the power down in front, drop the exponent by one, then multiply. Apply the same move to this question's term."
         }
       },
       "feedback": {
@@ -380,6 +473,10 @@
             "Differentiate each term with the power rule",
             "Add the resulting derivatives together"
           ]
+        },
+        "sandbox": {
+          "preset": "power_rule",
+          "caption": "Step through the power rule in general form — it's the move you apply to each term once the polynomial is split apart."
         }
       },
       "feedback": {
@@ -404,6 +501,10 @@
           "points": [2],
           "options": ["Increasing", "Decreasing"],
           "regions": [{ "correctIndex": 1 }, { "correctIndex": 0 }]
+        },
+        "sandbox": {
+          "preset": "power_rule",
+          "caption": "Review how the power rule works in general form — the same move that produces the derivative whose sign you'll test here."
         }
       },
       "feedback": {
@@ -432,6 +533,10 @@
             { "prompt": "$3x^2$", "match": "6" }
           ],
           "distractors": ["2", "4", "8", "1", "5", "3"]
+        },
+        "sandbox": {
+          "preset": "power_rule",
+          "caption": "Walk through the general power rule, then apply it term by term to each function before evaluating at the given point."
         }
       },
       "feedback": {
@@ -456,6 +561,10 @@
           "prefix": "f'(x) =",
           "blanks": [{ "accept": "3x^2" }, { "accept": "4x" }, { "accept": "1" }],
           "bank": ["3x^2", "4x", "1", "2x", "x^2", "3x"]
+        },
+        "sandbox": {
+          "preset": "power_rule",
+          "caption": "Step through the power rule in general form, then apply the same move to each of the three terms here."
         }
       },
       "feedback": {

@@ -66,7 +66,28 @@
             "not at all — it stays the same"
           ],
           "correctIndex": 1
+        },
+        "sandbox": {
+          "preset": "area_explorer",
+          "fn": "x + 1",
+          "a": 0,
+          "b": 4,
+          "integrand": "x + 1",
+          "caption": "Drag the upper limit on this different curve and watch the shaded area accumulate as the region widens."
         }
+      },
+      "solution": [
+        { "type": "text", "body": "Each step to the right adds a strip whose height is the curve's value there. Since $f(x) = x^2$ keeps rising, every new strip is taller than the one before." },
+        { "type": "text", "body": "Taller strips add more area, so the shaded region grows faster and faster — the second option." }
+      ],
+      "solveAnimation": {
+        "kind": "narrated",
+        "showAreaValue": true,
+        "phases": [
+          { "text": "Each step right adds a strip whose height is the curve's value there.", "to": 1, "ms": 1400 },
+          { "text": "Since $x^2$ keeps rising, every new strip is taller than the last.", "to": 3, "ms": 1700 },
+          { "text": "Taller strips add more area, so the total piles up faster and faster.", "to": 5, "ms": 1700 }
+        ]
       },
       "feedback": {
         "correct": "Right — because the curve gets taller as $x$ grows, each new strip is taller than the last, so the area piles up faster and faster.",
@@ -86,6 +107,24 @@
         {
           "type": "text",
           "body": "With only a few rectangles the estimate is rough, but as you add more they trace the curve closely and your running total closes in on the true area $\\approx 2.67$. That limit is exactly the integral."
+        },
+        {
+          "type": "text",
+          "body": "Writing that out: split $[a, b]$ into $n$ strips of width $\\Delta x$. Each strip is a rectangle of height $f(x_i)$, so its area is $f(x_i)\\,\\Delta x$, and the estimate is their sum, written with the Greek capital sigma $\\Sigma$:"
+        },
+        {
+          "type": "math",
+          "latex": "\\sum_{i=1}^{n} f(x_i)\\,\\Delta x",
+          "display": true
+        },
+        {
+          "type": "text",
+          "body": "As $n \\to \\infty$ the strips grow infinitely thin and that sum becomes the exact area — the definite integral. The integral sign $\\int$ is itself a stretched-out S, a reminder that it began life as a sum:"
+        },
+        {
+          "type": "math",
+          "latex": "\\int_a^b f(x)\\,dx = \\lim_{n \\to \\infty} \\sum_{i=1}^{n} f(x_i)\\,\\Delta x",
+          "display": true
         }
       ],
       "interaction": {
@@ -110,7 +149,7 @@
       "content": [
         {
           "type": "text",
-          "body": "In the slicing demo, a few wide rectangles gave a rough estimate. What happens to the estimate as you use more — and therefore thinner — rectangles?"
+          "body": "You saw the estimate sharpen as you piled on rectangles. With a large but FINITE number of rectangles, is that estimate ever the EXACT area, or only an approximation?"
         }
       ],
       "interaction": {
@@ -118,18 +157,37 @@
         "answer": {
           "type": "multiple_choice",
           "options": [
-            "It gets worse — each extra rectangle piles on more error",
-            "It improves — thinner rectangles leave smaller gaps, so the estimate closes in on the true area",
-            "It stays exactly the same no matter how many you use",
-            "It only improves when the curve happens to be a straight line"
+            "Only an approximation — a finite number of rectangles always leaves a small gap; the area is exact only in the limit as n → ∞",
+            "Exact — once the rectangles are thin enough, the estimate equals the area and stops changing",
+            "Exact — the midpoint estimate has zero error for any number of rectangles",
+            "Approximate forever — even letting n → ∞ never quite reaches the true area"
           ],
-          "correctIndex": 1
+          "correctIndex": 0
+        },
+        "sandbox": {
+          "preset": "riemann",
+          "fn": "0.5*x^2 + 1",
+          "a": 0,
+          "b": 3,
+          "caption": "Pile on rectangles under this different curve and watch the estimate close in on the true area as you add more."
         }
       },
+      "solution": [
+        { "type": "text", "body": "With any finite number of rectangles, the flat tops can't perfectly follow the curve, so a small gap of error always remains — the estimate is close but never exact." },
+        { "type": "text", "body": "Those gaps shrink toward zero as you add rectangles, but they only fully vanish in the limit $n \\to \\infty$. So a finite estimate is always an approximation, and the exact area is that limiting value — the definite integral (the first option)." }
+      ],
+      "solveAnimation": {
+        "kind": "narrated",
+        "phases": [
+          { "text": "With a finite number of rectangles, the flat tops can't trace the curve perfectly, so a little gap of error always remains." },
+          { "text": "Add more rectangles and those gaps shrink — but they vanish completely only in the limit $n \\to \\infty$." },
+          { "text": "So any finite estimate is an approximation; the exact area is that limit — the definite integral." }
+        ]
+      },
       "feedback": {
-        "correct": "Right — thinner rectangles hug the curve with smaller gaps, so the error shrinks toward zero and the estimate converges to the exact area.",
-        "incorrect": "Picture the demo: the wide rectangles left big gaps over the curve, while many thin ones traced it closely.",
-        "hint": "More, thinner rectangles → smaller gaps → a sharper estimate approaching the true area."
+        "correct": "Right — a finite stack of rectangles is always a touch off; the estimate becomes exact only in the limit as n → ∞, and that limit is the integral.",
+        "incorrect": "No finite number of rectangles is exact — there's always a small gap. Exactness arrives only in the limit n → ∞.",
+        "hint": "Finite n gives an approximation with a small gap; only the limit n → ∞ gives the exact area."
       }
     },
     {
@@ -156,7 +214,20 @@
         },
         {
           "type": "text",
-          "body": "To get the area under $f$ between two points $x = a$ and $x = b$, evaluate the antiderivative at each endpoint and subtract:"
+          "body": "That isn't the only antiderivative, though. The derivative of any constant is 0, so you can add any number to $\\frac{x^3}{3}$ and it still differentiates back to $x^2$ — making $\\frac{x^3}{3}$, $\\frac{x^3}{3} + 5$, and $\\frac{x^3}{3} - 2$ all antiderivatives of $f$. To capture this whole family at once we add a constant of integration $C$, written with the indefinite integral (an integral with no limits):"
+        },
+        {
+          "type": "math",
+          "latex": "\\int x^2\\,dx = \\frac{x^3}{3} + C",
+          "display": true
+        },
+        {
+          "type": "text",
+          "body": "For the area between two specific points, though, that constant doesn't matter: in $F(b) - F(a)$ the $+\\,C$ cancels itself out. So when we use an antiderivative to measure area we just take the simplest one, with $C = 0$."
+        },
+        {
+          "type": "text",
+          "body": "So to get the area under $f$ between $x = a$ and $x = b$, evaluate that antiderivative at each endpoint and subtract:"
         },
         {
           "type": "math",
@@ -188,7 +259,24 @@
           "initialSlider": 2,
           "static": true
         },
-        "answer": { "type": "numeric", "value": 2.667, "tolerance": 0.05 }
+        "answer": { "type": "numeric", "value": 2.667, "tolerance": 0.05 },
+        "sandbox": {
+          "preset": "riemann",
+          "fn": "x",
+          "a": 0,
+          "b": 4,
+          "caption": "On a different curve, drag to add rectangles and watch their total close in on the true area. Area is the limit of these rectangle sums."
+        }
+      },
+      "solution": [
+        { "type": "text", "body": "Evaluate the antiderivative $F(x) = \\frac{x^3}{3}$ at the endpoints and subtract:" },
+        { "type": "math", "latex": "\\int_0^2 x^2\\,dx = F(2) - F(0) = \\frac{2^3}{3} - \\frac{0^3}{3} = \\frac{8}{3} \\approx 2.67", "display": true }
+      ],
+      "solveAnimation": {
+        "kind": "ftc_evaluate",
+        "terms": [{ "coefficient": 1, "exponent": 2 }],
+        "a": 0,
+        "b": 2
       },
       "feedback": {
         "correct": "Exactly — $F(2) - F(0) = \\frac{2^3}{3} - 0 = \\frac{8}{3} \\approx 2.67$.",
@@ -236,7 +324,29 @@
           "type": "slider",
           "value": 3,
           "tolerance": 0.05
+        },
+        "sandbox": {
+          "preset": "area_explorer",
+          "fn": "2*x + 1",
+          "a": 0,
+          "b": 4,
+          "integrand": "2x + 1",
+          "caption": "Drag the upper limit on a different curve and watch the accumulated area climb toward a value you pick."
         }
+      },
+      "solution": [
+        { "type": "text", "body": "The area under $x^2$ from 0 to t is $F(t) = \\frac{t^3}{3}$. Set it equal to 9:" },
+        { "type": "math", "latex": "\\frac{t^3}{3} = 9 \\;\\Rightarrow\\; t^3 = 27 \\;\\Rightarrow\\; t = 3", "display": true },
+        { "type": "text", "body": "Drag the slider to $t = 3$." }
+      ],
+      "solveAnimation": {
+        "kind": "narrated",
+        "showAreaValue": true,
+        "phases": [
+          { "text": "The area under $x^2$ from $0$ to $t$ is $F(t) = \\frac{t^3}{3}$." },
+          { "text": "Set it to $9$: $\\frac{t^3}{3} = 9$, so $t^3 = 27$ and $t = 3$." },
+          { "text": "Drag to $t = 3$, where $9$ units of area have accumulated.", "to": 3, "ms": 1800 }
+        ]
       },
       "feedback": {
         "correct": "Nice — the area from 0 to $t$ is $\\frac{t^3}{3}$, and $\\frac{3^3}{3} = 9$, so $t = 3$. You located exactly where 9 units of area have accumulated.",
@@ -275,7 +385,27 @@
             "less than doubles"
           ],
           "correctIndex": 1
+        },
+        "sandbox": {
+          "preset": "area_explorer",
+          "fn": "0.5*x + 1",
+          "a": 0,
+          "b": 4,
+          "integrand": "0.5x + 1",
+          "caption": "Drag the upper limit on a different curve and watch the shaded area accumulate as the interval stretches."
         }
+      },
+      "solution": [
+        { "type": "text", "body": "The area from 0 to b is $\\frac{b^3}{3}$ — it depends on $b^3$, not $b$. Double the upper limit:" },
+        { "type": "math", "latex": "\\frac{(2b)^3}{3} = \\frac{8b^3}{3} = 8 \\cdot \\frac{b^3}{3}", "display": true },
+        { "type": "text", "body": "The area grows eightfold — far more than double (the second option)." }
+      ],
+      "solveAnimation": {
+        "kind": "narrated",
+        "phases": [
+          { "text": "The area from $0$ to $b$ is $\\frac{b^3}{3}$ — it depends on $b^3$, not $b$." },
+          { "text": "Doubling $b$: $\\frac{(2b)^3}{3} = 8 \\cdot \\frac{b^3}{3}$ — eightfold, far more than double." }
+        ]
       },
       "feedback": {
         "correct": "Right — the area is $\\frac{b^3}{3}$, so doubling $b$ gives $\\frac{(2b)^3}{3} = 8 \\cdot \\frac{b^3}{3}$. The area grows eightfold, far more than double.",
@@ -323,7 +453,28 @@
           "type": "slider",
           "value": 4,
           "tolerance": 0.2
+        },
+        "sandbox": {
+          "preset": "ftc_explorer",
+          "fn": "x - 1",
+          "a": 0,
+          "b": 3,
+          "domain": [-1, 4],
+          "caption": "Slide the two limits on a different curve and watch the signed area — the part below the axis subtracts."
         }
+      },
+      "solution": [
+        { "type": "text", "body": "Below the axis, area counts as negative. From 0 to 2 the curve $f(x) = x - 2$ is below the axis, contributing $-2$." },
+        { "type": "text", "body": "To get back to 0 that $-2$ must be cancelled by $+2$ of area above the axis, which accumulates from 2 to 4. So the running total returns to 0 at $x = 4$." }
+      ],
+      "solveAnimation": {
+        "kind": "narrated",
+        "showAreaValue": true,
+        "phases": [
+          { "text": "Below the axis, area counts as negative. From $0$ to $2$, $f(x) = x - 2$ is below the axis, contributing $-2$.", "to": 2, "ms": 1800 },
+          { "text": "From $2$ to $4$ the area above the axis is $+2$, cancelling it.", "to": 4, "ms": 1800 },
+          { "text": "So the running total returns to $0$ at $x = 4$." }
+        ]
       },
       "feedback": {
         "correct": "Yes — from 0 to 2 the area below the axis is $-2$, and from 2 to 4 the area above is $+2$. They cancel, so by $x = 4$ the running total is back to 0.",
@@ -388,6 +539,14 @@
           "type": "slider",
           "value": 3,
           "tolerance": 0.15
+        },
+        "sandbox": {
+          "preset": "area_explorer",
+          "fn": "0.5*x^2 + 1",
+          "a": 0,
+          "b": 4,
+          "integrand": "0.5x^2 + 1",
+          "caption": "Drag the upper limit on a different curve and watch the accumulated area climb."
         }
       },
       "feedback": {
@@ -435,6 +594,14 @@
           "type": "slider",
           "value": 4,
           "tolerance": 0.15
+        },
+        "sandbox": {
+          "preset": "area_explorer",
+          "fn": "x + 1",
+          "a": 0,
+          "b": 4,
+          "integrand": "x + 1",
+          "caption": "Drag the upper limit on a different curve and watch the shaded area pile up."
         }
       },
       "feedback": {
@@ -477,6 +644,14 @@
           "type": "slider",
           "value": 2,
           "tolerance": 0.2
+        },
+        "sandbox": {
+          "preset": "ftc_explorer",
+          "fn": "x - 2",
+          "a": 1,
+          "b": 3,
+          "domain": [-1, 4],
+          "caption": "Slide the two limits on a different curve and watch the signed area — while the curve dips below the axis the total keeps subtracting."
         }
       },
       "feedback": {
@@ -505,6 +680,14 @@
             { "prompt": "$\\int_1^3 x\\,dx$", "match": "4" }
           ],
           "distractors": ["8", "-6"]
+        },
+        "sandbox": {
+          "preset": "ftc_explorer",
+          "fn": "0.5*x - 1",
+          "a": 0,
+          "b": 3,
+          "domain": [-1, 4],
+          "caption": "Slide the two limits on a different curve and watch the signed area — the stretch below the axis subtracts."
         }
       },
       "feedback": {
@@ -533,6 +716,13 @@
             "$n = 10$ rectangles",
             "$n = 50$ rectangles"
           ]
+        },
+        "sandbox": {
+          "preset": "riemann",
+          "fn": "x + 1",
+          "a": 0,
+          "b": 4,
+          "caption": "Add rectangles under this different curve and watch the estimate tighten toward the true area."
         }
       },
       "feedback": {
@@ -543,97 +733,77 @@
     },
     {
       "id": "auc-practice-6",
-      "type": "match",
+      "type": "paint_intervals",
       "conceptTag": "definite_integral",
       "content": [
         {
           "type": "text",
-          "body": "Each definite integral is an exact area. Match every integral to its value."
+          "body": "Here is $f(x) = x - 2$. Drag across the plot to shade every stretch where the curve contributes NEGATIVE area to the integral."
         }
       ],
       "interaction": {
         "answer": {
-          "type": "match",
-          "pairs": [
-            {
-              "prompt": "$\\int_0^2 x^2\\,dx$",
-              "match": "2.67"
-            },
-            {
-              "prompt": "$\\int_0^3 x^2\\,dx$",
-              "match": "9"
-            },
-            {
-              "prompt": "$\\int_0^2 x\\,dx$",
-              "match": "2"
-            },
-            {
-              "prompt": "$\\int_2^4 x\\,dx$",
-              "match": "6"
-            }
-          ],
-          "distractors": [
-            "4"
-          ]
+          "type": "paint_intervals",
+          "fn": "x - 2",
+          "domain": [0, 4],
+          "yDomain": [-3, 3],
+          "breakpoints": [2],
+          "correct": [true, false],
+          "prompt": "Shade where the curve lies below the x-axis.",
+          "xLabel": "x",
+          "yLabel": "f"
+        },
+        "sandbox": {
+          "preset": "ftc_explorer",
+          "fn": "0.5*x - 1",
+          "a": 0,
+          "b": 3,
+          "domain": [-1, 4],
+          "caption": "Slide the two limits on a different curve and watch the signed area — wherever the curve is below the axis the total drops."
         }
       },
       "feedback": {
-        "correct": "Nice — $\\int_0^2 x^2\\,dx = \\frac{8}{3} \\approx 2.67$, $\\int_0^3 x^2\\,dx = 9$, $\\int_0^2 x\\,dx = 2$, and $\\int_2^4 x\\,dx = \\frac{16 - 4}{2} = 6$.",
-        "incorrect": "Use $\\int_0^b x^2\\,dx = \\frac{b^3}{3}$ and $\\int_a^b x\\,dx = \\frac{b^2 - a^2}{2}$ — mind the lower bound when it is not 0.",
-        "hint": "For example, $\\int_2^4 x\\,dx = \\frac{16 - 4}{2} = 6$."
+        "correct": "Right — on [0, 2] the curve sits below the axis, so that area is negative; past x = 2 it rises above the axis and adds positive area.",
+        "incorrect": "Negative area comes from where the curve is below the x-axis. Shade only the stretch where f(x) = x − 2 is less than 0.",
+        "hint": "f(x) = x − 2 is negative for x < 2, so shade [0, 2] and leave [2, 4] unshaded."
       }
     },
     {
       "id": "auc-practice-7",
-      "type": "slider_graph",
+      "type": "drag_drop",
       "conceptTag": "definite_integral",
       "content": [
         {
           "type": "text",
-          "body": "The shaded region is the area under $f(x) = x^2$ from 0 to $t$. Drag $t$ until that area equals 9."
-        },
-        {
-          "type": "math",
-          "latex": "\\int_0^t x^2\\,dx = 9",
-          "display": true
+          "body": "A definite integral is the limit of a Riemann sum: add up $n$ rectangles, each of height $f(x_i)$ and width $\\Delta x$, then let $n$ grow without bound. Drag the tile that completes the definition."
         }
       ],
       "interaction": {
-        "graph": {
-          "fn": "x^2",
-          "domain": [
-            0,
-            4
-          ],
-          "yDomain": [
-            0,
-            16
-          ],
-          "sliderLabel": "t",
-          "xLabel": "x",
-          "yLabel": "f",
-          "showSecant": false,
-          "showValue": false,
-          "showArea": true,
-          "areaStart": 0,
-          "showAreaValue": false,
-          "areaReadoutMath": true,
-          "integrand": "x^2",
-          "sliderMin": 0,
-          "sliderMax": 4,
-          "sliderStep": 0.1,
-          "initialSlider": 0
-        },
         "answer": {
-          "type": "slider",
-          "value": 3,
-          "tolerance": 0.15
+          "type": "drag_drop",
+          "prefix": "\\int_a^b f(x)\\,dx = \\lim_{n \\to \\infty}",
+          "blanks": [
+            { "accept": "\\sum_{i=1}^{n} f(x_i)\\,\\Delta x" }
+          ],
+          "bank": [
+            "\\sum_{i=1}^{n} f(x_i)\\,\\Delta x",
+            "\\sum_{i=1}^{n} f(x_i)",
+            "f(x_i)\\,\\Delta x",
+            "\\sum_{i=1}^{n} \\Delta x"
+          ]
+        },
+        "sandbox": {
+          "preset": "riemann",
+          "fn": "2*x + 1",
+          "a": 0,
+          "b": 3,
+          "caption": "Lay rectangles under this different curve and add their areas — watch the running sum approach the true area."
         }
       },
       "feedback": {
-        "correct": "Spot on — $\\frac{t^3}{3} = 9$ gives $t^3 = 27$, so $t = 3$.",
-        "incorrect": "Set $\\frac{t^3}{3} = 9$ and solve for $t$ before dragging the slider.",
-        "hint": "$\\frac{t^3}{3} = 9 \\to t^3 = 27 \\to t = 3$."
+        "correct": "Exactly — sum each rectangle's area $f(x_i)\\,\\Delta x$ over all $n$ strips, then take the limit as $n \\to \\infty$ to land on the integral.",
+        "incorrect": "Each rectangle contributes height × width = $f(x_i)\\,\\Delta x$, and you add up all $n$ of them with $\\Sigma$.",
+        "hint": "You need the sum of every rectangle's area: $\\sum_{i=1}^{n} f(x_i)\\,\\Delta x$."
       }
     },
     {
@@ -656,6 +826,14 @@
             "$\\int_1^3 x\\,dx$",
             "$\\int_0^3 x^2\\,dx$"
           ]
+        },
+        "sandbox": {
+          "preset": "ftc_explorer",
+          "fn": "x - 1",
+          "a": 0,
+          "b": 3,
+          "domain": [-1, 4],
+          "caption": "Slide the two limits on a different curve and watch the signed area — the part below the axis counts as negative."
         }
       },
       "feedback": {
@@ -684,6 +862,13 @@
             "Multiply each strip's height by Δx",
             "Add up all the rectangle areas"
           ]
+        },
+        "sandbox": {
+          "preset": "riemann",
+          "fn": "0.5*x + 1",
+          "a": 0,
+          "b": 4,
+          "caption": "Build the sum yourself on a different curve: lay rectangles, add their areas, and watch the estimate converge."
         }
       },
       "feedback": {
@@ -737,6 +922,14 @@
           "type": "slider",
           "value": 3,
           "tolerance": 0.15
+        },
+        "sandbox": {
+          "preset": "area_explorer",
+          "fn": "2*x + 1",
+          "a": 0,
+          "b": 4,
+          "integrand": "2x + 1",
+          "caption": "Drag the upper limit on a different curve and watch the accumulated area grow."
         }
       },
       "feedback": {
