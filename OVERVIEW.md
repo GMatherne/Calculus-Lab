@@ -125,9 +125,11 @@ Key principles baked into the build:
   learners revisit earlier steps (but not skip ahead to the end).
 - **Reference cheat sheet** — a hand-authored sheet of must-know formulas and
   definitions, one tap from the header (or the roadmap) on any page. It opens as
-  a popup over the current page, groups facts by level, and **unlocks level by
-  level as the course is completed**, so the sheet grows with progress; each card
-  links back to the lesson that teaches it.
+  a popup over the current page, groups facts by level, and **unlocks a level at
+  a time as the learner advances** — each level's facts open the moment that
+  level is reached (i.e. once the previous level is complete; level 1's are there
+  from the start), so the sheet grows with progress and each card links back to
+  the lesson that teaches it.
 
 ### Reinforcement (learning-science layer)
 - **Per-lesson practice** — each lesson has a *practice bank*; a session samples
@@ -174,8 +176,9 @@ slider-graph interaction. Finished lessons expose per-lesson **Practice**; the
 roadmap also offers a cross-lesson **Targeted review** and **Custom practice**,
 and completed levels expose a **Level review**. A hand-authored **Reference**
 cheat sheet (`content/reference.json`) of the course's key formulas and
-definitions is one tap from the header on any page, unlocking level by level as
-the course is completed.
+definitions is one tap from the header on any page, unlocking a level at a time
+as the learner advances (each level's facts open once the previous level is
+complete).
 
 ---
 
@@ -400,14 +403,14 @@ type AnswerSpec =
 ```
 
 The **Reference** cheat sheet is a separate hand-authored deck, grouped for
-display by the level that teaches each fact and unlocked as those levels are
-completed:
+display by the level that teaches each fact and unlocked a level at a time as the
+learner reaches each level (once the previous level is complete):
 
 ```ts
 interface ReferenceFact {
   id: string;
   title: string;
-  lessonId: string;        // teaching lesson: completing it unlocks the fact
+  lessonId: string;        // teaching lesson + "Learn more" target; the fact unlocks with its level
   conceptTag?: string;
   formula?: string;        // headline LaTeX; at least one of formula/summary
   summary?: string;        // one-line plain-language statement (inline $…$)
