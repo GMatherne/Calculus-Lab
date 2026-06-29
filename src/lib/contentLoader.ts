@@ -238,13 +238,6 @@ export function getLessonProgressPercent(
   return Math.round((done / total) * 100);
 }
 
-export function getNextLessonId(currentId: string): string | null {
-  const published = getPublishedLessons();
-  const idx = published.findIndex((l) => l.id === currentId);
-  if (idx === -1 || idx >= published.length - 1) return null;
-  return published[idx + 1].id;
-}
-
 export function isLessonUnlocked(
   lessonId: string,
   progress: Record<string, { status: string }>,

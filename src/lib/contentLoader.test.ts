@@ -1,7 +1,6 @@
 import {
   getPublishedLessons,
   getLesson,
-  getNextLessonId,
   isLessonUnlocked,
   canAccessLesson,
   getLessonProgressPercent,
@@ -79,14 +78,6 @@ describe("canAccessLesson", () => {
     expect(canAccessLesson(second, { [second]: { status: "complete" } })).toBe(
       true,
     );
-  });
-});
-
-describe("getNextLessonId", () => {
-  it("returns the next lesson, or null at the end", () => {
-    expect(getNextLessonId(published[0].id)).toBe(published[1].id);
-    expect(getNextLessonId(published[published.length - 1].id)).toBeNull();
-    expect(getNextLessonId("does-not-exist")).toBeNull();
   });
 });
 
