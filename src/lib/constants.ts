@@ -51,11 +51,16 @@ export const CUSTOM_PRACTICE_MAX_SIZE = 20;
  */
 export const TEST_OUT_PASS_RATIO = 0.8;
 
-/** Target number of questions per concept in a test-out's coverage set. */
+/** Target number of questions per concept within a single lesson's test-out draw. */
 export const TEST_OUT_PER_CONCEPT = 2;
 
-/** Hard cap on questions in a whole-level test-out (it spans several lessons). */
-export const TEST_OUT_LEVEL_MAX_QUESTIONS = 16;
+/**
+ * Questions drawn from each lesson a skip-ahead spans. A skip-ahead test-out
+ * pulls this quota from every lesson up to and including the target level, so a
+ * test that bypasses more lessons is proportionally longer and each bypassed
+ * lesson is guaranteed representation.
+ */
+export const TEST_OUT_PER_LESSON = 3;
 
 /** Fewest questions a test-out must be able to offer to be worth taking. */
 export const TEST_OUT_MIN_QUESTIONS = 3;

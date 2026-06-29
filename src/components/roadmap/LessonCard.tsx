@@ -34,8 +34,6 @@ export function LessonCard({ meta, status, progress }: LessonCardProps) {
         <div className="min-w-0 sm:flex-1">
           <div className="flex flex-wrap items-baseline gap-x-2 text-xs text-slate-500">
             <span className="uppercase tracking-wide">Lesson {meta.order}</span>
-            <span aria-hidden>·</span>
-            <span>~{meta.estimatedMinutes} min</span>
           </div>
           <h3 className="font-semibold text-lg text-slate-900">{meta.title}</h3>
         </div>

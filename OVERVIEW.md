@@ -866,7 +866,8 @@ a "Work through it" button that animates the widget to the answer while the
 concept-to-answer `solution` reveals step by step — lesson questions only, and
 excluded from mastery since it's a worked example), **Hints** (live "warmer/colder" feedback while interacting on
 value-tuning questions, plus the authored hint offered proactively and the AI tutor),
-or **No help** (hints and tutor hidden). The choice is a sticky per-learner
+or **No help** (no proactive hints or sandbox; a missed answer shows only a brief
+"not quite" verification, with the AI tutor available on demand). The choice is a sticky per-learner
 preference (`useAssistancePreference.ts`, default Hints); practice questions offer
 only Hints / No help.
 

@@ -138,7 +138,8 @@ concrete **do** with file references.
   **Hints** (live "warmer/colder" proximity feedback while interacting on
   value-tuning questions, plus the authored hint offered proactively and the AI
   tutor), and
-  **No help** (hints and tutor hidden). The level is a sticky per-learner
+  **No help** (no proactive hints or sandbox — a missed answer shows only a brief
+  verification, with the AI tutor available on demand). The level is a sticky per-learner
   preference (`useAssistancePreference.ts`, default Hints) and the learner can
   override it on any question. "Solve it" is a worked example, not a test, so it
   advances the lesson but is excluded from concept mastery (`markStepSolved` +

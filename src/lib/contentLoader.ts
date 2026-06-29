@@ -3,9 +3,9 @@ import {
   PRACTICE_BANK_MIN,
   PRACTICE_SESSION_SIZE,
   REVIEW_SESSION_SIZE,
-  TEST_OUT_LEVEL_MAX_QUESTIONS,
   TEST_OUT_MIN_QUESTIONS,
   TEST_OUT_PER_CONCEPT,
+  TEST_OUT_PER_LESSON,
 } from "./constants";
 import { assertValidLesson } from "./validateLesson";
 
@@ -449,27 +449,83 @@ function buildTestOutSession(
 }
 
 /**
- * A whole-level test-out: a coverage set spanning every lesson in the level,
- * capped at {@link TEST_OUT_LEVEL_MAX_QUESTIONS}. Passing it skips the entire
- * stage at once.
+ * Every published lesson from the start of the course through the given level,
+ * inclusive — the full span a "skip ahead" reaches across. Empty for an unknown
+ * level.
  */
-export function getLevelTestOutSession(levelId: string): Step[] {
-  const level = getLevel(levelId);
-  if (!level) return [];
-  const pool = level.lessons.flatMap((meta) => getPracticeBank(meta.id));
-  return buildTestOutSession(
-    pool,
-    TEST_OUT_PER_CONCEPT,
-    TEST_OUT_LEVEL_MAX_QUESTIONS,
+function lessonsUpToLevel(levelId: string): LessonMeta[] {
+  const levels = getLevels();
+  const idx = levels.findIndex((l) => l.id === levelId);
+  if (idx === -1) return [];
+  return levels.slice(0, idx + 1).flatMap((l) => l.lessons);
+}
+
+/**
+ * The lessons a skip-ahead at this level actually bypasses: every lesson up to
+ * and including it that the learner hasn't already finished, in course order. A
+ * skip is a claim to know the material you *haven't done yet*, so already-
+ * completed lessons drop out of both the questions drawn and the lessons marked
+ * complete (they're already complete). The earlier "complete everything up to
+ * here" guarantee still holds — finishing these leaves the whole span done.
+ */
+export function getLevelTestOutLessonIds(
+  levelId: string,
+  progress: Record<string, { status: string }>,
+): string[] {
+  return lessonsUpToLevel(levelId)
+    .filter((meta) => {
+      const status = progress[meta.id]?.status;
+      return status !== "complete" && status !== "mastered";
+    })
+    .map((meta) => meta.id);
+}
+
+/**
+ * A quota-per-lesson coverage set drawn from an explicit list of lessons: each
+ * lesson contributes up to {@link TEST_OUT_PER_LESSON} questions, chosen
+ * concept-first from its own bank, then the per-lesson draws are pooled and
+ * shuffled. The basis for a skip-ahead test-out — building from a fixed list
+ * keeps the questions in lock-step with the lessons that will be marked
+ * complete.
+ */
+export function getTestOutSessionForLessons(lessonIds: string[]): Step[] {
+  const picked = lessonIds.flatMap((id) =>
+    buildTestOutSession(
+      getPracticeBank(id),
+      TEST_OUT_PER_CONCEPT,
+      TEST_OUT_PER_LESSON,
+    ),
+  );
+  return shuffle(picked);
+}
+
+/**
+ * A skip-ahead test-out for a level: a quota-per-lesson set spanning only the
+ * lessons up to and including it that the learner hasn't finished — the ones
+ * they'd actually be skipping. The test grows the more unfinished lessons it
+ * bypasses and every such lesson is represented; lessons already done are never
+ * re-tested. Passing it certifies — and skips — that whole run at once.
+ */
+export function getLevelTestOutSession(
+  levelId: string,
+  progress: Record<string, { status: string }>,
+): Step[] {
+  return getTestOutSessionForLessons(
+    getLevelTestOutLessonIds(levelId, progress),
   );
 }
 
-/** Whether a level has enough questions across its lessons for a test-out. */
-export function canTestOutLevel(levelId: string): boolean {
-  const level = getLevel(levelId);
-  if (!level) return false;
-  const total = level.lessons.reduce(
-    (n, meta) => n + getPracticeBank(meta.id).length,
+/**
+ * Whether a skip-ahead at this level is worth offering — i.e. there are enough
+ * questions across the lessons it would actually skip (the unfinished ones up
+ * to and including it) to certify them.
+ */
+export function canTestOutLevel(
+  levelId: string,
+  progress: Record<string, { status: string }>,
+): boolean {
+  const total = getLevelTestOutLessonIds(levelId, progress).reduce(
+    (n, id) => n + getPracticeBank(id).length,
     0,
   );
   return total >= TEST_OUT_MIN_QUESTIONS;

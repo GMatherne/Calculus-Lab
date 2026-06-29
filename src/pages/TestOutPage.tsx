@@ -2,9 +2,11 @@ import { useMemo, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import {
   canTestOutLevel,
+  getContinueLessonId,
   getLevel,
   getLevelStatus,
-  getLevelTestOutSession,
+  getLevelTestOutLessonIds,
+  getTestOutSessionForLessons,
 } from "../lib/contentLoader";
 import { TEST_OUT_PASS_RATIO } from "../lib/constants";
 import { useProgress } from "../contexts/ProgressContext";
@@ -25,12 +27,19 @@ export function TestOutPage() {
 
   const title = level?.title ?? "";
 
-  // Every lesson in the level is marked complete on a pass; the "Start the
-  // level" fallback on a fail points at its first lesson.
-  const lessonIds = useMemo(() => level?.lessons.map((l) => l.id) ?? [], [level]);
-  const learnHref = `/lesson/${level?.lessons[0]?.id ?? ""}`;
+  // The lessons this skip would bypass: everything up to and including the level
+  // that isn't already finished. The questions are drawn from exactly these, and
+  // exactly these are marked complete on a pass — finished lessons are never
+  // re-tested. Recomputed when progress loads (it starts empty) so we don't quiz
+  // the learner on lessons they've already done. A failed attempt sends them to
+  // where they should actually resume.
+  const lessonIds = useMemo(
+    () => (levelId ? getLevelTestOutLessonIds(levelId, progress) : []),
+    [levelId, progress],
+  );
+  const learnHref = `/lesson/${getContinueLessonId(progress) ?? level?.lessons[0]?.id ?? ""}`;
 
-  const eligible = !!levelId && canTestOutLevel(levelId);
+  const eligible = !!levelId && canTestOutLevel(levelId, progress);
 
   // Nothing to skip once the whole level is already finished.
   const alreadyComplete =
@@ -43,8 +52,8 @@ export function TestOutPage() {
       title: `Skip ahead: ${title}`,
       order: 0,
     },
-    buildSteps: () => (levelId ? getLevelTestOutSession(levelId) : []),
-    resampleKey: [levelId],
+    buildSteps: () => getTestOutSessionForLessons(lessonIds),
+    resampleKey: [lessonIds],
   });
 
   if (!level) {
@@ -107,10 +116,10 @@ export function TestOutPage() {
           <h1 className="mt-1 text-2xl font-bold text-slate-900">{title}</h1>
           <p className="mt-3 text-slate-500">
             Answer {session.steps.length}{" "}
-            {session.steps.length === 1 ? "question" : "questions"} covering this
-            level's lessons. Score {passPercent}% or higher on your first try and
-            we'll mark every lesson in it complete and unlock the next level — no
-            walkthrough needed.
+            {session.steps.length === 1 ? "question" : "questions"} drawn from the
+            lessons you haven't finished yet, up to and including this level. Score{" "}
+            {passPercent}% or higher on your first try and we'll mark them complete
+            and unlock what's next — no walkthrough needed.
           </p>
           <p className="mt-3 text-sm text-slate-400">
             Miss too many and nothing changes — you can take the lessons as

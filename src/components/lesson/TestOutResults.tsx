@@ -15,9 +15,9 @@ interface TestOutResultsProps {
   result: PracticeResult;
   /** Eyebrow text — the title of the level being skipped. */
   title: string;
-  /** Lessons to mark complete when the learner passes. */
+  /** Lessons to mark complete when the learner passes (up to & incl. this level). */
   lessonIds: string[];
-  /** Where the "Start the level" link points on a failed attempt. */
+  /** Where the failed-attempt link points — the lesson to resume from. */
   learnHref: string;
   /** Re-sample a fresh set and retake. */
   onRetry: () => void;
@@ -34,7 +34,7 @@ export function TestOutResults({
   const ratio = total > 0 ? correct / total : 0;
   const passed = total > 0 && ratio >= TEST_OUT_PASS_RATIO;
   const passPercent = Math.round(TEST_OUT_PASS_RATIO * 100);
-  const scopeNoun = "this whole level";
+  const scopeNoun = "everything up to here";
 
   // On a pass, mark the covered lesson(s) complete exactly once — the ref guards
   // against React's double-invoked effects in dev, mirroring PracticeResults.
@@ -80,7 +80,7 @@ export function TestOutResults({
           </div>
           <h1 className="text-2xl font-bold text-slate-900">Skipped ahead!</h1>
           <p className="text-slate-500 mt-2">
-            You proved you know {scopeNoun} — we've marked it complete and
+            You proved you know {scopeNoun} — we've marked it all complete and
             unlocked what's next.
           </p>
 
@@ -176,7 +176,7 @@ export function TestOutResults({
             to={learnHref}
             className="block w-full min-h-[48px] rounded-xl bg-indigo-600 text-white font-semibold leading-[48px] hover:bg-indigo-700 active:scale-[0.98] transition"
           >
-            Start the level
+            Keep learning
           </Link>
           <button
             type="button"

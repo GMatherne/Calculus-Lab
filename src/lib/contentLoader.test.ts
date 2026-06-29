@@ -17,11 +17,12 @@ import {
   shuffle,
   getLessonStepCount,
   getLevelTestOutSession,
+  getLevelTestOutLessonIds,
   canTestOutLevel,
 } from "./contentLoader";
 import {
   PRACTICE_SESSION_SIZE,
-  TEST_OUT_LEVEL_MAX_QUESTIONS,
+  TEST_OUT_PER_LESSON,
 } from "./constants";
 
 const published = getPublishedLessons();
@@ -272,31 +273,140 @@ describe("shuffle", () => {
 });
 
 describe("getLevelTestOutSession", () => {
-  const level = getLevels()[0];
+  const levels = getLevels();
+  const noProgress: Record<string, { status: string }> = {};
 
-  it("draws a capped, deduped set across the level's lessons", () => {
-    const pool = level.lessons.flatMap((l) => getPracticeBank(l.id));
-    const uniqueIds = new Set(pool.map((s) => s.id));
-    const session = getLevelTestOutSession(level.id);
+  // Lessons from the start of the course through a level, inclusive.
+  const lessonsUpTo = (i: number) =>
+    levels.slice(0, i + 1).flatMap((l) => l.lessons);
+
+  // What one lesson contributes: its whole bank, capped at the per-lesson quota.
+  const lessonQuota = (lessonId: string) =>
+    Math.min(getPracticeBank(lessonId).length, TEST_OUT_PER_LESSON);
+
+  it("draws a deduped set summing the per-lesson quota across the whole span", () => {
+    const idx = levels.length - 1; // last level: the widest span
+    const span = lessonsUpTo(idx);
+    const uniqueIds = new Set(
+      span.flatMap((l) => getPracticeBank(l.id)).map((s) => s.id),
+    );
+    const session = getLevelTestOutSession(levels[idx].id, noProgress);
 
     expect(new Set(session.map((s) => s.id)).size).toBe(session.length);
     expect(session.every((s) => uniqueIds.has(s.id))).toBe(true);
     expect(session.length).toBe(
-      Math.min(uniqueIds.size, TEST_OUT_LEVEL_MAX_QUESTIONS),
+      span.reduce((n, l) => n + lessonQuota(l.id), 0),
     );
   });
 
+  it("pulls the quota from every lesson in the span, earlier levels included", () => {
+    const idx = levels.length - 1;
+    const span = lessonsUpTo(idx);
+    const session = getLevelTestOutSession(levels[idx].id, noProgress);
+
+    for (const lesson of span) {
+      const bankIds = new Set(getPracticeBank(lesson.id).map((s) => s.id));
+      const fromLesson = session.filter((s) => bankIds.has(s.id));
+      expect(fromLesson.length).toBe(lessonQuota(lesson.id));
+    }
+  });
+
+  it("only draws from lessons being skipped, never ones already finished", () => {
+    const idx = levels.length - 1;
+    const span = lessonsUpTo(idx);
+    // Mark the first half of the span done (a mix of complete and mastered).
+    const finished = span.slice(0, Math.ceil(span.length / 2));
+    const progress: Record<string, { status: string }> = {};
+    finished.forEach((l, i) => {
+      progress[l.id] = { status: i % 2 === 0 ? "complete" : "mastered" };
+    });
+    const finishedIds = new Set(
+      finished.flatMap((l) => getPracticeBank(l.id)).map((s) => s.id),
+    );
+
+    const session = getLevelTestOutSession(levels[idx].id, progress);
+    expect(session.length).toBeGreaterThan(0);
+    expect(session.some((s) => finishedIds.has(s.id))).toBe(false);
+    // Exactly the quota from each still-unfinished lesson, and nothing more.
+    const unfinished = span.filter((l) => !finished.includes(l));
+    expect(session.length).toBe(
+      unfinished.reduce((n, l) => n + lessonQuota(l.id), 0),
+    );
+  });
+
+  it("grows the more lessons it bypasses", () => {
+    const lengths = levels.map(
+      (l) => getLevelTestOutSession(l.id, noProgress).length,
+    );
+    for (let i = 1; i < lengths.length; i++) {
+      expect(lengths[i]).toBeGreaterThan(lengths[i - 1]);
+    }
+  });
+
   it("returns nothing for an unknown level", () => {
-    expect(getLevelTestOutSession("does-not-exist")).toEqual([]);
+    expect(getLevelTestOutSession("does-not-exist", noProgress)).toEqual([]);
+  });
+
+  it("returns nothing once every lesson in the span is finished", () => {
+    const idx = 1;
+    const progress: Record<string, { status: string }> = {};
+    lessonsUpTo(idx).forEach((l) => {
+      progress[l.id] = { status: "complete" };
+    });
+    expect(getLevelTestOutSession(levels[idx].id, progress)).toEqual([]);
+  });
+});
+
+describe("getLevelTestOutLessonIds", () => {
+  const levels = getLevels();
+  const noProgress: Record<string, { status: string }> = {};
+
+  it("lists every unfinished lesson up to and including the level, in course order", () => {
+    const idx = Math.min(2, levels.length - 1);
+    const expected = levels
+      .slice(0, idx + 1)
+      .flatMap((l) => l.lessons.map((m) => m.id));
+    expect(getLevelTestOutLessonIds(levels[idx].id, noProgress)).toEqual(
+      expected,
+    );
+  });
+
+  it("omits lessons the learner has already finished", () => {
+    const idx = Math.min(2, levels.length - 1);
+    const all = levels
+      .slice(0, idx + 1)
+      .flatMap((l) => l.lessons.map((m) => m.id));
+    const progress: Record<string, { status: string }> = {
+      [all[0]]: { status: "complete" },
+      [all[1]]: { status: "mastered" },
+    };
+    expect(getLevelTestOutLessonIds(levels[idx].id, progress)).toEqual(
+      all.slice(2),
+    );
+  });
+
+  it("is empty for an unknown level", () => {
+    expect(getLevelTestOutLessonIds("does-not-exist", noProgress)).toEqual([]);
   });
 });
 
 describe("test-out eligibility", () => {
+  const noProgress: Record<string, { status: string }> = {};
+
   it("is available for a real level", () => {
-    expect(canTestOutLevel(getLevels()[0].id)).toBe(true);
+    expect(canTestOutLevel(getLevels()[0].id, noProgress)).toBe(true);
   });
 
   it("is unavailable for an unknown level", () => {
-    expect(canTestOutLevel("does-not-exist")).toBe(false);
+    expect(canTestOutLevel("does-not-exist", noProgress)).toBe(false);
+  });
+
+  it("is unavailable once every lesson it would skip is finished", () => {
+    const level = getLevels()[0];
+    const progress: Record<string, { status: string }> = {};
+    level.lessons.forEach((l) => {
+      progress[l.id] = { status: "complete" };
+    });
+    expect(canTestOutLevel(level.id, progress)).toBe(false);
   });
 });

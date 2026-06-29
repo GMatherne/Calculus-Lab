@@ -1006,6 +1006,16 @@ export function LessonPlayer({
           : undefined;
   const hintProactive =
     !submitted && effectiveLevel === "hints" && Boolean(displayHint);
+  // "No help" withholds the elaborated authored `incorrect` (often a near-worked
+  // solution) so the learner keeps the retry/struggle; a brief verification shows
+  // instead. Validation messages and the correct message are untouched, and
+  // Hints/Solve keep the full feedback.
+  const displayMessage =
+    effectiveLevel === "none" &&
+    feedback.isCorrect === false &&
+    feedback.message === activeStep.feedback.incorrect
+      ? "Not quite — give it another go."
+      : feedback.message;
 
   // Power-rule "exponent drop" animation. The active power_term answer supplies
   // the source term (start → answer) for both the solve walkthrough and a brief
@@ -1154,7 +1164,7 @@ export function LessonPlayer({
       ) : (
         <>
           <FeedbackPanel
-            message={feedback.message}
+            message={displayMessage}
             isCorrect={feedback.isCorrect}
             hint={displayHint}
             hintRevealed={hintRevealed}
@@ -1167,8 +1177,7 @@ export function LessonPlayer({
           />
           {submitted &&
             feedback.isCorrect !== null &&
-            !isRead &&
-            effectiveLevel !== "none" && (
+            !isRead && (
               <TutorPanel
                 key={`${activeStep.id}-${feedback.isCorrect}`}
                 step={activeStep}
