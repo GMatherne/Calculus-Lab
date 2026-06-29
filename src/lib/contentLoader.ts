@@ -238,13 +238,6 @@ export function getLessonProgressPercent(
   return Math.round((done / total) * 100);
 }
 
-export function getNextLessonId(currentId: string): string | null {
-  const published = getPublishedLessons();
-  const idx = published.findIndex((l) => l.id === currentId);
-  if (idx === -1 || idx >= published.length - 1) return null;
-  return published[idx + 1].id;
-}
-
 export function isLessonUnlocked(
   lessonId: string,
   progress: Record<string, { status: string }>,
@@ -497,22 +490,6 @@ export function getTestOutSessionForLessons(lessonIds: string[]): Step[] {
     ),
   );
   return shuffle(picked);
-}
-
-/**
- * A skip-ahead test-out for a level: a quota-per-lesson set spanning only the
- * lessons up to and including it that the learner hasn't finished — the ones
- * they'd actually be skipping. The test grows the more unfinished lessons it
- * bypasses and every such lesson is represented; lessons already done are never
- * re-tested. Passing it certifies — and skips — that whole run at once.
- */
-export function getLevelTestOutSession(
-  levelId: string,
-  progress: Record<string, { status: string }>,
-): Step[] {
-  return getTestOutSessionForLessons(
-    getLevelTestOutLessonIds(levelId, progress),
-  );
 }
 
 /**
